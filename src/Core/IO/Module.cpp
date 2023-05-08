@@ -7,18 +7,19 @@
 #define str(a) #a
 #define to_str(a) str(a)
 
-#define RAINDROP_set_context(type, submodule){																	\
-	using __FncType = void(*)(type*);     																		\
-	__FncType __fnc = (__FncType)_dll.getProc(to_str(RAINDROP_submodule_set(submodule)));						\
-	if (__fnc){																									\
-		__fnc(RAINDROP_submodule_get(submodule)());																								\
-	} else {																									\
-		RAINDROP_log(ERROR, IO, "missing module function : %s", to_str(RAINDROP_submodule_set(submodule)));		\
-	}																											\
+#define RAINDROP_set_context(type, submodule){																						\
+	using __FncType = void(*)(type*); 																								\
+	__FncType __fnc = nullptr;		    																							\
+	try{																															\
+		__fnc = (__FncType)_dll.getProc(to_str(RAINDROP_submodule_set(submodule)));													\
+	} catch (const std::exception &){																								\
+		throw std::runtime_error("missing module function, cannot find " + std::string(to_str(RAINDROP_submodule_set(submodule))));	\
+	}																																\
+	__fnc(RAINDROP_submodule_get(submodule)());																						\
 }
 
 namespace Raindrop::Core::IO{
-	Module::Module(const char* path) : _dll(path){
+	RAINDROP_API Module::Module(const std::filesystem::path& path) : _dll(path){
 		RAINDROP_profile_function();
 
 		RAINDROP_set_context(::Raindrop::Core::Debug::Log::__Logger, log);
@@ -31,46 +32,47 @@ namespace Raindrop::Core::IO{
 		}
 	}
 	
-	bool Module::init(){
+	RAINDROP_API bool Module::init(){
 		RAINDROP_profile_function();
 		using InitModuleFnc = bool(*)(void);
-		InitModuleFnc initModule = (InitModuleFnc)_dll.getProc("initialize");
 
-		if (initModule){
+		try{
+			InitModuleFnc initModule = (InitModuleFnc)_dll.getProc("initialize");
 			return initModule();
+		} catch (const std::exception& e){
+			RAINDROP_log(INFO, IO, "the module does not have a initialize function");
+			return true;
 		}
-		RAINDROP_log(WARNING, IO, "invalid module : missing initialize function \"%s\"", _dll.filepath());
-		return false;
 	}
 
-	void Module::shutdown(){
+	RAINDROP_API void Module::shutdown(){
 		RAINDROP_profile_function();
 		using ShutdownModuleFnc = bool(*)(void);
-		ShutdownModuleFnc shutdownModule = (ShutdownModuleFnc)_dll.getProc("shutdown");
 
-		if (shutdownModule){
+		try{
+			ShutdownModuleFnc shutdownModule = (ShutdownModuleFnc)_dll.getProc("shutdown");
 			shutdownModule();
-		} else {
-			RAINDROP_log(WARNING, IO, "invalid module : missing shutdown function \"%s\"", _dll.filepath());
+		} catch (const std::exception& e){
+			RAINDROP_log(INFO, IO, "the module does not have a shutdown function");
 		}
 	}
 
-	Module::~Module(){
+	RAINDROP_API Module::~Module(){
 		RAINDROP_profile_function();
 		shutdown();
 	}
 
-	bool Module::isOpen() const{
+	RAINDROP_API bool Module::isOpen() const{
 		RAINDROP_profile_function();
 		return _dll.isOpen() && _loaded;
 	}
 
-	const char* Module::filepath() const{
+	RAINDROP_API const std::filesystem::path& Module::filepath() const{
 		RAINDROP_profile_function();
 		return _dll.filepath();
 	}
 
-	void* Module::getFnc(const char* name) const{
+	RAINDROP_API void* Module::getFnc(const char* name) const{
 		RAINDROP_profile_function();
 		return _dll.getProc(name);
 	}

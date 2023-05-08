@@ -1,45 +1,38 @@
 #ifndef __RAINDROP_CORE_SCENE_ENTITY_MANAGER_HPP__
 #define __RAINDROP_CORE_SCENE_ENTITY_MANAGER_HPP__
 
-#include <common.hpp>
-#include <Core/Memory/allocators/Allocator.hpp>
-#include <Core/Memory/containers/List.hpp>
+#include <Core/Scene/common.hpp>
+#include <Core/Memory/memory.hpp>
 
 namespace Raindrop::Core::Scene{
-	class EntityManager{
+	class RAINDROP_API EntityManager{
 		public:
-			EntityManager(Memory::Allocator& allocator, usize capacity = 1024);
+			EntityManager(usize capacity = 1024);
 			~EntityManager();
 
 			/**
 			 * @brief create an unused identifies between 0 and the capacity-1
 			 * 
-			 * @exception std::overflow_error whene the manager does not have free IDs anymore
-			 * @return ID32 
+			 * @exception std::overflow_error when the manager does not have free IDs anymore
+			 * @return EntityID
 			 */
-			ID32 create();
+			EntityID create();
 
 			/**
 			 * @brief release the ID has an ID that can be used again
 			 * @param entity the ID to release
-			 * 
-			 * @exception std::invalid_argument (ONLY IN DEBUG MODE) whene the user release an ID that is already released
+			 * @warning the engine does not check if the ID is already released
 			 */
-			void destroy(ID32 entity);
+			void destroy(EntityID entity);
 
 			/**
-			 * @brief get if the entity is used or released
-			 * 
-			 * @param entity the entity to check
-			 * @return true 
-			 * @return false 
+			 * @brief get the total capacity of the entity manager
+			 * @return usize 
 			 */
-			bool exists(ID32 entity) const;
+			usize capacity() const;
 
 		private:
-			Memory::Allocator& _allocator;
-			Memory::List<ID32> _freeEntities;
-
+			std::queue<EntityID> _freeEntities;
 			usize _capacity;
 	};
 }

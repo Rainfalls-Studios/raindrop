@@ -1,7 +1,9 @@
 #ifndef __RAINDROP_COMMON_HPP__
 #define __RAINDROP_COMMON_HPP__
 
+#include <filesystem>
 #include <stdexcept>
+#include <algorithm>
 #include <typeinfo>
 #include <utility>
 #include <cstring>
@@ -57,7 +59,11 @@
 	typedef long long int __int128[2];
 #endif
 
-#define RAINDROP_MODULE extern "C" __declspec(dllexport) __stdcall
+#if defined(_WIN32)
+	#define RAINDROP_MODULE extern "C" __declspec(dllexport) __stdcall
+#else
+	#define RAINDROP_MODULE extern "C" __attribute__((visibility("default"))) __stdcall
+#endif
 
 #define RAINDROP_CreateVersion(major, minor, patch) ::Raindrop::Version{major, minor, patch}
 #define RAINDROP_VERSION RAINDROP_CreateVersion(RAINDROP_VERSION_MAJOR, RAINDROP_VERSION_MINOR, RAINDROP_VERSION_PATCH)
