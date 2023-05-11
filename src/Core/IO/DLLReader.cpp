@@ -15,10 +15,22 @@ namespace Raindrop::Core::IO{
 		RAINDROP_API DLLReader::DLLReader(const std::filesystem::path& filepath) : _filepath{filepath}{
 			RAINDROP_profile_function();
 			RAINDROP_log(INFO, IO, "loading \"%s\" dll library", filepath);
-			_dll = static_cast<void*>(::LoadLibraryW(filepath.c_str()));
+			_dll = nullptr;
+			_dll = (void*)::LoadLibraryW(filepath.c_str());
 
 			if (_dll == nullptr){
-				throw std::ifstream::failure("failed to open dynamic library file");
+				std::stringstream errorMessage;
+
+				DWORD error = GetLastError();
+				LPSTR lpBuffer;
+
+				DWORD dwSize = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, error, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&lpBuffer, 0, NULL);
+
+				errorMessage << "failed to open dynamic library : " << filepath <<  lpBuffer;
+
+				LocalFree(lpBuffer);
+
+				throw std::ifstream::failure(errorMessage.str());
 			}
 		}
 
