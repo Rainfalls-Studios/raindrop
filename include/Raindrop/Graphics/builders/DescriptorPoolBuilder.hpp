@@ -3,7 +3,6 @@
 
 #include <Raindrop/Graphics/common.hpp>
 
-//TODO: add build from xml  - https://trello.com/c/1ppfxZk8/1-add-build-from-xml
 namespace Raindrop::Graphics::Builders{
 	class DescriptorPoolBuilder{
 		public:
@@ -16,10 +15,14 @@ namespace Raindrop::Graphics::Builders{
 			void setMaxSets(uint32_t max);
 			void pushPoolSize(VkDescriptorPoolSize size);
 
+			void loadFromXML(tinyxml2::XMLElement* element);
+
 		private:
 			VkDescriptorPoolCreateFlags _flags = 0;
 			uint32_t _maxSets = 0;
 			std::vector<VkDescriptorPoolSize> _poolSizes;
+
+			void loadPoolFromXML(tinyxml2::XMLElement* element);
 	};
 }
 
