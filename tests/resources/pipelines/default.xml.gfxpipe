@@ -1,0 +1,7 @@
+<GraphicsPipeline name="default pipeline">
+	<Shaders>
+		<Shader source="${Engine.Resources.Directory}/shaders/default/default.glsl.frag.spv"/>
+		<Shader source="${Engine.Resources.Directory}/shaders/default/default.glsl.vert.spv"/>
+	</Shaders>
+	<Target id="WorldFramebuffer"/>
+</GraphicsPipeline>

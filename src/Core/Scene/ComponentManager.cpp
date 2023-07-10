@@ -1,46 +1,61 @@
-#include "Core/Scene/ComponentManager.hpp"
-#include <Core/Debug/profiler.hpp>
-#include <cstring>
+#include <Raindrop/Core/Scene/ComponentManager.hpp>
 
 namespace Raindrop::Core::Scene{
-	RAINDROP_API ComponentManager::ComponentManager(usize componentSize, usize componentAlignement, uint32 size) : _componentSize{componentSize}, _componentAlignement{componentAlignement}{
-		RAINDROP_profile_function();
-		_start = nullptr;
-		_capacity = 0;
-		allocate(size);
+	ComponentManager::ComponentManager(uint32_t componentSize, size_t typeID, uint32_t size, ConstructorPtr constructor, DestructorPtr destructor) : _componentSize{componentSize}, _typeID{typeID}, _size{size}, _constructor{constructor}, _destructor{destructor}{
+		_components.resize(size * componentSize);
+
+		for (uint32_t i=0; i<size; i++){
+			_IDsPool.push(i);
+		}
 	}
 
-	RAINDROP_API ComponentManager::~ComponentManager(){
-		RAINDROP_profile_function();
-		_start.release();
+	ComponentManager::~ComponentManager(){
+		_components.clear();
 	}
 
-	RAINDROP_API void ComponentManager::allocate(usize size){
-		RAINDROP_profile_function();
-
-		std::unique_ptr<void, decltype(std::free)*> newStart(_aligned_malloc(size * _componentSize, _componentAlignement), std::free);
-		std::memcpy(newStart.get(), _start.get(), std::min(_capacity * _componentSize, size * _componentSize));
-		_start = std::move(newStart);
-
-		_capacity = size;
+	void* ComponentManager::get(ComponentHandleID id){
+		return static_cast<char*>(_components.data()) + (id * _componentSize);
 	}
 
-	RAINDROP_API void* ComponentManager::get(ID32 id){
-		RAINDROP_profile_function();
-		if (id >= _capacity) throw std::out_of_range("the given component id is out of the bounds of the component manager");
-		return static_cast<void*>(static_cast<char*>(_start.get()) + _componentSize * id);
+	uint32_t ComponentManager::size() const{
+		return _size;
 	}
 
-	RAINDROP_API void ComponentManager::set(ID32 id, void* component){
-		RAINDROP_profile_function();
-		if (id >= _capacity) throw std::out_of_range("the given component id is out of the bounds of the component manager");
-		if (!component) throw std::invalid_argument("the given component pointer in null, cannot copy");
-		void* ptr = get(id);
-		memcpy(ptr, component, _componentSize);
+	void* ComponentManager::array(){
+		return static_cast<void*>(_components.data());
 	}
 
-	RAINDROP_API usize ComponentManager::capacity() const{
-		RAINDROP_profile_function();
-		return _capacity;
+	ComponentHandleID ComponentManager::createComponent(){
+		ComponentHandleID id = _IDsPool.front();
+		_IDsPool.pop();
+		_constructor(get(id));
+		return id;
+	}
+
+	void ComponentManager::destroyComponent(ComponentHandleID id){
+		_IDsPool.push(id);
+		_destructor(get(id));
+	}
+
+	void ComponentManager::addEntity(EntityID entity){
+		_entities.push_back(entity);
+	}
+
+	void ComponentManager::removeEntity(EntityID entity){
+		_entities.remove(entity);
+	}
+
+	std::list<EntityID>& ComponentManager::entities(){
+		return _entities;
+	}
+
+	
+	ConstructorPtr ComponentManager::constructor(){
+		return _constructor;
+	}
+
+
+	DestructorPtr ComponentManager::destructor(){
+		return _destructor;
 	}
 }

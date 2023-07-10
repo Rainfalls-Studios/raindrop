@@ -1,34 +1,29 @@
-#include <Core/Scene/EntityManager.hpp>
-#include <Core/Debug/profiler.hpp>
+#include <Raindrop/Core/Scene/EntityManager.hpp>
 
 namespace Raindrop::Core::Scene{
-	RAINDROP_API EntityManager::EntityManager(usize capacity){
-		RAINDROP_profile_function();
-		_capacity = capacity;
-
-		for (usize i=0; i<capacity; i++){
-			_freeEntities.push(static_cast<EntityID>(i));
+	EntityManager::EntityManager(uint32_t size) : _size{size}{
+		for (uint32_t i=0; i<size; i++){
+			_IDsPool.push(i);
 		}
 	}
 
-	RAINDROP_API EntityManager::~EntityManager(){
-		RAINDROP_profile_function();
+	EntityManager::~EntityManager(){}
+
+	EntityID EntityManager::createEntity(){
+		EntityID id = _IDsPool.front();
+		_IDsPool.pop();
+		return id;
 	}
 
-	RAINDROP_API EntityID EntityManager::create(){
-		RAINDROP_profile_function();
-		EntityID entity = _freeEntities.front();
-		_freeEntities.pop();
-		return entity;
+	void EntityManager::destroyEntity(EntityID id){
+		_IDsPool.push(id);
 	}
 
-	RAINDROP_API void EntityManager::destroy(EntityID entity){
-		RAINDROP_profile_function();
-		if (entity >= _capacity) throw std::out_of_range("cannot destroy the entity, the ID is out of the bounding of the manager");
-		_freeEntities.push(entity);
+	uint32_t EntityManager::size() const{
+		return _size;
 	}
 
-	usize RAINDROP_API EntityManager::capacity() const{
-		return _capacity;
+	uint32_t EntityManager::usedSize() const{
+		return _size - _IDsPool.size();
 	}
 }

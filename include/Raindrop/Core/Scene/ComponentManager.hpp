@@ -1,31 +1,41 @@
 #ifndef __RAINDROP_CORE_SCENE_COMPONENT_MANAGER_HPP__
 #define __RAINDROP_CORE_SCENE_COMPONENT_MANAGER_HPP__
 
-#include <common.hpp>
-#include <Core/Memory/memory.hpp>
+#include <Raindrop/Core/Scene/common.hpp>
 
 namespace Raindrop::Core::Scene{
-	class RAINDROP_API ComponentManager{
+	class ComponentManager{
 		public:
-			ComponentManager(usize componentSize, usize componentAlignement, uint32 size = 1024);
+			ComponentManager(uint32_t componentSize, size_t typeID, uint32_t size, ConstructorPtr constructor, DestructorPtr destructor);
 			~ComponentManager();
 
-			ComponentManager(const ComponentManager& other) = delete;
-			ComponentManager& operator=(const ComponentManager& other) = delete;
+			void* get(ComponentHandleID id);
+			uint32_t size() const;
 
-			void* get(ID32 id);
-			void set(ID32 id, void* component);
+			ComponentHandleID createComponent();
+			void destroyComponent(ComponentHandleID id);
 
-			usize capacity() const;
-		
+			void* array();
+
+			void addEntity(EntityID entity);
+			void removeEntity(EntityID entity);
+			std::list<EntityID>& entities();
+			
+			ConstructorPtr constructor();
+			DestructorPtr destructor();
+
 		private:
-			// * _start;
-			std::unique_ptr<void, decltype(std::free)*> _start{nullptr, std::free};
-			usize _capacity;
-			usize _componentSize;
-			usize _componentAlignement;
-
-			void allocate(usize size);
+			// create a vector of 1byte data type.
+			std::vector<char> _components;
+			std::queue<ComponentHandleID> _IDsPool;
+			std::list<EntityID> _entities;
+			
+			ConstructorPtr _constructor;
+			DestructorPtr _destructor;
+			
+			uint32_t _componentSize;
+			uint32_t _size;
+			size_t _typeID;
 	};
 }
 

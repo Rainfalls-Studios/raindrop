@@ -1,8 +1,15 @@
-
 [submodule "libs/glm"]
 	path = libs/glm
 	url = https://github.com/g-truc/glm.git
-
 [submodule "libs/gtest"]
 	path = libs/gtest
 	url = https://github.com/google/googletest.git
+[submodule "libs/easyloggingpp"]
+	path = libs/easyloggingpp
+	url = https://github.com/amrayn/easyloggingpp.git
+[submodule "libs/tinyxml2"]
+	path = libs/tinyxml2
+	url = https://github.com/leethomason/tinyxml2.git
+[submodule "libs/imgui"]
+	path = libs/imgui
+	url = https://github.com/ocornut/imgui.git

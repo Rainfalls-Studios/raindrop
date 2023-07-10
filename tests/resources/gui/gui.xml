@@ -1,0 +1,19 @@
+<Frame name="my frame" open="MainFrame.open">
+	<Button label="close">
+		<SetBool variable="MainFrame.open" value="false"/>
+	</Button>
+
+	<SameLine/>
+	<Button label="open child">
+		<OpenChild path="${Engine.Resources.Directory}/gui/gui2.xml"/>
+	</Button>
+
+	<SameLine/>
+	<Button label="open">
+		<Open path="${Engine.Resources.Directory}/gui/gui2.xml"/>
+	</Button>
+
+	<Separator/>
+
+	<Text text="${hello}"/>
+</Frame>
