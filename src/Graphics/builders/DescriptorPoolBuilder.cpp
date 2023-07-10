@@ -53,7 +53,7 @@ namespace Raindrop::Graphics::Builders{
 
 		const char* type;
 		if (element->QueryStringAttribute("Type", &type) == tinyxml2::XML_SUCCESS)
-			poolSize.type = strToVkEnumT<VkDescriptorType>(type, 0);
+			poolSize.type = strToVkEnumT<VkDescriptorType>(type, static_cast<VkDescriptorType>(0));
 		
 		poolSize.descriptorCount = element->IntAttribute("DescriptorCount");
 

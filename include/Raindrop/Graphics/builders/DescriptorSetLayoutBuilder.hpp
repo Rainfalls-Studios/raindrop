@@ -15,9 +15,14 @@ namespace Raindrop::Graphics::Builders{
 			void setFlags(VkDescriptorSetLayoutCreateFlags flags);
 			void pushBinding(VkDescriptorSetLayoutBinding& binding);
 
+			void loadFromXML(tinyxml2::XMLElement* element, GraphicsContext& context);
+
 		private:
 			VkDescriptorSetLayoutCreateFlags _flags = 0;
 			std::vector<VkDescriptorSetLayoutBinding> _bindings;
+			std::vector<VkSampler> _samplers;
+
+			void loadBindingFromXML(tinyxml2::XMLElement* element, GraphicsContext& context);
 	};
 }
 
