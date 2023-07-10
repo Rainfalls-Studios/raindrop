@@ -3,7 +3,6 @@
 
 #include <Raindrop/Graphics/common.hpp>
 
-//TODO: Add 'createFromXML' - https://trello.com/c/fnHsUiAp/2-add-createfromxml
 namespace Raindrop::Graphics::Builders{
 	class DescriptorSetLayoutBuilder{
 		public:
