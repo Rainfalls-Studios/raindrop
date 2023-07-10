@@ -37,7 +37,7 @@ namespace Raindrop::Graphics::Builders{
 	void DescriptorPoolBuilder::loadFromXML(tinyxml2::XMLElement* element){
 		const char* flags;
 		if (element->QueryStringAttribute("Flags", &flags) == tinyxml2::XML_SUCCESS)
-			_flags = strToVkEnumT(flags, 0);
+			_flags = strToVkEnumT<VkDescriptorPoolCreateFlags>(flags, 0);
 		
 		_maxSets = element->IntAttribute("MaxSets");
 
@@ -53,7 +53,7 @@ namespace Raindrop::Graphics::Builders{
 
 		const char* type;
 		if (element->QueryStringAttribute("Type", &type) == tinyxml2::XML_SUCCESS)
-			poolSize.type = strToVkEnumT(type, 0);
+			poolSize.type = strToVkEnumT<VkDescriptorType>(type, 0);
 		
 		poolSize.descriptorCount = element->IntAttribute("DescriptorCount");
 
