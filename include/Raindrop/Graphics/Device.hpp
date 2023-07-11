@@ -22,8 +22,10 @@ namespace Raindrop::Graphics{
 			uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
 			SwapchainSupport getSwapchainSupport(VkSurfaceKHR surface) const;
+			const VkPhysicalDeviceProperties& properties() const;
 
 			void waitIdle();
+
 
 		private:
 			GraphicsContext& _context;
@@ -34,6 +36,8 @@ namespace Raindrop::Graphics{
 			VkQueue _graphicsQueue = VK_NULL_HANDLE;
 			VkQueue _presentQueue = VK_NULL_HANDLE;
 			VkQueue _transfertQueue = VK_NULL_HANDLE;
+
+			VkPhysicalDeviceProperties _properties;
 
 			void findPhysicalDevice();
 			bool isPhysicalDeviceSuitable(VkPhysicalDevice device);

@@ -8,6 +8,9 @@ namespace Raindrop::Graphics{
 		customLogger->configurations()->set(el::Level::Global, el::ConfigurationType::Format, "%datetime %level [%logger]: %msg");
 
 		findPhysicalDevice();
+
+		vkGetPhysicalDeviceProperties(_physicalDevice, &_properties);
+
 		build();
 	}
 
@@ -245,4 +248,9 @@ namespace Raindrop::Graphics{
 	void Device::waitIdle(){
 		vkDeviceWaitIdle(_device);
 	}
+
+	const VkPhysicalDeviceProperties& Device::properties() const{
+		return _properties;
+	}
+
 }
