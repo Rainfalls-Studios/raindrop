@@ -75,7 +75,7 @@ namespace Raindrop::Graphics{
 
 		if (vkAllocateMemory(_context.device.get(), &allocInfo, nullptr, &_memory) != VK_SUCCESS){
 			CLOG(ERROR, "Engine.Graphics.Texture") << "Failed to allocate texture memory";
-			throw std::runtime_error("failed to allocate image memory!");
+			throw std::runtime_error("failed to allocate image memory");
 		}
 
 		vkBindImageMemory(_context.device.get(), _image, _memory, 0);
@@ -145,12 +145,45 @@ namespace Raindrop::Graphics{
 	}
 
 	void Texture::createImageView(){
-		
+		VkImageViewCreateInfo info{};
+		info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+		info.format = VK_FORMAT_R8G8B8A8_SRGB;
+		info.image = _image;
+		info.viewType = VK_VIEW_TYPE_2D;
+		info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		info.subresourceRange.baseMipLevel = 0;
+		info.subresourceRange.levelCount = 1;
+		info.subresourceRange.baseArrayLayer = 0;
+		info.subresourceRange.layerCount = 1;
 
+		if (vkCreateImageView(_context.device.get(), &info, _context.allocationCallbacks, &_imageView) != VK_SUCCESS){
+			CLOG(ERROR, "Engine.Graphics.Texture") << "Failed to create texture image view";
+			throw std::runtime_error("failed to create texture image view");
+		}
 	}
 
 	void Texture::createSampler(){
+		VkSamplerCreateInfo info{};
+		info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+		info.magFilter = VK_FILTER_LINEAR;
+		info.minFilter = VK_FILTER_LINEAR;
+		info.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+		info.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+		info.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+		info.anisotropyEnable = VK_TRUE;
+		info.maxAnisotropy = device.properties.limits.maxSamplerAnisotropy;
+		info.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+		info.unnormalizedCoordinates = VK_FALSE;
+		info.compareEnable = VK_FALSE;
+		info.compareOp = VK_COMPARE_OP_ALWAYS;
+		info.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+		info.mipLodBias = 0.f;
+		info.minLod = 0.f;
+		info.maxLod = 0.f;
 
+		if (vkCreateSampler(_context.device.get(), &info, _context.allocationCallbacks, &_sampler) != VK_SUCCESS){
+			CLOG(ERROR, "Engine.Graphics.Texture") << "Failed to create texture sampler";
+			throw std::runtime_error("failed to create texture sampler");
+		}
 	}
-
 }
