@@ -20,6 +20,8 @@
 #include <Raindrop/Core/Scene/Components/Transform.hpp>
 #include <Raindrop/Core/Scene/Components/Model.hpp>
 
+#include <Raindrop/Graphics/Texture.hpp>
+
 namespace Raindrop::Graphics{
 	Renderer::Renderer(Core::EngineContext& context, Core::Scene::Scene& scene) : _interpreter{context}{
 		el::Logger* customLogger = el::Loggers::getLogger("Engine.Graphics");

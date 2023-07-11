@@ -7,16 +7,23 @@
 
 namespace Raindrop::Graphics{
 	Texture::Texture(GraphicsContext& context, const std::filesystem::path &path) : _context{context}{
+		el::Logger* customLogger = el::Loggers::getLogger("Engine.Graphics.Texture");
+		customLogger->configurations()->set(el::Level::Global, el::ConfigurationType::Format, "%datetime %level [%logger]: %msg");
+
+		CLOG(INFO, "Engine.Graphics.Texture") << "Loading texture : " << path << "...";
 		createImage(path);
 		createImageView();
 		createSampler();
+		CLOG(INFO, "Engine.Graphics.Texture") << "Texture loaded with success !";
 	}
 
 	Texture::~Texture(){
+		CLOG(INFO, "Engine.Graphics.Texture") << "Destroying texture...";
 		if (_image) vkDestroyImage(_context.device.get(), _image, _context.allocationCallbacks);
 		if (_memory) vkFreeMemory(_context.device.get(), _memory, _context.allocationCallbacks);
 		if (_imageView) vkDestroyImageView(_context.device.get(), _imageView, _context.allocationCallbacks);
 		if (_sampler) vkDestroySampler(_context.device.get(), _sampler, _context.allocationCallbacks);
+		CLOG(INFO, "Engine.Graphics.Texture") << "Texture destroyed with success !";
 	}
 
 	void Texture::createImage(const std::filesystem::path &filepath){
@@ -149,7 +156,7 @@ namespace Raindrop::Graphics{
 		info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 		info.format = VK_FORMAT_R8G8B8A8_SRGB;
 		info.image = _image;
-		info.viewType = VK_VIEW_TYPE_2D;
+		info.viewType = VK_IMAGE_VIEW_TYPE_2D;
 		info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 		info.subresourceRange.baseMipLevel = 0;
 		info.subresourceRange.levelCount = 1;
@@ -171,7 +178,7 @@ namespace Raindrop::Graphics{
 		info.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
 		info.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
 		info.anisotropyEnable = VK_TRUE;
-		info.maxAnisotropy = device.properties.limits.maxSamplerAnisotropy;
+		info.maxAnisotropy = _context.device.properties().limits.maxSamplerAnisotropy;
 		info.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
 		info.unnormalizedCoordinates = VK_FALSE;
 		info.compareEnable = VK_FALSE;
