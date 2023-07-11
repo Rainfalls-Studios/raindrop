@@ -18,6 +18,7 @@ add_subdirectory(libs/gtest)
 add_subdirectory(libs/easyloggingpp)
 add_subdirectory(libs/tinyxml2)
 add_subdirectory(libs/imgui)
+add_subdirectory(libs/stb)
 
 # submodules includes
 set(GLM_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/libs/glm/)
@@ -25,7 +26,8 @@ set(GTEST_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/libs/gtest/googleTest/include
 set(EASY_LOGGING_GPP_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/libs/easyloggingpp/src)
 set(TINY_XML2_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/libs/tinyxml2)
 set(IMGUI_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/libs/)
-set(RAINDROP_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include/ ${GLM_INCLUDE_DIRS} ${EASY_LOGGING_GPP_INCLUDE_DIRS} ${TINY_XML2_INCLUDE_DIRS}, ${TINY_XML2_INCLUDE_DIRS} ${tinyobjloader_INCLUDE_DIRS}")
+set(STB_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/libs/)
+set(RAINDROP_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include/ ${GLM_INCLUDE_DIRS} ${EASY_LOGGING_GPP_INCLUDE_DIRS} ${TINY_XML2_INCLUDE_DIRS}, ${TINY_XML2_INCLUDE_DIRS} ${tinyobjloader_INCLUDE_DIRS} ${STB_INCLUDE_DIRS}")
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/)
 include_directories(${GLM_INCLUDE_DIRS})
@@ -34,6 +36,7 @@ include_directories(${EASY_LOGGING_GPP_INCLUDE_DIRS})
 include_directories(${TINY_XML2_INCLUDE_DIRS})
 include_directories(${IMGUI_INCLUDE_DIRS})
 include_directories(${TINYOBJLOADER_INCLUDE_DIRS})
+include_directories(${STB_INCLUDE_DIRS})
 
 add_definitions(-DSDL_MAIN_HANDLED)
 
