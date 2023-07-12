@@ -4,6 +4,12 @@ target_precompile_headers(pch_target INTERFACE ${PCH_PATH})
 
 # === ENGINE ===
 
+option(RAINDROP_DEV_MODE "compile the engine into dev mode, which mean with editor menu and debug features" ON)
+
+if (${RAINDROP_DEV_MODE})
+	add_definitions(-DRAINDROP_DEV_MODE)
+endif()
+
 file(GLOB_RECURSE SOURCES *.cpp)
 add_library(RaindropEngine STATIC ${SOURCES})
 

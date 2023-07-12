@@ -48,6 +48,12 @@ namespace Raindrop::Graphics{
 			void renderGui();
 			void renderScene(VkCommandBuffer commmandBuffer);
 			void renderSwapchain(VkCommandBuffer commandBuffer);
+
+			void normalRender(VkCommandBuffer commandBuffer);
+
+			#ifdef RAINDROP_DEV_MODE
+				void devRender(VkCommandBuffer commandBuffer);
+			#endif
 	};
 
 	struct PushConstant{

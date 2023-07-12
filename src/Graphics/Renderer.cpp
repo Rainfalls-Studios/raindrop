@@ -85,25 +85,47 @@ namespace Raindrop::Graphics{
 	}
 
 	void Renderer::update(){
-		auto& swapchain = _context->swapchain;
 
 		_context->window.events(_gui.get());
 
 		if (VkCommandBuffer commandBuffer = beginFrame()){
-
-			_worldFramebuffer->beginRenderPass(commandBuffer);
-			renderScene(commandBuffer);
-			_worldFramebuffer->endRenderPass(commandBuffer);
-
-			renderGui();
-
-			swapchain.beginRenderPass(commandBuffer);
-			renderSwapchain(commandBuffer);
-			swapchain.endRenderPass(commandBuffer);
+			#ifdef RAINDROP_DEV_MODE
+				devRender(commandBuffer);
+			#else
+				normalRender(commandBuffer);
+			#endif
 
 			endFrame();
 		}
 	}
+
+	
+	void Renderer::normalRender(VkCommandBuffer commandBuffer){
+
+		auto& swapchain = _context->swapchain;
+		_worldFramebuffer->beginRenderPass(commandBuffer);
+		renderScene(commandBuffer);
+		_worldFramebuffer->endRenderPass(commandBuffer);
+
+		renderGui();
+
+		swapchain.beginRenderPass(commandBuffer);
+		renderSwapchain(commandBuffer);
+		swapchain.endRenderPass(commandBuffer);
+	}
+
+	#ifdef RAINDROP_DEV_MODE
+	
+	void Renderer::devRender(VkCommandBuffer commandBuffer){
+		auto& swapchain = _context->swapchain;
+
+		swapchain.beginRenderPass(commandBuffer);
+		renderSwapchain(commandBuffer);
+		swapchain.endRenderPass(commandBuffer);
+	}
+
+	#endif
+
 
 	void Renderer::renderGui(){
 		_gui->newFrame();

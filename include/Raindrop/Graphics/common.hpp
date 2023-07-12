@@ -21,7 +21,7 @@ namespace Raindrop::Graphics{
 		class DescriptorSetLayoutBuilder;
 	}
 
-	class GraphicsContext;
+	struct GraphicsContext;
 	class Renderer;
 	class Instance;
 	class Device;
