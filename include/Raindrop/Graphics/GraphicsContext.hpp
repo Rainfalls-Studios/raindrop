@@ -36,6 +36,8 @@ namespace Raindrop::Graphics{
 		GraphicsCommandPool graphicsCommandPool;
 		TransfertCommandPool transfertCommandPool;
 
+		VkRenderPass sceneRenderPass;
+
 		uint32_t graphicsFamily;
 		uint32_t transfertFamily;
 		uint32_t presentFamily;

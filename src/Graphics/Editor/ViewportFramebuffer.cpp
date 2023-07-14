@@ -1,17 +1,19 @@
-#include <Raindrop/Graphics/Dev/ViewportFramebuffer.hpp>
-#include <Raindrop/Graphics/Dev/DevContext.hpp>
+#include <Raindrop/Graphics/Editor/ViewportFramebuffer.hpp>
+#include <Raindrop/Graphics/Editor/EditorContext.hpp>
 
-namespace Raindrop::Graphics::Dev{
-	ViewportFramebuffer::ViewportFramebuffer(DevContext& context, uint32_t width, uint32_t height) : _context{context}, _width{width}, _height{height}{
+namespace Raindrop::Graphics::Editor{
+	ViewportFramebuffer::ViewportFramebuffer(EditorContext& context, uint32_t width, uint32_t height) : Image(context), _context{context}, _width{width}, _height{height}{
 		el::Logger* customLogger = el::Loggers::getLogger("Engine.Graphics.Dev.ViewportFramebuffer");
 		customLogger->configurations()->set(el::Level::Global, el::ConfigurationType::Format, "%datetime %level [%logger]: %msg");
 
 		createRenderPass();
 		createAttachmentImage();
-		createAttachmentImageView();
 		allocAttachmentMemory();
+		createAttachmentImageView();
 		createAttachmentSampler();
 		createFramebuffer();
+
+		Image::setTexture(_attachmentSampler, _attachmentImageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 	}
 
 	ViewportFramebuffer::~ViewportFramebuffer(){
@@ -20,8 +22,8 @@ namespace Raindrop::Graphics::Dev{
 
 		if (_framebuffer) vkDestroyFramebuffer(device, _framebuffer, allocationCallbacks);
 		if (_attachmentSampler) vkDestroySampler(device, _attachmentSampler, allocationCallbacks);
-		if (_attachmentMemory) vkFreeMemory(device, _attachmentMemory, allocationCallbacks);
 		if (_attachmentImageView) vkDestroyImageView(device, _attachmentImageView, allocationCallbacks);
+		if (_attachmentMemory) vkFreeMemory(device, _attachmentMemory, allocationCallbacks);
 		if (_attachmentImage) vkDestroyImage(device, _attachmentImage, allocationCallbacks);
 		if (_renderPass) vkDestroyRenderPass(device, _renderPass, allocationCallbacks);
 	}
@@ -49,7 +51,7 @@ namespace Raindrop::Graphics::Dev{
 		attachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
 		VkAttachmentDescription attachmentDescription{};
-		attachmentDescription.format = VK_FORMAT_R8G8B8A8_SINT;
+		attachmentDescription.format = VK_FORMAT_B8G8R8A8_SRGB;
 		attachmentDescription.samples = VK_SAMPLE_COUNT_1_BIT;
 		attachmentDescription.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 		attachmentDescription.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -91,7 +93,7 @@ namespace Raindrop::Graphics::Dev{
 		VkImageCreateInfo info{};
 		info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 		info.imageType = VK_IMAGE_TYPE_2D;
-		info.format = VK_FORMAT_R8G8B8A8_SINT;
+		info.format = VK_FORMAT_B8G8R8A8_SRGB;
 		info.extent = VkExtent3D{_width, _height, 1};
 		info.mipLevels = 1;
 		info.arrayLayers = 1;
@@ -114,7 +116,7 @@ namespace Raindrop::Graphics::Dev{
 		info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 		info.image = _attachmentImage;
 		info.viewType = VK_IMAGE_VIEW_TYPE_2D;
-		info.format = VK_FORMAT_R8G8B8A8_SINT;
+		info.format = VK_FORMAT_B8G8R8A8_SRGB;
 		info.subresourceRange = VkImageSubresourceRange{
 			.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
 			.baseMipLevel = 0,
@@ -173,5 +175,61 @@ namespace Raindrop::Graphics::Dev{
 			CLOG(ERROR, "Engine.Graphics.Dev.ViewportFramebuffer") << "Failed to create viewport framebuffer attachment sampler";
 			throw std::runtime_error("Failed to create sampler");
 		}
+	}
+
+	bool ViewportFramebuffer::beginRenderPass(VkCommandBuffer commandBuffer){
+		if (_width == 0 || _height == 0) return false;
+
+		VkRenderPassBeginInfo info{};
+		info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+		info.framebuffer = _framebuffer;
+		info.renderPass = _renderPass;
+		info.renderArea = VkRect2D{0, 0, _width, _height};
+
+		VkClearValue clearColor;
+		clearColor.color.int32[0] = 0;
+		clearColor.color.int32[1] = 0;
+		clearColor.color.int32[2] = 0;
+		clearColor.color.int32[3] = 0;
+
+		info.pClearValues = &clearColor;
+		info.clearValueCount = 1;
+
+		VkImageMemoryBarrier layoutTransitionBarrier{};
+
+		layoutTransitionBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+		layoutTransitionBarrier.srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
+		layoutTransitionBarrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		layoutTransitionBarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		layoutTransitionBarrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		layoutTransitionBarrier.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		layoutTransitionBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+		layoutTransitionBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+		layoutTransitionBarrier.image = _attachmentImage;
+		layoutTransitionBarrier.subresourceRange.baseMipLevel = 0;
+		layoutTransitionBarrier.subresourceRange.levelCount = 1;
+		layoutTransitionBarrier.subresourceRange.baseArrayLayer = 0;
+		layoutTransitionBarrier.subresourceRange.layerCount = 1;
+
+		vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 0, 0, nullptr, 0, nullptr, 1, &layoutTransitionBarrier);
+		vkCmdBeginRenderPass(commandBuffer, &info, VK_SUBPASS_CONTENTS_INLINE);
+
+		return true;
+	}
+
+	void ViewportFramebuffer::endRenderPass(VkCommandBuffer commandBuffer){
+		vkCmdEndRenderPass(commandBuffer);
+	}
+
+	uint32_t ViewportFramebuffer::width() const{
+		return _width;
+	}
+
+	uint32_t ViewportFramebuffer::height() const{
+		return _height;
+	}
+
+	VkRenderPass ViewportFramebuffer::renderPass() const{
+		return _renderPass;
 	}
 }

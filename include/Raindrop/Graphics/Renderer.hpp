@@ -8,6 +8,10 @@
 #include <Raindrop/Graphics/GUI/Interpreter.hpp>
 #include <Raindrop/Graphics/GraphicsContext.hpp>
 
+#ifdef RAINDROP_EDITOR
+	#include <Raindrop/Graphics/Editor/common.hpp>
+#endif
+
 namespace Raindrop::Graphics{
 	class Renderer{
 		friend class ImGUI;
@@ -48,11 +52,10 @@ namespace Raindrop::Graphics{
 			void renderGui();
 			void renderScene(VkCommandBuffer commmandBuffer);
 			void renderSwapchain(VkCommandBuffer commandBuffer);
+			void renderFrame(VkCommandBuffer commandBuffer);
 
-			void normalRender(VkCommandBuffer commandBuffer);
-
-			#ifdef RAINDROP_DEV_MODE
-				void devRender(VkCommandBuffer commandBuffer);
+			#ifdef RAINDROP_EDITOR
+				std::unique_ptr<Editor::Editor> _editor;
 			#endif
 	};
 

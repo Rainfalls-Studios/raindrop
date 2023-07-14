@@ -730,7 +730,7 @@ namespace Raindrop::Graphics{
 		builder.addShader(std::static_pointer_cast<Shader>(_context.context.assetManager.loadOrGet("C:/Users/aalee/Documents/raindrop/tests/resources/shaders/worldFramebuffer/default.glsl.vert.spv").lock()));
 
 		builder.setName("world framebuffer");
-		builder.setRenderPass(_context.swapchain.renderPass());
+		builder.setRenderPass(_context.sceneRenderPass);
 
 		builder.addDescriptorSetLayout(_setLayout->get());
 		builder.setAttachmentCount(1);

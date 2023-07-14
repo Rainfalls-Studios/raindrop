@@ -73,6 +73,8 @@ namespace Raindrop::Graphics{
 		}
 
 		ImGui_ImplVulkan_DestroyFontUploadObjects();
+
+		ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 		
 		CLOG(INFO, "Engine.Graphics.GUI") << "Loaded IMGUI with success!";
 	}

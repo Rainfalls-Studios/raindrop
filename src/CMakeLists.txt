@@ -4,10 +4,10 @@ target_precompile_headers(pch_target INTERFACE ${PCH_PATH})
 
 # === ENGINE ===
 
-option(RAINDROP_DEV_MODE "compile the engine into dev mode, which mean with editor menu and debug features" ON)
+option(RAINDROP_EDITOR "compile the engine into editor mode, which mean with editor menu and debug features" ON)
 
-if (${RAINDROP_DEV_MODE})
-	add_definitions(-DRAINDROP_DEV_MODE)
+if (${RAINDROP_EDITOR})
+	add_definitions(-DRAINDROP_EDITOR)
 endif()
 
 file(GLOB_RECURSE SOURCES *.cpp)

@@ -20,7 +20,9 @@
 #include <Raindrop/Core/Scene/Components/Transform.hpp>
 #include <Raindrop/Core/Scene/Components/Model.hpp>
 
-#include <Raindrop/Graphics/Texture.hpp>
+#ifdef RAINDROP_EDITOR
+	#include <Raindrop/Graphics/Editor/Editor.hpp>
+#endif
 
 namespace Raindrop::Graphics{
 	Renderer::Renderer(Core::EngineContext& context, Core::Scene::Scene& scene) : _interpreter{context}{
@@ -30,12 +32,20 @@ namespace Raindrop::Graphics{
 		CLOG(INFO, "Engine.Graphics") << "Creating renderer ...";
 		
 		_context = std::make_unique<GraphicsContext>(context, scene);
+		_gui = std::make_unique<ImGUI>(*_context);
 		registerFactories();
 
-		_gui = std::make_unique<ImGUI>(*_context);
+		#ifdef RAINDROP_EDITOR
+			_editor = std::make_unique<Editor::Editor>(*_context);
+			_context->sceneRenderPass = _editor->renderPass();
+		#else
+			_context->sceneRenderPass = _context->swapchain.renderPass();
+		#endif
+
 		_worldFramebuffer = std::make_unique<WorldFramebuffer>(*_context, 1080, 720);
 
 		createGraphicsCommandBuffers();
+
 
 		CLOG(INFO, "Engine.Graphics") << "Created renderer with success !";
 	}
@@ -47,6 +57,10 @@ namespace Raindrop::Graphics{
 
 		eraseFactories();
 		destroyGraphicsCommandBuffers();
+
+		#ifdef RAINDROP_EDITOR
+			_editor.reset();
+		#endif
 
 		_worldFramebuffer.reset();
 		_gui.reset();
@@ -85,70 +99,52 @@ namespace Raindrop::Graphics{
 	}
 
 	void Renderer::update(){
+		auto& swapchain = _context->swapchain;
 
 		_context->window.events(_gui.get());
 
 		if (VkCommandBuffer commandBuffer = beginFrame()){
-			#ifdef RAINDROP_DEV_MODE
-				devRender(commandBuffer);
-			#else
-				normalRender(commandBuffer);
+			_gui->newFrame();
+			
+			_worldFramebuffer->beginRenderPass(commandBuffer);
+			renderScene(commandBuffer);
+			_worldFramebuffer->endRenderPass(commandBuffer);
+
+			renderGui();
+
+			#ifdef RAINDROP_EDITOR
+				if (_editor->beginRenderPass(commandBuffer)){
+					renderFrame(commandBuffer);
+					_editor->endRenderPass(commandBuffer);
+				}
 			#endif
+
+			swapchain.beginRenderPass(commandBuffer);
+			renderSwapchain(commandBuffer);
+			swapchain.endRenderPass(commandBuffer);
 
 			endFrame();
 		}
 	}
 
-	
-	void Renderer::normalRender(VkCommandBuffer commandBuffer){
-
-		auto& swapchain = _context->swapchain;
-		_worldFramebuffer->beginRenderPass(commandBuffer);
-		renderScene(commandBuffer);
-		_worldFramebuffer->endRenderPass(commandBuffer);
-
-		renderGui();
-
-		swapchain.beginRenderPass(commandBuffer);
-		renderSwapchain(commandBuffer);
-		swapchain.endRenderPass(commandBuffer);
-	}
-
-	#ifdef RAINDROP_DEV_MODE
-	
-	void Renderer::devRender(VkCommandBuffer commandBuffer){
-		auto& swapchain = _context->swapchain;
-
-		swapchain.beginRenderPass(commandBuffer);
-		renderSwapchain(commandBuffer);
-		swapchain.endRenderPass(commandBuffer);
-	}
-
-	#endif
-
-
 	void Renderer::renderGui(){
-		_gui->newFrame();
-
-		auto& registry = _context->context.registry;
-		auto& assetManager = _context->context.assetManager;
-		auto& eventManager = _context->context.eventManager;
-		auto& scene = _context->scene;
-
-		_interpreter.update();
-		registry["Edit.SelectedEntity"] = scene.UI(registry["Edit.SelectedEntity"].as<Core::Scene::EntityID>(Core::Scene::INVALID_ENTITY_ID));
-
-		if (ImGui::Begin("component")){
-			auto entity = registry["Edit.SelectedEntity"].as<Core::Scene::EntityID>();
-			if (entity != Core::Scene::INVALID_ENTITY_ID) scene.componentsUI(entity);
-		}
-		ImGui::End();
 	}
 
 	void Renderer::renderSwapchain(VkCommandBuffer commandBuffer){
-		_worldFramebuffer->render(commandBuffer);
+		#ifndef RAINDROP_EDITOR
+			renderFrame(commandBuffer);
+		#else
+			_editor->render();
+		#endif
+
 		_gui->render(commandBuffer);
 	}
+
+	void Renderer::renderFrame(VkCommandBuffer commandBuffer){
+			_worldFramebuffer->render(commandBuffer);
+
+	}
+
 
 	VkCommandBuffer Renderer::beginFrame(){
 		auto& window = _context->window;
