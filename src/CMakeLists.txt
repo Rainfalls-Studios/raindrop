@@ -7,7 +7,7 @@ target_precompile_headers(pch_target INTERFACE ${PCH_PATH})
 option(RAINDROP_EDITOR "compile the engine into editor mode, which mean with editor menu and debug features" ON)
 
 if (${RAINDROP_EDITOR})
-	add_definitions(-DRAINDROP_EDITOR)
+	add_definitions(-DRAINDROP_EDITOR -DRAINDROP_EDITOR_PATH="${EDITOR_PATH}")
 endif()
 
 file(GLOB_RECURSE SOURCES *.cpp)

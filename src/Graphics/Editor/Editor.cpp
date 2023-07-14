@@ -2,12 +2,19 @@
 #include <Raindrop/Graphics/Editor/EditorContext.hpp>
 #include <Raindrop/Graphics/Editor/ViewportFramebuffer.hpp>
 #include <Raindrop/Graphics/Editor/ViewportPanel.hpp>
+#include <Raindrop/Graphics/GraphicsContext.hpp>
 #include <imgui/imgui_internal.h>
 
 namespace Raindrop::Graphics::Editor{
 	Editor::Editor(GraphicsContext& context){
 		_context = std::make_unique<EditorContext>(context);
 		_viewport = std::make_unique<ViewportPanel>(*_context);
+
+		context.context.registry["EditorSourceDir"] = RAINDROP_EDITOR_DIR;
+
+		tinyxml2::XMLDocument doc;
+		doc.LoadFile((RAINDROP_EDITOR_DIR / "icons/dark.xml").string().c_str());
+		_context->icons.loadFromXML(doc.RootElement());
 	}
 
 	Editor::~Editor(){
@@ -38,7 +45,6 @@ namespace Raindrop::Graphics::Editor{
 		ImGui::Begin("Editor", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoDocking);
 
 		ImGui::PopStyleVar(3);
-
 		
 
 		ImGuiID dockspace_id = ImGui::GetID("DockSpace");

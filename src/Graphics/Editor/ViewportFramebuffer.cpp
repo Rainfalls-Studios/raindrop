@@ -20,6 +20,8 @@ namespace Raindrop::Graphics::Editor{
 		auto device = _context.context.device.get();
 		auto allocationCallbacks = _context.context.allocationCallbacks;
 
+		Image::removeTexture();
+
 		if (_framebuffer) vkDestroyFramebuffer(device, _framebuffer, allocationCallbacks);
 		if (_attachmentSampler) vkDestroySampler(device, _attachmentSampler, allocationCallbacks);
 		if (_attachmentImageView) vkDestroyImageView(device, _attachmentImageView, allocationCallbacks);

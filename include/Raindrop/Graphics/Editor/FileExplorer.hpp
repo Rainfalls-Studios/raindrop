@@ -14,6 +14,9 @@ namespace Raindrop::Graphics::Editor{
 		private:
 			EditorContext& _context;
 
+			void hierachy();
+			void content();
+
 	};
 }
 

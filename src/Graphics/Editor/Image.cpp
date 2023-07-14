@@ -7,7 +7,6 @@ namespace Raindrop::Graphics::Editor{
 	}
 
 	Image::~Image(){
-		removeTexture();
 	}
 
 	void Image::setTexture(VkSampler sampler, VkImageView imageView, VkImageLayout layout){

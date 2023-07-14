@@ -10,6 +10,9 @@ namespace Raindrop::Graphics::Editor{
 	class Editor;
 	class Image;
 	class FileExplorer;
+	class IconAtlas;
+	class Icon;
+	class Texture;
 }
 
 #endif
