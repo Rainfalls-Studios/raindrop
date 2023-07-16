@@ -66,17 +66,16 @@ namespace Raindrop::Graphics{
 
 		ImGui_ImplVulkan_Init(&init_info, renderPass);
 
-		{
-			VkCommandBuffer cmd = _context.transfertCommandPool.beginSingleTime();
-			ImGui_ImplVulkan_CreateFontsTexture(cmd);
-			_context.transfertCommandPool.endSingleTime(cmd);
-		}
-
-		ImGui_ImplVulkan_DestroyFontUploadObjects();
-
 		ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 		
 		CLOG(INFO, "Engine.Graphics.GUI") << "Loaded IMGUI with success!";
+	}
+
+	void ImGUI::uploadFonts(){
+		VkCommandBuffer cmd = _context.transfertCommandPool.beginSingleTime();
+		ImGui_ImplVulkan_CreateFontsTexture(cmd);
+		_context.transfertCommandPool.endSingleTime(cmd);
+		ImGui_ImplVulkan_DestroyFontUploadObjects();
 	}
 
 	ImGUI::~ImGUI(){

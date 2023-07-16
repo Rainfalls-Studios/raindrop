@@ -17,6 +17,14 @@ namespace Raindrop::Graphics::Editor{
 			void hierachy();
 			void content();
 
+			bool renderFolder(const std::filesystem::path& path);
+
+			std::filesystem::path _selectedDirectory;
+			std::stack<std::filesystem::path> _lastSelections;
+			std::stack<std::filesystem::path> _nextSelections;
+
+			void select(const std::filesystem::path& dir);
+
 	};
 }
 

@@ -42,6 +42,8 @@ namespace Raindrop::Graphics{
 			_context->sceneRenderPass = _context->swapchain.renderPass();
 		#endif
 
+		_gui->uploadFonts();
+
 		_worldFramebuffer = std::make_unique<WorldFramebuffer>(*_context, 1080, 720);
 
 		createGraphicsCommandBuffers();

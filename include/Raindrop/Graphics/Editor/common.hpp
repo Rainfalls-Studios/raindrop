@@ -13,6 +13,7 @@ namespace Raindrop::Graphics::Editor{
 	class IconAtlas;
 	class Icon;
 	class Texture;
+	class Font;
 }
 
 #endif

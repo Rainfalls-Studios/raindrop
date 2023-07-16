@@ -10,11 +10,25 @@ namespace Raindrop::Graphics::Editor{
 		_context = std::make_unique<EditorContext>(context);
 		_viewport = std::make_unique<ViewportPanel>(*_context);
 
-		context.context.registry["EditorSourceDir"] = RAINDROP_EDITOR_DIR;
+		context.context.registry["EditorSourceDir"] = RAINDROP_EDITOR_DIR.string();
 
 		tinyxml2::XMLDocument doc;
 		doc.LoadFile((RAINDROP_EDITOR_DIR / "icons/dark.xml").string().c_str());
-		_context->icons.loadFromXML(doc.RootElement());
+		_context->icons.loadFromXML(doc.RootElement()->FirstChildElement("Icons"));
+
+		for (int i=5; i<20; i+=1){
+			_context->fonts.load(std::string("Inter Black ") + std::to_string(i), static_cast<float>(i), RAINDROP_EDITOR_DIR / "fonts/inter/Inter-Black.ttf");
+			_context->fonts.load(std::string("Inter Bold ") + std::to_string(i), static_cast<float>(i), RAINDROP_EDITOR_DIR / "fonts/inter/Inter-Bold.ttf");
+			_context->fonts.load(std::string("Inter ExtraBold ") + std::to_string(i), static_cast<float>(i), RAINDROP_EDITOR_DIR / "fonts/inter/Inter-ExtraBold.ttf");
+			_context->fonts.load(std::string("Inter ExtraLight ") + std::to_string(i), static_cast<float>(i), RAINDROP_EDITOR_DIR / "fonts/inter/Inter-ExtraLight.ttf");
+			_context->fonts.load(std::string("Inter Light ") + std::to_string(i), static_cast<float>(i), RAINDROP_EDITOR_DIR / "fonts/inter/Inter-Light.ttf");
+			_context->fonts.load(std::string("Inter Medium ") + std::to_string(i), static_cast<float>(i), RAINDROP_EDITOR_DIR / "fonts/inter/Inter-Medium.ttf");
+			_context->fonts.load(std::string("Inter Regular ") + std::to_string(i), static_cast<float>(i), RAINDROP_EDITOR_DIR / "fonts/inter/Inter-Regular.ttf");
+			_context->fonts.load(std::string("Inter SemiBold ") + std::to_string(i), static_cast<float>(i), RAINDROP_EDITOR_DIR / "fonts/inter/Inter-SemiBold.ttf");
+			_context->fonts.load(std::string("Inter Thin ") + std::to_string(i), static_cast<float>(i), RAINDROP_EDITOR_DIR / "fonts/inter/Inter-Thin.ttf");
+		}
+
+		ImGui::GetIO().FontDefault = _context->fonts.get("Inter Medium 14");
 	}
 
 	Editor::~Editor(){

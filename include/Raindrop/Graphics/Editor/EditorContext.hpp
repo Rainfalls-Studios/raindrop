@@ -5,6 +5,7 @@
 #include <Raindrop/Graphics/Editor/ViewportFramebuffer.hpp>
 #include <Raindrop/Graphics/Editor/FileExplorer.hpp>
 #include <Raindrop/Graphics/Editor/IconAtlas.hpp>
+#include <Raindrop/Graphics/Editor/Fonts.hpp>
 #include <Raindrop/Graphics/GraphicsContext.hpp>
 
 namespace Raindrop::Graphics::Editor{
@@ -18,6 +19,7 @@ namespace Raindrop::Graphics::Editor{
 		ViewportFramebuffer viewport;
 		FileExplorer fileExplorer;
 		IconAtlas icons;
+		Fonts fonts;
 
 		EditorContext(GraphicsContext& context);
 	};

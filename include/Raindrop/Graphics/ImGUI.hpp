@@ -14,6 +14,8 @@ namespace Raindrop::Graphics{
 
 			void event(SDL_Event* e);
 
+			void uploadFonts();
+
 		private:
 			GraphicsContext& _context;
 			VkDescriptorPool _imguiPool;
