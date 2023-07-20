@@ -7,6 +7,7 @@
 #include <Raindrop/Graphics/Editor/IconAtlas.hpp>
 #include <Raindrop/Graphics/Editor/Fonts.hpp>
 #include <Raindrop/Graphics/GraphicsContext.hpp>
+#include <Raindrop/Core/Scene/Entity.hpp>
 
 namespace Raindrop::Graphics::Editor{
 	static inline constexpr ImVec4 rgb(float r, float g, float b, float a = 255.f){
@@ -20,6 +21,9 @@ namespace Raindrop::Graphics::Editor{
 		FileExplorer fileExplorer;
 		IconAtlas icons;
 		Fonts fonts;
+		
+		Core::Scene::Entity selectedEntity;
+		Core::Scene::Scene* scene;
 
 		EditorContext(GraphicsContext& context);
 	};

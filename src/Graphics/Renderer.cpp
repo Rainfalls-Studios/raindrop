@@ -36,7 +36,7 @@ namespace Raindrop::Graphics{
 		registerFactories();
 
 		#ifdef RAINDROP_EDITOR
-			_editor = std::make_unique<Editor::Editor>(*_context);
+			_editor = std::make_unique<Editor::Editor>(*_context, &scene);
 			_context->sceneRenderPass = _editor->renderPass();
 		#else
 			_context->sceneRenderPass = _context->swapchain.renderPass();

@@ -87,7 +87,7 @@ namespace Raindrop::Graphics::Editor{
 		const ImGuiStyle& style = ImGui::GetStyle();
 		ImGuiStorage* storage = ImGui::GetStateStorage();
 
-		bool* opened = storage->GetBoolRef(ImGui::GetID("opened"), 0);
+		bool* opened = storage->GetBoolRef(ImGui::GetID("opened"), false);
 
 		ImGui::BeginGroup();
 

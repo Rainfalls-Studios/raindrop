@@ -5,6 +5,7 @@ namespace Raindrop::Graphics::Editor{
 		context{context},
 		viewport{*this, 1080, 720},
 		fileExplorer{*this},
-		icons{*this}{
+		icons{*this},
+		selectedEntity{Core::Scene::INVALID_ENTITY_ID, nullptr}{
 	}
 }
