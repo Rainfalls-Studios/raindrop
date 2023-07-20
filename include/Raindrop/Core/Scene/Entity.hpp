@@ -84,17 +84,17 @@ namespace Raindrop::Core::Scene{
 				return getComponent<Components::Tag>();
 			}
 
-			Components::Hierachy& hierachy(){
-				return getComponent<Components::Hierachy>();
+			Components::Hierarchy& hierarchy(){
+				return getComponent<Components::Hierarchy>();
 			}
 
 			Iterator begin(){
-				auto &a = hierachy();
+				auto &a = hierarchy();
 				return Iterator(a.childs.begin(), _scene);
 			}
 
 			Iterator end(){
-				return Iterator(hierachy().childs.end(), _scene);
+				return Iterator(hierarchy().childs.end(), _scene);
 			}
 
 			EntityID id() const{
@@ -107,8 +107,8 @@ namespace Raindrop::Core::Scene{
 
 			Entity createChild(){
 				Entity child = Entity(_scene->createEntity(), _scene);
-				hierachy().childs.push_back(child);
-				child.hierachy().parent = _id;
+				hierarchy().childs.push_back(child);
+				child.hierarchy().parent = _id;
 				return child;
 			}
 

@@ -24,7 +24,7 @@ namespace Raindrop::Core::Scene{
 
 		registerComponent<Components::Tag>(entityCount);
 		registerComponent<Components::Transform>(entityCount);
-		registerComponent<Components::Hierachy>(entityCount);
+		registerComponent<Components::Hierarchy>(entityCount);
 		registerComponent<Components::Camera>(1);
 		registerComponent<Components::Model>(entityCount);
 
@@ -70,7 +70,7 @@ namespace Raindrop::Core::Scene{
 	EntityID Scene::createEntity(){
 		EntityID entity = _entityManager->createEntity();
 		createComponent<Components::Transform>(entity);
-		createComponent<Components::Hierachy>(entity);
+		createComponent<Components::Hierarchy>(entity);
 		createComponent<Components::Tag>(entity);
 
 		return entity;

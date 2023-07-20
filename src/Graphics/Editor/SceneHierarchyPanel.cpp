@@ -8,13 +8,11 @@ namespace Raindrop::Graphics::Editor{
 	SceneHierarchyPanel::~SceneHierarchyPanel(){}
 
 	void SceneHierarchyPanel::update(){
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
 		bool begin = _open ? ImGui::Begin("Scene Hierarchy", &_open, ImGuiWindowFlags_NoDocking) : false;
 		
-		ImGui::PopStyleVar(3);
+		ImGui::PopStyleVar();
 		
 		if (begin){
 			_dockspace = ImGui::GetID("DockSpace");
@@ -41,7 +39,7 @@ namespace Raindrop::Graphics::Editor{
 
 		// the arrow button
 		{
-			bool hasChilds = !entity.hierachy().childs.empty();
+			bool hasChilds = !entity.hierarchy().childs.empty();
 
 			if (hasChilds){
 				if (ImGui::ArrowButton("arrow button", *opened ? ImGuiDir_Down : ImGuiDir_Right)){

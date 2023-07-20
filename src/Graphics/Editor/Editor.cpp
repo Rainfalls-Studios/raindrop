@@ -3,6 +3,7 @@
 #include <Raindrop/Graphics/Editor/ViewportFramebuffer.hpp>
 #include <Raindrop/Graphics/Editor/ViewportPanel.hpp>
 #include <Raindrop/Graphics/Editor/SceneHierarchyPanel.hpp>
+#include <Raindrop/Graphics/Editor/ComponentEditorPanel.hpp>
 #include <Raindrop/Graphics/GraphicsContext.hpp>
 #include <imgui/imgui_internal.h>
 
@@ -14,6 +15,7 @@ namespace Raindrop::Graphics::Editor{
 
 		_viewport = std::make_unique<ViewportPanel>(*_context);
 		_sceneHierarchy = std::make_unique<SceneHierarchyPanel>(*_context);
+		_componentEditor = std::make_unique<ComponentEditorPanel>(*_context);
 
 		context.context.registry["EditorSourceDir"] = RAINDROP_EDITOR_DIR.string();
 
@@ -87,6 +89,7 @@ namespace Raindrop::Graphics::Editor{
 		_viewport->update();
 		_context->fileExplorer.update();
 		_sceneHierarchy->update();
+		_componentEditor->update(_context->selectedEntity);
 
 	}
 

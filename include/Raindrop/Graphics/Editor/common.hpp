@@ -15,6 +15,7 @@ namespace Raindrop::Graphics::Editor{
 	class Texture;
 	class Fonts;
 	class SceneHierarchyPanel;
+	class ComponentEditorPanel;
 }
 
 #endif
