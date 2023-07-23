@@ -52,31 +52,49 @@ namespace Raindrop::Graphics::Editor{
 			ImGui::SameLine();
 		}
 
-		float x = ImGui::GetCursorPosX();
-		if (ImGui::InvisibleButton("select button", ImVec2(-1, ImGui::GetFontSize() * 1.2))){
-			_context.selectedEntity = entity;
-		}
+		
+		if (_renamingEntity == entity){
+			if (ImGui::InputText("##name", _renameBuffer, sizeof(_renameBuffer), ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue)){
+				entity.tag().name = _renameBuffer;
+				_renamingEntity = Core::Scene::Entity();
+			}
 
-		bool hovered = ImGui::IsItemHovered();
-		bool active = ImGui::IsItemActive();
-
-		if (hovered || active){
-			ImGui::GetWindowDrawList()->AddRectFilled(ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), ImGui::GetColorU32(active ? style.Colors[ImGuiCol_HeaderActive] : style.Colors[ImGuiCol_HeaderHovered]));
-		} else if (_context.selectedEntity == entity){
-			ImGui::GetWindowDrawList()->AddRectFilled(ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), ImGui::GetColorU32(style.Colors[ImGuiCol_TextSelectedBg]));
-		}
-
-		// Icon, text
-		ImGui::SameLine();
-		ImGui::SetCursorPosX(x + 5);
-		float size = ImGui::GetFrameHeight();
-		ImGui::Image(objectIcon.texture(), ImVec2(size, size), objectIcon.uv1(), objectIcon.uv2());
-		ImGui::SameLine();
-
-		if (opened){
-			ImGui::Text(name.c_str());
+			if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGui::IsItemClicked()){
+				_renamingEntity = Core::Scene::Entity();
+			}
+			
 		} else {
-			ImGui::TextDisabled(name.c_str());
+			float x = ImGui::GetCursorPosX();
+			if (ImGui::InvisibleButton("select button", ImVec2(-1, ImGui::GetFontSize() * 1.2))){
+				_context.selectedEntity = entity;
+			}
+
+			bool hovered = ImGui::IsItemHovered();
+			bool active = ImGui::IsItemActive();
+
+			if (hovered || active){
+				ImGui::GetWindowDrawList()->AddRectFilled(ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), ImGui::GetColorU32(active ? style.Colors[ImGuiCol_HeaderActive] : style.Colors[ImGuiCol_HeaderHovered]));
+			} else if (_context.selectedEntity == entity){
+				ImGui::GetWindowDrawList()->AddRectFilled(ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), ImGui::GetColorU32(style.Colors[ImGuiCol_TextSelectedBg]));
+			}
+
+			if (hovered && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)){
+				renameEntity(entity);
+			}
+
+			// Icon, text
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(x + 5);
+			float size = ImGui::GetFrameHeight();
+			ImGui::Image(objectIcon.texture(), ImVec2(size, size), objectIcon.uv1(), objectIcon.uv2());
+			ImGui::SameLine();
+			
+
+			if (opened){
+				ImGui::Text(name.c_str());
+			} else {
+				ImGui::TextDisabled(name.c_str());
+			}
 		}
 
 		ImGui::EndGroup();
@@ -119,25 +137,65 @@ namespace Raindrop::Graphics::Editor{
 	}
 
 	void SceneHierarchyPanel::entitySettings(Core::Scene::Entity entity){
-		ImGui::MenuItem("Select");
-		ImGui::MenuItem("Add Component");
+		if (ImGui::MenuItem("Select")) selectEntity(entity);
+		if (ImGui::MenuItem("Add Component")) addComponentEntity(entity);
 
 		ImGui::Separator();
-		ImGui::MenuItem("Look at");
+		if (ImGui::MenuItem("Look at")) lookAtEntity(entity);
 
 		ImGui::Separator();
-		ImGui::MenuItem("Copy", "Ctr+C");
-		ImGui::MenuItem("Cut", "Ctr+X");
-		ImGui::MenuItem("Copy ID", "Ctr+Maj+C");
+		
+		if (ImGui::MenuItem("Copy", "Ctr+C")) copyEntity(entity);
+		if (ImGui::MenuItem("Cut", "Ctr+X")) cutEntity(entity);
+		if (ImGui::MenuItem("Copy ID", "Ctr+Maj+C")) copyEntityID(entity);
 
 		ImGui::Separator();
-		ImGui::MenuItem("Rename", "F2");
-		ImGui::MenuItem("Remove", "Del");
+		if (ImGui::MenuItem("Rename", "F2")) renameEntity(entity);
+		if (ImGui::MenuItem("Remove", "Del")) removeEntity(entity);
 	}
 
 	void SceneHierarchyPanel::drawSceneSettings(Core::Scene::Scene* scene){
 		ImGui::MenuItem("Hide");
 
 		ImGui::MenuItem("Advenced settings");
+	}
+
+	void SceneHierarchyPanel::selectEntity(Core::Scene::Entity entity){
+		_context.selectedEntity = entity;
+	}
+
+	void SceneHierarchyPanel::addComponentEntity(Core::Scene::Entity entity){
+		//TODO: Add 'Add component entity" - https://trello.com/c/6TYvsAXe/9-add-add-component-entity
+	}
+
+	void SceneHierarchyPanel::lookAtEntity(Core::Scene::Entity entity){
+		//TODO: Add "look at entity" - https://trello.com/c/Co2RWK5L/8-add-look-at-entity
+	}
+
+	void SceneHierarchyPanel::copyEntity(Core::Scene::Entity entity){
+		//TODO: Add "copy entity" - https://trello.com/c/jNXXxisz/11-add-copy-entity
+	}
+
+	void SceneHierarchyPanel::cutEntity(Core::Scene::Entity entity){
+		copyEntity(entity);
+		removeEntity(entity);
+	}
+
+	void SceneHierarchyPanel::copyEntityID(Core::Scene::Entity entity){
+		ImGui::SetClipboardText(std::to_string(entity.tag().UUID).c_str());
+	}
+
+	void SceneHierarchyPanel::renameEntity(Core::Scene::Entity entity){
+		_renamingEntity = entity;
+		strcpy(_renameBuffer, entity.tag().name.c_str());
+	}
+
+	void SceneHierarchyPanel::removeEntity(Core::Scene::Entity entity){
+		if (entity == _renamingEntity) _renamingEntity = Core::Scene::Entity();
+		if (entity == _context.selectedEntity) _context.selectedEntity = Core::Scene::Entity();
+		
+		try{
+			entity.scene()->destroyEntity(entity.id());
+		} catch (const std::exception &){}
 	}
 }

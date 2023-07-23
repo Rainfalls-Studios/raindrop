@@ -77,6 +77,24 @@ namespace Raindrop::Core::Scene{
 	}
 
 	void Scene::destroyEntity(EntityID ID){
+		if (ID == _root){
+			CLOG(WARNING, "Engine.Core.Scene") << "Cannot destroy the root entity of the scene";
+			throw std::runtime_error("Cannot destroy root");
+		}
+		
+		if (hasComponent<Components::Hierarchy>(ID)){
+			auto& component = getComponent<Components::Hierarchy>(ID);
+			
+			for (auto &c : component.childs){
+				destroyEntity(c);
+			}
+
+			if (component.parent != INVALID_ENTITY_ID){
+				auto& parentComponent = getComponent<Components::Hierarchy>(component.parent);
+				parentComponent.childs.remove(ID);
+			}
+		}
+
 		for (uint32_t i=0; i<_entityComponentsRegistry->componentCount(); i++){
 			auto& component = _entityComponentsRegistry->get(ID, i);
 			if (component != INVALID_COMPONENT_HANDLE_ID){

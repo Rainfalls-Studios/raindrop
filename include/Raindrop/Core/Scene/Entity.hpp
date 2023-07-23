@@ -32,6 +32,7 @@ namespace Raindrop::Core::Scene{
 					value_type _it;
 			};
 
+			Entity() : _id{INVALID_ENTITY_ID}, _scene{nullptr}{}
 			Entity(EntityID id, Scene* scene) : _id{id}, _scene{scene}{}
 			Entity(const Entity &other) : _id{other._id}, _scene{other._scene}{}
 			~Entity() = default;

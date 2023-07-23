@@ -4,13 +4,8 @@
 #include <glm/gtc/constants.hpp>
 
 namespace Raindrop::Graphics::Editor{
-	ViewportPanel::ViewportPanel(EditorContext& context) : _context{context}{
-
-	}
-
-	ViewportPanel::~ViewportPanel(){
-
-	}
+	ViewportPanel::ViewportPanel(EditorContext& context) : _context{context}{}
+	ViewportPanel::~ViewportPanel(){}
 
 	void ViewportPanel::update(){
         ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
@@ -54,9 +49,6 @@ namespace Raindrop::Graphics::Editor{
 				const float sensitivity = 0.1f;
 				rotation += glm::vec3(rotationDrag.y * sensitivity, -rotationDrag.x * sensitivity, 0.0f);
 				rotation.x = glm::clamp(rotation.x, -89.0f, 89.0f);
-
-				// camera.rotation += glm::vec3(rotationDrag.y, rotationDrag.x, 0.f) * camera.rotationSensivity;
-				// camera.rotation = glm::normalize(camera.rotation);
 
 				ImGui::Text("x : %f", camera.rotation.x);
 				ImGui::Text("y : %f", camera.rotation.y);
