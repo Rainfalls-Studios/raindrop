@@ -252,17 +252,21 @@ namespace Raindrop::Graphics{
 		auto& scene = _context->scene;
 
 		glm::mat4 viewTransform;
-		{
-			auto& list = scene.componentEntities<Core::Scene::Components::Camera>();
-			if (!list.empty()){
-				auto entity = Core::Scene::Entity(list.front(), &scene);
-				auto& component = entity.getComponent<Core::Scene::Components::Camera>();
-				component.update(entity.getComponent<Core::Scene::Components::Transform>());
-				viewTransform = component.viewProjection;
-			} else {
-				viewTransform = glm::scale(glm::mat4(1.f), glm::vec3(1/100.f));
+		#ifdef RAINDROP_EDITOR
+			viewTransform = _editor->cameraViewProjection();
+		#else
+			{
+				auto& list = scene.componentEntities<Core::Scene::Components::Camera>();
+				if (!list.empty()){
+					auto entity = Core::Scene::Entity(list.front(), &scene);
+					auto& component = entity.getComponent<Core::Scene::Components::Camera>();
+					component.update(entity.getComponent<Core::Scene::Components::Transform>());
+					viewTransform = component.viewProjection;
+				} else {
+					viewTransform = glm::scale(glm::mat4(1.f), glm::vec3(1/100.f));
+				}
 			}
-		}
+		#endif
 		
 		auto weak_pipeline = _context->context.registry["Pipeline"].as<std::weak_ptr<Raindrop::Core::Asset::Asset>>();
 		if (auto pipeline = std::static_pointer_cast<GraphicsPipeline>(weak_pipeline.lock())){

@@ -6,6 +6,7 @@
 #include <Raindrop/Graphics/Editor/FileExplorer.hpp>
 #include <Raindrop/Graphics/Editor/IconAtlas.hpp>
 #include <Raindrop/Graphics/Editor/Fonts.hpp>
+#include <Raindrop/Graphics/Editor/Camera.hpp>
 #include <Raindrop/Graphics/GraphicsContext.hpp>
 #include <Raindrop/Core/Scene/Entity.hpp>
 
@@ -24,6 +25,8 @@ namespace Raindrop::Graphics::Editor{
 		
 		Core::Scene::Entity selectedEntity;
 		Core::Scene::Scene* scene;
+
+		Camera camera;
 
 		EditorContext(GraphicsContext& context);
 	};

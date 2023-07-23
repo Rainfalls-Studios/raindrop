@@ -86,6 +86,8 @@ namespace Raindrop::Graphics::Editor{
 		}
     	ImGui::End();
 
+		_context->camera.update();
+
 		_viewport->update();
 		_context->fileExplorer.update();
 		_sceneHierarchy->update();
@@ -95,5 +97,9 @@ namespace Raindrop::Graphics::Editor{
 
 	VkRenderPass Editor::renderPass() const{
 		return _context->viewport.renderPass();
+	}
+
+	const glm::mat4& Editor::cameraViewProjection() const{
+		return _context->camera.viewProjection;
 	}
 }

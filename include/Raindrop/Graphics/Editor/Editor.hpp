@@ -16,6 +16,7 @@ namespace Raindrop::Graphics::Editor{
 			void render();
 
 			VkRenderPass renderPass() const;
+			const glm::mat4& cameraViewProjection() const;
 
 		private:
 			std::unique_ptr<EditorContext> _context;
