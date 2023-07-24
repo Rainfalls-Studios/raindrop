@@ -24,6 +24,7 @@ namespace Raindrop::Graphics::Editor{
 
 			void selectEntity(Core::Scene::Entity entity);
 			void addComponentEntity(Core::Scene::Entity entity);
+			void addChildEntity(Core::Scene::Entity entity);
 			void lookAtEntity(Core::Scene::Entity entity);
 			void copyEntity(Core::Scene::Entity entity);
 			void cutEntity(Core::Scene::Entity entity);
@@ -33,6 +34,8 @@ namespace Raindrop::Graphics::Editor{
 
 			char _renameBuffer[255];
 			Core::Scene::Entity _renamingEntity;
+
+			
 	};
 }
 

@@ -113,6 +113,26 @@ namespace Raindrop::Core::Scene{
 				return child;
 			}
 
+			operator bool() const{
+				return _id == INVALID_ENTITY_ID || _scene == nullptr;
+			}
+
+			bool operator==(const EntityID& other) const{
+				return _id == other;
+			}
+
+			bool operator==(const Entity& other) const{
+				return _id == other._id && _scene == other._scene;
+			}
+
+			bool operator!=(const Entity& other) const{
+				return !(*this == other);
+			}
+
+			bool operator!=(const EntityID& other) const{
+				return !(*this == other);
+			}
+
 		private:
 			EntityID _id;
 			Scene* _scene;

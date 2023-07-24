@@ -1,5 +1,6 @@
 #include <imgui/backends/imgui_impl_vulkan.h> 
 #include <imgui/backends/imgui_impl_sdl2.h>
+#include <imGuizmo/ImGuizmo.h>
 
 #include <Raindrop/Graphics/ImGUI.hpp>
 #include <Raindrop/Graphics/Renderer.hpp>
@@ -89,6 +90,7 @@ namespace Raindrop::Graphics{
 		ImGui_ImplVulkan_NewFrame();
 		ImGui_ImplSDL2_NewFrame();
 		ImGui::NewFrame();
+		ImGuizmo::BeginFrame();
 	}
 
 	void ImGUI::render(VkCommandBuffer commandBuffer){

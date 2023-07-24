@@ -10,9 +10,18 @@ namespace Raindrop::Graphics::Editor{
 			~ViewportPanel();
 
 			void update();
+			
+			glm::u32vec2 start() const;
+			glm::u32vec2 size() const;
 
 		private:
 			EditorContext& _context;
+
+			glm::u32vec2 _start;
+			glm::u32vec2 _size;
+
+			void guizmo();
+			
 
 	};
 }

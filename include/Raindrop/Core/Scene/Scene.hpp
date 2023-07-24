@@ -69,9 +69,6 @@ namespace Raindrop::Core::Scene{
 			}
 
 			EntityID root() const;
-			EntityID UI(EntityID selectedEntity = INVALID_ENTITY_ID);
-			void componentsUI(EntityID entity);
-
 
 			std::list<EntityID>& componentEntities(ComponentID component);	
 

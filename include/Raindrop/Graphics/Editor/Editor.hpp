@@ -24,6 +24,8 @@ namespace Raindrop::Graphics::Editor{
 			std::unique_ptr<SceneHierarchyPanel> _sceneHierarchy;
 			std::unique_ptr<ComponentEditorPanel> _componentEditor;
 
+			void guizmo();
+
 	};
 }
 

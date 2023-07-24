@@ -2,6 +2,8 @@
 #include <Raindrop/Graphics/Editor/EditorContext.hpp>
 #include <imgui/imgui_internal.h>
 #include <glm/gtc/constants.hpp>
+#include <ImGuizmo/ImGuizmo.h>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace Raindrop::Graphics::Editor{
 	ViewportPanel::ViewportPanel(EditorContext& context) : _context{context}{}
@@ -23,11 +25,14 @@ namespace Raindrop::Graphics::Editor{
 
 			ImVec2 origin = ImGui::GetCursorPos();
 
+			_start = {pos.x, pos.y};
+			_size = {winSize.x, winSize.y};
+
 			ImGui::GetWindowDrawList()->AddImage(
 				(void *)_context.viewport.texture(),
-				ImVec2(pos.x - 12, pos.y - 7),
-				ImVec2(winPos.x + winSize.x + 5, winPos.y + winSize.y),
-				ImVec2(0, 1), ImVec2(1, 0)
+				ImVec2(_start.x, _start.y),
+				ImVec2(_size.x + _start.x, _size.y + _start.y),
+				ImVec2(1, 1), ImVec2(0, 0)
 			);
 
 			ImVec2 size = ImGui::GetWindowSize();
@@ -65,6 +70,58 @@ namespace Raindrop::Graphics::Editor{
 			}
 
 		}
+
+		guizmo();
 		ImGui::End();
+	}
+
+	
+	glm::u32vec2 ViewportPanel::start() const{
+		return _start;
+	}
+
+	glm::u32vec2 ViewportPanel::size() const{
+		return _size;
+	}
+
+	void ViewportPanel::guizmo(){
+		if (_context.selectedEntity.id() == Core::Scene::INVALID_ENTITY_ID) return;
+		if (!_context.selectedEntity.hasComponent<Core::Scene::Components::Transform>()) return;
+
+		ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
+		ImGuizmo::SetOrthographic(_context.camera.type == Camera::Type::ORTHOGRAPHIC);
+		ImGuizmo::SetDrawlist(ImGui::GetWindowDrawList());
+
+		ImGuizmo::SetRect(_start.x, _start.y, _size.x, _size.y);
+
+		const glm::mat4 projection = glm::scale(_context.camera.projection, glm::vec3(1.f, -1.f, 1.f));
+		const glm::mat4& view =_context.camera.view;
+
+		auto& transform = _context.selectedEntity.getComponent<Core::Scene::Components::Transform>();
+		glm::mat4 transformMatrix;
+
+		ImGuizmo::RecomposeMatrixFromComponents(
+			glm::value_ptr(transform.translation),
+			glm::value_ptr(transform.rotation),
+			glm::value_ptr(transform.scale),
+			glm::value_ptr(transformMatrix)
+		);
+		
+		ImGuizmo::Manipulate(
+			glm::value_ptr(view),
+			glm::value_ptr(projection),
+			ImGuizmo::TRANSLATE,
+			ImGuizmo::LOCAL,
+			glm::value_ptr(transformMatrix)
+		);
+
+		if (ImGuizmo::IsUsing()){
+			ImGuizmo::DecomposeMatrixToComponents(
+				glm::value_ptr(transformMatrix),
+				glm::value_ptr(transform.translation),
+				glm::value_ptr(transform.rotation),
+				glm::value_ptr(transform.scale)
+			);
+		}
 	}
 }

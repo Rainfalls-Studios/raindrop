@@ -19,7 +19,6 @@ namespace Raindrop::Graphics::Editor{
 			ImGui::DockSpace(_dockspace, ImVec2(0, 0), ImGuiDockNodeFlags_PassthruCentralNode);
 
 			drawScene(_context.scene);
-
 			ImGui::End();
 		}
 	}
@@ -139,6 +138,7 @@ namespace Raindrop::Graphics::Editor{
 	void SceneHierarchyPanel::entitySettings(Core::Scene::Entity entity){
 		if (ImGui::MenuItem("Select")) selectEntity(entity);
 		if (ImGui::MenuItem("Add Component")) addComponentEntity(entity);
+		if (ImGui::MenuItem("Add Child")) addChildEntity(entity);
 
 		ImGui::Separator();
 		if (ImGui::MenuItem("Look at")) lookAtEntity(entity);
@@ -151,7 +151,7 @@ namespace Raindrop::Graphics::Editor{
 
 		ImGui::Separator();
 		if (ImGui::MenuItem("Rename", "F2")) renameEntity(entity);
-		if (ImGui::MenuItem("Remove", "Del")) removeEntity(entity);
+		if (ImGui::MenuItem("Remove", "Del", nullptr, entity != _context.scene->root())) removeEntity(entity);
 	}
 
 	void SceneHierarchyPanel::drawSceneSettings(Core::Scene::Scene* scene){
@@ -166,6 +166,12 @@ namespace Raindrop::Graphics::Editor{
 
 	void SceneHierarchyPanel::addComponentEntity(Core::Scene::Entity entity){
 		//TODO: Add 'Add component entity" - https://trello.com/c/6TYvsAXe/9-add-add-component-entity
+	}
+
+	void SceneHierarchyPanel::addChildEntity(Core::Scene::Entity entity){
+		auto child = entity.createChild();
+		selectEntity(child);
+		renameEntity(child);
 	}
 
 	void SceneHierarchyPanel::lookAtEntity(Core::Scene::Entity entity){

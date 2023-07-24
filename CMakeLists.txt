@@ -18,6 +18,7 @@ add_subdirectory(libs/gtest)
 add_subdirectory(libs/easyloggingpp)
 add_subdirectory(libs/tinyxml2)
 add_subdirectory(libs/imgui)
+add_subdirectory(libs/ImGuizmo)
 add_subdirectory(libs/stb)
 
 # submodules includes
