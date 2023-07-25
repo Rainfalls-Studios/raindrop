@@ -17,6 +17,7 @@ namespace Raindrop::Graphics::Editor{
 	class SceneHierarchyPanel;
 	class ComponentEditorPanel;
 	class Camera;
+	class Toolbar;
 }
 
 #endif

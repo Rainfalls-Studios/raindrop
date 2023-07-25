@@ -20,7 +20,12 @@ namespace Raindrop::Graphics::Editor{
 			glm::u32vec2 _start;
 			glm::u32vec2 _size;
 
+			void viewport();
+
 			void guizmo();
+
+			int _currentGuizmoMode = 0;
+			int _currentGuizmoOperation = 0;
 			
 
 	};

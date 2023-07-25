@@ -4,15 +4,54 @@
 #include <glm/gtc/constants.hpp>
 #include <ImGuizmo/ImGuizmo.h>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
 
 namespace Raindrop::Graphics::Editor{
 	ViewportPanel::ViewportPanel(EditorContext& context) : _context{context}{}
 	ViewportPanel::~ViewportPanel(){}
 
 	void ViewportPanel::update(){
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+		
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
+		bool begin = ImGui::Begin("Workspace", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
+
+		ImGui::PopStyleVar(3);
+
+		if (begin){
+
+			ImGuiID dockspace_id = ImGui::GetID("DockSpace");
+			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_NoTabBar | ImGuiDockNodeFlags_NoDocking);
+			static auto first_time = true;
+
+			if (first_time) {
+				first_time = false;
+				ImGui::DockBuilderRemoveNode(dockspace_id);
+				ImGui::DockBuilderAddNode(dockspace_id);
+				ImGui::DockBuilderSetNodeSize(dockspace_id, ImGui::GetMainViewport()->Size);
+
+				auto dock_id_right = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, 0.5f, nullptr, &dockspace_id);
+				auto dock_id_left = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.001f, nullptr, &dockspace_id);
+
+				ImGui::DockBuilderDockWindow("Viewport", dock_id_right);
+				ImGui::DockBuilderDockWindow("Toolbar", dock_id_left);
+
+				ImGui::DockBuilderFinish(dockspace_id);
+			}
+			
+			ImGui::End();
+
+			viewport();
+			_context.toolbar.update();
+		}
+	}
+
+	void ViewportPanel::viewport(){
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
 		bool begin = ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
 
@@ -42,9 +81,15 @@ namespace Raindrop::Graphics::Editor{
 
 			ImGui::SetCursorPos(origin);
 
+			if (ImGui::IsWindowHovered){
+				if (ImGui::IsMouseDown(ImGuiMouseButton_Right) || ImGui::IsMouseDown(ImGuiMouseButton_Middle)){
+					ImGui::FocusWindow(ImGui::GetCurrentWindow(), ImGuiFocusRequestFlags_UnlessBelowModal);
+				}
+			}
+
 			if (ImGui::IsWindowFocused()){
-				ImVec2 translationDrag = ImGui::GetMouseDragDelta(ImGuiMouseButton_Middle);
-				ImVec2 rotationDrag = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right);
+				ImVec2 translationDrag = ImGui::GetMouseDragDelta(ImGuiMouseButton_Middle, 0.f);
+				ImVec2 rotationDrag = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right, 0.f);
 
 				ImGui::ResetMouseDragDelta(ImGuiMouseButton_Middle);
 				ImGui::ResetMouseDragDelta(ImGuiMouseButton_Right);
@@ -52,29 +97,21 @@ namespace Raindrop::Graphics::Editor{
 				auto& rotation = camera.rotation;
 
 				const float sensitivity = 0.1f;
-				rotation += glm::vec3(rotationDrag.y * sensitivity, -rotationDrag.x * sensitivity, 0.0f);
+				rotation += glm::vec3(rotationDrag.y * sensitivity, rotationDrag.x * sensitivity, 0.0f);
 				rotation.x = glm::clamp(rotation.x, -89.0f, 89.0f);
 
-				ImGui::Text("x : %f", camera.rotation.x);
-				ImGui::Text("y : %f", camera.rotation.y);
-				ImGui::Text("z : %f", camera.rotation.z);
+				float forward = -ImGui::GetIO().MouseWheel;
 
-				if (ImGui::IsMouseDown(ImGuiMouseButton_Right)){
-					auto& io = ImGui::GetIO();
-					translationDrag.y -= io.MouseWheel;
-				}
-
-				glm::vec3 translation = camera.translationSensivity * (camera.right * -translationDrag.x + camera.forward * -translationDrag.y);
+				glm::vec3 translation = camera.translationSensivity * (camera.right * -translationDrag.x + camera.up * -translationDrag.y);
+				translation += camera.forward * forward;
 
 				camera.translation += translation;
 			}
-
 		}
-
+		
 		guizmo();
 		ImGui::End();
 	}
-
 	
 	glm::u32vec2 ViewportPanel::start() const{
 		return _start;
@@ -98,30 +135,32 @@ namespace Raindrop::Graphics::Editor{
 		const glm::mat4& view =_context.camera.view;
 
 		auto& transform = _context.selectedEntity.getComponent<Core::Scene::Components::Transform>();
-		glm::mat4 transformMatrix;
 
-		ImGuizmo::RecomposeMatrixFromComponents(
-			glm::value_ptr(transform.translation),
-			glm::value_ptr(transform.rotation),
-			glm::value_ptr(transform.scale),
-			glm::value_ptr(transformMatrix)
-		);
-		
+		glm::mat4 modelMatrix; // The complete model matrix (translation, rotation, scale)
+		// Compose the complete model matrix from translation, rotation, and scale
+		modelMatrix = glm::translate(glm::mat4(1.0f), transform.translation);
+		modelMatrix = modelMatrix * glm::mat4_cast(transform.rotation);
+		modelMatrix = glm::scale(modelMatrix, transform.scale);
+
 		ImGuizmo::Manipulate(
 			glm::value_ptr(view),
 			glm::value_ptr(projection),
-			ImGuizmo::TRANSLATE,
-			ImGuizmo::LOCAL,
-			glm::value_ptr(transformMatrix)
+			ImGuizmo::OPERATION(_context.toolbar.guizmoOperation),
+			ImGuizmo::MODE(_context.toolbar.guizmoMode),
+			glm::value_ptr(modelMatrix)
 		);
 
 		if (ImGuizmo::IsUsing()){
-			ImGuizmo::DecomposeMatrixToComponents(
-				glm::value_ptr(transformMatrix),
-				glm::value_ptr(transform.translation),
-				glm::value_ptr(transform.rotation),
-				glm::value_ptr(transform.scale)
-			);
+			glm::vec3 skew;
+			glm::vec4 perspective;
+
+			glm::decompose(
+				modelMatrix, 
+				transform.scale,
+				transform.rotation,
+				transform.translation,
+				skew,
+				perspective);
 		}
 	}
 }

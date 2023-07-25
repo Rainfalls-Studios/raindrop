@@ -79,7 +79,8 @@ namespace Raindrop::Graphics::Editor{
 
 			auto dock_id_up = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Up, 0.5f, nullptr, &dockspace_id);
 			auto dock_id_down = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Down, 0.5f, nullptr, &dockspace_id);
-			ImGui::DockBuilderDockWindow("Viewport", dock_id_up);
+
+			ImGui::DockBuilderDockWindow("Workspace", dock_id_up);
 			ImGui::DockBuilderDockWindow("FileExplorer", dock_id_down);
 
 			ImGui::DockBuilderFinish(dockspace_id);
@@ -87,7 +88,6 @@ namespace Raindrop::Graphics::Editor{
     	ImGui::End();
 
 		_context->camera.update();
-
 		_viewport->update();
 		_context->fileExplorer.update();
 		_sceneHierarchy->update();

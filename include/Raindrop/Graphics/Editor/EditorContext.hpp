@@ -8,6 +8,7 @@
 #include <Raindrop/Graphics/Editor/Fonts.hpp>
 #include <Raindrop/Graphics/Editor/Camera.hpp>
 #include <Raindrop/Graphics/GraphicsContext.hpp>
+#include <Raindrop/Graphics/Editor/Toolbar.hpp>
 #include <Raindrop/Core/Scene/Entity.hpp>
 
 namespace Raindrop::Graphics::Editor{
@@ -22,6 +23,7 @@ namespace Raindrop::Graphics::Editor{
 		FileExplorer fileExplorer;
 		IconAtlas icons;
 		Fonts fonts;
+		Toolbar toolbar;
 		
 		Core::Scene::Entity selectedEntity;
 		Core::Scene::Scene* scene;

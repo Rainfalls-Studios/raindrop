@@ -19,8 +19,8 @@ namespace Raindrop::Graphics::Editor{
 			ImGui::DockSpace(_dockspace, ImVec2(0, 0), ImGuiDockNodeFlags_PassthruCentralNode);
 
 			drawScene(_context.scene);
-			ImGui::End();
 		}
+		ImGui::End();
 	}
 
 	void SceneHierarchyPanel::drawEntity(Core::Scene::Entity entity){
@@ -131,8 +131,8 @@ namespace Raindrop::Graphics::Editor{
 				ImGui::EndPopup();
 			}
 
-			ImGui::End();
 		}
+		ImGui::End();
 	}
 
 	void SceneHierarchyPanel::entitySettings(Core::Scene::Entity entity){

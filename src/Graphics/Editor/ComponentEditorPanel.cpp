@@ -36,7 +36,7 @@ namespace Raindrop::Graphics::Editor{
 				ImGui::EndPopup();
 			}
 
-			ImGui::End();
 		}
+		ImGui::End();
 	}
 }
