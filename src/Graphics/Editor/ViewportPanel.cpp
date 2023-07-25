@@ -32,8 +32,8 @@ namespace Raindrop::Graphics::Editor{
 				ImGui::DockBuilderAddNode(dockspace_id);
 				ImGui::DockBuilderSetNodeSize(dockspace_id, ImGui::GetMainViewport()->Size);
 
-				auto dock_id_right = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, 0.5f, nullptr, &dockspace_id);
-				auto dock_id_left = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.001f, nullptr, &dockspace_id);
+				auto dock_id_right = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, 0.999f, nullptr, &dockspace_id);
+				auto dock_id_left = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.005f, nullptr, &dockspace_id);
 
 				ImGui::DockBuilderDockWindow("Viewport", dock_id_right);
 				ImGui::DockBuilderDockWindow("Toolbar", dock_id_left);

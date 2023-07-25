@@ -3,12 +3,10 @@
 
 #include <Raindrop/Graphics/Editor/common.hpp>
 
-namespace Raindrop::Graphics::Editor{
-	static inline ImVec2 operator+(const ImVec2& lhs, const ImVec2& rhs) { 
-		return ImVec2(lhs.x + rhs.x, lhs.y + rhs.y); 
-	}
-	
-	void ImageRotated(ImTextureID tex_id, ImVec2 size, float angle, ImVec2 uv0 = ImVec2(0, 0), ImVec2 uv1 = ImVec2(1, 1), ImVec2 center = ImVec2(123456789.f, 123456789.f));
+namespace ImGui{
+	bool BufferingBar(const char* label, float value,  const ImVec2& size_arg, const ImU32& bg_col, const ImU32& fg_col);
+	bool Spinner(const char* label, float radius, int thickness, const ImU32& color);
+	void LoadingIndicatorCircle(const char* label, const float indicator_radius, const ImVec4& main_color, const ImVec4& backdrop_color, const int circle_count, const float speed);
 }
 
 #endif

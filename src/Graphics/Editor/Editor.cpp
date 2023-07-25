@@ -63,10 +63,9 @@ namespace Raindrop::Graphics::Editor{
         ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 		
-		ImGui::Begin("Editor", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoDocking);
+		ImGui::Begin("Editor", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_MenuBar);
 
 		ImGui::PopStyleVar(3);
-		
 
 		ImGuiID dockspace_id = ImGui::GetID("DockSpace");
 		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_NoTabBar | ImGuiDockNodeFlags_NoDocking);
@@ -85,7 +84,8 @@ namespace Raindrop::Graphics::Editor{
 
 			ImGui::DockBuilderFinish(dockspace_id);
 		}
-    	ImGui::End();
+
+		menuBar();
 
 		_context->camera.update();
 		_viewport->update();
@@ -93,6 +93,7 @@ namespace Raindrop::Graphics::Editor{
 		_sceneHierarchy->update();
 		_componentEditor->update(_context->selectedEntity);
 
+    	ImGui::End();
 	}
 
 	VkRenderPass Editor::renderPass() const{
@@ -101,5 +102,60 @@ namespace Raindrop::Graphics::Editor{
 
 	const glm::mat4& Editor::cameraViewProjection() const{
 		return _context->camera.viewProjection;
+	}
+
+	void Editor::menuBar(){
+		if (ImGui::BeginMenuBar()){
+			
+			fileMenu();
+			editorMenu();
+			sceneMenu();
+			assetsMenu();
+
+			ImGui::EndMenuBar();
+		}
+	}
+
+	void Editor::fileMenu(){
+		if (!ImGui::BeginMenu("File")) return;
+
+		ImGui::MenuItem("Save project");
+		ImGui::MenuItem("Save project as");
+		ImGui::MenuItem("export project");
+		ImGui::Separator();
+		
+		ImGui::MenuItem("Open project");
+		ImGui::MenuItem("New project");
+		ImGui::Separator();
+
+		ImGui::MenuItem("Exit");
+		ImGui::MenuItem("Close window");
+		ImGui::EndMenu();
+	}
+
+	void Editor::editorMenu(){
+		if (!ImGui::BeginMenu("Editor")) return;
+
+		ImGui::MenuItem("Run");
+		ImGui::Separator();
+
+		ImGui::MenuItem("Camera settings");
+		ImGui::MenuItem("Grid settings");
+
+		ImGui::EndMenu();
+	}
+
+	void Editor::sceneMenu(){
+		if (!ImGui::BeginMenu("Scene")) return;
+
+		ImGui::EndMenu();
+	}
+
+	void Editor::assetsMenu(){
+		if (!ImGui::BeginMenu("Assets")) return;
+
+		ImGui::MenuItem("List assets");
+
+		ImGui::EndMenu();
 	}
 }

@@ -6,7 +6,8 @@ namespace Raindrop::Graphics::Editor{
 	Toolbar::~Toolbar(){};
 
 	void Toolbar::update(){
-		if (ImGui::Begin("Toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize)){
+		ImGui::SetNextWindowSize(ImVec2(-1.f, 25));
+		if (ImGui::Begin("Toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove)){
 			
 			modeButton();
 			operationButton();

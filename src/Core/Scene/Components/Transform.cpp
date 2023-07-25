@@ -4,10 +4,8 @@
 namespace Raindrop::Core::Scene::Components{
 	void Transform::UI(EngineContext& context){
 		if (ImGui::TreeNode("Translation")){
-			ImGui::DragFloat3("translation", reinterpret_cast<float*>(&translation));
-			ImGui::DragFloat3("scale", reinterpret_cast<float*>(&scale), 0.01);
-
-			float r = glm::length(glm::vec3(rotation.x, rotation.y, rotation.z));
+			ImGui::DragFloat3("translation", glm::value_ptr(translation));
+			ImGui::DragFloat3("scale", glm::value_ptr(scale), 0.01);
 
 			glm::vec3 euler = glm::degrees(glm::eulerAngles(rotation));
 
