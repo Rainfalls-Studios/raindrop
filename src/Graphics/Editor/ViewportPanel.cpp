@@ -102,7 +102,7 @@ namespace Raindrop::Graphics::Editor{
 
 				float forward = -ImGui::GetIO().MouseWheel;
 
-				glm::vec3 translation = camera.translationSensivity * (camera.right * -translationDrag.x + camera.up * -translationDrag.y);
+				glm::vec3 translation = camera.translationSensivity * (camera.right * translationDrag.x + camera.up * translationDrag.y);
 				translation += camera.forward * forward;
 
 				camera.translation += translation;
