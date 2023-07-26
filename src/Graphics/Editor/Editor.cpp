@@ -136,7 +136,7 @@ namespace Raindrop::Graphics::Editor{
 	void Editor::editorMenu(){
 		if (!ImGui::BeginMenu("Editor")) return;
 
-		ImGui::MenuItem("Run");
+		ImGui::MenuItem("Run", "F5");
 		ImGui::Separator();
 
 		ImGui::MenuItem("Camera settings");

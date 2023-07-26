@@ -18,6 +18,7 @@ namespace Raindrop::Graphics::Editor{
 	class ComponentEditorPanel;
 	class Camera;
 	class Toolbar;
+	class DragDropHandler;
 }
 
 #endif

@@ -9,6 +9,7 @@
 #include <Raindrop/Graphics/Editor/Camera.hpp>
 #include <Raindrop/Graphics/GraphicsContext.hpp>
 #include <Raindrop/Graphics/Editor/Toolbar.hpp>
+#include <Raindrop/Graphics/Editor/DragDropHandler.hpp>
 #include <Raindrop/Core/Scene/Entity.hpp>
 
 namespace Raindrop::Graphics::Editor{
@@ -18,7 +19,8 @@ namespace Raindrop::Graphics::Editor{
 
 	struct EditorContext{
 		GraphicsContext& context;
-		
+
+		DragDropHandler dragDrop;
 		ViewportFramebuffer viewport;
 		FileExplorer fileExplorer;
 		IconAtlas icons;

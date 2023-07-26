@@ -45,6 +45,7 @@ namespace ImGui{
 		window->DrawList->AddCircleFilled(ImVec2(pos.x + circleEnd - o1, bb.Min.y + r), r, bg_col);
 		window->DrawList->AddCircleFilled(ImVec2(pos.x + circleEnd - o2, bb.Min.y + r), r, bg_col);
 		window->DrawList->AddCircleFilled(ImVec2(pos.x + circleEnd - o3, bb.Min.y + r), r, bg_col);
+		return true;
 	}
 
 	bool Spinner(const char* label, float radius, int thickness, const ImU32& color) {
@@ -81,6 +82,7 @@ namespace ImGui{
 		}
 
 		window->DrawList->PathStroke(color, false, thickness);
+		return true;
 	}
 
 	void LoadingIndicatorCircle(const char* label, const float indicator_radius, const ImVec4& main_color, const ImVec4& backdrop_color, const int circle_count, const float speed) {

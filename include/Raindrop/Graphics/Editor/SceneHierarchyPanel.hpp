@@ -32,6 +32,20 @@ namespace Raindrop::Graphics::Editor{
 			void renameEntity(Core::Scene::Entity entity);
 			void removeEntity(Core::Scene::Entity entity);
 
+			void addCube(Core::Scene::Scene* scene);
+			void addCone(Core::Scene::Scene* scene);
+			void addPlane(Core::Scene::Scene* scene);
+			void addPyramide(Core::Scene::Scene* scene);
+			void addModel(Core::Scene::Scene* scene);
+			void addText(Core::Scene::Scene* scene);
+			void add3DText(Core::Scene::Scene* scene);
+			void addCamera(Core::Scene::Scene* scene);
+			void addLightPoint(Core::Scene::Scene* scene);
+			void addSpotLight(Core::Scene::Scene* scene);
+			void addSun(Core::Scene::Scene* scene);
+
+			Core::Scene::Entity createEntity(Core::Scene::Scene* scene);
+
 			char _renameBuffer[255];
 			Core::Scene::Entity _renamingEntity;
 

@@ -48,12 +48,10 @@ namespace Raindrop::Core::Scene{
 	std::list<EntityID>& ComponentManager::entities(){
 		return _entities;
 	}
-
 	
 	ConstructorPtr ComponentManager::constructor(){
 		return _constructor;
 	}
-
 
 	DestructorPtr ComponentManager::destructor(){
 		return _destructor;
