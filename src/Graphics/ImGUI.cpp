@@ -1,5 +1,6 @@
 #include <imgui/backends/imgui_impl_vulkan.h> 
 #include <imgui/backends/imgui_impl_sdl2.h>
+#include <imGuizmo/ImGuizmo.h>
 
 #include <Raindrop/Graphics/ImGUI.hpp>
 #include <Raindrop/Graphics/Renderer.hpp>
@@ -66,15 +67,16 @@ namespace Raindrop::Graphics{
 
 		ImGui_ImplVulkan_Init(&init_info, renderPass);
 
-		{
-			VkCommandBuffer cmd = _context.transfertCommandPool.beginSingleTime();
-			ImGui_ImplVulkan_CreateFontsTexture(cmd);
-			_context.transfertCommandPool.endSingleTime(cmd);
-		}
-
-		ImGui_ImplVulkan_DestroyFontUploadObjects();
+		ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 		
 		CLOG(INFO, "Engine.Graphics.GUI") << "Loaded IMGUI with success!";
+	}
+
+	void ImGUI::uploadFonts(){
+		VkCommandBuffer cmd = _context.transfertCommandPool.beginSingleTime();
+		ImGui_ImplVulkan_CreateFontsTexture(cmd);
+		_context.transfertCommandPool.endSingleTime(cmd);
+		ImGui_ImplVulkan_DestroyFontUploadObjects();
 	}
 
 	ImGUI::~ImGUI(){
@@ -88,6 +90,7 @@ namespace Raindrop::Graphics{
 		ImGui_ImplVulkan_NewFrame();
 		ImGui_ImplSDL2_NewFrame();
 		ImGui::NewFrame();
+		ImGuizmo::BeginFrame();
 	}
 
 	void ImGUI::render(VkCommandBuffer commandBuffer){

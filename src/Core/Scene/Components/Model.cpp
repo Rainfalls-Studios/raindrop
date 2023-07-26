@@ -16,6 +16,7 @@ namespace Raindrop::Core::Scene::Components{
 				} catch (const std::exception& e){
 					printf("%s\n", e.what());
 				}
+				buff[0] = '\0';
 			}
 
 			ImGui::TreePop();

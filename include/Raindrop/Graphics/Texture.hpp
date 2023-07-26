@@ -7,9 +7,9 @@ namespace Raindrop::Graphics{
 	class Texture{
 		public:
 			Texture(GraphicsContext& context, const std::filesystem::path &path);
-			~Texture();
+			virtual ~Texture();
 
-		private:
+		protected:
 			void createImage(const std::filesystem::path &filepath);
 			void createImageView();
 			void createSampler();

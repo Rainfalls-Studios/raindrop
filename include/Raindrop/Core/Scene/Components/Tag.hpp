@@ -10,6 +10,7 @@ namespace Raindrop::Core::Scene::Components{
 			virtual ~Tag() override = default;
 
 			std::string name = "Entity";
+			uint64_t UUID = ~(0ULL);
 	};
 }
 

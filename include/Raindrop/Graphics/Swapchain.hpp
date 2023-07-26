@@ -70,7 +70,7 @@ namespace Raindrop::Graphics{
 			uint32_t _wantedFrameCount = 0;
 			VkExtent2D _wantedExtent;
 			VkPresentModeKHR _wantedPresentMode = VK_PRESENT_MODE_FIFO_KHR;
-			VkSurfaceFormatKHR _wantedSurfaceFormat = {VK_FORMAT_B8G8R8A8_SRGB, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR};
+			VkSurfaceFormatKHR _wantedSurfaceFormat = {VK_FORMAT_B8G8R8A8_UNORM, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR};
 
 			VkClearColorValue _clearColor = {0.f, 0.f, 0.f, 0.f};
 

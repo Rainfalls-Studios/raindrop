@@ -1,0 +1,27 @@
+<Editor>
+	<Icons>
+		<Icon Name="XML file" Atlas="${EditorSourceDir}/icons/atlas/dark.png" uv1x="0" uv1y="0" uv2x="255" uv2y="255"/>
+		<Icon Name="Folder" Atlas="${EditorSourceDir}/icons/atlas/dark.png" uv1x="256" uv1y="0" uv2x="511" uv2y="255"/>
+
+		<Icon Name="Settings wheel" Atlas="${EditorSourceDir}/icons/atlas/dark.png" uv1x="1024" uv1y="0" uv2x="1151" uv2y="127"/>
+		<Icon Name="Magnifying glasses" Atlas="${EditorSourceDir}/icons/atlas/dark.png" uv1x="1152" uv1y="0" uv2x="1279" uv2y="127"/>
+		<Icon Name="Next arrow" Atlas="${EditorSourceDir}/icons/atlas/dark.png" uv1x="1280" uv1y="0" uv2x="1407" uv2y="127"/>
+		<Icon Name="Hard drive" Atlas="${EditorSourceDir}/icons/atlas/dark.png" uv1x="1408" uv1y="0" uv2x="1535" uv2y="127"/>
+		<Icon Name="Bold folder" Atlas="${EditorSourceDir}/icons/atlas/dark.png" uv1x="1536" uv1y="0" uv2x="1663" uv2y="127"/>
+		<Icon Name="Home" Atlas="${EditorSourceDir}/icons/atlas/dark.png" uv1x="1664" uv1y="0" uv2x="1791" uv2y="127"/>
+		<Icon Name="3D polygon" Atlas="${EditorSourceDir}/icons/atlas/dark.png" uv1x="1792" uv1y="0" uv2x="1919" uv2y="127"/>
+		<Icon Name="Sphere" Atlas="${EditorSourceDir}/icons/atlas/dark.png" uv1x="1920" uv1y="0" uv2x="2047" uv2y="127"/>
+		
+		<Icon Name="Camera" Atlas="${EditorSourceDir}/icons/atlas/dark.png" uv1x="1024" uv1y="128" uv2x="1151" uv2y="255"/>
+		<Icon Name="Light bulb" Atlas="${EditorSourceDir}/icons/atlas/dark.png" uv1x="1152" uv1y="128" uv2x="1279" uv2y="255"/>
+		<Icon Name="Projector" Atlas="${EditorSourceDir}/icons/atlas/dark.png" uv1x="1280" uv1y="128" uv2x="1407" uv2y="255"/>
+		<Icon Name="Sun" Atlas="${EditorSourceDir}/icons/atlas/dark.png" uv1x="1408" uv1y="128" uv2x="1535" uv2y="255"/>
+		<Icon Name="Paralelogramme" Atlas="${EditorSourceDir}/icons/atlas/dark.png" uv1x="1536" uv1y="128" uv2x="1663" uv2y="255"/>
+		<Icon Name="Filled sound emmiter" Atlas="${EditorSourceDir}/icons/atlas/dark.png" uv1x="1664" uv1y="128" uv2x="1791" uv2y="255"/>
+		<Icon Name="Sound emmiter" Atlas="${EditorSourceDir}/icons/atlas/dark.png" uv1x="1792" uv1y="128" uv2x="1919" uv2y="255"/>
+		<Icon Name="Bezier curve" Atlas="${EditorSourceDir}/icons/atlas/dark.png" uv1x="1920" uv1y="128" uv2x="2047" uv2y="255"/>
+
+		<Icon Name="Cube" Atlas="${EditorSourceDir}/icons/atlas/dark.png" uv1x="1024" uv1y="256" uv2x="1151" uv2y="383"/>
+		<Icon Name="Down arrow" Atlas="${EditorSourceDir}/icons/atlas/dark.png" uv1x="1152" uv1y="256" uv2x="1279" uv2y="383"/>
+	</Icons>
+</Editor>

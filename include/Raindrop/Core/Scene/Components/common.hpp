@@ -6,7 +6,7 @@
 namespace Raindrop::Core::Scene::Components{
 	class Tag;
 	class Transform;
-	class Hierachy;
+	class Hierarchy;
 	class Camera;
 	class Model;
 }

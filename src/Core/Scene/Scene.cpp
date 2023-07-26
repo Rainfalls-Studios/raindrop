@@ -24,7 +24,7 @@ namespace Raindrop::Core::Scene{
 
 		registerComponent<Components::Tag>(entityCount);
 		registerComponent<Components::Transform>(entityCount);
-		registerComponent<Components::Hierachy>(entityCount);
+		registerComponent<Components::Hierarchy>(entityCount);
 		registerComponent<Components::Camera>(1);
 		registerComponent<Components::Model>(entityCount);
 
@@ -70,13 +70,31 @@ namespace Raindrop::Core::Scene{
 	EntityID Scene::createEntity(){
 		EntityID entity = _entityManager->createEntity();
 		createComponent<Components::Transform>(entity);
-		createComponent<Components::Hierachy>(entity);
+		createComponent<Components::Hierarchy>(entity);
 		createComponent<Components::Tag>(entity);
 
 		return entity;
 	}
 
 	void Scene::destroyEntity(EntityID ID){
+		if (ID == _root){
+			CLOG(WARNING, "Engine.Core.Scene") << "Cannot destroy the root entity of the scene";
+			throw std::runtime_error("Cannot destroy root");
+		}
+		
+		if (hasComponent<Components::Hierarchy>(ID)){
+			auto& component = getComponent<Components::Hierarchy>(ID);
+			
+			for (auto &c : component.childs){
+				destroyEntity(c);
+			}
+
+			if (component.parent != INVALID_ENTITY_ID){
+				auto& parentComponent = getComponent<Components::Hierarchy>(component.parent);
+				parentComponent.childs.remove(ID);
+			}
+		}
+
 		for (uint32_t i=0; i<_entityComponentsRegistry->componentCount(); i++){
 			auto& component = _entityComponentsRegistry->get(ID, i);
 			if (component != INVALID_COMPONENT_HANDLE_ID){
@@ -124,106 +142,5 @@ namespace Raindrop::Core::Scene{
 
 	std::list<EntityID>& Scene::componentEntities(ComponentID component){
 		return _componentRegistry->getManager(component)->entities();
-	}
-	
-	bool drawEntityNode(Entity entity, EntityID& selection){
-		const ImGuiStyle& style = ImGui::GetStyle();
-		ImGuiStorage* storage = ImGui::GetStateStorage();
-
-		bool* isTextEditActive = storage->GetBoolRef(ImGui::GetID("textEdit"));
-		bool* opened = storage->GetBoolRef(ImGui::GetID("opened"));
-		static char inputBuffer[256];
-	
-		if (ImGui::ArrowButton("##expend_button", *opened ? ImGuiDir_Down : ImGuiDir_Right)){
-			*opened = !(*opened);
-		}
-		ImGui::SameLine();
-
-		ImVec2 pos = ImGui::GetCursorPos();
-		ImGui::SetCursorPosX(0);
-		if (ImGui::InvisibleButton("##button", ImVec2(ImGui::GetWindowWidth(), 15))){
-			selection = entity.id();
-		}
-		ImGui::SetCursorPos(pos);
-
-		if (ImGui::IsItemHovered()){
-			if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)){
-				*isTextEditActive = true;
-			}
-		}
-
-		if (*isTextEditActive){
-			ImGui::SetKeyboardFocusHere();
-			if (ImGui::InputText("##editText", inputBuffer, sizeof(inputBuffer), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll)){
-				*isTextEditActive = false;
-				entity.tag().name = std::string(inputBuffer);
-			}
-		} else {
-			ImGui::Text("%s", entity.tag().name.c_str());
-			if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
-				strncpy(inputBuffer, entity.tag().name.c_str(), sizeof(inputBuffer));
-				*isTextEditActive = true;
-			}
-		}
-
-		return *opened;
-	}
-
-	EntityID drawEntity(Entity entity, EntityID& selectedEntity){
-		ImGui::PushID(entity.id());
-		EntityID selected = INVALID_ENTITY_ID;
-
-		if (drawEntityNode(entity, selected)){
-			ImGui::Indent(15);
-			for (auto c : entity){
-				EntityID newSelection = drawEntity(c, selected);
-				if (newSelection != INVALID_ENTITY_ID){
-					selected = newSelection;
-				}
-			}
-			ImGui::Indent(-15);
-		}
-		
-		ImGui::PopID();
-		return selected == INVALID_ENTITY_ID ? selectedEntity : selected;
-	}
-
-	void entityButtons(Entity entity){
-		if (ImGui::Button("Add childs")){
-			entity.createChild();
-		}
-	}
-
-	EntityID Scene::UI(EntityID selectedEntity){
-		if (selectedEntity == INVALID_ENTITY_ID) ImGui::BeginDisabled();
-		entityButtons(Entity(selectedEntity, this));
-		if (selectedEntity == INVALID_ENTITY_ID) ImGui::EndDisabled();
-
-		Entity base = Entity(root(), this);
-		return drawEntity(base, selectedEntity);
-	}
-
-	#define draw_component(component) if (entity.hasComponent<component>()) {entity.getComponent<component>().UI(_context);}
-	#define add_component(component) if (!entity.hasComponent<component>()) {if (ImGui::MenuItem(#component)){entity.createComponent<component>();}}
-
-	void Scene::componentsUI(EntityID id){
-		Entity entity = Entity(id, this);
-		ImGui::Text("LUID: 0x%x", entity.id());
-		ImGui::Text("GUID: none");
-
-		if (ImGui::Button("add component")){
-			ImGui::OpenPopup("add component");
-		}
-
-		if (ImGui::BeginPopup("add component")){
-			add_component(Components::Transform);
-			add_component(Components::Camera);
-			add_component(Components::Model);
-			ImGui::EndPopup();
-		}
-
-		draw_component(Components::Transform);
-		draw_component(Components::Camera);
-		draw_component(Components::Model);
 	}
 }

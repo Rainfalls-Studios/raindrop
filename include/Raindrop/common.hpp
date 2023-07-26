@@ -35,4 +35,8 @@
 #include <shared_mutex>
 #include <semaphore>
 
+#ifdef RAINDROP_EDITOR
+	#define RAINDROP_EDITOR_DIR std::filesystem::path(RAINDROP_EDITOR_PATH)
+#endif
+
 #endif

@@ -18,6 +18,7 @@ add_subdirectory(libs/gtest)
 add_subdirectory(libs/easyloggingpp)
 add_subdirectory(libs/tinyxml2)
 add_subdirectory(libs/imgui)
+add_subdirectory(libs/ImGuizmo)
 add_subdirectory(libs/stb)
 
 # submodules includes
@@ -41,6 +42,7 @@ include_directories(${STB_INCLUDE_DIRS})
 add_definitions(-DSDL_MAIN_HANDLED)
 
 set(PCH_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include/Raindrop/common.hpp")
+set(EDITOR_PATH "${CMAKE_CURRENT_SOURCE_DIR}/.editor/")
 
 add_subdirectory(src)
 add_subdirectory(tests)

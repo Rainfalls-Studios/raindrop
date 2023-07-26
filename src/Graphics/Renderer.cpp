@@ -20,7 +20,9 @@
 #include <Raindrop/Core/Scene/Components/Transform.hpp>
 #include <Raindrop/Core/Scene/Components/Model.hpp>
 
-#include <Raindrop/Graphics/Texture.hpp>
+#ifdef RAINDROP_EDITOR
+	#include <Raindrop/Graphics/Editor/Editor.hpp>
+#endif
 
 namespace Raindrop::Graphics{
 	Renderer::Renderer(Core::EngineContext& context, Core::Scene::Scene& scene) : _interpreter{context}{
@@ -30,12 +32,22 @@ namespace Raindrop::Graphics{
 		CLOG(INFO, "Engine.Graphics") << "Creating renderer ...";
 		
 		_context = std::make_unique<GraphicsContext>(context, scene);
+		_gui = std::make_unique<ImGUI>(*_context);
 		registerFactories();
 
-		_gui = std::make_unique<ImGUI>(*_context);
+		#ifdef RAINDROP_EDITOR
+			_editor = std::make_unique<Editor::Editor>(*_context, &scene);
+			_context->sceneRenderPass = _editor->renderPass();
+		#else
+			_context->sceneRenderPass = _context->swapchain.renderPass();
+		#endif
+
+		_gui->uploadFonts();
+
 		_worldFramebuffer = std::make_unique<WorldFramebuffer>(*_context, 1080, 720);
 
 		createGraphicsCommandBuffers();
+
 
 		CLOG(INFO, "Engine.Graphics") << "Created renderer with success !";
 	}
@@ -47,6 +59,10 @@ namespace Raindrop::Graphics{
 
 		eraseFactories();
 		destroyGraphicsCommandBuffers();
+
+		#ifdef RAINDROP_EDITOR
+			_editor.reset();
+		#endif
 
 		_worldFramebuffer.reset();
 		_gui.reset();
@@ -60,9 +76,10 @@ namespace Raindrop::Graphics{
 	}
 
 	void drawEntity(Core::Scene::Entity entity, VkPipelineLayout layout, VkCommandBuffer commandBuffer, glm::mat4& viewTransform){
-
 		auto& transform = entity.transform();
-		glm::mat4 rotationMatrix = glm::eulerAngleXYZ(transform.rotation.x, transform.rotation.y, transform.rotation.z);
+
+
+		glm::mat4 rotationMatrix = glm::mat4_cast(transform.rotation);
 		glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), transform.translation);
 		glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), transform.scale);
 
@@ -90,12 +107,20 @@ namespace Raindrop::Graphics{
 		_context->window.events(_gui.get());
 
 		if (VkCommandBuffer commandBuffer = beginFrame()){
-
+			_gui->newFrame();
+			
 			_worldFramebuffer->beginRenderPass(commandBuffer);
 			renderScene(commandBuffer);
 			_worldFramebuffer->endRenderPass(commandBuffer);
 
 			renderGui();
+
+			#ifdef RAINDROP_EDITOR
+				if (_editor->beginRenderPass(commandBuffer)){
+					renderFrame(commandBuffer);
+					_editor->endRenderPass(commandBuffer);
+				}
+			#endif
 
 			swapchain.beginRenderPass(commandBuffer);
 			renderSwapchain(commandBuffer);
@@ -106,27 +131,23 @@ namespace Raindrop::Graphics{
 	}
 
 	void Renderer::renderGui(){
-		_gui->newFrame();
-
-		auto& registry = _context->context.registry;
-		auto& assetManager = _context->context.assetManager;
-		auto& eventManager = _context->context.eventManager;
-		auto& scene = _context->scene;
-
-		_interpreter.update();
-		registry["Edit.SelectedEntity"] = scene.UI(registry["Edit.SelectedEntity"].as<Core::Scene::EntityID>(Core::Scene::INVALID_ENTITY_ID));
-
-		if (ImGui::Begin("component")){
-			auto entity = registry["Edit.SelectedEntity"].as<Core::Scene::EntityID>();
-			if (entity != Core::Scene::INVALID_ENTITY_ID) scene.componentsUI(entity);
-		}
-		ImGui::End();
 	}
 
 	void Renderer::renderSwapchain(VkCommandBuffer commandBuffer){
-		_worldFramebuffer->render(commandBuffer);
+		#ifndef RAINDROP_EDITOR
+			renderFrame(commandBuffer);
+		#else
+			_editor->render();
+		#endif
+
 		_gui->render(commandBuffer);
 	}
+
+	void Renderer::renderFrame(VkCommandBuffer commandBuffer){
+			_worldFramebuffer->render(commandBuffer);
+
+	}
+
 
 	VkCommandBuffer Renderer::beginFrame(){
 		auto& window = _context->window;
@@ -232,17 +253,21 @@ namespace Raindrop::Graphics{
 		auto& scene = _context->scene;
 
 		glm::mat4 viewTransform;
-		{
-			auto& list = scene.componentEntities<Core::Scene::Components::Camera>();
-			if (!list.empty()){
-				auto entity = Core::Scene::Entity(list.front(), &scene);
-				auto& component = entity.getComponent<Core::Scene::Components::Camera>();
-				component.update(entity.getComponent<Core::Scene::Components::Transform>());
-				viewTransform = component.viewProjection;
-			} else {
-				viewTransform = glm::scale(glm::mat4(1.f), glm::vec3(1/100.f));
+		#ifdef RAINDROP_EDITOR
+			viewTransform = _editor->cameraViewProjection();
+		#else
+			{
+				auto& list = scene.componentEntities<Core::Scene::Components::Camera>();
+				if (!list.empty()){
+					auto entity = Core::Scene::Entity(list.front(), &scene);
+					auto& component = entity.getComponent<Core::Scene::Components::Camera>();
+					component.update(entity.getComponent<Core::Scene::Components::Transform>());
+					viewTransform = component.viewProjection;
+				} else {
+					viewTransform = glm::scale(glm::mat4(1.f), glm::vec3(1/100.f));
+				}
 			}
-		}
+		#endif
 		
 		auto weak_pipeline = _context->context.registry["Pipeline"].as<std::weak_ptr<Raindrop::Core::Asset::Asset>>();
 		if (auto pipeline = std::static_pointer_cast<GraphicsPipeline>(weak_pipeline.lock())){

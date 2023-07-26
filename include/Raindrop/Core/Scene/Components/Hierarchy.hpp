@@ -4,10 +4,10 @@
 #include <Raindrop/Core/Scene/Component.hpp>
 
 namespace Raindrop::Core::Scene::Components{
-	class Hierachy : public Component{
+	class Hierarchy : public Component{
 		public:
-			Hierachy() = default;
-			virtual ~Hierachy() override = default;
+			Hierarchy() = default;
+			virtual ~Hierarchy() override = default;
 
 			std::list<EntityID> childs;
 			EntityID parent = INVALID_ENTITY_ID;
