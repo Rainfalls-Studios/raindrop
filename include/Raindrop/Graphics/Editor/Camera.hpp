@@ -19,7 +19,7 @@ namespace Raindrop::Graphics::Editor{
 			glm::vec3 rotation = glm::vec3(0, 0, 0);
 
 			glm::vec3 rotationSensivity = glm::vec3(0.001f);
-			glm::vec3 translationSensivity = glm::vec3(1.f);
+			glm::vec3 translationSensivity = glm::vec3(0.01f);
 
 			/**
 			 * @note in a perspective camera, the apsect ratio is based of abs(left + right) / abs(top + down)

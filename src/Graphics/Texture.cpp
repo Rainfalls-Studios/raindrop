@@ -193,4 +193,13 @@ namespace Raindrop::Graphics{
 			throw std::runtime_error("failed to create texture sampler");
 		}
 	}
+
+	VkDescriptorImageInfo Texture::info() const{
+		VkDescriptorImageInfo info;
+		info.sampler = _sampler;
+		info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		info.imageView = _imageView;
+		return info;
+	} 
+
 }

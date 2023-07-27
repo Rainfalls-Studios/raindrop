@@ -5,6 +5,7 @@
 #include <Raindrop/Graphics/factory/ShaderFactory.hpp>
 #include <Raindrop/Graphics/factory/GraphicsPipelineFactory.hpp>
 #include <Raindrop/Graphics/factory/ModelFactory.hpp>
+#include <Raindrop/Graphics/factory/TextureFactory.hpp>
 #include <Raindrop/Graphics/GUI/Interpreter.hpp>
 #include <Raindrop/Graphics/GraphicsContext.hpp>
 
@@ -32,6 +33,7 @@ namespace Raindrop::Graphics{
 			std::shared_ptr<Factory::GraphicsPipelineFactory> _graphicsPipelineFactory;
 			std::shared_ptr<Factory::ShaderFactory> _shaderFactory; 
 			std::shared_ptr<Factory::ModelFactory> _modelFactory;
+			std::shared_ptr<Factory::TextureFactory> _textureFactory;
 
 			std::unique_ptr<WorldFramebuffer> _worldFramebuffer;
 
@@ -39,6 +41,7 @@ namespace Raindrop::Graphics{
 			void registerShaderFactory();
 			void registerGraphicsPipelineFactory();
 			void registerModelFactory();
+			void registerTextureFactory();
 			void eraseFactories();
 
 			void createGraphicsCommandBuffers();
@@ -53,6 +56,16 @@ namespace Raindrop::Graphics{
 			void renderScene(VkCommandBuffer commmandBuffer);
 			void renderSwapchain(VkCommandBuffer commandBuffer);
 			void renderFrame(VkCommandBuffer commandBuffer);
+
+			void drawEntity(Core::Scene::Entity entity, VkPipelineLayout layout, VkCommandBuffer commandBuffer, glm::mat4& viewTransform);
+			
+			std::shared_ptr<DescriptorPool> _descriptorPool;
+			std::shared_ptr<DescriptorSetLayout> _setLayout;
+			VkDescriptorSet _descriptorSet;
+			
+			void createDescriptorPool();
+			void createSetLayout();
+			void createDescriptorSet();
 
 			#ifdef RAINDROP_EDITOR
 				std::unique_ptr<Editor::Editor> _editor;

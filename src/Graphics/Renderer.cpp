@@ -7,8 +7,13 @@
 #include <Raindrop/Graphics/ImGUI.hpp>
 #include <Raindrop/Graphics/WorldFramebuffer.hpp>
 #include <Raindrop/Graphics/Model.hpp>
+#include <Raindrop/Graphics/Texture.hpp>
 #include <Raindrop/Core/Asset/AssetManager.hpp>
 #include <Raindrop/Core/Scene/Entity.hpp>
+#include <Raindrop/Graphics/DescriptorPool.hpp>
+#include <Raindrop/Graphics/DescriptorSetLayout.hpp>
+#include <Raindrop/Graphics/builders/DescriptorPoolBuilder.hpp>
+#include <Raindrop/Graphics/builders/DescriptorSetLayoutBuilder.hpp>
 
 #include <SDL2/SDL_vulkan.h>
 #include <glm/gtc/matrix_transform.hpp>
@@ -46,8 +51,13 @@ namespace Raindrop::Graphics{
 
 		_worldFramebuffer = std::make_unique<WorldFramebuffer>(*_context, 1080, 720);
 
-		createGraphicsCommandBuffers();
+		createDescriptorPool();
+		createSetLayout();
+		createDescriptorSet();
 
+		_context->gRegistry["layout"] = _setLayout->get();
+
+		createGraphicsCommandBuffers();
 
 		CLOG(INFO, "Engine.Graphics") << "Created renderer with success !";
 	}
@@ -63,6 +73,10 @@ namespace Raindrop::Graphics{
 		#ifdef RAINDROP_EDITOR
 			_editor.reset();
 		#endif
+		
+		_setLayout.reset();
+		vkResetDescriptorPool(_context->device.get(), _descriptorPool->get(), 0);
+		_descriptorPool.reset();
 
 		_worldFramebuffer.reset();
 		_gui.reset();
@@ -75,9 +89,45 @@ namespace Raindrop::Graphics{
 		_interpreter.parse(path);
 	}
 
-	void drawEntity(Core::Scene::Entity entity, VkPipelineLayout layout, VkCommandBuffer commandBuffer, glm::mat4& viewTransform){
-		auto& transform = entity.transform();
+	void Renderer::createDescriptorPool(){
+		Builders::DescriptorPoolBuilder builder;
+		builder.setMaxSets(1);
+		builder.pushPoolSize({VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1});
 
+		_descriptorPool = builder.build(*_context);
+	}
+
+	void Renderer::createSetLayout(){
+		Builders::DescriptorSetLayoutBuilder builder;
+
+		VkDescriptorSetLayoutBinding binding;
+		binding.binding = 0;
+		binding.descriptorCount = 1;
+		binding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		binding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+		binding.pImmutableSamplers = nullptr;
+		builder.pushBinding(binding);
+
+		_setLayout = builder.build(*_context);
+	}
+
+	void Renderer::createDescriptorSet(){
+		VkDescriptorSetAllocateInfo info{};
+		info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+		info.descriptorSetCount = 1;
+		info.descriptorPool = _descriptorPool->get();
+		
+		VkDescriptorSetLayout layout = _setLayout->get();
+		info.pSetLayouts = &layout;
+		
+		if (vkAllocateDescriptorSets(_context->device.get(), &info, &_descriptorSet) != VK_SUCCESS){
+			CLOG(ERROR, "Engine.Graphics.WorldFramebuffer") << "Failed to create world framebuffer descriptor set";
+			throw std::runtime_error("Failed to create world framebuffer descriptor set");
+		}
+	}
+
+	void Renderer::drawEntity(Core::Scene::Entity entity, VkPipelineLayout layout, VkCommandBuffer commandBuffer, glm::mat4& viewTransform){
+		auto& transform = entity.transform();
 
 		glm::mat4 rotationMatrix = glm::mat4_cast(transform.rotation);
 		glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), transform.translation);
@@ -90,7 +140,33 @@ namespace Raindrop::Graphics{
 		if (entity.hasComponent<Core::Scene::Components::Model>()){
 			auto& model = entity.getComponent<Core::Scene::Components::Model>();
 
-			if (auto m = model._model.lock()){
+			auto pipeline = model._pipeline.lock();
+			auto texture = model._texture.lock();
+			auto m = model._model.lock();
+
+			if (pipeline && texture && m){
+				VkDescriptorImageInfo info = texture->info();
+
+				VkWriteDescriptorSet write = {};
+				write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+				write.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+				write.dstBinding = 0;
+				write.pImageInfo = &info;
+				write.descriptorCount = 1;
+				write.dstSet = _descriptorSet;
+
+				vkUpdateDescriptorSets(_context->device.get(), 1, &write, 0, nullptr);
+				vkCmdBindDescriptorSets(
+					commandBuffer,
+					VK_PIPELINE_BIND_POINT_GRAPHICS,
+					pipeline->layout(),
+					0,
+					1,
+					&_descriptorSet,
+					0,
+					nullptr
+				);
+
 				vkCmdPushConstants(commandBuffer, layout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstant), &p);
 				m->draw(commandBuffer);
 			}
@@ -205,6 +281,7 @@ namespace Raindrop::Graphics{
 		registerShaderFactory();
 		registerGraphicsPipelineFactory();
 		registerModelFactory();
+		registerTextureFactory();
 		CLOG(INFO, "Engine.Graphics") << "registred renderer asset factories with success !";
 	}
 
@@ -223,10 +300,16 @@ namespace Raindrop::Graphics{
 		_modelFactory->registerExtensions(_modelFactory);
 	}
 
+	void Renderer::registerTextureFactory(){
+		_textureFactory = std::make_unique<Factory::TextureFactory>(*_context);
+		_textureFactory->registerExtensions(_textureFactory);
+	}
+
 	void Renderer::eraseFactories(){
 		_shaderFactory.reset();
 		_graphicsPipelineFactory.reset();
 		_modelFactory.reset();
+		_textureFactory.reset();
 	}
 
 	void Renderer::createGraphicsCommandBuffers(){

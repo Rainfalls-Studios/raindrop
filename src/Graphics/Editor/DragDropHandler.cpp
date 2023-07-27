@@ -13,6 +13,7 @@ namespace Raindrop::Graphics::Editor{
 		FONT,
 		IMAGE,
 		SCENE,
+		GRAPHICS_PIPELINE,
 	};
 
 	static FileType pathToType(const std::filesystem::path& path){
@@ -25,6 +26,9 @@ namespace Raindrop::Graphics::Editor{
 			{".jpg", IMAGE},
 			{".jpeg", IMAGE},
 			{".bmp", IMAGE},
+
+			{".gfxpipe", GRAPHICS_PIPELINE},
+			{".gfxpipeline", GRAPHICS_PIPELINE},
 		};
 
 		auto extension = path.extension();
@@ -48,6 +52,7 @@ namespace Raindrop::Graphics::Editor{
 			case MODEL: payloadName = MODEL_PATH_TYPE; break;
 			case IMAGE: payloadName = IMAGE_PATH_TYPE; break;
 			case FONT: payloadName = FONT_PATH_TYPE; break;
+			case GRAPHICS_PIPELINE: payloadName = GRAPHICS_PIPELINE_PATH_TYPE; break;
 		}
 
 		ImGui::SetDragDropPayload(payloadName.c_str(), strPath.c_str(), strPath.size());

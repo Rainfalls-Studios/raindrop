@@ -119,6 +119,8 @@ namespace Raindrop::Graphics::Factory{
 			throw std::runtime_error("Cannot find GraphicsPipeline element");
 		}
 
+		builder.addDescriptorSetLayout(reinterpret_cast<VkDescriptorSetLayout>(_context.gRegistry["layout"]));
+
 		getShadersXML(node->FirstChildElement("Shaders"), builder);
 		getTargetXML(node->FirstChildElement("Target"), builder);
 		getRasterisationInfoXML(node->FirstChildElement("Rasterization"), builder);

@@ -8,6 +8,7 @@ namespace Raindrop::Graphics::Editor{
 	static constexpr const char* MODEL_PATH_TYPE = "MODEL_PATH";
 	static constexpr const char* IMAGE_PATH_TYPE = "IMAGE_PATH";
 	static constexpr const char* FONT_PATH_TYPE = "FONT_PATH";
+	static constexpr const char* GRAPHICS_PIPELINE_PATH_TYPE = "GRAPHICS_PIPELINE_PATH_TYPE";
 
 
 	class DragDropHandler{

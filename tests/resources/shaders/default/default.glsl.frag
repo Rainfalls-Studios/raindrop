@@ -10,11 +10,11 @@ layout (location = 1) out vec4 out_bloom;
 layout (location = 2) out vec4 out_normal;
 layout (location = 3) out vec4 out_position;
 
+layout (set = 0, binding = 0) uniform sampler2D tex;
+
 void main(){
-	out_color = vec4(in_color, 0.0);
+	out_color = vec4(in_color, 0.0) * texture(tex, in_UV);
 	out_bloom = vec4(1.0, 1.0, 1.0, 0.0);
 	out_normal = vec4(in_normal, 0.0);
 	out_position = vec4(in_position, 0.0);
-
-	out_color = vec4(in_UV, 0.0, 1.0);
 }

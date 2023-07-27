@@ -2,12 +2,15 @@
 #define __RAINDROP_GRAPHICS_TEXTURE_HPP__
 
 #include <Raindrop/Graphics/common.hpp>
+#include <Raindrop/Core/Asset/Asset.hpp>
 
 namespace Raindrop::Graphics{
-	class Texture{
+	class Texture : public Core::Asset::Asset{
 		public:
 			Texture(GraphicsContext& context, const std::filesystem::path &path);
 			virtual ~Texture();
+
+			VkDescriptorImageInfo info() const; 
 
 		protected:
 			void createImage(const std::filesystem::path &filepath);
