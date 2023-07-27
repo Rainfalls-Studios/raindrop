@@ -13,44 +13,6 @@ namespace Raindrop::Graphics::Editor{
 	ViewportPanel::~ViewportPanel(){}
 
 	void ViewportPanel::update(){
-		
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-
-		bool begin = ImGui::Begin("Workspace", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
-
-		ImGui::PopStyleVar(3);
-
-		if (begin){
-
-			ImGuiID dockspace_id = ImGui::GetID("DockSpace");
-			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_NoTabBar | ImGuiDockNodeFlags_NoDocking);
-			static auto first_time = true;
-
-			if (first_time) {
-				first_time = false;
-				ImGui::DockBuilderRemoveNode(dockspace_id);
-				ImGui::DockBuilderAddNode(dockspace_id);
-				ImGui::DockBuilderSetNodeSize(dockspace_id, ImGui::GetMainViewport()->Size);
-
-				auto dock_id_right = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, 0.999f, nullptr, &dockspace_id);
-				auto dock_id_left = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.005f, nullptr, &dockspace_id);
-
-				ImGui::DockBuilderDockWindow("Viewport", dock_id_right);
-				ImGui::DockBuilderDockWindow("Toolbar", dock_id_left);
-
-				ImGui::DockBuilderFinish(dockspace_id);
-			}
-			
-			ImGui::End();
-
-			viewport();
-			_context.toolbar.update();
-		}
-	}
-
-	void ViewportPanel::viewport(){
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));

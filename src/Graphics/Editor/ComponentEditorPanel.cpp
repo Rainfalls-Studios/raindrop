@@ -16,24 +16,25 @@ namespace Raindrop::Graphics::Editor{
 	#define add_component(T) if (!entity.hasComponent<Raindrop::Core::Scene::Components::T>()) {if (ImGui::MenuItem(#T)){entity.createComponent<Raindrop::Core::Scene::Components::T>();}}
 
 	void ComponentEditorPanel::update(Core::Scene::Entity entity){
-		if (entity.id() == Core::Scene::INVALID_ENTITY_ID) return;
+		if (ImGui::Begin("Components", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus)){
 
-		if (ImGui::Begin("components", nullptr, ImGuiWindowFlags_NoDocking)){
-			if (ImGui::Button("add component")){
-				ImGui::OpenPopup("add component");
-			}
+			if (entity.id() != Core::Scene::INVALID_ENTITY_ID){
+				if (ImGui::Button("add component")){
+					ImGui::OpenPopup("add component");
+				}
 
-			draw_component(Tag);
-			draw_component(Transform);
-			draw_component(Hierarchy);
-			draw_component(Camera);
-			draw_component(Model);
+				draw_component(Tag);
+				draw_component(Transform);
+				draw_component(Hierarchy);
+				draw_component(Camera);
+				draw_component(Model);
 
-			if (ImGui::BeginPopup("add component")){
-				add_component(Transform);
-				add_component(Camera);
-				add_component(Model);
-				ImGui::EndPopup();
+				if (ImGui::BeginPopup("add component")){
+					add_component(Transform);
+					add_component(Camera);
+					add_component(Model);
+					ImGui::EndPopup();
+				}
 			}
 
 		}

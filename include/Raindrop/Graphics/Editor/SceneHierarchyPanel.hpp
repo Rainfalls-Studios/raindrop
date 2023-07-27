@@ -15,12 +15,16 @@ namespace Raindrop::Graphics::Editor{
 		private:
 			EditorContext& _context;
 			ImGuiID _dockspace;
-			bool _open = true;
+
+			char _renameBuffer[255];
+			Core::Scene::Entity _renamingEntity;
 
 			void drawScene(Core::Scene::Scene* scene);
 			void drawEntity(Core::Scene::Entity entity);
 			void entitySettings(Core::Scene::Entity entity);
 			void drawSceneSettings(Core::Scene::Scene* scene);
+
+			void dragDrop(Core::Scene::Entity entity);
 
 			void selectEntity(Core::Scene::Entity entity);
 			void addComponentEntity(Core::Scene::Entity entity);
@@ -45,11 +49,6 @@ namespace Raindrop::Graphics::Editor{
 			void addSun(Core::Scene::Scene* scene);
 
 			Core::Scene::Entity createEntity(Core::Scene::Scene* scene);
-
-			char _renameBuffer[255];
-			Core::Scene::Entity _renamingEntity;
-
-			
 	};
 }
 

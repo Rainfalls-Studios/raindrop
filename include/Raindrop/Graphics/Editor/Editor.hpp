@@ -20,9 +20,7 @@ namespace Raindrop::Graphics::Editor{
 
 		private:
 			std::unique_ptr<EditorContext> _context;
-			std::unique_ptr<ViewportPanel> _viewport;
-			std::unique_ptr<SceneHierarchyPanel> _sceneHierarchy;
-			std::unique_ptr<ComponentEditorPanel> _componentEditor;
+			std::unique_ptr<WorkspacePanel> _workspace;
 
 			void menuBar();
 

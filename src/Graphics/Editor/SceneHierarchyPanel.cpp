@@ -12,18 +12,17 @@ namespace Raindrop::Graphics::Editor{
 
 	void SceneHierarchyPanel::update(){
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-
-		bool begin = _open ? ImGui::Begin("Scene Hierarchy", &_open, ImGuiWindowFlags_NoDocking) : false;
-		
+		bool begin = ImGui::Begin("Scene Hierarchy", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus);
 		ImGui::PopStyleVar();
 		
 		if (begin){
 			_dockspace = ImGui::GetID("DockSpace");
-			ImGui::DockSpace(_dockspace, ImVec2(0, 0), ImGuiDockNodeFlags_PassthruCentralNode);
+			ImGui::DockSpace(_dockspace, ImVec2(0, 0), ImGuiDockNodeFlags_AutoHideTabBar);
 
 			drawScene(_context.scene);
 		}
-		if (_open) ImGui::End();
+
+		ImGui::End();
 	}
 
 	void SceneHierarchyPanel::drawEntity(Core::Scene::Entity entity){
@@ -53,7 +52,6 @@ namespace Raindrop::Graphics::Editor{
 			}
 			ImGui::SameLine();
 		}
-
 		
 		if (_renamingEntity == entity){
 			if (ImGui::InputText("##name", _renameBuffer, sizeof(_renameBuffer), ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue)){
@@ -86,7 +84,7 @@ namespace Raindrop::Graphics::Editor{
 
 			// Icon, text
 			ImGui::SameLine();
-			ImGui::SetCursorPosX(x + 5);
+			ImGui::SetCursorPosX(x);
 			float size = ImGui::GetFrameHeight();
 			ImGui::Image(objectIcon.texture(), ImVec2(size, size), objectIcon.uv1(), objectIcon.uv2());
 			ImGui::SameLine();
@@ -100,6 +98,8 @@ namespace Raindrop::Graphics::Editor{
 		}
 
 		ImGui::EndGroup();
+
+		dragDrop(entity);
 
 		if (ImGui::BeginPopupContextItem("Settings")){
 			entitySettings(entity);
@@ -125,17 +125,25 @@ namespace Raindrop::Graphics::Editor{
 		if (!scene) return;
 
 		ImGui::SetNextWindowDockID(_dockspace);
-		if (ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoMove)){
-			drawEntity(Core::Scene::Entity(scene->root(), scene));
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
+		bool begin = ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus);
+
+		ImGui::PopStyleVar();
+
+		if (begin){
+			drawEntity(Core::Scene::Entity(scene->root(), scene));
 			
 			ImGui::Dummy(ImGui::GetContentRegionAvail());
+
+			if (ImGui::IsItemClicked(ImGuiMouseButton_Left)){
+				_context.selectedEntity = Core::Scene::Entity(Core::Scene::INVALID_ENTITY_ID, nullptr);
+			}
 			
 			if (ImGui::BeginPopupContextItem("Scene selection")){
 				drawSceneSettings(scene);
 				ImGui::EndPopup();
 			}
-
 		}
 
 		ImGui::End();
@@ -181,6 +189,23 @@ namespace Raindrop::Graphics::Editor{
 			if (ImGui::MenuItem("Sun", nullptr, nullptr, false)) addSun(scene);
 
 			ImGui::EndMenu();
+		}
+	}
+
+	void SceneHierarchyPanel::dragDrop(Core::Scene::Entity entity){
+		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)){
+			ImGui::SetDragDropPayload("ENTITY", &entity, sizeof(Core::Scene::Entity));
+			ImGui::Text(entity.tag().name.c_str());
+			ImGui::EndDragDropSource();
+		}
+
+		if (ImGui::BeginDragDropTarget()){
+			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITY");
+			if (payload){
+				Core::Scene::Entity child;
+				memcpy(&child, payload->Data, sizeof(child));
+			}
+			ImGui::EndDragDropTarget();
 		}
 	}
 
