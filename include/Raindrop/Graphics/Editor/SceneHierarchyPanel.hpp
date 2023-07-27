@@ -15,12 +15,16 @@ namespace Raindrop::Graphics::Editor{
 		private:
 			EditorContext& _context;
 			ImGuiID _dockspace;
-			bool _open = true;
+
+			char _renameBuffer[255];
+			Core::Scene::Entity _renamingEntity;
 
 			void drawScene(Core::Scene::Scene* scene);
 			void drawEntity(Core::Scene::Entity entity);
 			void entitySettings(Core::Scene::Entity entity);
 			void drawSceneSettings(Core::Scene::Scene* scene);
+
+			void dragDrop(Core::Scene::Entity entity);
 
 			void selectEntity(Core::Scene::Entity entity);
 			void addComponentEntity(Core::Scene::Entity entity);
@@ -32,10 +36,19 @@ namespace Raindrop::Graphics::Editor{
 			void renameEntity(Core::Scene::Entity entity);
 			void removeEntity(Core::Scene::Entity entity);
 
-			char _renameBuffer[255];
-			Core::Scene::Entity _renamingEntity;
+			void addCube(Core::Scene::Scene* scene);
+			void addCone(Core::Scene::Scene* scene);
+			void addPlane(Core::Scene::Scene* scene);
+			void addPyramide(Core::Scene::Scene* scene);
+			void addModel(Core::Scene::Scene* scene);
+			void addText(Core::Scene::Scene* scene);
+			void add3DText(Core::Scene::Scene* scene);
+			void addCamera(Core::Scene::Scene* scene);
+			void addLightPoint(Core::Scene::Scene* scene);
+			void addSpotLight(Core::Scene::Scene* scene);
+			void addSun(Core::Scene::Scene* scene);
 
-			
+			Core::Scene::Entity createEntity(Core::Scene::Scene* scene);
 	};
 }
 

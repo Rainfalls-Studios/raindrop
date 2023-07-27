@@ -5,50 +5,14 @@
 #include <ImGuizmo/ImGuizmo.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
+#include <Raindrop/Core/Scene/Components/Model.hpp>
+#include <Raindrop/Graphics/Model.hpp>
 
 namespace Raindrop::Graphics::Editor{
 	ViewportPanel::ViewportPanel(EditorContext& context) : _context{context}{}
 	ViewportPanel::~ViewportPanel(){}
 
 	void ViewportPanel::update(){
-		
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-
-		bool begin = ImGui::Begin("Workspace", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
-
-		ImGui::PopStyleVar(3);
-
-		if (begin){
-
-			ImGuiID dockspace_id = ImGui::GetID("DockSpace");
-			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_NoTabBar | ImGuiDockNodeFlags_NoDocking);
-			static auto first_time = true;
-
-			if (first_time) {
-				first_time = false;
-				ImGui::DockBuilderRemoveNode(dockspace_id);
-				ImGui::DockBuilderAddNode(dockspace_id);
-				ImGui::DockBuilderSetNodeSize(dockspace_id, ImGui::GetMainViewport()->Size);
-
-				auto dock_id_right = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, 0.999f, nullptr, &dockspace_id);
-				auto dock_id_left = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.005f, nullptr, &dockspace_id);
-
-				ImGui::DockBuilderDockWindow("Viewport", dock_id_right);
-				ImGui::DockBuilderDockWindow("Toolbar", dock_id_left);
-
-				ImGui::DockBuilderFinish(dockspace_id);
-			}
-			
-			ImGui::End();
-
-			viewport();
-			_context.toolbar.update();
-		}
-	}
-
-	void ViewportPanel::viewport(){
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
@@ -60,12 +24,12 @@ namespace Raindrop::Graphics::Editor{
 		if (begin){
 			ImVec2 pos = ImGui::GetCursorScreenPos();
 			ImVec2 winPos = ImGui::GetWindowPos();
-			ImVec2 winSize = ImGui::GetWindowSize();
+			ImVec2 size = ImGui::GetWindowSize();
 
 			ImVec2 origin = ImGui::GetCursorPos();
 
 			_start = {pos.x, pos.y};
-			_size = {winSize.x, winSize.y};
+			_size = {size.x, size.y};
 
 			ImGui::GetWindowDrawList()->AddImage(
 				(void *)_context.viewport.texture(),
@@ -74,12 +38,13 @@ namespace Raindrop::Graphics::Editor{
 				ImVec2(1, 1), ImVec2(0, 0)
 			);
 
-			ImVec2 size = ImGui::GetWindowSize();
 			auto& camera = _context.camera;
 			camera.width = glm::vec2(-size.x/2.f, size.x/2.f);
 			camera.height = glm::vec2(-size.y/2.f, size.y/2.f);
 
 			ImGui::SetCursorPos(origin);
+
+			ImGui::Dummy(size);
 
 			if (ImGui::IsWindowHovered){
 				if (ImGui::IsMouseDown(ImGuiMouseButton_Right) || ImGui::IsMouseDown(ImGuiMouseButton_Middle)){
@@ -106,6 +71,29 @@ namespace Raindrop::Graphics::Editor{
 				translation += camera.forward * forward;
 
 				camera.translation += translation;
+			}
+
+			if (ImGui::BeginDragDropTarget()){
+				ImGui::GetWindowDrawList()->AddRectFilled(
+					ImVec2(_start.x, _start.y),
+					ImVec2(_start.x + _size.x, _start.y + _size.y),
+					ImGui::GetColorU32(ImGui::GetStyleColorVec4(ImGuiCol_ModalWindowDimBg))
+				);
+
+				std::filesystem::path path;
+				const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(MODEL_PATH_TYPE);
+				
+				if (payload){
+					path = static_cast<char*>(payload->Data);
+
+					try{
+						auto entity = Core::Scene::Entity(_context.scene->createEntity(), _context.scene);
+						auto& component = entity.createComponent<Core::Scene::Components::Model>();
+						component._model = _context.context.context.assetManager.loadOrGet<Model>(path);
+					} catch (const std::exception& e){}
+				}
+				
+				ImGui::EndDragDropTarget();
 			}
 		}
 		
@@ -160,7 +148,8 @@ namespace Raindrop::Graphics::Editor{
 				transform.rotation,
 				transform.translation,
 				skew,
-				perspective);
+				perspective
+			);
 		}
 	}
 }

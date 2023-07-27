@@ -3,6 +3,7 @@
 namespace Raindrop::Graphics::Editor{
 	EditorContext::EditorContext(GraphicsContext& context) :
 		context{context},
+		dragDrop{*this},
 		viewport{*this, 1080, 720},
 		fileExplorer{*this},
 		icons{*this},

@@ -225,9 +225,9 @@ namespace Raindrop::Graphics::Editor{
 								}
 
 							} else if (entry.is_regular_file()){
-								ImGui::Button(entry.path().filename().string().c_str(), ImVec2(150, 150));
+								ImGui::Button(filename.c_str(), ImVec2(150, 150));
+								_context.dragDrop.pathSource(entry.path());
 							}
-
 							
 							float textWidth = ImGui::CalcTextSize(filename.c_str()).x;
 							float ident = std::max(0.f, (150 / 2.f) - (textWidth / 2.f));
@@ -238,6 +238,7 @@ namespace Raindrop::Graphics::Editor{
 
 							ImGui::TableNextColumn();
 						}
+
 					}
 				} catch (const std::exception &){}
 				ImGui::EndTable();

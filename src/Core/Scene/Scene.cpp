@@ -13,6 +13,8 @@
 
 namespace Raindrop::Core::Scene{
 	Scene::Scene(EngineContext& context, uint32_t entityCount, uint32_t componentCount) : _context{context}{
+		_root = INVALID_ENTITY_ID;
+
 		el::Logger* customLogger = el::Loggers::getLogger("Engine.Core.Scene");
 		customLogger->configurations()->set(el::Level::Global, el::ConfigurationType::Format, "%datetime %level [%logger]: %msg");
 
@@ -69,8 +71,9 @@ namespace Raindrop::Core::Scene{
 	
 	EntityID Scene::createEntity(){
 		EntityID entity = _entityManager->createEntity();
+
 		createComponent<Components::Transform>(entity);
-		createComponent<Components::Hierarchy>(entity);
+		auto& hierarchy = createComponent<Components::Hierarchy>(entity);
 		createComponent<Components::Tag>(entity);
 
 		return entity;

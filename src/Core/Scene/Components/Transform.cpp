@@ -9,7 +9,7 @@ namespace Raindrop::Core::Scene::Components{
 
 			glm::vec3 euler = glm::degrees(glm::eulerAngles(rotation));
 
-			if (ImGui::DragFloat3("rotation", glm::value_ptr(euler), 0.01f)){
+			if (ImGui::DragFloat3("rotation", glm::value_ptr(euler), 2)){
 				rotation = glm::quat(glm::radians(euler));
 			}
 

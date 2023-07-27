@@ -3,23 +3,25 @@
 #include <Raindrop/Core/Scene/Entity.hpp>
 #include <Raindrop/Graphics/Editor/Icon.hpp>
 
+#include <Raindrop/Core/Scene/Components/Model.hpp>
+#include <Raindrop/Core/Scene/Components/Camera.hpp>
+
 namespace Raindrop::Graphics::Editor{
 	SceneHierarchyPanel::SceneHierarchyPanel(EditorContext& context) : _context{context}{}
 	SceneHierarchyPanel::~SceneHierarchyPanel(){}
 
 	void SceneHierarchyPanel::update(){
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-
-		bool begin = _open ? ImGui::Begin("Scene Hierarchy", &_open, ImGuiWindowFlags_NoDocking) : false;
-		
+		bool begin = ImGui::Begin("Scene Hierarchy", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus);
 		ImGui::PopStyleVar();
 		
 		if (begin){
 			_dockspace = ImGui::GetID("DockSpace");
-			ImGui::DockSpace(_dockspace, ImVec2(0, 0), ImGuiDockNodeFlags_PassthruCentralNode);
+			ImGui::DockSpace(_dockspace, ImVec2(0, 0), ImGuiDockNodeFlags_AutoHideTabBar);
 
 			drawScene(_context.scene);
 		}
+
 		ImGui::End();
 	}
 
@@ -50,7 +52,6 @@ namespace Raindrop::Graphics::Editor{
 			}
 			ImGui::SameLine();
 		}
-
 		
 		if (_renamingEntity == entity){
 			if (ImGui::InputText("##name", _renameBuffer, sizeof(_renameBuffer), ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue)){
@@ -83,7 +84,7 @@ namespace Raindrop::Graphics::Editor{
 
 			// Icon, text
 			ImGui::SameLine();
-			ImGui::SetCursorPosX(x + 5);
+			ImGui::SetCursorPosX(x);
 			float size = ImGui::GetFrameHeight();
 			ImGui::Image(objectIcon.texture(), ImVec2(size, size), objectIcon.uv1(), objectIcon.uv2());
 			ImGui::SameLine();
@@ -98,40 +99,53 @@ namespace Raindrop::Graphics::Editor{
 
 		ImGui::EndGroup();
 
-		if (*opened){
-			ImGui::TreePush(name.c_str());
-			for (const auto& child : entity){
-				drawEntity(child);
-			}
-			ImGui::TreePop();
-		}
+		dragDrop(entity);
 
 		if (ImGui::BeginPopupContextItem("Settings")){
 			entitySettings(entity);
 			ImGui::EndPopup();
 		}
 
+		if (*opened){
+			ImGui::TreePush(name.c_str());
+			auto it = entity.begin();
+			while (it != entity.end()){
+				auto child = *it;
+				++it;
+				drawEntity(child);
+			}
+			ImGui::TreePop();
+		}
+
+
 		ImGui::PopID();
 	}
 
 	void SceneHierarchyPanel::drawScene(Core::Scene::Scene* scene){
 		if (!scene) return;
-		ImGui::SetNextWindowDockID(_dockspace);
-		if (ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoMove)){
-			drawEntity(Core::Scene::Entity(scene->root(), scene));
 
+		ImGui::SetNextWindowDockID(_dockspace);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
+		bool begin = ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus);
+
+		ImGui::PopStyleVar();
+
+		if (begin){
+			drawEntity(Core::Scene::Entity(scene->root(), scene));
 			
 			ImGui::Dummy(ImGui::GetContentRegionAvail());
-			if (ImGui::IsItemClicked(ImGuiMouseButton_Right)){
-				ImGui::OpenPopup("Scene selection");
+
+			if (ImGui::IsItemClicked(ImGuiMouseButton_Left)){
+				_context.selectedEntity = Core::Scene::Entity(Core::Scene::INVALID_ENTITY_ID, nullptr);
 			}
 			
-			if (ImGui::BeginPopup("Scene selection")){
+			if (ImGui::BeginPopupContextItem("Scene selection")){
 				drawSceneSettings(scene);
 				ImGui::EndPopup();
 			}
-
 		}
+
 		ImGui::End();
 	}
 
@@ -155,9 +169,44 @@ namespace Raindrop::Graphics::Editor{
 	}
 
 	void SceneHierarchyPanel::drawSceneSettings(Core::Scene::Scene* scene){
-		ImGui::MenuItem("Hide");
+		if (ImGui::BeginMenu("Add")){
+			if (ImGui::MenuItem("Cube", nullptr, nullptr, false)) addCube(scene);
+			if (ImGui::MenuItem("Cone", nullptr, nullptr, false)) addCone(scene);
+			if (ImGui::MenuItem("Plane", nullptr, nullptr, false)) addPlane(scene);
+			if (ImGui::MenuItem("Pyramide", nullptr, nullptr, false)) addPyramide(scene);
+			if (ImGui::MenuItem("Model")) addModel(scene);
 
-		ImGui::MenuItem("Advenced settings");
+			ImGui::Separator();
+			if (ImGui::MenuItem("Text", nullptr, nullptr, false)) addText(scene);
+			if (ImGui::MenuItem("3D Text", nullptr, nullptr, false)) add3DText(scene);
+
+			ImGui::Separator();
+			if (ImGui::MenuItem("Camera")) addCamera(scene);
+
+			ImGui::Separator();
+			if (ImGui::MenuItem("Light Point", nullptr, nullptr, false)) addLightPoint(scene);
+			if (ImGui::MenuItem("Spotlight", nullptr, nullptr, false)) addSpotLight(scene);
+			if (ImGui::MenuItem("Sun", nullptr, nullptr, false)) addSun(scene);
+
+			ImGui::EndMenu();
+		}
+	}
+
+	void SceneHierarchyPanel::dragDrop(Core::Scene::Entity entity){
+		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)){
+			ImGui::SetDragDropPayload("ENTITY", &entity, sizeof(Core::Scene::Entity));
+			ImGui::Text(entity.tag().name.c_str());
+			ImGui::EndDragDropSource();
+		}
+
+		if (ImGui::BeginDragDropTarget()){
+			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITY");
+			if (payload){
+				Core::Scene::Entity child;
+				memcpy(&child, payload->Data, sizeof(child));
+			}
+			ImGui::EndDragDropTarget();
+		}
 	}
 
 	void SceneHierarchyPanel::selectEntity(Core::Scene::Entity entity){
@@ -203,5 +252,64 @@ namespace Raindrop::Graphics::Editor{
 		try{
 			entity.scene()->destroyEntity(entity.id());
 		} catch (const std::exception &){}
+	}
+
+	Core::Scene::Entity SceneHierarchyPanel::createEntity(Core::Scene::Scene* scene){
+		auto entity = Core::Scene::Entity(scene->root(), scene).createChild();
+		selectEntity(entity);
+		return entity;
+	}
+
+	void SceneHierarchyPanel::addCube(Core::Scene::Scene* scene){
+		auto entity = createEntity(scene);
+	}
+
+	void SceneHierarchyPanel::addCone(Core::Scene::Scene* scene){
+		auto entity = createEntity(scene);
+
+	}
+
+	void SceneHierarchyPanel::addPlane(Core::Scene::Scene* scene){
+		auto entity = createEntity(scene);
+	}
+
+	void SceneHierarchyPanel::addPyramide(Core::Scene::Scene* scene){
+		auto entity = createEntity(scene);
+
+	}
+
+	void SceneHierarchyPanel::addModel(Core::Scene::Scene* scene){
+		auto entity = createEntity(scene);
+		entity.createComponent<Core::Scene::Components::Model>();
+	}
+
+	void SceneHierarchyPanel::addText(Core::Scene::Scene* scene){
+		auto entity = createEntity(scene);
+
+	}
+
+	void SceneHierarchyPanel::add3DText(Core::Scene::Scene* scene){
+		auto entity = createEntity(scene);
+
+	}
+
+	void SceneHierarchyPanel::addCamera(Core::Scene::Scene* scene){
+		auto entity = createEntity(scene);
+		entity.createComponent<Core::Scene::Components::Camera>();
+	}
+	
+	void SceneHierarchyPanel::addLightPoint(Core::Scene::Scene* scene){
+		auto entity = createEntity(scene);
+
+	}
+
+	void SceneHierarchyPanel::addSpotLight(Core::Scene::Scene* scene){
+		auto entity = createEntity(scene);
+
+	}
+
+	void SceneHierarchyPanel::addSun(Core::Scene::Scene* scene){
+		auto entity = createEntity(scene);
+
 	}
 }
