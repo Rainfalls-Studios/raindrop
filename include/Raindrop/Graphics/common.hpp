@@ -40,6 +40,8 @@ namespace Raindrop::Graphics{
 	class DescriptorPool;
 	class DescriptorSetLayout;
 	class Texture;
+	class ForwardShader;
+	class SceneRenderer;
 
 	struct Vertex{
 		glm::vec3 position{};

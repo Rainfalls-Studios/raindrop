@@ -372,11 +372,6 @@ namespace Raindrop::Graphics{
 		createAttachments();
 		createFramebuffer();
 
-		createDescriptorPool();
-		createSetLayout();
-		createDescriptorSet();
-		createPipeline();
-
 		_context.gRegistry["WorldFramebuffer"] = this;
 
 		CLOG(INFO, "Engine.Graphics.WorldFramebuffer") << "Created world framebuffer with success !";
@@ -391,10 +386,6 @@ namespace Raindrop::Graphics{
 			if (a.memory) vkFreeMemory(_context.device.get(), a.memory, _context.allocationCallbacks);
 			if (a.sampler) vkDestroySampler(_context.device.get(), a.sampler, _context.allocationCallbacks);
 		}
-
-		vkResetDescriptorPool(_context.device.get(), _descriptorPool->get(), 0);
-		_descriptorPool.reset();
-		_setLayout.reset();
 
 		if (_renderPass) vkDestroyRenderPass(_context.device.get(), _renderPass, _context.allocationCallbacks);
 	}
@@ -664,87 +655,11 @@ namespace Raindrop::Graphics{
 		return _attachments.size() - 1;
 	}
 
-	void WorldFramebuffer::createDescriptorPool(){
-		Builders::DescriptorPoolBuilder builder;
-		builder.setMaxSets(1);
-		builder.pushPoolSize({VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 5});
-
-		_descriptorPool = builder.build(_context);
-	}
-
-	void WorldFramebuffer::createSetLayout(){
-		Builders::DescriptorSetLayoutBuilder builder;
-
-		for (int i=0; i<_attachments.size(); i++){
-			VkDescriptorSetLayoutBinding binding{};
-			binding.binding = i;
-			binding.descriptorCount = 1;
-			binding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-			binding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-			binding.pImmutableSamplers = &_attachments[i].sampler;
-			builder.pushBinding(binding);
-		}
-
-		_setLayout = builder.build(_context);
-	}
-
-	void WorldFramebuffer::createDescriptorSet(){
-		VkDescriptorSetAllocateInfo info{};
-		info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-		info.descriptorSetCount = 1;
-		info.descriptorPool = _descriptorPool->get();
-		
-		VkDescriptorSetLayout layout = _setLayout->get();
-		info.pSetLayouts = &layout;
-		
-		if (vkAllocateDescriptorSets(_context.device.get(), &info, &_descriptorSet) != VK_SUCCESS){
-			CLOG(ERROR, "Engine.Graphics.WorldFramebuffer") << "Failed to create world framebuffer descriptor set";
-			throw std::runtime_error("Failed to create world framebuffer descriptor set");
-		}
-
-		VkWriteDescriptorSet writes[5];
-		VkDescriptorImageInfo infos[5];
-
-		for (int i=0; i<sizeof(writes)/sizeof(VkWriteDescriptorSet); i++){
-			infos[i] = {};
-			writes[i] = {};
-
-			infos[i].imageLayout = attachments[i].description.finalLayout;
-			infos[i].imageView = _attachments[i].imageView;
-			infos[i].sampler = _attachments[i].sampler;
-
-			writes[i].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			writes[i].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-			writes[i].dstBinding = i;
-			writes[i].pImageInfo = &infos[i];
-			writes[i].descriptorCount = 1;
-			writes[i].dstSet = _descriptorSet;
-		}
-
-		vkUpdateDescriptorSets(_context.device.get(), sizeof(writes)/sizeof(VkWriteDescriptorSet), writes, 0, nullptr);
-	}
-
-	void WorldFramebuffer::createPipeline(){
-		Builders::GraphicsPipelineBuilder builder;
-		builder.addShader(std::static_pointer_cast<Shader>(_context.context.assetManager.loadOrGet("C:/Users/aalee/Documents/raindrop/tests/resources/shaders/worldFramebuffer/default.glsl.frag.spv").lock()));
-		builder.addShader(std::static_pointer_cast<Shader>(_context.context.assetManager.loadOrGet("C:/Users/aalee/Documents/raindrop/tests/resources/shaders/worldFramebuffer/default.glsl.vert.spv").lock()));
-
-		builder.setName("world framebuffer");
-		builder.setRenderPass(_context.sceneRenderPass);
-
-		builder.addDescriptorSetLayout(_setLayout->get());
-		builder.setAttachmentCount(1);
-
-		builder.setVertexAttribtes({});
-		builder.setVertexBindings({});
-
-		_pipeline = builder.build(_context);
-	}
-
-	void WorldFramebuffer::render(VkCommandBuffer commandBuffer){
-		_pipeline->bind(commandBuffer);
-		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->layout(), 0, 1, &_descriptorSet, 0, nullptr);
-
-		vkCmdDraw(commandBuffer, 6, 1, 0, 0);
+	VkDescriptorImageInfo WorldFramebuffer::getAttachmentInfo(uint32_t index){
+		VkDescriptorImageInfo info;
+		info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		info.imageView = _attachments[index].imageView;
+		info.sampler = _attachments[index].sampler;
+		return info;
 	}
 }

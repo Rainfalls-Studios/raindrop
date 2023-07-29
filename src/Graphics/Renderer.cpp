@@ -6,24 +6,19 @@
 #include <Raindrop/Graphics/GraphicsPipeline.hpp>
 #include <Raindrop/Graphics/ImGUI.hpp>
 #include <Raindrop/Graphics/WorldFramebuffer.hpp>
-#include <Raindrop/Graphics/Model.hpp>
-#include <Raindrop/Graphics/Texture.hpp>
 #include <Raindrop/Core/Asset/AssetManager.hpp>
-#include <Raindrop/Core/Scene/Entity.hpp>
 #include <Raindrop/Graphics/DescriptorPool.hpp>
 #include <Raindrop/Graphics/DescriptorSetLayout.hpp>
 #include <Raindrop/Graphics/builders/DescriptorPoolBuilder.hpp>
 #include <Raindrop/Graphics/builders/DescriptorSetLayoutBuilder.hpp>
+#include <Raindrop/Graphics/SceneRenderer.hpp>
+#include <Raindrop/Core/Scene/Entity.hpp>
+#include <Raindrop/Graphics/ForwardShader.hpp>
+#include <Raindrop/Graphics/builders/GraphicsPipelineBuilder.hpp>
+#include <Raindrop/Graphics/Shader.hpp>
 
 #include <SDL2/SDL_vulkan.h>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/euler_angles.hpp>
 
-#include <Raindrop/Core/Scene/Components/Camera.hpp>
-#include <Raindrop/Core/Scene/Components/Hierarchy.hpp>
-#include <Raindrop/Core/Scene/Components/Tag.hpp>
-#include <Raindrop/Core/Scene/Components/Transform.hpp>
-#include <Raindrop/Core/Scene/Components/Model.hpp>
 
 #ifdef RAINDROP_EDITOR
 	#include <Raindrop/Graphics/Editor/Editor.hpp>
@@ -50,14 +45,18 @@ namespace Raindrop::Graphics{
 		_gui->uploadFonts();
 
 		_worldFramebuffer = std::make_unique<WorldFramebuffer>(*_context, 1080, 720);
+		_sceneRenderer = std::make_unique<SceneRenderer>(*_context);
+		_forwardShader = std::make_unique<ForwardShader>(*_context, 1080, 720);
 
 		createDescriptorPool();
 		createSetLayout();
 		createDescriptorSet();
+		createPipeline();
 
 		_context->gRegistry["layout"] = _setLayout->get();
-
 		createGraphicsCommandBuffers();
+
+		_forwardShader->updateDescriptor(*_worldFramebuffer);
 
 		CLOG(INFO, "Engine.Graphics") << "Created renderer with success !";
 	}
@@ -74,10 +73,13 @@ namespace Raindrop::Graphics{
 			_editor.reset();
 		#endif
 		
+		_forwardShader.reset();
 		_setLayout.reset();
 		vkResetDescriptorPool(_context->device.get(), _descriptorPool->get(), 0);
 		_descriptorPool.reset();
+		_pipeline.reset();
 
+		_sceneRenderer.reset();
 		_worldFramebuffer.reset();
 		_gui.reset();
 		_context.reset();
@@ -121,60 +123,21 @@ namespace Raindrop::Graphics{
 		info.pSetLayouts = &layout;
 		
 		if (vkAllocateDescriptorSets(_context->device.get(), &info, &_descriptorSet) != VK_SUCCESS){
-			CLOG(ERROR, "Engine.Graphics.WorldFramebuffer") << "Failed to create world framebuffer descriptor set";
-			throw std::runtime_error("Failed to create world framebuffer descriptor set");
-		}
-	}
-
-	void Renderer::drawEntity(Core::Scene::Entity entity, VkPipelineLayout layout, VkCommandBuffer commandBuffer, glm::mat4& viewTransform){
-		auto& transform = entity.transform();
-
-		glm::mat4 rotationMatrix = glm::mat4_cast(transform.rotation);
-		glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), transform.translation);
-		glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), transform.scale);
-
-		PushConstant p;
-		p.viewTransform = viewTransform;
-		p.localTransform = translationMatrix * rotationMatrix * scaleMatrix;
-
-		if (entity.hasComponent<Core::Scene::Components::Model>()){
-			auto& model = entity.getComponent<Core::Scene::Components::Model>();
-
-			auto pipeline = model._pipeline.lock();
-			auto texture = model._texture.lock();
-			auto m = model._model.lock();
-
-			if (pipeline && texture && m){
-				VkDescriptorImageInfo info = texture->info();
-
-				VkWriteDescriptorSet write = {};
-				write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-				write.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-				write.dstBinding = 0;
-				write.pImageInfo = &info;
-				write.descriptorCount = 1;
-				write.dstSet = _descriptorSet;
-
-				vkUpdateDescriptorSets(_context->device.get(), 1, &write, 0, nullptr);
-				vkCmdBindDescriptorSets(
-					commandBuffer,
-					VK_PIPELINE_BIND_POINT_GRAPHICS,
-					pipeline->layout(),
-					0,
-					1,
-					&_descriptorSet,
-					0,
-					nullptr
-				);
-
-				vkCmdPushConstants(commandBuffer, layout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstant), &p);
-				m->draw(commandBuffer);
-			}
+			CLOG(ERROR, "Engine.Graphics") << "Failed to create renderer descriptor set";
+			throw std::runtime_error("Failed to create renderer descriptor set");
 		}
 
-		for (auto c : entity){
-			drawEntity(c, layout, commandBuffer, viewTransform);
-		}
+		VkWriteDescriptorSet write = {};
+		VkDescriptorImageInfo imageInfo = _forwardShader->getAttachmentInfo();
+
+		write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		write.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		write.dstBinding = 0;
+		write.pImageInfo = &imageInfo;
+		write.descriptorCount = 1;
+		write.dstSet = _descriptorSet;
+
+		vkUpdateDescriptorSets(_context->device.get(), 1, &write, 0, nullptr);
 	}
 
 	void Renderer::update(){
@@ -188,6 +151,8 @@ namespace Raindrop::Graphics{
 			_worldFramebuffer->beginRenderPass(commandBuffer);
 			renderScene(commandBuffer);
 			_worldFramebuffer->endRenderPass(commandBuffer);
+
+			_forwardShader->render(commandBuffer, _editor->cameraDirection(), _editor->cameraPosition());
 
 			renderGui();
 
@@ -220,10 +185,20 @@ namespace Raindrop::Graphics{
 	}
 
 	void Renderer::renderFrame(VkCommandBuffer commandBuffer){
-			_worldFramebuffer->render(commandBuffer);
+		_pipeline->bind(commandBuffer);
+		vkCmdBindDescriptorSets(
+			commandBuffer,
+			VK_PIPELINE_BIND_POINT_GRAPHICS,
+			_pipeline->layout(),
+			0,
+			1,
+			&_descriptorSet,
+			0,
+			nullptr
+		);
 
+		vkCmdDraw(commandBuffer, 6, 1, 0, 0);
 	}
-
 
 	VkCommandBuffer Renderer::beginFrame(){
 		auto& window = _context->window;
@@ -362,7 +337,24 @@ namespace Raindrop::Graphics{
 			vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 			vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
 
-			drawEntity(Core::Scene::Entity(scene.root(), &scene), pipeline->layout(), commandBuffer, viewTransform);
+			_sceneRenderer->drawEntity(Core::Scene::Entity(scene.root(), &scene), pipeline->layout(), commandBuffer, viewTransform);
 		}
+	}
+
+	void Renderer::createPipeline(){
+		Builders::GraphicsPipelineBuilder builder;
+		builder.addShader(std::static_pointer_cast<Shader>(_context->context.assetManager.loadOrGet("C:/Users/aalee/Documents/raindrop/tests/resources/shaders/worldFramebuffer/default.glsl.frag.spv").lock()));
+		builder.addShader(std::static_pointer_cast<Shader>(_context->context.assetManager.loadOrGet("C:/Users/aalee/Documents/raindrop/tests/resources/shaders/worldFramebuffer/default.glsl.vert.spv").lock()));
+
+		builder.setName("quad frame render");
+		builder.setRenderPass(_context->sceneRenderPass);
+
+		builder.addDescriptorSetLayout(_setLayout->get());
+		builder.setAttachmentCount(1);
+
+		builder.setVertexAttribtes({});
+		builder.setVertexBindings({});
+
+		_pipeline = builder.build(*_context);
 	}
 }

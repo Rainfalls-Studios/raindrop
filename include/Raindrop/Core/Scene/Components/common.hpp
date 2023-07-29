@@ -9,6 +9,7 @@ namespace Raindrop::Core::Scene::Components{
 	class Hierarchy;
 	class Camera;
 	class Model;
+	class LightPoint;
 }
 
 #endif

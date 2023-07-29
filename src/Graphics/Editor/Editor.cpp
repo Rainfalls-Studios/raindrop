@@ -151,4 +151,13 @@ namespace Raindrop::Graphics::Editor{
 
 		ImGui::EndMenu();
 	}
+
+	const glm::vec3& Editor::cameraDirection() const{
+		return _context->camera.rotation;
+	}
+
+	const glm::vec3& Editor::cameraPosition() const{
+		return _context->camera.translation;
+	}
+
 }

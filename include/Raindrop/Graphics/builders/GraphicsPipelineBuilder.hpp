@@ -15,6 +15,7 @@ namespace Raindrop::Graphics::Builders{
 
 			void addShader(const std::shared_ptr<Shader>& shader);
 			void addDescriptorSetLayout(const VkDescriptorSetLayout &layout);
+			void addPushConstant(const VkPushConstantRange& pushConstant);
 			void setRenderPass(VkRenderPass renderPass);
 			void setName(const std::string& name);
 			void setAttachmentCount(uint32_t count);
@@ -39,6 +40,7 @@ namespace Raindrop::Graphics::Builders{
 			std::vector<VkDescriptorSetLayout> _setLayouts;
 			std::vector<VkVertexInputAttributeDescription> _vertexAttributes;
 			std::vector<VkVertexInputBindingDescription> _vertexBindings;
+			std::vector<VkPushConstantRange> _pushConstants;
 			std::string _name;
 
 			VkPipelineLayout createPipelineLayout(VkAllocationCallbacks* callbacks);

@@ -5,6 +5,9 @@
 
 #include <Raindrop/Core/Scene/Components/Model.hpp>
 #include <Raindrop/Core/Scene/Components/Camera.hpp>
+#include <Raindrop/Core/Scene/Components/Spotlight.hpp>
+#include <Raindrop/Core/Scene/Components/LightPoint.hpp>
+#include <Raindrop/Core/Scene/Components/Sun.hpp>
 
 namespace Raindrop::Graphics::Editor{
 	SceneHierarchyPanel::SceneHierarchyPanel(EditorContext& context) : _context{context}{}
@@ -184,9 +187,9 @@ namespace Raindrop::Graphics::Editor{
 			if (ImGui::MenuItem("Camera")) addCamera(scene);
 
 			ImGui::Separator();
-			if (ImGui::MenuItem("Light Point", nullptr, nullptr, false)) addLightPoint(scene);
-			if (ImGui::MenuItem("Spotlight", nullptr, nullptr, false)) addSpotLight(scene);
-			if (ImGui::MenuItem("Sun", nullptr, nullptr, false)) addSun(scene);
+			if (ImGui::MenuItem("Light Point")) addLightPoint(scene);
+			if (ImGui::MenuItem("Spotlight")) addSpotLight(scene);
+			if (ImGui::MenuItem("Sun")) addSun(scene);
 
 			ImGui::EndMenu();
 		}
@@ -300,16 +303,16 @@ namespace Raindrop::Graphics::Editor{
 	
 	void SceneHierarchyPanel::addLightPoint(Core::Scene::Scene* scene){
 		auto entity = createEntity(scene);
-
+		entity.createComponent<Core::Scene::Components::LightPoint>();
 	}
 
 	void SceneHierarchyPanel::addSpotLight(Core::Scene::Scene* scene){
 		auto entity = createEntity(scene);
-
+		entity.createComponent<Core::Scene::Components::Spotlight>();
 	}
 
 	void SceneHierarchyPanel::addSun(Core::Scene::Scene* scene){
 		auto entity = createEntity(scene);
-
+		entity.createComponent<Core::Scene::Components::Sun>();
 	}
 }

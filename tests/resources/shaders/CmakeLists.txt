@@ -3,3 +3,4 @@ find_program(glslc_executable NAMES glslc HINT Vulkan::glslc)
 
 add_subdirectory(default)
 add_subdirectory(worldFramebuffer)
+add_subdirectory(forwardShading)

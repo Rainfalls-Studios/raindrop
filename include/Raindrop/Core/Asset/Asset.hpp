@@ -5,9 +5,15 @@
 
 namespace Raindrop::Core::Asset{
 	class Asset{
+		friend class AssetManager;
 		public:
 			Asset() = default;
 			virtual ~Asset() = default;
+
+			const std::filesystem::path& path() const;
+		
+		protected:
+			std::filesystem::path _path;
 	};
 }
 

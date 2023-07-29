@@ -1,5 +1,6 @@
 #include <Raindrop/Core/Asset/AssetManager.hpp>
 #include <Raindrop/Core/Asset/AssetFactory.hpp>
+#include <Raindrop/Core/Asset/Asset.hpp>
 
 namespace Raindrop::Core::Asset{
 	AssetManager::AssetManager(){
@@ -40,6 +41,8 @@ namespace Raindrop::Core::Asset{
 		}
 		auto asset = factory->createAsset(path);
 		_pathToAsset[path] = asset;
+
+		asset->_path = path;
 		return asset;
 	}
 

@@ -25,7 +25,7 @@ namespace Raindrop::Graphics{
 			Attachment& getAttachment(uint32_t id);
 			std::vector<Attachment>& getAttachments();
 
-			void render(VkCommandBuffer commandBuffer);
+			VkDescriptorImageInfo getAttachmentInfo(uint32_t index);
 
 		private:
 			GraphicsContext& _context;
@@ -35,21 +35,9 @@ namespace Raindrop::Graphics{
 
 			std::vector<Attachment> _attachments;
 
-			// ! TEMP
-			std::shared_ptr<GraphicsPipeline> _pipeline;
-			std::shared_ptr<DescriptorPool> _descriptorPool;
-			std::shared_ptr<DescriptorSetLayout> _setLayout;
-			VkDescriptorSet _descriptorSet;
-			// ! TEMP
-
 			uint32_t _width;
 			uint32_t _height;
-
-			void createDescriptorPool();
-			void createSetLayout();
-			void createPipeline();
-			void createDescriptorSet();
-
+			
 			void createRenderPass();
 			void createAttachments();
 			void createFramebuffer();

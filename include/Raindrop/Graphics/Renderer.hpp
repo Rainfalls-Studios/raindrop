@@ -36,6 +36,13 @@ namespace Raindrop::Graphics{
 			std::shared_ptr<Factory::TextureFactory> _textureFactory;
 
 			std::unique_ptr<WorldFramebuffer> _worldFramebuffer;
+			std::unique_ptr<SceneRenderer> _sceneRenderer;
+			std::unique_ptr<ForwardShader> _forwardShader;
+
+			std::shared_ptr<GraphicsPipeline> _pipeline;
+			std::shared_ptr<DescriptorPool> _descriptorPool;
+			std::shared_ptr<DescriptorSetLayout> _setLayout;
+			VkDescriptorSet _descriptorSet;
 
 			void registerFactories();
 			void registerShaderFactory();
@@ -57,24 +64,15 @@ namespace Raindrop::Graphics{
 			void renderSwapchain(VkCommandBuffer commandBuffer);
 			void renderFrame(VkCommandBuffer commandBuffer);
 
-			void drawEntity(Core::Scene::Entity entity, VkPipelineLayout layout, VkCommandBuffer commandBuffer, glm::mat4& viewTransform);
-			
-			std::shared_ptr<DescriptorPool> _descriptorPool;
-			std::shared_ptr<DescriptorSetLayout> _setLayout;
-			VkDescriptorSet _descriptorSet;
-			
 			void createDescriptorPool();
 			void createSetLayout();
+			void createPipeline();
 			void createDescriptorSet();
+
 
 			#ifdef RAINDROP_EDITOR
 				std::unique_ptr<Editor::Editor> _editor;
 			#endif
-	};
-
-	struct PushConstant{
-		glm::mat4 viewTransform;
-		glm::mat4 localTransform;
 	};
 }
 

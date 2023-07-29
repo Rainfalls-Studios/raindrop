@@ -3,6 +3,7 @@
 #include <Raindrop/Graphics/Shader.hpp>
 #include <Raindrop/Graphics/Device.hpp>
 #include <Raindrop/Graphics/Renderer.hpp>
+#include <Raindrop/Graphics/SceneRenderer.hpp>
 
 namespace Raindrop::Graphics::Builders{
 	GraphicsPipelineBuilder::GraphicsPipelineBuilder(){
@@ -162,22 +163,31 @@ namespace Raindrop::Graphics::Builders{
 		createInfo.subpass = _subpass;
 		createInfo.basePipelineIndex = -1;
 
-		VkPushConstantRange pushConstantRange{};
-		pushConstantRange.offset = 0;
-		pushConstantRange.size = sizeof(PushConstant);
-		pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-
 		VkPipelineLayoutCreateInfo layoutInfo = {};
 		layoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		
-		layoutInfo.pPushConstantRanges = &pushConstantRange;
-		layoutInfo.pushConstantRangeCount = 1;
+
+		if (_pushConstants.empty()){
+			VkPushConstantRange pushConstantRange{};
+			pushConstantRange.offset = 0;
+			pushConstantRange.size = sizeof(PushConstant);
+			pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+			
+			layoutInfo.pPushConstantRanges = &pushConstantRange;
+			layoutInfo.pushConstantRangeCount = 1;
+		} else {
+			layoutInfo.pPushConstantRanges = _pushConstants.data();
+			layoutInfo.pushConstantRangeCount = static_cast<uint32_t>(_pushConstants.size());
+		}
 
 		layoutInfo.pSetLayouts = _setLayouts.data();
 		layoutInfo.setLayoutCount = static_cast<uint32_t>(_setLayouts.size());
 		layoutInfo.flags = 0;
 
 		return std::make_shared<GraphicsPipeline>(context, createInfo, layoutInfo, _shaders, _name);
+	}
+
+	void GraphicsPipelineBuilder::addPushConstant(const VkPushConstantRange& pushConstant){
+		_pushConstants.push_back(pushConstant);
 	}
 
 	void GraphicsPipelineBuilder::addShader(const std::shared_ptr<Shader>& shader){
