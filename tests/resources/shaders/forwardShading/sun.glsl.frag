@@ -46,5 +46,5 @@ void main(){
 	float spec = getSpecular(position, normal);
 
 	float coef = (normalFalloff) + spec;
-	outColor = vec4(albedo, 1.) * coef;
+	outColor = vec4(albedo * light.color, 1.) * coef;
 }

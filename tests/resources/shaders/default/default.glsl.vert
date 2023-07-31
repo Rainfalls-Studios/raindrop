@@ -19,7 +19,7 @@ void main(){
 	vec4 positionWorld = push.modelMatrix * vec4(in_position, 1.0);
 
 	frag_color = in_color;
-	frag_normal = in_normal;
+	frag_normal = normalize(mat3(push.modelMatrix) * in_normal);
 	frag_UV = in_UV;
 	frag_position = positionWorld.rgb;
 

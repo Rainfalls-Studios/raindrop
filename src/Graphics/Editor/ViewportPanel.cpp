@@ -34,8 +34,7 @@ namespace Raindrop::Graphics::Editor{
 			ImGui::GetWindowDrawList()->AddImage(
 				(void *)_context.viewport.texture(),
 				ImVec2(_start.x, _start.y),
-				ImVec2(_size.x + _start.x, _size.y + _start.y),
-				ImVec2(1, 1), ImVec2(0, 0)
+				ImVec2(_size.x + _start.x, _size.y + _start.y)
 			);
 
 			auto& camera = _context.camera;
@@ -62,7 +61,7 @@ namespace Raindrop::Graphics::Editor{
 				auto& rotation = camera.rotation;
 
 				const float sensitivity = 0.1f;
-				rotation += glm::vec3(rotationDrag.y * sensitivity, rotationDrag.x * sensitivity, 0.0f);
+				rotation += glm::vec3(rotationDrag.y * -sensitivity, -rotationDrag.x * sensitivity, 0.0f);
 				rotation.x = glm::clamp(rotation.x, -89.0f, 89.0f);
 
 				float forward = -ImGui::GetIO().MouseWheel;

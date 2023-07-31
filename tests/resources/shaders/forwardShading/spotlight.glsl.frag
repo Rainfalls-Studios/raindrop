@@ -42,7 +42,6 @@ float getSpecular(in vec3 position, in vec3 normal){
 }
 
 void main(){
-
 	// query samples
 	vec3 position = texture(position_tex, in_UV).rgb;
 	vec3 normal = texture(normal_tex, in_UV).rgb;
@@ -60,6 +59,7 @@ void main(){
 	float normalFalloff = getNormalFalloff(position, normal);
 	float spec = getSpecular(position, normal);
 
-	float coef = (radialFalloff * angularFalloff * normalFalloff) + spec;
-	outColor = vec4(albedo, 1.) * coef;
+	// float coef = (radialFalloff * angularFalloff * normalFalloff) + spec;
+	float coef = (radialFalloff * angularFalloff * normalFalloff);
+	outColor = vec4(albedo * light.color, 1.) * coef;
 }

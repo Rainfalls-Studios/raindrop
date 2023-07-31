@@ -388,6 +388,17 @@ namespace Raindrop::Graphics{
 
 		builder.addPushConstant(pushConstant);
 
+		builder.setAttachmentCount(1);
+		auto& blend = builder.attachmentState(0);
+		blend.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+		blend.blendEnable = VK_TRUE;
+		blend.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;    // Source color factor (alpha premultiplied)
+		blend.dstColorBlendFactor = VK_BLEND_FACTOR_ONE;          // Destination color factor (alpha premultiplied)
+		blend.colorBlendOp = VK_BLEND_OP_ADD;                     // Blend operation for color components
+		blend.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;          // Source alpha factor
+		blend.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE;          // Destination alpha factor
+		blend.alphaBlendOp = VK_BLEND_OP_ADD;                     // Blend operation for alpha component
+
 		builder.setVertexAttribtes({});
 		builder.setVertexBindings({});
 
@@ -412,6 +423,17 @@ namespace Raindrop::Graphics{
 
 		builder.addPushConstant(pushConstant);
 
+		builder.setAttachmentCount(1);
+		auto& blend = builder.attachmentState(0);
+		blend.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+		blend.blendEnable = VK_TRUE;
+		blend.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;    // Source color factor (alpha premultiplied)
+		blend.dstColorBlendFactor = VK_BLEND_FACTOR_ONE;          // Destination color factor (alpha premultiplied)
+		blend.colorBlendOp = VK_BLEND_OP_ADD;                     // Blend operation for color components
+		blend.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;          // Source alpha factor
+		blend.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE;          // Destination alpha factor
+		blend.alphaBlendOp = VK_BLEND_OP_ADD;                     // Blend operation for alpha component
+
 		builder.setVertexAttribtes({});
 		builder.setVertexBindings({});
 
@@ -435,6 +457,17 @@ namespace Raindrop::Graphics{
 		pushConstant.size = sizeof(SunPushConstant);
 
 		builder.addPushConstant(pushConstant);
+
+		builder.setAttachmentCount(1);
+		auto& blend = builder.attachmentState(0);
+		blend.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+		blend.blendEnable = VK_TRUE;
+		blend.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;    // Source color factor (alpha premultiplied)
+		blend.dstColorBlendFactor = VK_BLEND_FACTOR_ONE;          // Destination color factor (alpha premultiplied)
+		blend.colorBlendOp = VK_BLEND_OP_ADD;                     // Blend operation for color components
+		blend.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;          // Source alpha factor
+		blend.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE;          // Destination alpha factor
+		blend.alphaBlendOp = VK_BLEND_OP_ADD;                     // Blend operation for alpha component
 
 		builder.setVertexAttribtes({});
 		builder.setVertexBindings({});
@@ -538,12 +571,12 @@ namespace Raindrop::Graphics{
 		auto lights = _context.scene.componentEntities<Core::Scene::Components::Spotlight>();
 		if (lights.empty()) return;
 
-		_lightPointPipeline->bind(commandBuffer);
+		_spotlightPipeline->bind(commandBuffer);
 
 		vkCmdBindDescriptorSets(
 			commandBuffer,
 			VK_PIPELINE_BIND_POINT_GRAPHICS,
-			_lightPointPipeline->layout(),
+			_spotlightPipeline->layout(),
 			0,
 			1,
 			&_descriptorSet,
@@ -568,7 +601,7 @@ namespace Raindrop::Graphics{
 			pushConstant.direction = glm::rotate(transform.rotation, glm::vec3(0.0f, 0.0f, -1.0f));
 			pushConstant.direction = glm::normalize(pushConstant.direction);
 
-			vkCmdPushConstants(commandBuffer, _lightPointPipeline->layout(), VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SpotlightPushConstant), &pushConstant);
+			vkCmdPushConstants(commandBuffer, _spotlightPipeline->layout(), VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SpotlightPushConstant), &pushConstant);
 			vkCmdDraw(commandBuffer, 6, 1, 0, 0);
 		}
 	}
@@ -577,12 +610,12 @@ namespace Raindrop::Graphics{
 		auto lights = _context.scene.componentEntities<Core::Scene::Components::Sun>();
 		if (lights.empty()) return;
 
-		_lightPointPipeline->bind(commandBuffer);
+		_sunPipeline->bind(commandBuffer);
 
 		vkCmdBindDescriptorSets(
 			commandBuffer,
 			VK_PIPELINE_BIND_POINT_GRAPHICS,
-			_lightPointPipeline->layout(),
+			_sunPipeline->layout(),
 			0,
 			1,
 			&_descriptorSet,
@@ -603,7 +636,7 @@ namespace Raindrop::Graphics{
 			pushConstant.direction = glm::rotate(transform.rotation, glm::vec3(0.0f, 0.0f, -1.0f));
 			pushConstant.direction = glm::normalize(pushConstant.direction);
 
-			vkCmdPushConstants(commandBuffer, _lightPointPipeline->layout(), VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SunPushConstant), &pushConstant);
+			vkCmdPushConstants(commandBuffer, _sunPipeline->layout(), VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SunPushConstant), &pushConstant);
 			vkCmdDraw(commandBuffer, 6, 1, 0, 0);
 		}
 	}
