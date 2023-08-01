@@ -79,4 +79,5 @@ namespace Raindrop::Graphics{
 			vkCmdDraw(commandBuffer, _vertexCount, 1, 0, 0);
 		}
 	}
+
 }

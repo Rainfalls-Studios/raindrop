@@ -106,7 +106,7 @@ namespace Raindrop::Graphics::Factory{
 		CLOG(INFO, "Engine.Graphics.Pipeline") << "Loading " << path << " xml graphics pipeline";
 
 		tinyxml2::XMLDocument document;
-		if (!document.LoadFile(path.generic_u8string().c_str()) == tinyxml2::XML_SUCCESS){
+		if (!document.LoadFile(path.string().c_str()) == tinyxml2::XML_SUCCESS){
 			CLOG(ERROR, "Engine.Graphics.Pipeline") << "Failed to open " << path << ". Reason : " << document.ErrorStr();
 			throw std::runtime_error("Failed to open graphics pipline xml file");
 		}

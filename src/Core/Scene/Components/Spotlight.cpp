@@ -5,7 +5,8 @@ namespace Raindrop::Core::Scene::Components{
 	Spotlight::Spotlight(){
 		color = glm::vec3(1.f);
 		intensity = 1.f;
-		maxAngle = 1.f;
+		cutOff = 1.f;
+		outerCutOff = 1.3f;
 	}
 
 	void Spotlight::UI(EngineContext& context){
@@ -13,7 +14,17 @@ namespace Raindrop::Core::Scene::Components{
 		
 		if (ImGui::TreeNode("Spotlight")){
 			ImGui::DragFloat("intensity", &intensity);
-			ImGui::DragFloat("max angle", &maxAngle);
+
+			float degCutoff = glm::degrees(cutOff);
+			if (ImGui::DragFloat("cutOff", &degCutoff)){
+				cutOff = glm::radians(degCutoff);
+			}
+
+			float degOuterCutOff = glm::degrees(outerCutOff);
+			if (ImGui::DragFloat("outer cutOff", &outerCutOff)){
+				outerCutOff = glm::radians(degOuterCutOff);
+			}
+
 			ImGui::ColorPicker3("color", glm::value_ptr(color));
 
 			ImGui::TreePop();

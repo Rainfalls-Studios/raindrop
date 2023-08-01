@@ -23,7 +23,8 @@ namespace Raindrop::Graphics{
 		alignas(16) glm::vec3 color;
 		alignas(16) glm::vec3 position;
 		alignas(16) glm::vec3 direction;
-		float maxAngle;
+		float outerCutOff;
+		float cutOff;
 		float intensity;
 	};
 
@@ -596,7 +597,8 @@ namespace Raindrop::Graphics{
 			pushConstant.position = transform.translation;
 			pushConstant.color = light.color;
 			pushConstant.intensity = light.intensity;
-			pushConstant.maxAngle = light.maxAngle;
+			pushConstant.cutOff = light.cutOff;
+			pushConstant.outerCutOff = light.outerCutOff;
 
 			pushConstant.direction = glm::rotate(transform.rotation, glm::vec3(0.0f, 0.0f, -1.0f));
 			pushConstant.direction = glm::normalize(pushConstant.direction);

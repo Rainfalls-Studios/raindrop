@@ -28,54 +28,21 @@ namespace Raindrop::Core::Scene{
 			void* createComponent(EntityID entity, ComponentID component);
 			void destroyComponent(EntityID entity, ComponentID component);
 
-			template<typename T>
-			ComponentID getComponentID(){
-				return getComponentID(typeid(T).hash_code());
-			}
+			template<typename T> ComponentID getComponentID();
 
-			template<typename T>
-			ComponentID registerComponent(uint32_t maxCount){
-				return registerComponent(sizeof(T), typeid(T).hash_code(), maxCount, [](void* component){new (component) T();}, [](void* component){reinterpret_cast<T*>(component)->~T();});
-			}
-
-			template<typename T>
-			void unregisterComponent(){
-				unregisterComponent(getComponentID<T>());
-			}
-
-			template<typename T>
-			bool componentRegistred(){
-				return componentRegistred(getComponentID<T>());
-			}
-
-			template<typename T>
-			bool hasComponent(EntityID entity){
-				return hasComponent(entity, getComponentID<T>());
-			}
-
-			template<typename T>
-			T& getComponent(EntityID entity){
-				return *reinterpret_cast<T*>(getComponent(entity, getComponentID<T>()));
-			}
-
-			template<typename T>
-			T& createComponent(EntityID entity){
-				return *reinterpret_cast<T*>(createComponent(entity, getComponentID<T>()));
-			}
-
-			template<typename T>
-			void destroyComponent(EntityID entity){
-				destroyComponent(entity, getComponentID<T>());
-			}
+			template<typename T, typename... Args> ComponentID registerComponent(uint32_t maxCount, Args&&... args);
+			template<typename T> void unregisterComponent();
+			template<typename T> bool componentRegistred();
+			template<typename T> bool hasComponent(EntityID entity);
+			template<typename T> T& getComponent(EntityID entity);
+			template<typename T> T& createComponent(EntityID entity);
+			template<typename T> void destroyComponent(EntityID entity);
 
 			EntityID root() const;
 
 			std::list<EntityID>& componentEntities(ComponentID component);	
 
-			template<typename T>
-			std::list<EntityID>& componentEntities(){
-				return componentEntities(getComponentID<T>());
-			}
+			template<typename T> std::list<EntityID>& componentEntities();
 
 		private:
 			EngineContext& _context;
@@ -85,6 +52,8 @@ namespace Raindrop::Core::Scene{
 
 			EntityID _root;
 	};
+
+	#include <Raindrop/Core/Scene/Scene.tpp>
 }
 
 #endif

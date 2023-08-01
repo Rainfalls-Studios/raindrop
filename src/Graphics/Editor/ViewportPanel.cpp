@@ -5,7 +5,7 @@
 #include <ImGuizmo/ImGuizmo.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
-#include <Raindrop/Core/Scene/Components/Model.hpp>
+// #include <Raindrop/Core/Scene/Components/Model.hpp>
 #include <Raindrop/Graphics/Model.hpp>
 
 namespace Raindrop::Graphics::Editor{
@@ -72,28 +72,28 @@ namespace Raindrop::Graphics::Editor{
 				camera.translation += translation;
 			}
 
-			if (ImGui::BeginDragDropTarget()){
-				ImGui::GetWindowDrawList()->AddRectFilled(
-					ImVec2(_start.x, _start.y),
-					ImVec2(_start.x + _size.x, _start.y + _size.y),
-					ImGui::GetColorU32(ImGui::GetStyleColorVec4(ImGuiCol_ModalWindowDimBg))
-				);
+			// if (ImGui::BeginDragDropTarget()){
+			// 	ImGui::GetWindowDrawList()->AddRectFilled(
+			// 		ImVec2(_start.x, _start.y),
+			// 		ImVec2(_start.x + _size.x, _start.y + _size.y),
+			// 		ImGui::GetColorU32(ImGui::GetStyleColorVec4(ImGuiCol_ModalWindowDimBg))
+			// 	);
 
-				std::filesystem::path path;
-				const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(MODEL_PATH_TYPE);
+			// 	std::filesystem::path path;
+			// 	const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(MODEL_PATH_TYPE);
 				
-				if (payload){
-					path = static_cast<char*>(payload->Data);
+			// 	if (payload){
+			// 		path = static_cast<char*>(payload->Data);
 
-					try{
-						auto entity = Core::Scene::Entity(_context.scene->createEntity(), _context.scene);
-						auto& component = entity.createComponent<Core::Scene::Components::Model>();
-						component._model = _context.context.context.assetManager.loadOrGet<Model>(path);
-					} catch (const std::exception& e){}
-				}
+			// 		try{
+			// 			auto entity = Core::Scene::Entity(_context.scene->createEntity(), _context.scene);
+			// 			auto& component = entity.createComponent<Core::Scene::Components::Model>();
+			// 			component._model = _context.context.context.assetManager.loadOrGet<Model>(path);
+			// 		} catch (const std::exception& e){}
+			// 	}
 				
-				ImGui::EndDragDropTarget();
-			}
+			// 	ImGui::EndDragDropTarget();
+			// }
 		}
 		
 		guizmo();

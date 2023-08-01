@@ -16,6 +16,7 @@
 #include <Raindrop/Graphics/ForwardShader.hpp>
 #include <Raindrop/Graphics/builders/GraphicsPipelineBuilder.hpp>
 #include <Raindrop/Graphics/Shader.hpp>
+#include <Raindrop/Graphics/Components/Model.hpp>
 
 #include <SDL2/SDL_vulkan.h>
 
@@ -34,6 +35,8 @@ namespace Raindrop::Graphics{
 		_context = std::make_unique<GraphicsContext>(context, scene);
 		_gui = std::make_unique<ImGUI>(*_context);
 		registerFactories();
+
+		_context->scene.registerComponent<Components::Model>(1000, *_context);
 
 		#ifdef RAINDROP_EDITOR
 			_editor = std::make_unique<Editor::Editor>(*_context, &scene);

@@ -36,6 +36,8 @@ namespace Raindrop::Graphics{
 		GraphicsCommandPool graphicsCommandPool;
 		TransfertCommandPool transfertCommandPool;
 
+		VkDescriptorPool pool;
+
 		VkRenderPass sceneRenderPass;
 
 		uint32_t graphicsFamily;
@@ -45,6 +47,10 @@ namespace Raindrop::Graphics{
 		VkQueue graphicsQueue;
 		VkQueue transfertQueue;
 		VkQueue presentQueue;
+
+		private:
+			void createPool();
+			void destroyPool();
 	};
 }
 

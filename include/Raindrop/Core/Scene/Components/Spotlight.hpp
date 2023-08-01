@@ -11,7 +11,8 @@ namespace Raindrop::Core::Scene::Components{
 			virtual ~Spotlight() override = default;
 			
 			glm::vec3 color;
-			float maxAngle;
+			float outerCutOff;
+			float cutOff;
 			float intensity;
 
 			virtual void UI(EngineContext& context) override;

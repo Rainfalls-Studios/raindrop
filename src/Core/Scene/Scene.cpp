@@ -7,7 +7,6 @@
 
 #include <Raindrop/Core/Scene/Components/Camera.hpp>
 #include <Raindrop/Core/Scene/Components/Hierarchy.hpp>
-#include <Raindrop/Core/Scene/Components/Model.hpp>
 #include <Raindrop/Core/Scene/Components/Tag.hpp>
 #include <Raindrop/Core/Scene/Components/Transform.hpp>
 #include <Raindrop/Core/Scene/Components/LightPoint.hpp>
@@ -31,7 +30,6 @@ namespace Raindrop::Core::Scene{
 		registerComponent<Components::Transform>(entityCount);
 		registerComponent<Components::Hierarchy>(entityCount);
 		registerComponent<Components::Camera>(1);
-		registerComponent<Components::Model>(entityCount);
 		registerComponent<Components::LightPoint>(entityCount);
 		registerComponent<Components::Spotlight>(entityCount);
 		registerComponent<Components::Sun>(entityCount);

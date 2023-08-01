@@ -16,7 +16,7 @@
 #include <Raindrop/Core/Scene/Components/Hierarchy.hpp>
 #include <Raindrop/Core/Scene/Components/Tag.hpp>
 #include <Raindrop/Core/Scene/Components/Transform.hpp>
-#include <Raindrop/Core/Scene/Components/Model.hpp>
+#include <Raindrop/Graphics/Components/Model.hpp>
 
 namespace Raindrop::Graphics{
 	SceneRenderer::SceneRenderer(GraphicsContext& context) : _context{context}{
@@ -53,38 +53,21 @@ namespace Raindrop::Graphics{
 		p.viewTransform = viewTransform;
 		p.localTransform = translationMatrix * rotationMatrix * scaleMatrix;
 
-		if (entity.hasComponent<Core::Scene::Components::Model>()){
-			auto& model = entity.getComponent<Core::Scene::Components::Model>();
+		if (entity.hasComponent<Components::Model>()){
+			auto& model = entity.getComponent<Components::Model>();
 
-			// auto pipeline = model._pipeline.lock();
-			auto texture = model._texture.lock();
-			auto m = model._model.lock();
+			auto texture = model.texture();
+			auto m = model.model();
+			VkDescriptorSet descriptorSet = model.descriptorSet();
 
-			// std::cout << "aaaaaaaaa" << std::endl;
-
-			// if (texture && m){
 			if (m){
-				// std::cout << "bbbbbbbbbbbb" << std::endl;
-
-				// VkDescriptorImageInfo info = texture->info();
-
-				// VkWriteDescriptorSet write = {};
-				// write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-				// write.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-				// write.dstBinding = 0;
-				// write.pImageInfo = &info;
-				// write.descriptorCount = 1;
-				// write.dstSet = _descriptorSet;
-
-				// vkUpdateDescriptorSets(_context.device.get(), 1, &write, 0, nullptr);
-
 				vkCmdBindDescriptorSets(
 					commandBuffer,
 					VK_PIPELINE_BIND_POINT_GRAPHICS,
 					layout,
 					0,
 					1,
-					&_descriptorSet,
+					&descriptorSet,
 					0,
 					nullptr
 				);

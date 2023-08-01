@@ -10,8 +10,8 @@ namespace Raindrop::Core::Scene{
 	using ComponentHandleID = uint32_t;
 	using SceneID = uint32_t;
 	
-	using ConstructorPtr = void(*)(void*);
-	using DestructorPtr = void(*)(void*);
+	using ConstructorPtr = std::function<void(void*)>;
+	using DestructorPtr = std::function<void(void*)>;
 
 	static constexpr EntityID INVALID_ENTITY_ID = ~0;
 	static constexpr ComponentID INVALID_COMPONENT_ID = ~0;

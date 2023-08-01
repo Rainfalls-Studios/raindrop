@@ -32,7 +32,7 @@ namespace Raindrop::Graphics::GUI{
 		CLOG(INFO, "Engine.Graphics.GUI") << "Loading GUI... : " << path;
 		tinyxml2::XMLDocument document;
 
-		if (document.LoadFile(path.u8string().c_str()) != tinyxml2::XML_SUCCESS){
+		if (document.LoadFile(path.string().c_str()) != tinyxml2::XML_SUCCESS){
 			CLOG(ERROR, "Engine.Graphics.GUI") << "Failed to open " << path << ". Reason : " << document.ErrorStr();
 			throw std::runtime_error("failed to open xml file");
 		}
