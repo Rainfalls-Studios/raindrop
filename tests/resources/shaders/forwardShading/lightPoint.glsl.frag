@@ -20,7 +20,7 @@ layout (push_constant) uniform Push{
 
 float getRadialFalloff(in vec3 position){
 	vec3 directionToLight = light.position - position;
-	return 1.0 / dot(directionToLight, directionToLight);
+	return light.intensity / dot(directionToLight, directionToLight);
 }
 
 float getNormalFalloff(in vec3 position, in vec3 normal){
@@ -59,6 +59,5 @@ void main(){
 	float diff = getDiffuse(position, normal);
 
 	float coef = radialFalloff * normalFalloff * (spec + diff);
-	// float coef = (radialFalloff * normalFalloff);
 	outColor = vec4(albedo * light.color, 1.) * coef;
 }

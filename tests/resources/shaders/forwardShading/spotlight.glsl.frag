@@ -21,8 +21,8 @@ layout (push_constant) uniform Push{
 } light;
 
 float getRadialFalloff(in vec3 position){
-	float d = distance(position, light.position);
-	return light.intensity / pow(d, 2);
+	vec3 directionToLight = light.position - position;
+	return light.intensity / dot(directionToLight, directionToLight);
 }
 
 float getAngularFalloff(in vec3 position){
@@ -32,13 +32,18 @@ float getAngularFalloff(in vec3 position){
 
 float getNormalFalloff(in vec3 position, in vec3 normal){
 	vec3 directionToLight = light.position - position;
-	return clamp(dot(directionToLight, normal), 0., 1.);
+	return max(dot(normalize(normal), normalize(directionToLight)), 0.);
 }
 
 float getSpecular(in vec3 position, in vec3 normal){
 	vec3 viewDir = normalize(light.cameraPosition - position);
-	vec3 reflectDir = reflect(-light.direction, normal);  
-	return pow(max(dot(light.cameraDirection, reflectDir), 0.0), 32);
+	vec3 reflectDir = reflect(normalize(position - light.position), normal);  
+	return pow(max(dot(viewDir, reflectDir), 0.0), 32);
+}
+
+float getDiffuse(in vec3 position, in vec3 normal){
+	vec3 lightDir = normalize(light.position - position);  
+	return max(dot(normal, lightDir), 0.0);
 }
 
 void main(){
@@ -58,8 +63,8 @@ void main(){
 	float angularFalloff = getAngularFalloff(position);
 	float normalFalloff = getNormalFalloff(position, normal);
 	float spec = getSpecular(position, normal);
+	float diff = getDiffuse(position, normal);
 
-	// float coef = (radialFalloff * angularFalloff * normalFalloff) + spec;
-	float coef = (radialFalloff * angularFalloff * normalFalloff);
+	float coef = radialFalloff * angularFalloff * normalFalloff * (spec + diff);
 	outColor = vec4(albedo * light.color, 1.) * coef;
 }

@@ -18,14 +18,19 @@ layout (push_constant) uniform Push{
 } light;
 
 float getNormalFalloff(in vec3 position, in vec3 normal){
-	vec3 directionToLight = light.direction;
+	vec3 directionToLight = -light.direction;
 	return clamp(dot(directionToLight, normal), 0., 1.);
 }
 
 float getSpecular(in vec3 position, in vec3 normal){
 	vec3 viewDir = normalize(light.cameraPosition - position);
-	vec3 reflectDir = reflect(-light.direction, normal);  
-	return pow(max(dot(light.cameraDirection, reflectDir), 0.0), 32);
+	vec3 reflectDir = reflect(light.direction, normal);  
+	return pow(max(dot(viewDir, reflectDir), 0.0), 32);
+}
+
+float getDiffuse(in vec3 position, in vec3 normal){
+	vec3 directionToLight = -light.direction;
+	return max(dot(normal, directionToLight), 0.0);
 }
 
 void main(){
@@ -44,7 +49,8 @@ void main(){
 
 	float normalFalloff = getNormalFalloff(position, normal);
 	float spec = getSpecular(position, normal);
+	float diff = getDiffuse(position, normal);
 
-	float coef = (normalFalloff) + spec;
+	float coef = normalFalloff * (spec + diff);
 	outColor = vec4(albedo * light.color, 1.) * coef;
 }
