@@ -22,7 +22,18 @@ namespace std{
 }
 
 namespace Raindrop::Graphics::Builders{
-	ModelBuilder::ModelBuilder(const std::filesystem::path& path){
+	ModelBuilder::MeshData::MeshData() : 
+		dynamic{false}{
+	}
+
+	std::shared_ptr<Model> ModelBuilder::build(GraphicsContext& context){
+		return std::make_shared<Model>(context, *this);
+	}
+
+	ModelBuilder::ModelBuilder(){}
+	ModelBuilder::~ModelBuilder(){}
+
+	void ModelBuilder::loadFile(const std::filesystem::path& path){
 		tinyobj::attrib_t attrib;
 		std::vector<tinyobj::shape_t> shapes;
 		std::vector<tinyobj::material_t> materials;
@@ -33,12 +44,17 @@ namespace Raindrop::Graphics::Builders{
 			throw std::runtime_error(warn + err);
 		}
 
-		_vertices.clear();
-		_indices.clear();
+		_meshes.resize(shapes.size());
 
-		std::unordered_map<Vertex, uint32_t> uniqueVertices;
+		for (size_t i=0; i<shapes.size(); i++){
+			auto& shape = shapes[i];
+			auto& mesh = _meshes[i];
 
-		for (const auto &shape : shapes) {
+			auto& vertices = mesh.vertices;
+			auto& indices = mesh.indices;
+
+			std::unordered_map<Vertex, uint32_t> uniqueVertices;
+
 			for (const auto &index : shape.mesh.indices) {
 				Vertex vertex{};
 
@@ -72,32 +88,44 @@ namespace Raindrop::Graphics::Builders{
 				}
 
 				if (uniqueVertices.count(vertex) == 0){
-					uniqueVertices[vertex] = static_cast<uint32_t>(_vertices.size());
-					_vertices.push_back(vertex);
+					uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
+					vertices.push_back(vertex);
 				}
 
-				_indices.push_back(uniqueVertices[vertex]);
+				indices.push_back(uniqueVertices[vertex]);
 			}
 		}
 	}
 
-	std::shared_ptr<Model> ModelBuilder::build(GraphicsContext& context){
-		return std::make_shared<Model>(context, *this);
+	void ModelBuilder::setMeshCount(uint32_t count){
+		_meshes.resize(count);
 	}
 
-	ModelBuilder::ModelBuilder(){
-
-	}
-
-	ModelBuilder::~ModelBuilder(){
-
+	ModelBuilder::MeshData& ModelBuilder::data(uint32_t mesh){
+		return _meshes[mesh];
 	}
 	
-	std::vector<Vertex>& ModelBuilder::vertices(){
-		return _vertices;
+	std::vector<Vertex>& ModelBuilder::vertices(uint32_t mesh){
+		return _meshes[mesh].vertices;
 	}
 
-	std::vector<uint32_t>& ModelBuilder::indices(){
-		return _indices;
+	std::vector<uint32_t>& ModelBuilder::indices(uint32_t mesh){
+		return _meshes[mesh].indices;
+	}
+	
+	uint32_t ModelBuilder::meshCount() const{
+		return _meshes.size();
+	}
+
+	const ModelBuilder::MeshData& ModelBuilder::data(uint32_t mesh) const{
+		return _meshes[mesh];
+	}
+
+	const std::vector<Vertex>& ModelBuilder::vertices(uint32_t mesh) const{
+		return _meshes[mesh].vertices;
+	}
+
+	const std::vector<uint32_t>& ModelBuilder::indices(uint32_t mesh) const{
+		return _meshes[mesh].indices;
 	}
 }

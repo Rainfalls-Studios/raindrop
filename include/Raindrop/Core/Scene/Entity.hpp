@@ -32,111 +32,48 @@ namespace Raindrop::Core::Scene{
 					value_type _it;
 			};
 
-			Entity() : _id{INVALID_ENTITY_ID}, _scene{nullptr}{}
-			Entity(EntityID id, Scene* scene) : _id{id}, _scene{scene}{}
-			Entity(const Entity &other) : _id{other._id}, _scene{other._scene}{}
-			~Entity() = default;
+			Entity();
+			Entity(EntityID id, Scene* scene);
+			Entity(const Entity &other);
+			~Entity();
 
-			bool hasComponent(ComponentID component){
-				return _scene->hasComponent(_id, component);
-			}
+			bool hasComponent(ComponentID component);
+			void* getComponent(ComponentID component);
+			void* createComponent(ComponentID component);
+			void destroyComponent(ComponentID component);
 
-			void* getComponent(ComponentID component){
-				return _scene->getComponent(_id, component);
-			}
+			template<typename T> bool hasComponent();
+			template<typename T> T& getComponent();
+			template<typename T> T& createComponent();
+			template<typename T> void destroyComponent();
 
-			void* createComponent(ComponentID component){
-				return _scene->createComponent(_id, component);
-			}
+			void reset();
 
-			void destroyComponent(ComponentID component){
-				_scene->destroyComponent(_id, component);
-			}
+			Components::Transform& transform();
+			Components::Tag& tag();
+			Components::Hierarchy& hierarchy();
 
-			template<typename T>
-			bool hasComponent(){
-				return _scene->hasComponent<T>(_id);
-			}
+			Iterator begin();
+			Iterator end();
 
-			template<typename T>
-			T& getComponent(){
-				return _scene->getComponent<T>(_id);
-			}
+			EntityID id() const;
+			Scene* scene() const;
+			Entity createChild();
 
-			template<typename T>
-			T& createComponent(){
-				return _scene->createComponent<T>(_id);
-			}
+			operator EntityID() const;
+			operator bool() const;
 
-			template<typename T>
-			void destroyComponent(){
-				_scene->destroyComponent<T>(_id);
-			}
-
-			operator EntityID() const{
-				return _id;
-			}
-
-			Components::Transform& transform(){
-				return getComponent<Components::Transform>();
-			}
-
-			Components::Tag& tag(){
-				return getComponent<Components::Tag>();
-			}
-
-			Components::Hierarchy& hierarchy(){
-				return getComponent<Components::Hierarchy>();
-			}
-
-			Iterator begin(){
-				auto &a = hierarchy();
-				return Iterator(a.childs.begin(), _scene);
-			}
-
-			Iterator end(){
-				return Iterator(hierarchy().childs.end(), _scene);
-			}
-
-			EntityID id() const{
-				return _id;
-			}
-
-			Scene* scene() const{
-				return _scene;
-			}
-
-			Entity createChild(){
-				Entity child = Entity(_scene->createEntity(), _scene);
-				hierarchy().childs.push_back(child);
-				child.hierarchy().parent = _id;
-				return child;
-			}
-
-			operator bool() const{
-				return _id == INVALID_ENTITY_ID || _scene == nullptr;
-			}
-
-			bool operator==(const EntityID& other) const{
-				return _id == other;
-			}
-
-			bool operator==(const Entity& other) const{
-				return _id == other._id && _scene == other._scene;
-			}
-
-			bool operator!=(const Entity& other) const{
-				return !(*this == other);
-			}
-
-			bool operator!=(const EntityID& other) const{
-				return !(*this == other);
-			}
+			bool operator==(const EntityID& other) const;
+			bool operator==(const Entity& other) const;
+			bool operator!=(const Entity& other) const;
+			bool operator!=(const EntityID& other) const;
 
 		private:
 			EntityID _id;
 			Scene* _scene;
 	};
+
+	#include <Raindrop/Core/Scene/Entity.tpp>
 }
 
 #endif

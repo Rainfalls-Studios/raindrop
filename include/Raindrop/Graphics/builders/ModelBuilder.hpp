@@ -6,20 +6,34 @@
 namespace Raindrop::Graphics::Builders{
 	class ModelBuilder{
 		public:
-			ModelBuilder(const std::filesystem::path& path);
-			ModelBuilder();
+			struct MeshData{
+				std::vector<Vertex> vertices;
+				std::vector<uint32_t> indices;
+				bool dynamic;
 
+				MeshData();
+			};
+
+			ModelBuilder();
 			~ModelBuilder();
 
-			std::vector<Vertex>& vertices();
-			std::vector<uint32_t>& indices();
+			void loadFile(const std::filesystem::path& path);
+
+			void setMeshCount(uint32_t count);
+
+			MeshData& data(uint32_t mesh);
+			std::vector<Vertex>& vertices(uint32_t mesh);
+			std::vector<uint32_t>& indices(uint32_t mesh);
 			
 			std::shared_ptr<Model> build(GraphicsContext& context);
 
+			uint32_t meshCount() const;
+			const MeshData& data(uint32_t mesh) const;
+			const std::vector<Vertex>& vertices(uint32_t mesh) const;
+			const std::vector<uint32_t>& indices(uint32_t mesh) const;
+
 		private:
-		
-			std::vector<Vertex> _vertices;
-			std::vector<uint32_t> _indices;
+			std::vector<MeshData> _meshes;
 	};
 }
 

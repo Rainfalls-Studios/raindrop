@@ -8,6 +8,7 @@
 #include <Raindrop/Graphics/Texture.hpp>
 #include <Raindrop/Graphics/GraphicsPipeline.hpp>
 #include <Raindrop/Graphics/Model.hpp>
+#include <Raindrop/Graphics/FrameState.hpp>
 
 #include <glm/gtx/euler_angles.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -53,6 +54,9 @@ namespace Raindrop::Graphics{
 		p.viewTransform = viewTransform;
 		p.localTransform = translationMatrix * rotationMatrix * scaleMatrix;
 
+		FrameState frameState;
+		frameState.commandBuffer = commandBuffer;
+
 		if (entity.hasComponent<Components::Model>()){
 			auto& model = entity.getComponent<Components::Model>();
 
@@ -73,7 +77,7 @@ namespace Raindrop::Graphics{
 				);
 
 				vkCmdPushConstants(commandBuffer, layout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstant), &p);
-				m->draw(commandBuffer);
+				m->draw(frameState);
 			}
 		}
 

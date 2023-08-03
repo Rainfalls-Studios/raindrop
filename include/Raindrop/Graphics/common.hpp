@@ -42,6 +42,7 @@ namespace Raindrop::Graphics{
 	class Texture;
 	class ForwardShader;
 	class SceneRenderer;
+	class FrameState;
 
 	struct Vertex{
 		glm::vec3 position{};

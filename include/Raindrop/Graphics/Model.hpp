@@ -3,25 +3,20 @@
 
 #include <Raindrop/Graphics/common.hpp>
 #include <Raindrop/Graphics/builders/ModelBuilder.hpp>
+#include <Raindrop/Graphics/Mesh/common.hpp>
 
 namespace Raindrop::Graphics{
 	class Model : public Core::Asset::Asset{
 		public:
-			Model(GraphicsContext& context, Builders::ModelBuilder& builder);
+			Model(GraphicsContext& context, const Builders::ModelBuilder& builder);
 			~Model();
 
-			void draw(VkCommandBuffer commandBuffer);
+			void draw(const FrameState& frameState, VkBuffer* additionalVertexBuffers = nullptr, uint32_t vertexBufferCount = 0);
 
 		public:
 			GraphicsContext& _context;
-			std::unique_ptr<Buffer> _vertexBuffer;
-			std::unique_ptr<Buffer> _indexBuffer;
 
-			uint32_t _indexCount = 0;
-			uint32_t _vertexCount = 0;
-
-			void createVertexBuffer(Builders::ModelBuilder& builder);
-			void createIndexBuffer(Builders::ModelBuilder& builder);
+			std::vector<std::unique_ptr<Mesh::Mesh>> _meshes;
 	};
 }
 

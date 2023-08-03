@@ -18,7 +18,7 @@ namespace Raindrop::Graphics{
 		free();
 	}
 
-	void Buffer::allocate(VkDeviceSize instanceSize, uint32_t instanceCount, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceSize minOffsetAlignment){
+	void Buffer::allocateInstances(VkDeviceSize instanceSize, uint32_t instanceCount, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceSize minOffsetAlignment){
 		free();
 		
 		_instanceSize = instanceSize;
@@ -53,7 +53,7 @@ namespace Raindrop::Graphics{
 
 	void Buffer::allocate(VkDeviceSize size, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceSize minOffsetAlignment){
 		_alignmentSize = getAlignment(_instanceSize, minOffsetAlignment);
-		allocate(size, 1, usageFlags, memoryPropertyFlags, minOffsetAlignment);
+		allocateInstances(size, 1, usageFlags, memoryPropertyFlags, minOffsetAlignment);
 	}
 
 	void Buffer::free(){
@@ -120,15 +120,23 @@ namespace Raindrop::Graphics{
 		return invalidate(_alignmentSize, index * _alignmentSize);
 	}
 
-	VkBuffer Buffer::get(){
+	VkBuffer Buffer::get() const{
 		return _buffer;
 	}
 
-	VkDeviceMemory Buffer::memory(){
+	VkDeviceMemory Buffer::memory() const{
 		return _memory;
 	}
 
 	void* Buffer::mapped(){
 		return _mapped;
+	}
+	
+	uint32_t Buffer::instanceCount() const{
+		return _instanceCount;
+	}
+
+	uint32_t Buffer::instanceSize() const{
+		return _instanceSize;
 	}
 }

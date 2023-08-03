@@ -12,7 +12,7 @@ namespace Raindrop::Graphics{
 			Buffer(const Buffer&) = delete;
 			Buffer& operator=(const Buffer&) = delete;
 
-			void allocate(VkDeviceSize instanceSize, uint32_t instanceCount, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceSize minOffsetAlignment = 1);
+			void allocateInstances(VkDeviceSize instanceSize, uint32_t instanceCount, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceSize minOffsetAlignment = 1);
 			void allocate(VkDeviceSize size, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceSize minOffsetAlignment = 1);
 
 			void free();
@@ -30,9 +30,12 @@ namespace Raindrop::Graphics{
 			VkDescriptorBufferInfo descriptorInfoForIndex(int index);
 			VkResult invalidateIndex(int index);
 
-			VkBuffer get();
-			VkDeviceMemory memory();
+			VkBuffer get() const;
+			VkDeviceMemory memory() const;
 			void* mapped();
+
+			uint32_t instanceCount() const;
+			uint32_t instanceSize() const;
 
 		private:
 			GraphicsContext& _context;

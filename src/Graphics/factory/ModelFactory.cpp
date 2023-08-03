@@ -13,7 +13,8 @@ namespace Raindrop::Graphics::Factory{
 	}
 
 	std::shared_ptr<Core::Asset::Asset> ModelFactory::createAsset(const std::filesystem::path& path){
-		Builders::ModelBuilder builder(path);
+		Builders::ModelBuilder builder;
+		builder.loadFile(path);
 		std::shared_ptr<Model> model = builder.build(_context);
 
 		_models.push_back(model);
