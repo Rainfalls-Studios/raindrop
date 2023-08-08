@@ -18,6 +18,8 @@ namespace Raindrop::Graphics::Components{
 			CLOG(ERROR, "Engine.Graphics") << "Failed to allocate model descritor set";
 			throw std::runtime_error("Failed to allocate model descritor set");
 		}
+
+		updateTexture({});
 	}
 
 	Model::~Model(){
@@ -37,7 +39,7 @@ namespace Raindrop::Graphics::Components{
 		if (auto lock = texture.lock()){
 			imageInfo = lock->info();
 		} else {
-			
+			imageInfo = _context.whiteTexture().info();
 		}
 
 		VkWriteDescriptorSet write = {};

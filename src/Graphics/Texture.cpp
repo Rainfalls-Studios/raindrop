@@ -17,6 +17,18 @@ namespace Raindrop::Graphics{
 		CLOG(INFO, "Engine.Graphics.Texture") << "Texture loaded with success !";
 	}
 
+	Texture::Texture(GraphicsContext& context, void* data, uint32_t width, uint32_t height, int channels) : _context{context}{
+		el::Logger* customLogger = el::Loggers::getLogger("Engine.Graphics.Texture");
+		customLogger->configurations()->set(el::Level::Global, el::ConfigurationType::Format, "%datetime %level [%logger]: %msg");
+
+		CLOG(INFO, "Engine.Graphics.Texture") << "Creating texture from custom data ...";
+		createImageFromPtr(data, width, height, channels);
+		createImageView();
+		createSampler();
+		CLOG(INFO, "Engine.Graphics.Texture") << "Texture loaded with success !";
+
+	}
+
 	Texture::~Texture(){
 		CLOG(INFO, "Engine.Graphics.Texture") << "Destroying texture...";
 		if (_image) vkDestroyImage(_context.device.get(), _image, _context.allocationCallbacks);
@@ -31,31 +43,42 @@ namespace Raindrop::Graphics{
 		int texWidth, texHeight, texChannels;
 
 		stbi_uc *pixels = stbi_load(filepath.string().c_str(), &texWidth, &texHeight, &texChannels, 4);
-		VkDeviceSize imageSize = texWidth * texHeight * 4;
 
 		if (!pixels){
 			CLOG(ERROR, "Engine.Graphics.Texture") << "Failed to load " << filepath << " reason : " << stbi_failure_reason();
 			throw std::runtime_error("failed to load a texture");
 		}
 
-		_width = static_cast<uint32_t>(texWidth);
-		_height = static_cast<uint32_t>(texHeight);
+		createImageFromPtr(
+			pixels,
+			static_cast<uint32_t>(texWidth),
+			static_cast<uint32_t>(texHeight),
+			4
+		);
+		
+		stbi_image_free(pixels);
+	}
+
+	void Texture::createImageFromPtr(void* data, uint32_t width, uint32_t height, int channels){
+		
+		_width = width;
+		_height = height;
+		VkDeviceSize imageSize = width * height * channels;
 
 		Buffer stagingBuffer(_context);
 		stagingBuffer.allocate(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
 
 		stagingBuffer.map();
-		stagingBuffer.writeToBuffer((void *)pixels);
+		stagingBuffer.writeToBuffer((void *)data);
 		stagingBuffer.flush();
 		stagingBuffer.unmap();
 
-		stbi_image_free(pixels);
 
 		VkImageCreateInfo imageInfo{};
 		imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 		imageInfo.imageType = VK_IMAGE_TYPE_2D;
-		imageInfo.extent.width = static_cast<uint32_t>(texWidth);
-		imageInfo.extent.height = static_cast<uint32_t>(texHeight);
+		imageInfo.extent.width = width;
+		imageInfo.extent.height = height;
 		imageInfo.extent.depth = 1;
 		imageInfo.mipLevels = 1;
 		imageInfo.arrayLayers = 1;

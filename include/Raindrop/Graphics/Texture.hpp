@@ -8,12 +8,14 @@ namespace Raindrop::Graphics{
 	class Texture : public Core::Asset::Asset{
 		public:
 			Texture(GraphicsContext& context, const std::filesystem::path &path);
+			Texture(GraphicsContext& context, void* data, uint32_t width, uint32_t height, int channels = 4);
 			virtual ~Texture();
 
 			VkDescriptorImageInfo info() const; 
 
 		protected:
 			void createImage(const std::filesystem::path &filepath);
+			void createImageFromPtr(void* data, uint32_t width, uint32_t height, int channels);
 			void createImageView();
 			void createSampler();
 

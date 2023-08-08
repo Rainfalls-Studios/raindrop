@@ -40,7 +40,6 @@ namespace Raindrop::Graphics{
 	class DescriptorPool;
 	class DescriptorSetLayout;
 	class Texture;
-	class ForwardShader;
 	class SceneRenderer;
 	class FrameState;
 

@@ -4,10 +4,10 @@
 #include <Raindrop/Graphics/Editor/Icon.hpp>
 
 #include <Raindrop/Graphics/Components/Model.hpp>
+#include <Raindrop/Graphics/Components/Sun.hpp>
 #include <Raindrop/Core/Scene/Components/Camera.hpp>
 #include <Raindrop/Core/Scene/Components/Spotlight.hpp>
 #include <Raindrop/Core/Scene/Components/LightPoint.hpp>
-#include <Raindrop/Core/Scene/Components/Sun.hpp>
 
 namespace Raindrop::Graphics::Editor{
 	SceneHierarchyPanel::SceneHierarchyPanel(EditorContext& context) : _context{context}{}
@@ -313,6 +313,6 @@ namespace Raindrop::Graphics::Editor{
 
 	void SceneHierarchyPanel::addSun(Core::Scene::Scene* scene){
 		auto entity = createEntity(scene);
-		entity.createComponent<Core::Scene::Components::Sun>();
+		entity.createComponent<Components::Sun>();
 	}
 }

@@ -13,10 +13,13 @@
 #include <Raindrop/Graphics/builders/DescriptorSetLayoutBuilder.hpp>
 #include <Raindrop/Graphics/SceneRenderer.hpp>
 #include <Raindrop/Core/Scene/Entity.hpp>
-#include <Raindrop/Graphics/ForwardShader.hpp>
+#include <Raindrop/Graphics/ForwardShader/ForwardShader.hpp>
 #include <Raindrop/Graphics/builders/GraphicsPipelineBuilder.hpp>
 #include <Raindrop/Graphics/Shader.hpp>
+
+#include <Raindrop/Graphics/Components/Sun.hpp>
 #include <Raindrop/Graphics/Components/Model.hpp>
+#include <Raindrop/Graphics/ShadowMap/Sun/ShadowMap.hpp>
 
 #include <SDL2/SDL_vulkan.h>
 
@@ -37,6 +40,7 @@ namespace Raindrop::Graphics{
 		registerFactories();
 
 		_context->scene.registerComponent<Components::Model>(1000, *_context);
+		_context->scene.registerComponent<Components::Sun>(1000, *_context);
 
 		#ifdef RAINDROP_EDITOR
 			_editor = std::make_unique<Editor::Editor>(*_context, &scene);
@@ -49,7 +53,7 @@ namespace Raindrop::Graphics{
 
 		_worldFramebuffer = std::make_unique<WorldFramebuffer>(*_context, 1080, 720);
 		_sceneRenderer = std::make_unique<SceneRenderer>(*_context);
-		_forwardShader = std::make_unique<ForwardShader>(*_context, 1080, 720);
+		_forwardShader = std::make_unique<ForwardShader::ForwardShader>(*_context);
 
 		createDescriptorPool();
 		createSetLayout();
@@ -75,6 +79,9 @@ namespace Raindrop::Graphics{
 		#ifdef RAINDROP_EDITOR
 			_editor.reset();
 		#endif
+		
+		_context->scene.unregisterComponent<Components::Model>();
+		_context->scene.unregisterComponent<Components::Sun>();
 		
 		_forwardShader.reset();
 		_setLayout.reset();
@@ -131,7 +138,7 @@ namespace Raindrop::Graphics{
 		}
 
 		VkWriteDescriptorSet write = {};
-		VkDescriptorImageInfo imageInfo = _forwardShader->getAttachmentInfo();
+		VkDescriptorImageInfo imageInfo = _forwardShader->attachmentInfo();
 
 		write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 		write.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;

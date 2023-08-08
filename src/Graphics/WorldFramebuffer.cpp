@@ -573,7 +573,6 @@ namespace Raindrop::Graphics{
 				}
 			}
 
-
 			if (bestCase == VK_FORMAT_UNDEFINED){
 				CLOG(ERROR, "Engine.Graphics.WorldFramebuffer") << "failed to find a format for world framebuffer attachment";
 				throw std::runtime_error("failed to find a format for world framebuffer attachment");

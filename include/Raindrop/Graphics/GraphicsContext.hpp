@@ -10,8 +10,36 @@
 #include <Raindrop/Graphics/GraphicsCommandPool.hpp>
 #include <Raindrop/Graphics/GraphicsRegistry.hpp>
 
+#include <Raindrop/Graphics/ShadowMap/Sun/RenderPass.hpp>
+#include <Raindrop/Graphics/ForwardShader/RenderPass.hpp>
+
 namespace Raindrop::Graphics{
+
+	struct DescriptorLayouts{
+		VkDescriptorSetLayout sunShadowMapLayout;
+		VkDescriptorSetLayout lightPointShadowMapLayout;
+		VkDescriptorSetLayout spotlightShadowMapLayout;
+
+		DescriptorLayouts(GraphicsContext& context);
+		~DescriptorLayouts();
+
+		private:
+			GraphicsContext& _context;
+
+			void createLightsLayouts();
+			void destroyLightsLayouts();
+	};
+
+	struct RenderPasses{
+		RenderPasses(GraphicsContext& context);
+		~RenderPasses();
+
+		ShadowMap::Sun::RenderPass sun;
+		ForwardShader::RenderPass forwardShader;
+	};
+
 	struct GraphicsContext{
+
 		GraphicsContext(Core::EngineContext& context, Core::Scene::Scene& scene);
 		~GraphicsContext();
 
@@ -48,9 +76,17 @@ namespace Raindrop::Graphics{
 		VkQueue transfertQueue;
 		VkQueue presentQueue;
 
+		DescriptorLayouts layouts;
+		RenderPasses renderPasses;
+
+		const Texture& whiteTexture() const; 
+
 		private:
 			void createPool();
 			void destroyPool();
+			void createWhiteTexture();
+
+			std::unique_ptr<Texture> _whiteTexture;
 	};
 }
 

@@ -8,6 +8,7 @@
 #include <Raindrop/Graphics/factory/TextureFactory.hpp>
 #include <Raindrop/Graphics/GUI/Interpreter.hpp>
 #include <Raindrop/Graphics/GraphicsContext.hpp>
+#include <Raindrop/Graphics/ForwardShader/common.hpp>
 
 #ifdef RAINDROP_EDITOR
 	#include <Raindrop/Graphics/Editor/common.hpp>
@@ -37,7 +38,7 @@ namespace Raindrop::Graphics{
 
 			std::unique_ptr<WorldFramebuffer> _worldFramebuffer;
 			std::unique_ptr<SceneRenderer> _sceneRenderer;
-			std::unique_ptr<ForwardShader> _forwardShader;
+			std::unique_ptr<ForwardShader::ForwardShader> _forwardShader;
 
 			std::shared_ptr<GraphicsPipeline> _pipeline;
 			std::shared_ptr<DescriptorPool> _descriptorPool;
@@ -68,7 +69,6 @@ namespace Raindrop::Graphics{
 			void createSetLayout();
 			void createPipeline();
 			void createDescriptorSet();
-
 
 			#ifdef RAINDROP_EDITOR
 				std::unique_ptr<Editor::Editor> _editor;
