@@ -18,6 +18,7 @@ layout (push_constant) uniform Push{
 	vec3 cameraDirection;
 	vec3 color;
 	vec3 direction;
+	float intensity;
 } light;
 
 float getNormalFalloff(in vec3 position, in vec3 normal){
@@ -55,5 +56,5 @@ void main(){
 	float diff = getDiffuse(position, normal);
 
 	float coef = normalFalloff * (spec + diff);
-	outColor = vec4(albedo * light.color, 1.) * coef;
+	outColor = vec4(albedo * light.color, 1.) * coef * light.intensity;
 }

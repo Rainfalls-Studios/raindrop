@@ -9,6 +9,7 @@ namespace Raindrop::Graphics::ForwardShader::PushConstants{
 		alignas(16) glm::vec3 cameraDirection;
 		alignas(16) glm::vec3 color;
 		alignas(16) glm::vec3 direction;
+		float intensity;
 	};
 }
 

@@ -12,6 +12,7 @@ namespace Raindrop::Graphics::Components{
 			
 			bool hasShadowMap() const;
 			const glm::vec3 color() const;
+			float intensity() const;
 			
 			const ShadowMap::Sun::ShadowMap& shadowMap() const;
 			VkDescriptorSet descriptorSet() const;
@@ -20,6 +21,7 @@ namespace Raindrop::Graphics::Components{
 		
 		private:
 			GraphicsContext& _context;
+			float _intensity;
 			glm::vec3 _color;
 			std::unique_ptr<ShadowMap::Sun::ShadowMap> _shadowMap;
 			VkDescriptorSet _descriptorSet;

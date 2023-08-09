@@ -1,13 +1,13 @@
-#include <Raindrop/Core/Scene/Components/LightPoint.hpp>
+#include <Raindrop/Graphics/Components/LightPoint.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-namespace Raindrop::Core::Scene::Components{
+namespace Raindrop::Graphics::Components{
 	LightPoint::LightPoint(){
 		color = glm::vec3(1.f);
 		intensity = 1.f;
 	}
 
-	void LightPoint::UI(EngineContext& context){
+	void LightPoint::UI(Core::EngineContext& context){
 		ImGui::PushID(this);
 		
 		if (ImGui::TreeNode("Light point")){

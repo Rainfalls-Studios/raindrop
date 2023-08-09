@@ -8,6 +8,7 @@ namespace Raindrop::Graphics::Components{
 		_color = glm::vec3(1.f);
 		_shadowMap = nullptr;
 		_descriptorSet = VK_NULL_HANDLE;
+		_intensity = 0.f;
 	}
 
 	Sun::~Sun(){
@@ -30,6 +31,7 @@ namespace Raindrop::Graphics::Components{
 		ImGui::PushID(this);
 		
 		if (ImGui::TreeNode("Sun")){
+			ImGui::DragFloat("intensity", &_intensity);
 			ImGui::ColorPicker3("color", glm::value_ptr(_color));
 			
 			bool hasShadow = hasShadowMap();
@@ -94,5 +96,9 @@ namespace Raindrop::Graphics::Components{
 
 	VkDescriptorSet Sun::descriptorSet() const{
 		return _descriptorSet;
+	}
+
+	float Sun::intensity() const{
+		return _intensity;
 	}
 }

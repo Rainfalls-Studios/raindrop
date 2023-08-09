@@ -16,29 +16,37 @@ layout (push_constant) uniform Push{
 	vec3 color;
 	vec3 position;
 	vec3 direction;
-	float maxAngle;
+	float outerCutoff;
+	float innerCutoff;
 	float intensity;
 } light;
 
 float getRadialFalloff(in vec3 position){
-	float d = distance(position, light.position);
-	return light.intensity / pow(d, 2);
+	vec3 directionToLight = light.position - position;
+	return light.intensity / dot(directionToLight, directionToLight);
 }
 
 float getAngularFalloff(in vec3 position){
-	float product = dot(light.direction, light.position - position);
-	return smoothstep(0., light.maxAngle, product);
+	vec3 lightVector = normalize(light.position - position);
+	float cosTheta = dot(light.direction, -lightVector);
+	float theta = acos(cosTheta);
+	return smoothstep(light.outerCutoff, light.innerCutoff, theta);
 }
 
 float getNormalFalloff(in vec3 position, in vec3 normal){
 	vec3 directionToLight = light.position - position;
-	return clamp(dot(directionToLight, normal), 0., 1.);
+	return max(dot(normalize(normal), normalize(directionToLight)), 0.);
 }
 
 float getSpecular(in vec3 position, in vec3 normal){
 	vec3 viewDir = normalize(light.cameraPosition - position);
-	vec3 reflectDir = reflect(-light.direction, normal);  
-	return pow(max(dot(light.cameraDirection, reflectDir), 0.0), 32);
+	vec3 reflectDir = reflect(normalize(position - light.position), normal);  
+	return pow(max(dot(viewDir, reflectDir), 0.0), 32);
+}
+
+float getDiffuse(in vec3 position, in vec3 normal){
+	vec3 lightDir = normalize(light.position - position);  
+	return max(dot(normal, lightDir), 0.0);
 }
 
 void main(){
@@ -59,7 +67,8 @@ void main(){
 	float angularFalloff = getAngularFalloff(position);
 	float normalFalloff = getNormalFalloff(position, normal);
 	float spec = getSpecular(position, normal);
+	float diff = getDiffuse(position, normal);
 
-	float coef = (radialFalloff * angularFalloff * normalFalloff) + spec;
-	outColor = vec4(albedo, 1.) * coef;
+	float coef = radialFalloff * normalFalloff * angularFalloff * (spec + diff);
+	outColor = vec4(albedo * light.color, 1.) * coef;
 }

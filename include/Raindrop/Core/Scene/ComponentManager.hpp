@@ -29,6 +29,7 @@ namespace Raindrop::Core::Scene{
 			std::vector<char> _components;
 			std::queue<ComponentHandleID> _IDsPool;
 			std::list<EntityID> _entities;
+			std::list<ComponentHandleID> _usedHandles;
 			
 			ConstructorPtr _constructor;
 			DestructorPtr _destructor;

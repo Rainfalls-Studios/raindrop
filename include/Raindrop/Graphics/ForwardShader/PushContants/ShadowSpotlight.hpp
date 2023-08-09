@@ -6,11 +6,11 @@
 namespace Raindrop::Graphics::ForwardShader::PushConstants{
 	struct ShadowSpotlight{
 		glm::mat4 lightMatrix;
-		alignas(16) glm::vec3 cameraPosition;
-		alignas(16) glm::vec3 cameraDirection;
-		alignas(16) glm::vec3 color;
-		alignas(16) glm::vec3 position;
-		alignas(16) glm::vec3 direction;
+		glm::vec3 cameraPosition;
+		glm::vec3 cameraDirection;
+		glm::vec3 position;
+		glm::vec3 direction;
+		uint32_t color;
 		float outerCutOff;
 		float cutOff;
 		float intensity;

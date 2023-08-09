@@ -9,6 +9,8 @@ namespace Raindrop::Graphics::Components{
 	using Core::Scene::Component;
 	class Model;
 	class Sun;
+	class LightPoint;
+	class Spotlight;
 }
 
 #endif

@@ -6,8 +6,8 @@
 #include <Raindrop/Graphics/GraphicsPipeline.hpp>
 
 #include <Raindrop/Graphics/Components/Sun.hpp>
-#include <Raindrop/Core/Scene/Components/LightPoint.hpp>
-#include <Raindrop/Core/Scene/Components/Spotlight.hpp>
+#include <Raindrop/Graphics/Components/LightPoint.hpp>
+#include <Raindrop/Graphics/Components/Spotlight.hpp>
 #include <Raindrop/Core/Scene/Components/Transform.hpp>
 
 #include <Raindrop/Graphics/ForwardShader/PushContants/LightPoint.hpp>
@@ -52,7 +52,7 @@ namespace Raindrop::Graphics::ForwardShader{
 	}
 
 	void ForwardShader::renderLightPoints(VkCommandBuffer commandBuffer, const glm::vec3& cameraPosition, const glm::vec3& cameraDirection){
-		auto lights = _context.scene.componentEntities<Core::Scene::Components::LightPoint>();
+		auto lights = _context.scene.componentEntities<Components::LightPoint>();
 		if (lights.empty()) return;
 
 		auto& pipeline = _pipelines->lightPoint.pipeline();
@@ -78,7 +78,7 @@ namespace Raindrop::Graphics::ForwardShader{
 
 		for (const auto& l : lights){
 			auto& transform = _context.scene.getComponent<Core::Scene::Components::Transform>(l);
-			auto& light = _context.scene.getComponent<Core::Scene::Components::LightPoint>(l);
+			auto& light = _context.scene.getComponent<Components::LightPoint>(l);
 
 			p.position = transform.translation;
 			p.color = light.color;
@@ -98,7 +98,7 @@ namespace Raindrop::Graphics::ForwardShader{
 	}
 
 	void ForwardShader::renderSpotlights(VkCommandBuffer commandBuffer, const glm::vec3& cameraPosition, const glm::vec3& cameraDirection){
-		auto lights = _context.scene.componentEntities<Core::Scene::Components::Spotlight>();
+		auto lights = _context.scene.componentEntities<Components::Spotlight>();
 		if (lights.empty()) return;
 
 		auto& pipeline = _pipelines->spotlight.pipeline();
@@ -124,13 +124,16 @@ namespace Raindrop::Graphics::ForwardShader{
 
 		for (const auto& l : lights){
 			auto& transform = _context.scene.getComponent<Core::Scene::Components::Transform>(l);
-			auto& light = _context.scene.getComponent<Core::Scene::Components::Spotlight>(l);
+			auto& light = _context.scene.getComponent<Components::Spotlight>(l);
 
 			p.position = transform.translation;
 			p.color = light.color;
 			p.intensity = light.intensity;
 			p.cutOff = light.cutOff;
 			p.outerCutOff = light.outerCutOff;
+			
+			p.direction = glm::rotate(transform.rotation, glm::vec3(0.0f, 0.0f, -1.0f));
+			p.direction = glm::normalize(p.direction);
 
 			vkCmdPushConstants(
 				commandBuffer,
@@ -177,6 +180,7 @@ namespace Raindrop::Graphics::ForwardShader{
 			p.color = light.color();
 			p.direction = glm::rotate(transform.rotation, glm::vec3(0.0f, 0.0f, -1.0f));
 			p.direction = glm::normalize(p.direction);
+			p.intensity = light.intensity();
 
 			vkCmdPushConstants(
 				commandBuffer,

@@ -36,6 +36,8 @@ namespace Raindrop::Core::Scene{
 	}
 
 	void ComponentRegistry::unregisterComponent(ComponentID id){
+		
+
 		_managers[id].reset();
 		_typeIDtoComponentID.erase(id);
 		_IDsPool.push(id);

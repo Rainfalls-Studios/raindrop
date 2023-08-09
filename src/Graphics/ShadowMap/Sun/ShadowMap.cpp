@@ -5,10 +5,6 @@ namespace Raindrop::Graphics::ShadowMap::Sun{
 	struct AttachmentInfo{
 		VkImageViewCreateInfo imageView;
 		VkImageCreateInfo image;
-
-		// if none of the formats are available, throw an exception
-		std::vector<VkFormat> formats; // ordered from best to worst case
-		VkFormatFeatureFlags requiredFeatures;
 		VkClearValue clear;
 	};
 
@@ -19,7 +15,7 @@ namespace Raindrop::Graphics::ShadowMap::Sun{
 			.flags = 0,
 			.image = VK_NULL_HANDLE, // Set afterward
 			.viewType = VK_IMAGE_VIEW_TYPE_2D,
-			.format = VK_FORMAT_UNDEFINED,
+			.format = VK_FORMAT_D32_SFLOAT,
 			.components = VkComponentMapping{},
 			.subresourceRange = VkImageSubresourceRange{
 				.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
@@ -35,7 +31,7 @@ namespace Raindrop::Graphics::ShadowMap::Sun{
 			.pNext = nullptr,
 			.flags = 0,
 			.imageType = VK_IMAGE_TYPE_2D,
-			.format = VK_FORMAT_UNDEFINED,
+			.format = VK_FORMAT_D32_SFLOAT,
 			.extent = VkExtent3D{0, 0, 1}, // Set afterward
 			.mipLevels = 1,
 			.arrayLayers = 1,
@@ -73,11 +69,13 @@ namespace Raindrop::Graphics::ShadowMap::Sun{
 	}
 
 	ShadowMap::~ShadowMap(){
+		CLOG(INFO, "Engine.Graphics.ShadowMap.ShadowMap") << "Destroying sun shadow map...";
 		if (_memory) vkFreeMemory(_context.device.get(), _memory, _context.allocationCallbacks);
 		if (_image) vkDestroyImage(_context.device.get(), _image, _context.allocationCallbacks);
 		if (_imageView) vkDestroyImageView(_context.device.get(), _imageView, _context.allocationCallbacks);
 		if (_sampler) vkDestroySampler(_context.device.get(), _sampler, _context.allocationCallbacks);
 		if (_framebuffer) vkDestroyFramebuffer(_context.device.get(), _framebuffer, _context.allocationCallbacks);
+		CLOG(INFO, "Engine.Graphics.ShadowMap.ShadowMap") << "Sun shadow map destroyed with success !";
 	}
 
 	void ShadowMap::createAttachment(){
@@ -230,6 +228,7 @@ namespace Raindrop::Graphics::ShadowMap::Sun{
 		info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		info.imageView = _imageView;
 		info.sampler = _sampler;
+		return info;
 	}
 
 	uint32_t ShadowMap::width() const{

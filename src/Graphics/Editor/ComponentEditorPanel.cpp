@@ -5,10 +5,10 @@
 #include <Raindrop/Core/Scene/Components/Hierarchy.hpp>
 #include <Raindrop/Graphics/Components/Model.hpp>
 #include <Raindrop/Graphics/Components/Sun.hpp>
+#include <Raindrop/Graphics/Components/Spotlight.hpp>
+#include <Raindrop/Graphics/Components/LightPoint.hpp>
 #include <Raindrop/Core/Scene/Components/Tag.hpp>
 #include <Raindrop/Core/Scene/Components/Transform.hpp>
-#include <Raindrop/Core/Scene/Components/Spotlight.hpp>
-#include <Raindrop/Core/Scene/Components/LightPoint.hpp>
 
 namespace Raindrop::Graphics::Editor{
 	ComponentEditorPanel::ComponentEditorPanel(EditorContext& context) : _context{context}{}
@@ -36,17 +36,19 @@ namespace Raindrop::Graphics::Editor{
 				draw_component(Camera);
 
 				draw_graphics_component(Model);
-				draw_component(LightPoint);
-				draw_component(Spotlight);
+				draw_graphics_component(LightPoint);
+				draw_graphics_component(Spotlight);
 				draw_graphics_component(Sun);
 
 				if (ImGui::BeginPopup("add component")){
 					add_component(Transform);
 					add_component(Camera);
+
 					add_graphics_component(Model);
-					add_component(LightPoint);
-					add_component(Spotlight);
+					add_graphics_component(LightPoint);
+					add_graphics_component(Spotlight);
 					add_graphics_component(Sun);
+					
 					ImGui::EndPopup();
 				}
 			}

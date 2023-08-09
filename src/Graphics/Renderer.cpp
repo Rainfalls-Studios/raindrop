@@ -19,6 +19,8 @@
 
 #include <Raindrop/Graphics/Components/Sun.hpp>
 #include <Raindrop/Graphics/Components/Model.hpp>
+#include <Raindrop/Graphics/Components/LightPoint.hpp>
+#include <Raindrop/Graphics/Components/Spotlight.hpp>
 #include <Raindrop/Graphics/ShadowMap/Sun/ShadowMap.hpp>
 
 #include <SDL2/SDL_vulkan.h>
@@ -41,6 +43,8 @@ namespace Raindrop::Graphics{
 
 		_context->scene.registerComponent<Components::Model>(1000, *_context);
 		_context->scene.registerComponent<Components::Sun>(1000, *_context);
+		_context->scene.registerComponent<Components::LightPoint>(1000);
+		_context->scene.registerComponent<Components::Spotlight>(1000);
 
 		#ifdef RAINDROP_EDITOR
 			_editor = std::make_unique<Editor::Editor>(*_context, &scene);
@@ -82,6 +86,8 @@ namespace Raindrop::Graphics{
 		
 		_context->scene.unregisterComponent<Components::Model>();
 		_context->scene.unregisterComponent<Components::Sun>();
+		_context->scene.unregisterComponent<Components::Spotlight>();
+		_context->scene.unregisterComponent<Components::LightPoint>();
 		
 		_forwardShader.reset();
 		_setLayout.reset();

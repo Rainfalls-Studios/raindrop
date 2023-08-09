@@ -1,7 +1,7 @@
-#include <Raindrop/Core/Scene/Components/Spotlight.hpp>
+#include <Raindrop/Graphics/Components/Spotlight.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-namespace Raindrop::Core::Scene::Components{
+namespace Raindrop::Graphics::Components{
 	Spotlight::Spotlight(){
 		color = glm::vec3(1.f);
 		intensity = 1.f;
@@ -9,7 +9,7 @@ namespace Raindrop::Core::Scene::Components{
 		outerCutOff = 1.3f;
 	}
 
-	void Spotlight::UI(EngineContext& context){
+	void Spotlight::UI(Core::EngineContext& context){
 		ImGui::PushID(this);
 		
 		if (ImGui::TreeNode("Spotlight")){
@@ -21,7 +21,7 @@ namespace Raindrop::Core::Scene::Components{
 			}
 
 			float degOuterCutOff = glm::degrees(outerCutOff);
-			if (ImGui::DragFloat("outer cutOff", &outerCutOff)){
+			if (ImGui::DragFloat("outer cutOff", &degOuterCutOff)){
 				outerCutOff = glm::radians(degOuterCutOff);
 			}
 

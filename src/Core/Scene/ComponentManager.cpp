@@ -10,6 +10,10 @@ namespace Raindrop::Core::Scene{
 	}
 
 	ComponentManager::~ComponentManager(){
+		for (auto c : _usedHandles){
+			_destructor(get(c));
+		}
+
 		_components.clear();
 	}
 
@@ -29,11 +33,13 @@ namespace Raindrop::Core::Scene{
 		ComponentHandleID id = _IDsPool.front();
 		_IDsPool.pop();
 		_constructor(get(id));
+		_usedHandles.push_back(id);
 		return id;
 	}
 
 	void ComponentManager::destroyComponent(ComponentHandleID id){
 		_IDsPool.push(id);
+		_usedHandles.remove(id);
 		_destructor(get(id));
 	}
 
