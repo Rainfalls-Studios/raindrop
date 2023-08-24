@@ -10,7 +10,8 @@ set(CMAKE_PREFIX_PATH "C:/Program Files (x86)/Assimp/" ${CMAKE_PREFIX_PATH})
 find_package(Vulkan REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(tinyobjloader REQUIRED)
-include_directories(${Vulkan_INCLUDE_DIRS} ${SDL2_INCLUDE_DIRS} ${TINYOBJLOADER_INCLUDE_DIRS})
+find_package(Boost)
+include_directories(${Vulkan_INCLUDE_DIRS} ${SDL2_INCLUDE_DIRS} ${TINYOBJLOADER_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 
 # github submodules
 add_subdirectory(libs/glm)
