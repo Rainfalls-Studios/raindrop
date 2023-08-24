@@ -35,13 +35,25 @@ namespace Raindrop::Graphics{
 	class Buffer;
 	class GraphicsCommandPool;
 	class TransfertCommandPool;
-	class WorldFramebuffer;
+	class SceneFramebuffer;
 	class Target;
 	class DescriptorPool;
 	class DescriptorSetLayout;
 	class Texture;
 	class SceneRenderer;
 	class FrameState;
+	class RenderPasses;
+	class Pipelines;
+	class GraphicsFamily;
+	class PresentFamiliy;
+	class TransfertFamily;
+	class SceneRenderPass;
+	class GlobalDescriptorPool;
+	class GraphicsCommandBuffers;
+	class DescriptorSetLayouts;
+	class DummyTexture;
+	class Camera;
+	class SceneDescriptorSetLayout;
 
 	struct Vertex{
 		glm::vec3 position{};

@@ -6,13 +6,12 @@ namespace Raindrop::Graphics{
 
 		VkCommandPoolCreateInfo info{};
 		info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-		info.queueFamilyIndex = _context.graphicsFamily;
+		info.queueFamilyIndex = _context.graphics.familyIndex;
 
 		info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 		if (vkCreateCommandPool(_context.device.get(), &info, _context.allocationCallbacks, &_primaryCommandPool) != VK_SUCCESS){
 			CLOG(ERROR, "Engine.Graphics.GraphicsCommandPool") << "Failed to create primary graphics command pool";
-			throw std::runtime_error("Failed to create primary command pool");
-			
+			throw std::runtime_error("Failed to create primary command pool");	
 		}
 
 		info.flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT;
@@ -72,7 +71,7 @@ namespace Raindrop::Graphics{
 		info.signalSemaphoreCount = 0;
 		info.waitSemaphoreCount = 0;
 
-		if (vkQueueSubmit(_context.graphicsQueue, 1, &info, VK_NULL_HANDLE) != VK_SUCCESS){
+		if (vkQueueSubmit(_context.graphics.queue, 1, &info, VK_NULL_HANDLE) != VK_SUCCESS){
 			CLOG(ERROR, "Engine.Graphics.GraphicsCommandPool") << "Failed to submit single time graphics command buffer";
 			throw std::runtime_error("Failed to submit single time graphics command buffer");
 		}

@@ -108,21 +108,21 @@ namespace Raindrop::Graphics{
 			throw std::runtime_error("failed to create vulkan device");
 		}
 
-		_context.graphicsFamily = getGraphicsFamily();
-		_context.presentFamily = getPresentFamily();
-		_context.transfertFamily = getTransfertFamily();
+		_context.graphics.familyIndex = getGraphicsFamily();
+		_context.present.familyIndex = getPresentFamily();
+		_context.transfert.familyIndex = getTransfertFamily();
 
-		vkGetDeviceQueue(_device, _context.graphicsFamily, 0, &_context.graphicsQueue);
-		vkGetDeviceQueue(_device, _context.presentFamily, 0, &_context.presentQueue);
+		vkGetDeviceQueue(_device, _context.graphics.familyIndex, 0, &_context.graphics.queue);
+		vkGetDeviceQueue(_device, _context.present.familyIndex, 0, &_context.present.queue);
 
-		if (_context.graphicsFamily == _context.transfertFamily || _context.presentFamily == _context.transfertFamily){
-			if (familyProperties[_context.transfertFamily].queueCount > 1){
-				vkGetDeviceQueue(_device, _context.transfertFamily, 1, &_context.transfertQueue);
+		if (_context.graphics.familyIndex == _context.transfert.familyIndex || _context.present.familyIndex == _context.transfert.familyIndex){
+			if (familyProperties[_context.transfert.familyIndex].queueCount > 1){
+				vkGetDeviceQueue(_device, _context.transfert.familyIndex, 1, &_context.transfert.queue);
 			} else {
-				vkGetDeviceQueue(_device, _context.transfertFamily, 0, &_context.transfertQueue);
+				vkGetDeviceQueue(_device, _context.transfert.familyIndex, 0, &_context.transfert.queue);
 			}
 		} else {
-			vkGetDeviceQueue(_device, _context.transfertFamily, 0, &_context.transfertQueue);
+			vkGetDeviceQueue(_device, _context.transfert.familyIndex, 0, &_context.transfert.queue);
 		}
 	}
 

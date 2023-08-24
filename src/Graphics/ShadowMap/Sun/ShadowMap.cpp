@@ -110,7 +110,7 @@ namespace Raindrop::Graphics::ShadowMap::Sun{
 		imageInfo.extent.width = _width;
 		imageInfo.extent.height = _height;
 
-		uint32_t familyIndices[] = {_context.graphicsFamily};
+		uint32_t familyIndices[] = {_context.graphics.familyIndex};
 
 		imageInfo.pQueueFamilyIndices = familyIndices;
 		imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
@@ -159,17 +159,17 @@ namespace Raindrop::Graphics::ShadowMap::Sun{
 		samplerInfo.magFilter = VK_FILTER_LINEAR;
 		samplerInfo.minFilter = VK_FILTER_LINEAR;
 		samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-		samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-		samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-		samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+		samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+		samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+		samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
 		samplerInfo.mipLodBias = 0.0f;
 		samplerInfo.anisotropyEnable = VK_FALSE;
 		samplerInfo.maxAnisotropy = 1.0f;
-		samplerInfo.compareEnable = VK_FALSE;
-		samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+		samplerInfo.compareEnable = VK_TRUE;
+		samplerInfo.compareOp = VK_COMPARE_OP_LESS;
 		samplerInfo.minLod = 0.0f;
 		samplerInfo.maxLod = 0.0f;
-		samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK;
+		samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
 		samplerInfo.unnormalizedCoordinates = VK_FALSE;
 
 		if (vkCreateSampler(_context.device.get(), &samplerInfo, _context.allocationCallbacks, &_sampler) != VK_SUCCESS){
@@ -217,6 +217,22 @@ namespace Raindrop::Graphics::ShadowMap::Sun{
 		);
 		
 		vkCmdBeginRenderPass(commandBuffer, &info, VK_SUBPASS_CONTENTS_INLINE);
+
+		VkViewport viewport;
+		viewport.x = 0;
+		viewport.y = 0;
+		viewport.minDepth = 0.f;
+		viewport.maxDepth = 1.f;
+		viewport.width = _width;
+		viewport.height = _height;
+
+		vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+		
+		VkRect2D scissor;
+		scissor.extent = VkExtent2D(_width, _height);
+		scissor.offset = VkOffset2D(0, 0);
+
+		vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 	}
 
 	void ShadowMap::endRenderPass(VkCommandBuffer commandBuffer) const{

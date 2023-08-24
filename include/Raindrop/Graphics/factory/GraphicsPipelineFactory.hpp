@@ -4,7 +4,7 @@
 #include <Raindrop/Graphics/common.hpp>
 
 namespace Raindrop::Graphics::Factory{
-	class GraphicsPipelineFactory : public Raindrop::Core::Asset::AssetFactory{
+	class GraphicsPipelineFactory : public Core::Asset::AssetFactory{
 		public:
 			GraphicsPipelineFactory(GraphicsContext& context);
 			virtual ~GraphicsPipelineFactory() override;

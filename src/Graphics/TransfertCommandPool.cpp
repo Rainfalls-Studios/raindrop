@@ -6,7 +6,7 @@ namespace Raindrop::Graphics{
 
 		VkCommandPoolCreateInfo info{};
 		info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-		info.queueFamilyIndex = _context.transfertFamily;
+		info.queueFamilyIndex = _context.transfert.familyIndex;
 
 		info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 		if (vkCreateCommandPool(_context.device.get(), &info, _context.allocationCallbacks, &_primaryCommandPool) != VK_SUCCESS){
@@ -72,12 +72,12 @@ namespace Raindrop::Graphics{
 		info.signalSemaphoreCount = 0;
 		info.waitSemaphoreCount = 0;
 
-		if (vkQueueSubmit(_context.transfertQueue, 1, &info, VK_NULL_HANDLE) != VK_SUCCESS){
+		if (vkQueueSubmit(_context.transfert.queue, 1, &info, VK_NULL_HANDLE) != VK_SUCCESS){
 			CLOG(ERROR, "Engine.Graphics.TransfertCommandPool") << "Failed to submit single time transfert command buffer";
 			throw std::runtime_error("Failed to submit single time transfert command buffer");
 		}
 
-		vkQueueWaitIdle(_context.transfertQueue);
+		vkQueueWaitIdle(_context.transfert.queue);
 
 		vkFreeCommandBuffers(_context.device.get(), _singleTimeCommandPool, 1, &commandBuffer);
 	}

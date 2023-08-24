@@ -6,15 +6,18 @@
 
 namespace Raindrop::Graphics::Components{
 	Model::Model(GraphicsContext& context) : _context{context}{
+		auto pool = _context.descriptorPool.get();
+		auto device = _context.device.get();
+
 		VkDescriptorSetLayout layout = reinterpret_cast<VkDescriptorSetLayout>(_context.gRegistry["layout"]);
 
 		VkDescriptorSetAllocateInfo info = {};
 		info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-		info.descriptorPool = _context.pool;
+		info.descriptorPool = pool;
 		info.descriptorSetCount = 1;
 		info.pSetLayouts = &layout;
 
-		if (vkAllocateDescriptorSets(_context.device.get(), &info, &_descriptorSet) != VK_SUCCESS){
+		if (vkAllocateDescriptorSets(device, &info, &_descriptorSet) != VK_SUCCESS){
 			CLOG(ERROR, "Engine.Graphics") << "Failed to allocate model descritor set";
 			throw std::runtime_error("Failed to allocate model descritor set");
 		}
@@ -23,7 +26,10 @@ namespace Raindrop::Graphics::Components{
 	}
 
 	Model::~Model(){
-		vkFreeDescriptorSets(_context.device.get(), _context.pool, 1, &_descriptorSet);
+		auto pool = _context.descriptorPool.get();
+		auto device = _context.device.get();
+
+		vkFreeDescriptorSets(device, pool, 1, &_descriptorSet);
 	}
 	
 	Graphics::Texture* Model::texture() const{
@@ -39,7 +45,7 @@ namespace Raindrop::Graphics::Components{
 		if (auto lock = texture.lock()){
 			imageInfo = lock->info();
 		} else {
-			imageInfo = _context.whiteTexture().info();
+			imageInfo = _context.dummyTexture.info();
 		}
 
 		VkWriteDescriptorSet write = {};

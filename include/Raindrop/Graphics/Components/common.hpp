@@ -11,6 +11,7 @@ namespace Raindrop::Graphics::Components{
 	class Sun;
 	class LightPoint;
 	class Spotlight;
+	class Camera;
 }
 
 #endif

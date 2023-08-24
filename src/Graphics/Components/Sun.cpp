@@ -60,7 +60,7 @@ namespace Raindrop::Graphics::Components{
 	}
 
 	void Sun::updateDescriptorSet(){
-		if (!_shadowMap || _descriptorSet) return;
+		if (!_shadowMap || !_descriptorSet) return;
 
 		VkDescriptorImageInfo imageInfo = _shadowMap->getAttachmentInfo();
 		VkWriteDescriptorSet write = {};
@@ -75,23 +75,28 @@ namespace Raindrop::Graphics::Components{
 		vkUpdateDescriptorSets(_context.device.get(), 1, &write, 0, nullptr);
 	}
 
-	
 	void Sun::createDescriptorSet(){
+		auto pool = _context.descriptorPool.get();
+		auto device = _context.device.get();
+
 		VkDescriptorSetLayout layout = _context.layouts.sunShadowMapLayout;
 
 		VkDescriptorSetAllocateInfo info = {};
 		info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 		info.descriptorSetCount = 1;
-		info.descriptorPool = _context.pool;
+		info.descriptorPool = pool;
 		info.pSetLayouts = &layout;
 		
-		if (vkAllocateDescriptorSets(_context.device.get(), &info, &_descriptorSet) != VK_SUCCESS){
+		if (vkAllocateDescriptorSets(device, &info, &_descriptorSet) != VK_SUCCESS){
 			throw std::runtime_error("Failed to allocate descriptor set");
 		}
 	}
 
 	void Sun::destroyDescriptorSet(){
-		if (_descriptorSet) vkFreeDescriptorSets(_context.device.get(), _context.pool, 1, &_descriptorSet);
+		auto pool = _context.descriptorPool.get();
+		auto device = _context.device.get();
+		
+		if (_descriptorSet) vkFreeDescriptorSets(device, pool, 1, &_descriptorSet);
 	}
 
 	VkDescriptorSet Sun::descriptorSet() const{

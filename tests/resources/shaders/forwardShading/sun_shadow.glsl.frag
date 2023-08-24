@@ -37,6 +37,28 @@ float getDiffuse(in vec3 position, in vec3 normal){
 	return max(dot(normal, directionToLight), 0.0);
 }
 
+float ShadowCalculation(vec4 fragPosLightSpace){
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    projCoords = projCoords * 0.5 + 0.5;
+    float closestDepth = texture(shadow_tex, projCoords.xy).r; 
+    float currentDepth = projCoords.z;
+    float shadow = closestDepth < currentDepth  ? 0.0 : 1.0;
+
+	// vec4 color = projCoords.x > 0. && projCoords.x < 1. && projCoords.y > 0. && projCoords.y < 1. ? vec4(1.) : vec4(0.);
+
+	if (projCoords.x < 0.5){
+    	return shadow;
+	}
+
+	if (projCoords.x > 0.5 && projCoords.y < 0.5){
+		return closestDepth;
+	}
+
+	if (projCoords.x > 0.5 && projCoords.y > 0.5){
+		return currentDepth;
+	}
+}  
+
 void main(){
 
 	// query samples
@@ -54,7 +76,8 @@ void main(){
 	float normalFalloff = getNormalFalloff(position, normal);
 	float spec = getSpecular(position, normal);
 	float diff = getDiffuse(position, normal);
+	float shadow = ShadowCalculation(light.lightMatrix * vec4(position, 1.0));
 
 	float coef = normalFalloff * (spec + diff);
-	outColor = vec4(albedo * light.color, 1.) * coef * light.intensity;
+	outColor = vec4(albedo * light.color, 1.) * coef * light.intensity * shadow;
 }

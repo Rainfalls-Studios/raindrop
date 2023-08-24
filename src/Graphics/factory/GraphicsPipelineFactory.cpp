@@ -63,7 +63,7 @@ namespace Raindrop::Graphics::Factory{
 	}
 
 	void GraphicsPipelineFactory::registerExtensions(const std::shared_ptr<GraphicsPipelineFactory>& factory){
-		auto& assetManager = _context->assetManager;
+		auto& assetManager = _context.context.assetManager;
 
 		assetManager.linkFactory(".gfxpipe", factory);
 		assetManager.linkFactory(".gfxpipeline", factory);
@@ -100,8 +100,8 @@ namespace Raindrop::Graphics::Factory{
 	}
 
 	std::shared_ptr<GraphicsPipeline> GraphicsPipelineFactory::loadFromXML(const std::filesystem::path& path){
-		auto& assetManager = _context->assetManager;
-		auto& registry = _context->registry;
+		auto& assetManager = _context.context.assetManager;
+		auto& registry = _context.context.registry;
 
 		CLOG(INFO, "Engine.Graphics.Pipeline") << "Loading " << path << " xml graphics pipeline";
 
@@ -151,8 +151,8 @@ namespace Raindrop::Graphics::Factory{
 	}
 
 	std::shared_ptr<Shader> GraphicsPipelineFactory::getShaderXML(tinyxml2::XMLElement* shaderElement){
-		auto& assetManager = _context->assetManager;
-		auto& registry = _context->registry;
+		auto& assetManager = _context.context.assetManager;
+		auto& registry = _context.context.registry;
 
 		const char* source = shaderElement->Attribute("source");
 		if (!source){

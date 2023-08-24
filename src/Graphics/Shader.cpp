@@ -17,7 +17,7 @@ namespace Raindrop::Graphics{
 		createInfo.codeSize = static_cast<uint32_t>(code.size());
 
 		if (vkCreateShaderModule(_context.device.get(), &createInfo, _context.allocationCallbacks, &_shader) != VK_SUCCESS){
-			throw "Failed to create shader module";
+			throw std::runtime_error("Failed to create shader module");
 		}
 	}
 
@@ -28,5 +28,4 @@ namespace Raindrop::Graphics{
 	VkShaderStageFlagBits Shader::stage() const{
 		return _stage;
 	}
-
 }

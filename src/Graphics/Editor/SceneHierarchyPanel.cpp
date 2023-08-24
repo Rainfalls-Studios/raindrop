@@ -7,7 +7,7 @@
 #include <Raindrop/Graphics/Components/Sun.hpp>
 #include <Raindrop/Graphics/Components/LightPoint.hpp>
 #include <Raindrop/Graphics/Components/Spotlight.hpp>
-#include <Raindrop/Core/Scene/Components/Camera.hpp>
+#include <Raindrop/Graphics/Components/Camera.hpp>
 
 namespace Raindrop::Graphics::Editor{
 	SceneHierarchyPanel::SceneHierarchyPanel(EditorContext& context) : _context{context}{}
@@ -298,7 +298,7 @@ namespace Raindrop::Graphics::Editor{
 
 	void SceneHierarchyPanel::addCamera(Core::Scene::Scene* scene){
 		auto entity = createEntity(scene);
-		entity.createComponent<Core::Scene::Components::Camera>();
+		entity.createComponent<Graphics::Components::Camera>();
 	}
 	
 	void SceneHierarchyPanel::addLightPoint(Core::Scene::Scene* scene){

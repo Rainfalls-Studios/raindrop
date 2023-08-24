@@ -4,7 +4,7 @@
 #include <Raindrop/Graphics/common.hpp>
 
 namespace Raindrop::Graphics::Factory{
-	class ShaderFactory : public Raindrop::Core::Asset::AssetFactory{
+	class ShaderFactory : public Core::Asset::AssetFactory{
 		public:
 			ShaderFactory(GraphicsContext& context);
 			virtual ~ShaderFactory() override;

@@ -22,20 +22,20 @@ namespace Raindrop::Graphics{
 		auto physicalDevice = _context.device.getPhysicalDevice();
 		auto device = _context.device.get();
 		auto renderPass = _context.swapchain.renderPass();
-		auto graphicsQueue = _context.graphicsQueue;
+		auto graphicsQueue = _context.graphics.queue;
 
-		VkDescriptorPoolSize pool_sizes[] ={
-			{ VK_DESCRIPTOR_TYPE_SAMPLER, 1000 },
-			{ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000 },
-			{ VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1000 },
-			{ VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1000 },
-			{ VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 1000 },
-			{ VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 1000 },
-			{ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000 },
-			{ VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1000 },
-			{ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000 },
-			{ VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000 },
-			{ VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000 }
+		VkDescriptorPoolSize pool_sizes[] = {
+			{VK_DESCRIPTOR_TYPE_SAMPLER, 1000},
+			{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000},
+			{VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1000},
+			{VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1000},
+			{VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 1000},
+			{VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 1000},
+			{VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000},
+			{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1000},
+			{VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000},
+			{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000},
+			{VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000}
 		};
 
 		VkDescriptorPoolCreateInfo pool_info = {};
@@ -73,9 +73,9 @@ namespace Raindrop::Graphics{
 	}
 
 	void ImGUI::uploadFonts(){
-		VkCommandBuffer cmd = _context.transfertCommandPool.beginSingleTime();
+		VkCommandBuffer cmd = _context.transfert.commandPool.beginSingleTime();
 		ImGui_ImplVulkan_CreateFontsTexture(cmd);
-		_context.transfertCommandPool.endSingleTime(cmd);
+		_context.transfert.commandPool.endSingleTime(cmd);
 		ImGui_ImplVulkan_DestroyFontUploadObjects();
 	}
 

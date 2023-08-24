@@ -30,6 +30,7 @@ namespace Raindrop::Graphics::ForwardShader::Pipelines{
 
 		builder.addPushConstant(pushConstant);
 		builder.addDescriptorSetLayout(descriptorLayout);
+		builder.addDescriptorSetLayout(_context.layouts.sunShadowMapLayout);
 
 		auto& blend = builder.attachmentState(0);
 		blend.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;

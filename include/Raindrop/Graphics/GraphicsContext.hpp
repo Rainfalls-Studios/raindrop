@@ -10,48 +10,23 @@
 #include <Raindrop/Graphics/GraphicsCommandPool.hpp>
 #include <Raindrop/Graphics/GraphicsRegistry.hpp>
 
-#include <Raindrop/Graphics/ShadowMap/Sun/RenderPass.hpp>
-#include <Raindrop/Graphics/ForwardShader/RenderPass.hpp>
+#include <Raindrop/Graphics/RenderPasses.hpp>
+#include <Raindrop/Graphics/DescriptorSetLayouts.hpp>
+#include <Raindrop/Graphics/GraphicsFamily.hpp>
+#include <Raindrop/Graphics/TransfertFamily.hpp>
+#include <Raindrop/Graphics/PresentFamily.hpp>
+#include <Raindrop/Graphics/GlobalDescriptorPool.hpp>
+#include <Raindrop/Graphics/DummyTexture.hpp>
 
 namespace Raindrop::Graphics{
-
-	struct DescriptorLayouts{
-		VkDescriptorSetLayout sunShadowMapLayout;
-		VkDescriptorSetLayout lightPointShadowMapLayout;
-		VkDescriptorSetLayout spotlightShadowMapLayout;
-
-		DescriptorLayouts(GraphicsContext& context);
-		~DescriptorLayouts();
-
-		private:
-			GraphicsContext& _context;
-
-			void createLightsLayouts();
-			void destroyLightsLayouts();
-	};
-
-	struct RenderPasses{
-		RenderPasses(GraphicsContext& context);
-		~RenderPasses();
-
-		ShadowMap::Sun::RenderPass sun;
-		ForwardShader::RenderPass forwardShader;
-	};
-
 	struct GraphicsContext{
-
-		GraphicsContext(Core::EngineContext& context, Core::Scene::Scene& scene);
+		GraphicsContext(Core::EngineContext& context);
 		~GraphicsContext();
 
 		GraphicsContext(const GraphicsContext &) = delete;
 		GraphicsContext& operator=(const GraphicsContext &) = delete;
-
-		Core::EngineContext* operator->() const{
-			return &context;
-		}
 		
 		Core::EngineContext& context;
-		Core::Scene::Scene& scene;
 
 		GraphicsRegistry gRegistry;
 		VkAllocationCallbacks* allocationCallbacks = nullptr;
@@ -61,32 +36,17 @@ namespace Raindrop::Graphics{
 		Device device;
 		Swapchain swapchain;
 
-		GraphicsCommandPool graphicsCommandPool;
-		TransfertCommandPool transfertCommandPool;
-
-		VkDescriptorPool pool;
-
+		GlobalDescriptorPool descriptorPool;
 		VkRenderPass sceneRenderPass;
-
-		uint32_t graphicsFamily;
-		uint32_t transfertFamily;
-		uint32_t presentFamily;
-
-		VkQueue graphicsQueue;
-		VkQueue transfertQueue;
-		VkQueue presentQueue;
 
 		DescriptorLayouts layouts;
 		RenderPasses renderPasses;
 
-		const Texture& whiteTexture() const; 
+		GraphicsFamily graphics;
+		TransfertFamily transfert;
+		PresentFamily present;
 
-		private:
-			void createPool();
-			void destroyPool();
-			void createWhiteTexture();
-
-			std::unique_ptr<Texture> _whiteTexture;
+		DummyTexture dummyTexture;
 	};
 }
 

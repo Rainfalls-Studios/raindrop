@@ -5,10 +5,13 @@
 
 namespace Raindrop::Graphics{
 	struct FrameState{
-		VkCommandBuffer commandBuffer = VK_NULL_HANDLE;
+		FrameState();
+		
+		VkCommandBuffer commandBuffer;
+		Camera* camera;
 
-		glm::mat4 viewMatrix;
-		glm::mat4 projectionMatrix;
+		operator bool() const;
+		bool operator!() const;
 	};
 }
 

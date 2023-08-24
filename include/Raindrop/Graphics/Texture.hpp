@@ -14,6 +14,8 @@ namespace Raindrop::Graphics{
 			VkDescriptorImageInfo info() const; 
 
 		protected:
+			Texture(GraphicsContext& context);
+
 			void createImage(const std::filesystem::path &filepath);
 			void createImageFromPtr(void* data, uint32_t width, uint32_t height, int channels);
 			void createImageView();

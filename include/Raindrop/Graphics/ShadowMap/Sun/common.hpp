@@ -6,6 +6,7 @@
 namespace Raindrop::Graphics::ShadowMap::Sun{
 	class ShadowMap;
 	class RenderPass;
+	class Pipeline;
 }
 
 #endif

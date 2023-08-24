@@ -29,6 +29,8 @@ namespace Raindrop::Graphics{
 
 	}
 
+	Texture::Texture(GraphicsContext& context) : _context{context}{}
+
 	Texture::~Texture(){
 		CLOG(INFO, "Engine.Graphics.Texture") << "Destroying texture...";
 		if (_image) vkDestroyImage(_context.device.get(), _image, _context.allocationCallbacks);
@@ -110,13 +112,13 @@ namespace Raindrop::Graphics{
 
 		vkBindImageMemory(_context.device.get(), _image, _memory, 0);
 
-		VkCommandBuffer commandBuffer = _context.transfertCommandPool.beginSingleTime();
+		VkCommandBuffer commandBuffer = _context.transfert.commandPool.beginSingleTime();
 
 		transitionToTransfert(commandBuffer);
 		copyBuffer(commandBuffer, stagingBuffer);
 		transitionToShaderRead(commandBuffer);
 
-		_context.transfertCommandPool.endSingleTime(commandBuffer);
+		_context.transfert.commandPool.endSingleTime(commandBuffer);
 	}
 
 	void Texture::transitionToTransfert(VkCommandBuffer commandBuffer){

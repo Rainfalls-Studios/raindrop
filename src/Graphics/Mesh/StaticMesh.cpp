@@ -26,7 +26,7 @@ namespace Raindrop::Graphics::Mesh{
 		_vbo = std::make_unique<Buffer>(_context);
 		_vbo->allocateInstances(sizeof(Vertex), vertices.size(), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-		VkCommandBuffer commandBuffer = _context.transfertCommandPool.beginSingleTime();
+		VkCommandBuffer commandBuffer = _context.transfert.commandPool.beginSingleTime();
 
 		VkBufferCopy region{};
 		region.dstOffset = 0;
@@ -35,7 +35,7 @@ namespace Raindrop::Graphics::Mesh{
 
 		vkCmdCopyBuffer(commandBuffer, staginBuffer.get(), _vbo->get(), 1, &region);
 
-		_context.transfertCommandPool.endSingleTime(commandBuffer);
+		_context.transfert.commandPool.endSingleTime(commandBuffer);
 	}
 
 	void StaticMesh::createIBO(const std::vector<uint32_t>& indices){
@@ -50,7 +50,7 @@ namespace Raindrop::Graphics::Mesh{
 		_ibo = std::make_unique<Buffer>(_context);
 		_ibo->allocateInstances(sizeof(uint32_t), indices.size(), VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-		VkCommandBuffer commandBuffer = _context.transfertCommandPool.beginSingleTime();
+		VkCommandBuffer commandBuffer = _context.transfert.commandPool.beginSingleTime();
 
 		VkBufferCopy region{};
 		region.dstOffset = 0;
@@ -59,7 +59,7 @@ namespace Raindrop::Graphics::Mesh{
 
 		vkCmdCopyBuffer(commandBuffer, staginBuffer.get(), _ibo->get(), 1, &region);
 
-		_context.transfertCommandPool.endSingleTime(commandBuffer);
+		_context.transfert.commandPool.endSingleTime(commandBuffer);
 	}
 
 	bool StaticMesh::hasVertexBuffer() const{

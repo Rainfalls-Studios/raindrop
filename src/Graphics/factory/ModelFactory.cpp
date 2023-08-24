@@ -26,7 +26,7 @@ namespace Raindrop::Graphics::Factory{
 	}
 
 	void ModelFactory::registerExtensions(const std::shared_ptr<ModelFactory>& factory){
-		auto& assetManager = _context->assetManager;
+		auto& assetManager = _context.context.assetManager;
 		assetManager.linkFactory(".obj", factory);
 	}
 

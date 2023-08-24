@@ -146,8 +146,6 @@ namespace Raindrop::Graphics{
 	}
 
 	void Swapchain::createRenderPass(){
-		auto& registry = _context->registry;
-
 		VkAttachmentDescription colorAttachment{};
 		colorAttachment.format = _imageFormat;
 		colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -187,8 +185,6 @@ namespace Raindrop::Graphics{
 		if (vkCreateRenderPass(_context.device.get(), &renderPassInfo, _context.allocationCallbacks, &_renderPass) != VK_SUCCESS){
 			throw std::runtime_error("Failed to create swapchain's render pass");
 		}
-		
-		registry["Engine.Graphics.Swapchain.RenderPass"] = _renderPass;
 	}
 
 	void Swapchain::createImageViews(){
@@ -290,7 +286,7 @@ namespace Raindrop::Graphics{
 		submitInfo.pSignalSemaphores = signalSemaphores;
 
 		vkResetFences(_context.device.get(), 1, &_swapchain->_frames[_currentFrame].inFlightFence);
-		if (vkQueueSubmit(_context.graphicsQueue, 1, &submitInfo, _swapchain->_frames[_currentFrame].inFlightFence) != VK_SUCCESS)
+		if (vkQueueSubmit(_context.graphics.queue, 1, &submitInfo, _swapchain->_frames[_currentFrame].inFlightFence) != VK_SUCCESS)
 			throw "failed to submit draw command buffer";
 
 		VkPresentInfoKHR presentInfo = {};
@@ -305,7 +301,7 @@ namespace Raindrop::Graphics{
 
 		presentInfo.pImageIndices = &_currentFrame;
 
-		auto result = vkQueuePresentKHR(_context.presentQueue, &presentInfo);
+		auto result = vkQueuePresentKHR(_context.present.queue, &presentInfo);
 
 		_currentFrame = (_currentFrame + 1) % _frameCount;
 

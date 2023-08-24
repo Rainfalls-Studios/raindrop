@@ -104,7 +104,7 @@ namespace Raindrop::Graphics::Editor{
 		info.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 		info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 		info.queueFamilyIndexCount = 1;
-		info.pQueueFamilyIndices = &_context.context.graphicsFamily;
+		info.pQueueFamilyIndices = &_context.context.graphics.familyIndex;
 		info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
 		if (vkCreateImage(_context.context.device.get(), &info, _context.context.allocationCallbacks, &_attachmentImage) != VK_SUCCESS){
