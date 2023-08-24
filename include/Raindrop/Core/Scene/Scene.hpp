@@ -51,6 +51,8 @@ namespace Raindrop::Core::Scene{
 			std::unique_ptr<EntityManager> _entityManager;
 
 			EntityID _root;
+
+			void registerComponents();
 	};
 
 	#include <Raindrop/Core/Scene/Scene.tpp>

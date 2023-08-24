@@ -5,9 +5,14 @@
 #include <Raindrop/Core/Scene/EntityManager.hpp>
 #include <Raindrop/Core/Scene/EntityComponentsRegistry.hpp>
 
-#include <Raindrop/Core/Scene/Components/Camera.hpp>
 #include <Raindrop/Core/Scene/Components/Hierarchy.hpp>
 #include <Raindrop/Core/Scene/Components/Tag.hpp>
+#include <Raindrop/Core/Scene/Components/Transform.hpp>
+#include <Raindrop/Graphics/Components/Camera.hpp>
+#include <Raindrop/Graphics/Components/LightPoint.hpp>
+#include <Raindrop/Graphics/Components/Model.hpp>
+#include <Raindrop/Graphics/Components/Spotlight.hpp>
+#include <Raindrop/Graphics/Components/Sun.hpp>
 
 namespace Raindrop::Core::Scene{
 	Scene::Scene(EngineContext& context, uint32_t entityCount, uint32_t componentCount) : _context{context}{
@@ -22,13 +27,19 @@ namespace Raindrop::Core::Scene{
 		_entityManager = std::make_unique<EntityManager>(entityCount);
 		CLOG(INFO, "Engine.Core.Scene") << "Scene created with success !";
 
-		registerComponent<Components::Tag>(entityCount);
-		registerComponent<Components::Transform>(entityCount);
-		registerComponent<Components::Hierarchy>(entityCount);
-		registerComponent<Components::Camera>(1);
+		registerComponents();
 		
 		_root = createEntity();
 	}
+
+	void Scene::registerComponents(){
+		uint32_t count = _entityManager->size();
+
+		registerComponent<Components::Tag>(count);
+		registerComponent<Components::Transform>(count);
+		registerComponent<Components::Hierarchy>(count);
+	}
+
 
 	Scene::~Scene(){
 		CLOG(INFO, "Engine.Core.Scene") << "Destroying scene...";

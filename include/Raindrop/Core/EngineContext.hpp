@@ -4,12 +4,15 @@
 #include <Raindrop/Core/Asset/AssetManager.hpp>
 #include <Raindrop/Core/Event/EventManager.hpp>
 #include <Raindrop/Core/Registry/Registry.hpp>
+#include <Raindrop/Core/TaskQueue.hpp>
 
 namespace Raindrop::Core{
 	struct EngineContext{
 		Event::EventManager eventManager;
 		Asset::AssetManager assetManager;
 		Registry::Registry registry;
+		
+		TaskQueue taskQueue;
 
 		EngineContext(){};
 		~EngineContext() = default;

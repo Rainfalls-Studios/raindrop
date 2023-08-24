@@ -13,7 +13,7 @@ endif()
 file(GLOB_RECURSE SOURCES *.cpp)
 add_library(RaindropEngine STATIC ${SOURCES})
 
-target_link_libraries(RaindropEngine PRIVATE ${Vulkan_LIBRARIES} SDL2::SDL2-static tinyobjloader::tinyobjloader)
+target_link_libraries(RaindropEngine PRIVATE ${Vulkan_LIBRARIES} SDL2::SDL2-static tinyobjloader::tinyobjloader ${Boost_LIBRARIES})
 target_link_libraries(RaindropEngine PUBLIC easyloggingpp tinyxml2 imgui pch_target ImGuizmo)
 
 set_target_properties(RaindropEngine PROPERTIES

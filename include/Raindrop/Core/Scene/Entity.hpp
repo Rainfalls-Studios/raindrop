@@ -44,6 +44,7 @@ namespace Raindrop::Core::Scene{
 
 			template<typename T> bool hasComponent();
 			template<typename T> T& getComponent();
+			template<typename T> const T& getComponent() const;
 			template<typename T> T& createComponent();
 			template<typename T> void destroyComponent();
 

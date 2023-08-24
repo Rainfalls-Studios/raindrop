@@ -9,6 +9,11 @@ T& Entity::getComponent(){
 }
 
 template<typename T>
+const T& Entity::getComponent() const{
+	return _scene->getComponent<T>(_id);
+}
+
+template<typename T>
 T& Entity::createComponent(){
 	return _scene->createComponent<T>(_id);
 }
