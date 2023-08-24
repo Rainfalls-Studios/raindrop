@@ -54,6 +54,7 @@ namespace Raindrop::Graphics{
 	class DummyTexture;
 	class Camera;
 	class SceneDescriptorSetLayout;
+	class FormatUtilities;
 
 	struct Vertex{
 		glm::vec3 position{};

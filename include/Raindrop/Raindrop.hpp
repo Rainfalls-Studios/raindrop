@@ -23,9 +23,9 @@ namespace Raindrop{
 			Scene createScene();
 
 		private:
-			Scene _scene;
 			Core::EngineContext _context;
 			Graphics::Renderer _renderer;
+			Scene _scene;
 
 			bool _launched;
 

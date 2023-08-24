@@ -17,6 +17,7 @@
 #include <Raindrop/Graphics/PresentFamily.hpp>
 #include <Raindrop/Graphics/GlobalDescriptorPool.hpp>
 #include <Raindrop/Graphics/DummyTexture.hpp>
+#include <Raindrop/Graphics/FormatUtilities.hpp>
 
 namespace Raindrop::Graphics{
 	struct GraphicsContext{
@@ -36,6 +37,7 @@ namespace Raindrop::Graphics{
 		Device device;
 		Swapchain swapchain;
 
+		FormatUtilities formats;
 		GlobalDescriptorPool descriptorPool;
 		VkRenderPass sceneRenderPass;
 

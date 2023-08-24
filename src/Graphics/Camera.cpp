@@ -21,6 +21,10 @@ namespace Raindrop::Graphics{
 		return _framebuffer;
 	}
 
+	Target& Camera::framebuffer(){
+		return _framebuffer;
+	}
+
 	void Camera::setProjection(Projections::ProjectionType type){
 		switch (type){
 			case Projections::PERSPECTIVE:{
@@ -53,5 +57,17 @@ namespace Raindrop::Graphics{
 
 	Projections::ProjectionType Camera::projectionType() const{
 		return _projectionType;
+	}
+	
+	const glm::mat4& Camera::viewProjection() const{
+		return _projection->viewProjection();
+	}
+
+	const glm::mat4& Camera::view() const{
+		return _projection->viewMatrix();
+	}
+
+	const glm::mat4& Camera::projection() const{
+		return _projection->projectionMatrix();
 	}
 }

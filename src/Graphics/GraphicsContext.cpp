@@ -11,6 +11,7 @@ namespace Raindrop::Graphics{
 		window{*this},
 		instance{*this},
 		device{*this},
+		formats{*this},
 		swapchain{*this},
 		graphics{*this},
 		present{*this},

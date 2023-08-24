@@ -22,8 +22,8 @@ namespace Raindrop::Graphics{
 			virtual uint32_t width() const override;
 			virtual uint32_t height() const override;
 
-			virtual bool beginRenderPass(VkCommandBuffer commandBuffer);
-			virtual void endRenderPass(VkCommandBuffer commandBuffer);
+			virtual bool beginRenderPass(VkCommandBuffer commandBuffer) override;
+			virtual void endRenderPass(VkCommandBuffer commandBuffer) override;
 
 			Attachment& getAttachment(uint32_t id);
 			std::vector<Attachment>& getAttachments();

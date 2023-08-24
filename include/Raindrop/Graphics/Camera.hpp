@@ -12,10 +12,15 @@ namespace Raindrop::Graphics{
 			~Camera();
 
 			const Target& framebuffer() const;
+			Target& framebuffer();
 
 			Projections::OrthographicProjection& orthographic();
 			Projections::PerspectiveProjection& perspective();
 			Projections::ProjectionType projectionType() const;
+
+			const glm::mat4& viewProjection() const;
+			const glm::mat4& view() const;
+			const glm::mat4& projection() const;
 
 		protected:
 

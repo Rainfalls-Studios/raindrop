@@ -4,6 +4,7 @@
 #include <Raindrop/Graphics/common.hpp>
 #include <Raindrop/Graphics/GraphicsContext.hpp>
 #include <Raindrop/Graphics/FrameState.hpp>
+#include <Raindrop/Graphics/SceneRenderer.hpp>
 
 #include <Raindrop/Core/Scene/Scene.hpp>
 
@@ -26,8 +27,13 @@ namespace Raindrop::Graphics{
 
 		private:
 			GraphicsContext _context;
+			// SceneRenderer _sceneRenderer;
 
 			uint32_t currentFrameID();
+
+			void renderSceneWithCamera(FrameState& state, const Scene& scene, Camera& camera);
+
+
 
 			// std::vector<VkCommandBuffer> _graphicsCommandBuffers;
 

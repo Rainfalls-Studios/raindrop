@@ -3,8 +3,9 @@
 INITIALIZE_EASYLOGGINGPP;
 
 namespace Raindrop{
-	Raindrop::Raindrop() : 
-		_renderer{_context}{
+	Raindrop::Raindrop() : _renderer{_context}{
+
+		_scene = createScene();
 	}
 
 	Raindrop::~Raindrop(){
@@ -31,7 +32,9 @@ namespace Raindrop{
 	}
 
 	Scene Raindrop::createScene(){
-		return Scene(std::make_shared<Core::Scene::Scene>(_context, 5000, 100));
+		std::shared_ptr<Core::Scene::Scene> scene = std::make_shared<Core::Scene::Scene>(_context, 5000, 100);
+		_renderer.registerSceneComponents(*scene);
+		return Scene(scene);
 	}
 
 	void Raindrop::render(){

@@ -29,14 +29,14 @@ namespace Raindrop{
 			Entity createEntity(Entity parent);
 			void destroyEntity(Entity entity);
 
-			template<typename T> const std::list<Entity>& filterEntitiesWithComponent() const;
+			template<typename T> std::list<Entity> filterEntitiesWithComponent() const;
 
 		private:
 			std::shared_ptr<Core::Scene::Scene> _scene;
 
 	};
 
-	// #include <Raindrop/tpp/Scene.tpp>
+	#include <Raindrop/tpp/Scene.tpp>
 }
 
 #endif

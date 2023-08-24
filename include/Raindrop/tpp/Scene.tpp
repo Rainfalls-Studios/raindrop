@@ -1,5 +1,9 @@
 template<typename T>
-const std::list<Entity>& Scene::filterEntitiesWithComponent() const{
+std::list<Entity> Scene::filterEntitiesWithComponent() const{
 	auto list = _scene->componentEntities<T>();
-	return std::list<Entity>(list.begin(), list.end());
+	std::list<Entity> entityList;
+	for (const auto& e : list){
+		entityList.push_back(Core::Scene::Entity(e, _scene.get()));
+	}
+	return entityList;
 }

@@ -3,8 +3,6 @@
 #include <Raindrop/Core/Scene/Scene.hpp>
 
 namespace Raindrop{
-	#include <Raindrop/tpp/Scene.tpp>
-	
 	Scene::Scene(const std::shared_ptr<Core::Scene::Scene>& scene) : _scene{scene}{}
 	Scene::Scene(const Scene& other) : _scene{other._scene}{}
 	Scene::Scene() : _scene{nullptr}{}

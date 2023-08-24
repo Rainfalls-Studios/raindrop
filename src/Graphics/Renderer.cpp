@@ -17,7 +17,8 @@
 #endif
 
 namespace Raindrop::Graphics{
-	Renderer::Renderer(Core::EngineContext& context) : _context{context}{
+	Renderer::Renderer(Core::EngineContext& context) :
+		_context{context}{
 		
 	}
 
@@ -63,15 +64,17 @@ namespace Raindrop::Graphics{
 		return frameState;
 	}
 
-	void Renderer::renderScene(FrameState& state, const Scene& scene){
-
-	}
 
 	void Renderer::end(FrameState& state){
+		_context.window.events();
+
 		auto& window = _context.window;
 		auto& swapchain = _context.swapchain;
-
 		VkCommandBuffer& commandBuffer = state.commandBuffer;
+
+		swapchain.beginRenderPass(commandBuffer);
+		swapchain.endRenderPass(commandBuffer);
+
 
 		if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
 			throw std::runtime_error("failed to record command buffer");
@@ -86,6 +89,30 @@ namespace Raindrop::Graphics{
 
 		} else if (result != VK_SUCCESS){
 			throw std::runtime_error("failed to submit the command buffer");
+		}
+	}
+
+	void Renderer::renderScene(FrameState& state, const Scene& scene){
+		auto cameras = scene.filterEntitiesWithComponent<Components::Camera>();
+		for (auto &camera : cameras){
+			auto& cameraComponent = camera.getComponent<Components::Camera>();
+			renderSceneWithCamera(state, scene, cameraComponent.camera());
+		}
+	}
+
+	void Renderer::renderSceneWithCamera(FrameState& state, const Scene& scene, Camera& camera){
+		auto& fbo = camera.framebuffer();
+		auto commandBuffer = state.commandBuffer;
+
+		if (fbo.beginRenderPass(commandBuffer)){
+			
+			SceneRenderer::RenderWithTextureInfo info;
+			info.commandBuffer = commandBuffer;
+			info.viewTransform = camera.viewProjection();
+
+			// _sceneRenderer.renderWithTextures(scene.root(), info);
+			
+			fbo.endRenderPass(commandBuffer);
 		}
 	}
 
