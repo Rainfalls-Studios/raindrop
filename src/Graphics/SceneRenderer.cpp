@@ -1,8 +1,8 @@
 #include <Raindrop/Graphics/SceneRenderer.hpp>
 #include <Raindrop/Graphics/DescriptorPool.hpp>
 #include <Raindrop/Graphics/DescriptorSetLayout.hpp>
-#include <Raindrop/Graphics/builders/DescriptorPoolBuilder.hpp>
-#include <Raindrop/Graphics/builders/DescriptorSetLayoutBuilder.hpp>
+#include <Raindrop/Graphics/Builders/DescriptorPoolBuilder.hpp>
+#include <Raindrop/Graphics/Builders/DescriptorSetLayoutBuilder.hpp>
 #include <Raindrop/Graphics/GraphicsContext.hpp>
 #include <Raindrop/Core/Scene/Entity.hpp>
 #include <Raindrop/Graphics/Texture.hpp>

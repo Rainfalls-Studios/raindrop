@@ -2,10 +2,6 @@
 #define __RAINDROP_PCH_HPP__
 
 #include <glm/glm.hpp>
-#include <glm/gtc/quaternion.hpp>
-#include <easylogging++.h>
-#include <tinyxml2.h>
-#include <imgui/imgui.h>
 
 #include <memory>
 #include <functional>

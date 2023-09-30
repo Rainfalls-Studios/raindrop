@@ -1,4 +1,4 @@
-#include <Raindrop/Graphics/builders/ModelBuilder.hpp>
+#include <Raindrop/Graphics/Builders/ModelBuilder.hpp>
 #include <Raindrop/Graphics/Model.hpp>
 
 #include <tiny_obj_loader.h>

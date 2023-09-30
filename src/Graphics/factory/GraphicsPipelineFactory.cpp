@@ -1,8 +1,8 @@
-#include <Raindrop/Graphics/factory/GraphicsPipelineFactory.hpp>
+#include <Raindrop/Graphics/Factory/GraphicsPipelineFactory.hpp>
 #include <Raindrop/Core/Asset/AssetManager.hpp>
 #include <Raindrop/Graphics/GraphicsPipeline.hpp>
 #include <Raindrop/Graphics/Shader.hpp>
-#include <Raindrop/Graphics/builders/GraphicsPipelineBuilder.hpp>
+#include <Raindrop/Graphics/Builders/GraphicsPipelineBuilder.hpp>
 #include <Raindrop/Graphics/GraphicsContext.hpp>
 
 struct CaseInsensitiveHash {
@@ -31,11 +31,11 @@ namespace Raindrop::Graphics::Factory{
 		el::Logger* customLogger = el::Loggers::getLogger("Engine.Graphics.Pipeline");
 		customLogger->configurations()->set(el::Level::Global, el::ConfigurationType::Format, "%datetime %level [%logger]: %msg");
 
-		CLOG(INFO, "Engine.Graphics.Pipeline") << "Creating graphics pipeline asset factory...";
+		CLOG(INFO, "Engine.Graphics.Pipeline") << "Creating graphics pipeline asset Factory...";
 	}
 
 	GraphicsPipelineFactory::~GraphicsPipelineFactory(){
-		CLOG(INFO, "Engine.Graphics.Pipeline") << "Destroying graphics pipeline asset factory...";
+		CLOG(INFO, "Engine.Graphics.Pipeline") << "Destroying graphics pipeline asset Factory...";
 	}
 
 	std::shared_ptr<Core::Asset::Asset> GraphicsPipelineFactory::createAsset(const std::filesystem::path& path){
@@ -62,11 +62,11 @@ namespace Raindrop::Graphics::Factory{
 		asset.reset();
 	}
 
-	void GraphicsPipelineFactory::registerExtensions(const std::shared_ptr<GraphicsPipelineFactory>& factory){
-		auto& assetManager = _context.context.assetManager;
-
-		assetManager.linkFactory(".gfxpipe", factory);
-		assetManager.linkFactory(".gfxpipeline", factory);
+	std::vector<const char*> GraphicsPipelineFactory::extensions() const{
+		return {
+			".gfxpipe",
+			".gfxpipeline"
+		};
 	}
 
 	GraphicsPipelineFactory::Format GraphicsPipelineFactory::getFormat(const std::filesystem::path& path){

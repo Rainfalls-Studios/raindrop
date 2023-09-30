@@ -36,7 +36,7 @@ namespace Raindrop{
 			template<typename T> bool hasComponent() const;
 			template<typename T> T& getComponent();
 			template<typename T> const T& getComponent() const;
-			template<typename T> T& createComponent(T value = T{});
+			template<typename T> T& createComponent();
 			template<typename T> void destroyComponent();
 
 			bool operator==(const Entity& other) const;

@@ -4,7 +4,8 @@
 #include <Raindrop/common.hpp>
 
 namespace Raindrop::Core{
-	struct EngineContext;
+	struct Context;
+	struct Configuration;
 	class TaskQueue;
 	class AsyncTaskQueue;
 }

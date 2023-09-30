@@ -4,9 +4,9 @@
 
 namespace Raindrop::Graphics{
 	Camera::Camera(GraphicsContext& context, uint32_t width, uint32_t height) :
-		_context{context},
-		_framebuffer{_context, width, height}{
-
+		_context{context}{
+			
+		setProjection(Projections::PERSPECTIVE);
 		perspective().setProjection(
 			75.f,
 			0.1,
@@ -17,13 +17,13 @@ namespace Raindrop::Graphics{
 
 	Camera::~Camera(){}
 	
-	const Target& Camera::framebuffer() const{
-		return _framebuffer;
-	}
+	// const Target& Camera::framebuffer() const{
+	// 	return _framebuffer;
+	// }
 
-	Target& Camera::framebuffer(){
-		return _framebuffer;
-	}
+	// Target& Camera::framebuffer(){
+	// 	return _framebuffer;
+	// }
 
 	void Camera::setProjection(Projections::ProjectionType type){
 		switch (type){

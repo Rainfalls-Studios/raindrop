@@ -1,8 +1,10 @@
-#include <Raindrop/Graphics/factory/ShaderFactory.hpp>
+#include <Raindrop/Graphics/Factory/ShaderFactory.hpp>
+#include <Raindrop/Graphics/GraphicsContext.hpp>
 #include <Raindrop/Graphics/Shader.hpp>
+#include <boost/filesystem.hpp>
 
 struct CaseInsensitiveHash {
-	std::size_t operator()(const std::wstring& str) const {
+	std::size_t operator()(const std::string& str) const {
 		std::wstring lowercaseStr;
 		lowercaseStr.reserve(str.length());
 		for (wchar_t ch : str) {
@@ -13,9 +15,9 @@ struct CaseInsensitiveHash {
 };
 
 struct CaseInsensitiveEqual {
-	bool operator()(const std::wstring& str1, const std::wstring& str2) const {
+	bool operator()(const std::string& str1, const std::string& str2) const {
 		return std::equal(str1.begin(), str1.end(), str2.begin(), str2.end(),
-			[](wchar_t ch1, wchar_t ch2) {
+			[](char ch1, char ch2) {
 				return std::tolower(ch1, std::locale()) == std::tolower(ch2, std::locale());
 			}
 		);
@@ -23,6 +25,23 @@ struct CaseInsensitiveEqual {
 };
 
 namespace Raindrop::Graphics::Factory{
+	static const std::unordered_map<std::string, VkShaderStageFlagBits, CaseInsensitiveHash, CaseInsensitiveEqual> extensionToStageMap = {
+		{"vert", VK_SHADER_STAGE_VERTEX_BIT},
+		{"vertex", VK_SHADER_STAGE_VERTEX_BIT},
+		{"vs", VK_SHADER_STAGE_VERTEX_BIT},
+		{"vertexshader", VK_SHADER_STAGE_VERTEX_BIT},
+		{"vp", VK_SHADER_STAGE_VERTEX_BIT},
+		{"frag", VK_SHADER_STAGE_FRAGMENT_BIT},
+		{"fragment", VK_SHADER_STAGE_FRAGMENT_BIT},
+		{"fs", VK_SHADER_STAGE_FRAGMENT_BIT},
+		{"fragshader", VK_SHADER_STAGE_FRAGMENT_BIT},
+		{"fp", VK_SHADER_STAGE_FRAGMENT_BIT},
+		{"geom", VK_SHADER_STAGE_GEOMETRY_BIT},
+		{"geometry", VK_SHADER_STAGE_GEOMETRY_BIT},
+		{"gs", VK_SHADER_STAGE_GEOMETRY_BIT},
+		{"geometryshader", VK_SHADER_STAGE_GEOMETRY_BIT},
+		{"gp", VK_SHADER_STAGE_GEOMETRY_BIT}
+	};
 
 	static std::vector<char> readFile(const std::filesystem::path &filepath){
 		std::ifstream file(filepath, std::ios::ate | std::ios::binary);
@@ -53,20 +72,19 @@ namespace Raindrop::Graphics::Factory{
 	}
 
 	std::shared_ptr<Core::Asset::Asset> ShaderFactory::createAsset(const std::filesystem::path& path){
-		auto extension = path.extension();
 		CLOG(INFO, "Engine.Graphics.Shader") << "Loading a new shader : " << path;
 
 		std::shared_ptr<Shader> shader;
-		if (Core::iequals(extension, ".spv")) shader = loadSPV(path);
+		std::filesystem::path out = compiledName(path);
 
-		if (shader){
-			_shaders.push_back(shader);
-			return shader;
+		if (!isShaderCompiled(path)){
+			_context.shaderCompiler.compile(path, out);
 		}
 
-		std::stringstream err;
-		err << "Failed to reconize " << extension << " extesion (" << path << ")";
-		throw std::runtime_error(err.str());
+		shader = loadSPV(out);
+
+		_shaders.push_back(shader);
+		return shader;
 	}
 
 	void ShaderFactory::destroyAsset(std::shared_ptr<Core::Asset::Asset> asset){
@@ -83,48 +101,57 @@ namespace Raindrop::Graphics::Factory{
 	}
 
 	VkShaderStageFlagBits ShaderFactory::getStage(const std::filesystem::path& path){
-		std::wregex extensionRegex(L"\\.([a-zA-Z0-9]+)");
-		std::wstring strPath = path.wstring();
+		std::regex extensionRegex("\\.([a-zA-Z0-9]+)");
+		std::string strPath = path.string();
 
-		std::wsmatch extensionsMatch;
+		std::smatch extensionsMatch;
 		auto searchStart = strPath.cbegin();
 
 		while (std::regex_search(searchStart, strPath.cend(), extensionsMatch, extensionRegex)) {
-			std::wstring extension = extensionsMatch[1].str();
-			VkShaderStageFlagBits flagBits = getExtentionStage(extension);
+			std::string extension = extensionsMatch[1].str();
+			VkShaderStageFlagBits flagBits = getExtensionStage(extension);
 			if (flagBits != 0) return flagBits;
 			searchStart = extensionsMatch.suffix().first;
 		}
 		return static_cast<VkShaderStageFlagBits>(0);
 	}
 
-	class ExtensionToFlag{
-		public:
-			ExtensionToFlag(){
-				hashMap[L"vert"] = VK_SHADER_STAGE_VERTEX_BIT;
-				hashMap[L"vertex"] = VK_SHADER_STAGE_VERTEX_BIT;
-				hashMap[L"vs"] = VK_SHADER_STAGE_VERTEX_BIT;
-				hashMap[L"vertexshader"] = VK_SHADER_STAGE_VERTEX_BIT;
-				hashMap[L"vp"] = VK_SHADER_STAGE_VERTEX_BIT;
-				
-				hashMap[L"frag"] = VK_SHADER_STAGE_FRAGMENT_BIT;
-				hashMap[L"fragment"] = VK_SHADER_STAGE_FRAGMENT_BIT;
-				hashMap[L"fs"] = VK_SHADER_STAGE_FRAGMENT_BIT;
-				hashMap[L"fragshader"] = VK_SHADER_STAGE_FRAGMENT_BIT;
-				hashMap[L"fp"] = VK_SHADER_STAGE_FRAGMENT_BIT;
+	bool ShaderFactory::isShaderCompiled(const std::filesystem::path& path){
+		std::filesystem::path compiledPath = compiledName(path);
+		if (!std::filesystem::exists(compiledPath)) return false;
+		return boost::filesystem::last_write_time(path.string()) < boost::filesystem::last_write_time(compiledPath.string());
+	}
 
-				hashMap[L"geom"] = VK_SHADER_STAGE_GEOMETRY_BIT;
-				hashMap[L"geometry"] = VK_SHADER_STAGE_GEOMETRY_BIT;
-				hashMap[L"gs"] = VK_SHADER_STAGE_GEOMETRY_BIT;
-				hashMap[L"geometryshader"] = VK_SHADER_STAGE_GEOMETRY_BIT;
-				hashMap[L"gp"] = VK_SHADER_STAGE_GEOMETRY_BIT;
-			}
+	std::filesystem::path ShaderFactory::compiledName(std::filesystem::path path){
+		std::filesystem::path relPath = std::filesystem::relative(path, _context.context.dataDirectory);
+		relPath.replace_extension(relPath.extension().string() + ".spv");
+		std::string strPath = relPath.string();
+		
+		std::replace(strPath.begin(), strPath.end(), '\\', '_');
+   		std::replace(strPath.begin(), strPath.end(), '/', '_');
 
-			std::unordered_map<std::wstring, VkShaderStageFlagBits, CaseInsensitiveHash, CaseInsensitiveEqual> hashMap;
-	};
+		size_t pos = strPath.find("__");
+		while (pos != std::string::npos) {
+			strPath.replace(pos, 2, "_");
+			pos = strPath.find("__", pos + 1);
+		}
 
-	VkShaderStageFlagBits ShaderFactory::getExtentionStage(const std::wstring extension){
-		static ExtensionToFlag map;
-		return map.hashMap[extension];
+		return _context.context.config.compiledShaderDirectory / std::filesystem::path(strPath);
+	}
+
+	VkShaderStageFlagBits ShaderFactory::getExtensionStage(const std::string extension){
+		auto it = extensionToStageMap.find(extension);
+		return it != extensionToStageMap.end() ? it->second : throw std::runtime_error("unknown shader extension");
+	}
+
+	std::vector<const char*> ShaderFactory::extensions() const{
+		std::vector<const char*> ext;
+		ext.push_back(".spv");
+
+		for (const auto& it : extensionToStageMap){
+			ext.push_back((std::string(".") + it.first).c_str());
+		}
+
+		return ext;
 	}
 }

@@ -11,6 +11,8 @@ namespace Raindrop::Core::Asset{
 
 			virtual std::shared_ptr<Asset> createAsset(const std::filesystem::path& path) = 0;
 			virtual void destroyAsset(std::shared_ptr<Asset> asset) = 0;
+
+			virtual std::vector<const char*> extensions() const = 0;
 	};
 }
 

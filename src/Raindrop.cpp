@@ -1,11 +1,12 @@
 #include <Raindrop/Raindrop.hpp>
 
-INITIALIZE_EASYLOGGINGPP;
-
 namespace Raindrop{
 	Raindrop::Raindrop() : _renderer{_context}{
-
 		_scene = createScene();
+
+		_context.eventManager.subscribe("Engine.Window.Quit", [this](){
+			_launched = false;
+		});
 	}
 
 	Raindrop::~Raindrop(){

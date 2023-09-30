@@ -1,0 +1,7 @@
+<GraphicsPipeline name="wire mesh pipeline">
+	<Shaders>
+		<Shader source="${DataDirectory}/shaders/wireMesh/wireMesh.glsl.frag"/>
+		<Shader source="${DataDirectory}/shaders/wireMesh/wireMesh.glsl.vert"/>
+	</Shaders>
+	<Target id="SceneFramebuffer"/> 
+</GraphicsPipeline>

@@ -1,15 +1,20 @@
-#include <Raindrop/Raindrop.hpp>
+// #include <Raindrop/Raindrop.hpp>
+// #include <Raindrop/Graphics/Components/Camera.hpp>
 
-static std::filesystem::path RESOURCES = RESOURCES_PATH;
+// static std::filesystem::path RESOURCES = RESOURCES_PATH;
+
+#include <iostream>
 
 int main(int argc, char **argv){
-	START_EASYLOGGINGPP(argc, argv);
+	// std::filesystem::current_path(std::filesystem::current_path().parent_path());
 
-	Raindrop::Raindrop engine;
-	auto& scene = engine.scene();
+	// Raindrop::Raindrop engine;
+	// auto& scene = engine.scene();
 
-	auto entity = scene.createEntity();
+	// auto cameraEntity = scene.createEntity();
+	// auto& camera = cameraEntity.createComponent<Raindrop::Components::Camera>();
 	
-	engine.run();
+	// engine.run();
+	
 	return 0;
 }

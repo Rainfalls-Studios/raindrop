@@ -5,7 +5,10 @@
 
 namespace Raindrop::Graphics{
 	SceneRenderPass::SceneRenderPass(GraphicsContext& context) : _context{context}{
+		setBestFormats();
 		createRenderPass();
+
+		// _context.context.registry["SceneRenderPass"] = 
 	}
 
 	SceneRenderPass::~SceneRenderPass(){
@@ -14,6 +17,17 @@ namespace Raindrop::Graphics{
 
 		if (_renderPass) vkDestroyRenderPass(device, _renderPass, allocationCallbacks);
 		_renderPass = VK_NULL_HANDLE;
+	}
+
+	void SceneRenderPass::setBestFormats(){
+		for (int i=0; i<attachments.size(); i++){
+			auto& attachment = attachments[i];
+			VkFormat format = _context.formats.bestFormatOptimalTiling(attachment.flags, attachment.requiredFeatures);
+
+			attachment.description.format = format;
+			attachment.image.format = format;
+			attachment.imageView.format = format;
+		}
 	}
 
 	void SceneRenderPass::createRenderPass(){

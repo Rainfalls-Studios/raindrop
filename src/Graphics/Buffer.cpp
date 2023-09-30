@@ -1,5 +1,4 @@
 #include <Raindrop/Graphics/Buffer.hpp>
-#include <Raindrop/Graphics/Device.hpp>
 #include <Raindrop/Graphics/GraphicsContext.hpp>
 
 namespace Raindrop::Graphics{

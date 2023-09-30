@@ -2,6 +2,7 @@
 #define __RAINDROP_GRAPHICS_CONFIGURATION_COMMON_HPP__
 
 #include <Raindrop/Graphics/common.hpp>
+#include <Raindrop/Graphics/FormatUtilities.hpp>
 
 namespace Raindrop::Graphics{
 	struct AttachmentInfo{
@@ -9,9 +10,9 @@ namespace Raindrop::Graphics{
 		VkImageViewCreateInfo imageView;
 		VkImageCreateInfo image;
 
-		// if none of the formats are available, throw an exception
-		std::vector<VkFormat> formats; // ordered from best to worst case
 		VkFormatFeatureFlags requiredFeatures;
+		uint32_t flags;
+		
 		VkClearValue clear;
 	};
 }

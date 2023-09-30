@@ -1,10 +1,9 @@
-#include <Raindrop/Graphics/factory/TextureFactory.hpp>
+#include <Raindrop/Graphics/Factory/TextureFactory.hpp>
 #include <Raindrop/Graphics/GraphicsContext.hpp>
 #include <Raindrop/Graphics/Texture.hpp>
 
 namespace Raindrop::Graphics::Factory{
 	TextureFactory::TextureFactory(GraphicsContext& context) : _context{context}{
-
 	}
 
 	TextureFactory::~TextureFactory(){
@@ -22,12 +21,13 @@ namespace Raindrop::Graphics::Factory{
 		_textures.remove(std::static_pointer_cast<Texture>(asset));
 	}
 
-	void TextureFactory::registerExtensions(const std::shared_ptr<TextureFactory>& factory){
-		auto& assetManager = _context.context.assetManager;
-
-		assetManager.linkFactory(".jpg", factory);
-		assetManager.linkFactory(".jpeg", factory);
-		assetManager.linkFactory(".png", factory);
-		assetManager.linkFactory(".bmp", factory);
+	std::vector<const char*> TextureFactory::extensions() const{
+		return {
+			".jpg",
+			".jpeg",
+			".png",
+			".bmp"
+		};
 	}
+
 }

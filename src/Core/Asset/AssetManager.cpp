@@ -13,10 +13,6 @@ namespace Raindrop::Core::Asset{
 		CLOG(INFO, "AssetManager") << "Destroying Asset Manager";
 	}
 
-	void AssetManager::linkFactory(const std::filesystem::path& extension, std::shared_ptr<AssetFactory> factory){
-		_extensionToFactory[extension] = factory;
-	}
-
 	void AssetManager::destroyLink(const std::filesystem::path& extension){
 		_extensionToFactory.erase(extension);
 	}
@@ -33,13 +29,13 @@ namespace Raindrop::Core::Asset{
 			_pathToAsset.erase(it);
 		}
 
-		AssetFactory* factory = findFactory(path.extension());
-		if (!factory){
+		AssetFactory* Factory = findFactory(path.extension());
+		if (!Factory){
 			std::stringstream err;
-			err << "Failed to find the asset factory corresponding to " << path.extension() << " extension : " << path;
+			err << "Failed to find the asset Factory corresponding to " << path.extension() << " extension : " << path;
 			throw std::runtime_error(err.str());
 		}
-		auto asset = factory->createAsset(path);
+		auto asset = Factory->createAsset(path);
 		_pathToAsset[path] = asset;
 
 		asset->_path = path;
@@ -52,11 +48,36 @@ namespace Raindrop::Core::Asset{
 			return nullptr;
 		}
 
-		if (auto factory = it->second.lock()){
-			return factory.get();
+		if (auto Factory = it->second.lock()){
+			return Factory.get();
 		}
 
 		_extensionToFactory.erase(extension);
 		return nullptr;
 	}
+
+	void AssetManager::registerFactory(const std::shared_ptr<AssetFactory>& factory, std::size_t typeID){
+		FactoryData data;
+		data.factory = factory;
+		data.typeID = typeID;
+
+		_factories.push_back(data);
+		auto exts = factory->extensions();
+
+		for (const auto& e : exts){
+			_extensionToFactory[e] = factory;
+		}
+	}
+
+	void AssetManager::removeFactory(std::size_t typeID){
+		auto it = std::find_if(
+			_factories.begin(),
+			_factories.end(),
+			[typeID](const FactoryData& a){return a.typeID == typeID;}
+		);
+
+		if (it == _factories.end()) return;
+		_factories.erase(it);
+	}
+
 }
