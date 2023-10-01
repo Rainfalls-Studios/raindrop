@@ -5,5 +5,6 @@ namespace Raindrop::Core{
 		logger("Core"),
 		registry{*this},
 		eventManager{*this},
-		assetManager{*this}{}
+		assetManager{*this},
+		sceneManager{*this}{}
 }

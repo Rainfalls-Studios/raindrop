@@ -25,6 +25,9 @@ namespace Raindrop::Core::Event{
 			KeyEvents& keyEvents();
 			MouseEvents& mouseEvents();
 
+			const KeyEvents& keyEvents() const;
+			const MouseEvents& mouseEvents() const;
+
 		private:
 			std::unique_ptr<Context> _context;
 

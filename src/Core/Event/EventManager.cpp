@@ -46,4 +46,12 @@ namespace Raindrop::Core::Event{
 	MouseEvents& EventManager::mouseEvents(){
 		return *_mouseEvents;
 	}
+	
+	const KeyEvents& EventManager::keyEvents() const{
+		return *_keyEvents;
+	}
+
+	const MouseEvents& EventManager::mouseEvents() const{
+		return *_mouseEvents;
+	}
 }

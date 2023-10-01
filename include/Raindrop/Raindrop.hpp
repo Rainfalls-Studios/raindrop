@@ -2,8 +2,9 @@
 #define __RAINDROP_RAINDROP_HPP__
 
 #include <Raindrop/common.hpp>
-#include <Raindrop/Graphics/Engine.hpp>
-#include <Raindrop/components.hpp>
+#include <Raindrop/Core/common.hpp>
+// #include <Raindrop/Graphics/Engine.hpp>
+// #include <Raindrop/components.hpp>
 
 namespace Raindrop{
 	class Raindrop{
@@ -21,9 +22,8 @@ namespace Raindrop{
 			Scene createScene();
 
 		private:
-			std::unique_ptr<Core::Context> _core;
-			std::unique_ptr<Graphics::Engine> _renderEngine;
-			// Scene _scene;
+			std::unique_ptr<Core::Engine> _core;
+			// std::unique_ptr<Graphics::Engine> _graphics;
 
 			bool _launched;
 

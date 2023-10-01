@@ -5,6 +5,7 @@
 
 namespace Raindrop::Core::Asset{
 	class AssetManager{
+		friend class Core::Engine;
 		public:
 			AssetManager(Core::Context& core);
 			~AssetManager();

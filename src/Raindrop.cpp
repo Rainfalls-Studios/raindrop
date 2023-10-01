@@ -1,49 +1,51 @@
 #include <Raindrop/Raindrop.hpp>
+#include <Raindrop/Core/Engine.hpp>
 
 namespace Raindrop{
-	Raindrop::Raindrop() : _renderer{_context}{
-		_scene = createScene();
+	Raindrop::Raindrop(){
+		// _scene = createScene();
 
-		_context.eventManager.subscribe("Engine.Window.Quit", [this](){
-			_launched = false;
-		});
+		// _context.eventManager.subscribe("Engine.Window.Quit", [this](){
+		// 	_launched = false;
+		// });
+		_core = std::make_unique<Core::Engine>();
 	}
 
 	Raindrop::~Raindrop(){
-
+		_core.reset();
 	}
 
-	void Raindrop::run(){
-		_launched = true;
-		while (_launched){
-			render();
-		}
-	}
+	// void Raindrop::run(){
+	// 	_launched = true;
+	// 	while (_launched){
+	// 		render();
+	// 	}
+	// }
 	
-	Scene& Raindrop::scene(){
-		return _scene;
-	}
+	// Scene& Raindrop::scene(){
+	// 	return _scene;
+	// }
 
-	const Scene& Raindrop::scene() const{
-		return _scene;
-	}
+	// const Scene& Raindrop::scene() const{
+	// 	return _scene;
+	// }
 
-	void Raindrop::setScene(const Scene& scene){
-		_scene = scene;
-	}
+	// void Raindrop::setScene(const Scene& scene){
+	// 	_scene = scene;
+	// }
 
-	Scene Raindrop::createScene(){
-		std::shared_ptr<Core::Scene::Scene> scene = std::make_shared<Core::Scene::Scene>(_context, 5000, 100);
-		_renderer.registerSceneComponents(*scene);
-		return Scene(scene);
-	}
+	// Scene Raindrop::createScene(){
+	// 	std::shared_ptr<Core::Scene::Scene> scene = std::make_shared<Core::Scene::Scene>(_context, 5000, 100);
+	// 	_renderer.registerSceneComponents(*scene);
+	// 	return Scene(scene);
+	// }
 
-	void Raindrop::render(){
-		Graphics::FrameState frameState = _renderer.begin();
-		if (!frameState) return;
+	// void Raindrop::render(){
+	// 	Graphics::FrameState frameState = _renderer.begin();
+	// 	if (!frameState) return;
 
-		_renderer.renderScene(frameState, _scene);
+	// 	_renderer.renderScene(frameState, _scene);
 
-		_renderer.end(frameState);
-	}
+	// 	_renderer.end(frameState);
+	// }
 }

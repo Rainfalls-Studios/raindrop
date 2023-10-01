@@ -53,4 +53,13 @@ namespace Raindrop::Core::Scene{
 	void SceneManager::remove(const std::shared_ptr<Scene>& scene){
 		remove(scene->name());
 	}
+	
+	const std::shared_ptr<Scene> SceneManager::get(const std::string& name) const{
+		auto it = _nameToSceneMap.find(name);
+		if (it == _nameToSceneMap.end()){
+			_context->logger.warn("Cannot find scene \"%s\"", name.c_str());
+			throw std::runtime_error("Failed to find scene");
+		}
+		return it->second;
+	}
 }

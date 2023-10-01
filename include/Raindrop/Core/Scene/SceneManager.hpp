@@ -13,6 +13,8 @@ namespace Raindrop::Core::Scene{
 			std::shared_ptr<Scene> getOrCreate(const std::string& name);
 			std::shared_ptr<Scene> get(const std::string& name);
 
+			const std::shared_ptr<Scene> get(const std::string& name) const;
+
 			void remove(const std::string& name);
 			void remove(const std::shared_ptr<Scene>& scene);
 			bool exists(const std::string& name) const;
