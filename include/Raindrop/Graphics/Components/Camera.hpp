@@ -11,8 +11,6 @@ namespace Raindrop::Graphics::Components{
 			Camera(GraphicsContext& context);
 			virtual ~Camera() override;
 
-			virtual void UI(Core::EngineContext& context) override;
-
 			const Graphics::Camera& camera() const;
 			Graphics::Camera& camera();
 		

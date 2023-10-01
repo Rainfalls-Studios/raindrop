@@ -6,7 +6,7 @@
 namespace Raindrop::Core::Scene{
 	class ComponentRegistry{
 		public:
-			ComponentRegistry(uint32_t size);
+			ComponentRegistry(Context& context, uint32_t size);
 			~ComponentRegistry();
 
 			ComponentID registerComponent(uint32_t componentSize, size_t typeID, uint32_t size, ConstructorPtr constructor, DestructorPtr destructor);
@@ -30,6 +30,7 @@ namespace Raindrop::Core::Scene{
 			ComponentManager* getManager(ComponentID component);
 
 		private:
+			Context& _context;
 			std::unordered_map<size_t, ComponentID> _typeIDtoComponentID;
 			std::vector<std::unique_ptr<ComponentManager>> _managers;
 			std::queue<ComponentID> _IDsPool;

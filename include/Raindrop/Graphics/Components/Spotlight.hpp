@@ -13,8 +13,6 @@ namespace Raindrop::Graphics::Components{
 			float outerCutOff;
 			float cutOff;
 			float intensity;
-
-			virtual void UI(Core::EngineContext& context) override;
 	};
 }
 

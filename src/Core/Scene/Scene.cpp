@@ -1,5 +1,6 @@
 #include <Raindrop/Core/Scene/Scene.hpp>
 #include <Raindrop/Core/Scene/Entity.hpp>
+#include <Raindrop/Core/Scene/Context.hpp>
 #include <Raindrop/Core/Scene/ComponentRegistry.hpp>
 #include <Raindrop/Core/Scene/ComponentManager.hpp>
 #include <Raindrop/Core/Scene/EntityManager.hpp>
@@ -8,27 +9,18 @@
 #include <Raindrop/Core/Scene/Components/Hierarchy.hpp>
 #include <Raindrop/Core/Scene/Components/Tag.hpp>
 #include <Raindrop/Core/Scene/Components/Transform.hpp>
-#include <Raindrop/Graphics/Components/Camera.hpp>
-#include <Raindrop/Graphics/Components/LightPoint.hpp>
-#include <Raindrop/Graphics/Components/Model.hpp>
-#include <Raindrop/Graphics/Components/Spotlight.hpp>
-#include <Raindrop/Graphics/Components/Sun.hpp>
 
 namespace Raindrop::Core::Scene{
-	Scene::Scene(EngineContext& context, uint32_t entityCount, uint32_t componentCount) : _context{context}{
+	Scene::Scene(Context& context, uint32_t entityCount, uint32_t componentCount) : _context{context}{
 		_root = INVALID_ENTITY_ID;
 
-		el::Logger* customLogger = el::Loggers::getLogger("Engine.Core.Scene");
-		customLogger->configurations()->set(el::Level::Global, el::ConfigurationType::Format, "%datetime %level [%logger]: %msg");
-
-		CLOG(INFO, "Engine.Core.Scene") << "Creating new scene...";
-		_componentRegistry = std::make_unique<ComponentRegistry>(componentCount);
-		_entityComponentsRegistry = std::make_unique<EntityComponentsRegistry>(entityCount, componentCount);
-		_entityManager = std::make_unique<EntityManager>(entityCount);
-		CLOG(INFO, "Engine.Core.Scene") << "Scene created with success !";
+		_context.logger.info("Initializing Scene...");
+		_componentRegistry = std::make_unique<ComponentRegistry>(_context, componentCount);
+		_entityComponentsRegistry = std::make_unique<EntityComponentsRegistry>(_context, entityCount, componentCount);
+		_entityManager = std::make_unique<EntityManager>(_context, entityCount);
+		_context.logger.info("Scene initialized without any ciritcal error");
 
 		registerComponents();
-		
 		_root = createEntity();
 	}
 
@@ -40,13 +32,16 @@ namespace Raindrop::Core::Scene{
 		registerComponent<Components::Hierarchy>(count);
 	}
 
-
 	Scene::~Scene(){
-		CLOG(INFO, "Engine.Core.Scene") << "Destroying scene...";
+		_context.logger.info("Terminating Scene...");
 		_componentRegistry.reset();
 		_entityComponentsRegistry.reset();
 		_entityManager.reset();
-		CLOG(INFO, "Engine.Core.Scene") << "Scene destroyed with success !";
+		_context.logger.info("Scene terminated scene without any critical error");
+	}
+	
+	const std::string& Scene::name() const{
+		return _name;
 	}
 
 	uint32_t Scene::maxEntityCount() const{
@@ -89,7 +84,7 @@ namespace Raindrop::Core::Scene{
 
 	void Scene::destroyEntity(EntityID ID){
 		if (ID == _root){
-			CLOG(WARNING, "Engine.Core.Scene") << "Cannot destroy the root entity of the scene";
+			_context.logger.warn("Cannot destroy the root entity of the scene (%s)", _name.c_str());
 			throw std::runtime_error("Cannot destroy root");
 		}
 		

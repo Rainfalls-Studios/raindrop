@@ -8,7 +8,7 @@ namespace Raindrop::Core::Scene{
 
 	class EntityManager{
 		public:
-			EntityManager(uint32_t size);
+			EntityManager(Context& context, uint32_t size);
 			~EntityManager();
 
 			EntityID createEntity();
@@ -18,6 +18,7 @@ namespace Raindrop::Core::Scene{
 			uint32_t usedSize() const;
 
 		private:
+			Context& _context;
 			std::queue<EntityID> _IDsPool;
 			uint32_t _size;
 	};

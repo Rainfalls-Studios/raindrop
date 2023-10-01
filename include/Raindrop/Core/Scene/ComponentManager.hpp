@@ -6,7 +6,7 @@
 namespace Raindrop::Core::Scene{
 	class ComponentManager{
 		public:
-			ComponentManager(uint32_t componentSize, size_t typeID, uint32_t size, ConstructorPtr constructor, DestructorPtr destructor);
+			ComponentManager(Context& context, uint32_t componentSize, size_t typeID, uint32_t size, ConstructorPtr constructor, DestructorPtr destructor);
 			~ComponentManager();
 
 			void* get(ComponentHandleID id);
@@ -25,6 +25,8 @@ namespace Raindrop::Core::Scene{
 			DestructorPtr destructor();
 
 		private:
+			Context& _context;
+
 			// create a vector of 1byte data type.
 			std::vector<char> _components;
 			std::queue<ComponentHandleID> _IDsPool;

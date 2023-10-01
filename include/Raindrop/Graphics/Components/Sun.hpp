@@ -16,8 +16,6 @@ namespace Raindrop::Graphics::Components{
 			
 			// const ShadowMap::Sun::ShadowMap& shadowMap() const;
 			VkDescriptorSet descriptorSet() const;
-			
-			virtual void UI(Core::EngineContext& context) override;
 		
 		private:
 			GraphicsContext& _context;

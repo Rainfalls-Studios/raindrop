@@ -1,8 +1,9 @@
 #include <Raindrop/Core/Scene/ComponentRegistry.hpp>
 #include <Raindrop/Core/Scene/ComponentManager.hpp>
+#include <Raindrop/Core/Scene/Context.hpp>
 
 namespace Raindrop::Core::Scene{
-	ComponentRegistry::ComponentRegistry(uint32_t size){
+	ComponentRegistry::ComponentRegistry(Context& context, uint32_t size) : _context{context}{
 		_managers.resize(size);
 
 		for (uint32_t i=0; i<size; i++){
@@ -23,7 +24,7 @@ namespace Raindrop::Core::Scene{
 
 	ComponentID ComponentRegistry::getNextID(){
 		if (_IDsPool.empty()){
-			CLOG(ERROR, "Engine.Core.Scene") << "Cannot add another component ! The component registry is full !";
+			_context.logger.error("Cannot register a new component. The component registry is full !");
 			throw std::runtime_error("Cannot add another component !");
 		}
 		ComponentID id = _IDsPool.front();

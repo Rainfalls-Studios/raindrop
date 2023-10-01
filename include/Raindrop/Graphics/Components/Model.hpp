@@ -15,8 +15,6 @@ namespace Raindrop::Graphics::Components{
 
 			void updateTexture(std::weak_ptr<Graphics::Texture> texture);
 
-			virtual void UI(Core::EngineContext& context) override;
-
 		private:
 			GraphicsContext& _context;
 

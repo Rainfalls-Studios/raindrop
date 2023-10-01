@@ -2,7 +2,7 @@
 
 
 namespace Raindrop::Core::Scene{
-	EntityComponentsRegistry::EntityComponentsRegistry(uint32_t entityCount, uint32_t componentCount){
+	EntityComponentsRegistry::EntityComponentsRegistry(Context& context, uint32_t entityCount, uint32_t componentCount) : _context{context}{
 		_ids.resize(componentCount);
 		for (auto &v : _ids){
 			v.resize(entityCount);
@@ -10,9 +10,7 @@ namespace Raindrop::Core::Scene{
 		}
 	}
 
-	EntityComponentsRegistry::~EntityComponentsRegistry(){
-
-	}
+	EntityComponentsRegistry::~EntityComponentsRegistry(){}
 
 	ComponentHandleID& EntityComponentsRegistry::get(EntityID entity, ComponentID component){
 		return _ids[component][entity];

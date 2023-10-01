@@ -1,8 +1,7 @@
 #ifndef __RAINDROP_CORE_SCENE_COMMON_HPP__
 #define __RAINDROP_CORE_SCENE_COMMON_HPP__
 
-#include <Raindrop/common.hpp>
-#include <Raindrop/Core/Context.hpp>
+#include <Raindrop/Core/common.hpp>
 
 namespace Raindrop::Core::Scene{
 	using EntityID = uint32_t;

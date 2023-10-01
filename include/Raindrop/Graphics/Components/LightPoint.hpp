@@ -11,8 +11,6 @@ namespace Raindrop::Graphics::Components{
 			
 			glm::vec3 color;
 			float intensity;
-			
-			virtual void UI(Core::EngineContext& context) override;
 	};
 }
 

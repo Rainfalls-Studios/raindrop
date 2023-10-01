@@ -5,9 +5,7 @@
 
 namespace Raindrop::Core{
 	struct Context;
-	struct Configuration;
-	class TaskQueue;
-	class AsyncTaskQueue;
+	class Engine;
 }
 
 #endif

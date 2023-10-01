@@ -1,7 +1,7 @@
 #include <Raindrop/Core/Scene/EntityManager.hpp>
 
 namespace Raindrop::Core::Scene{
-	EntityManager::EntityManager(uint32_t size) : _size{size}{
+	EntityManager::EntityManager(Context& context, uint32_t size) : _size{size}, _context{context}{
 		for (uint32_t i=0; i<size; i++){
 			_IDsPool.push(i);
 		}

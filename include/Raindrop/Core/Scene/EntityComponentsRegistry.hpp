@@ -6,7 +6,7 @@
 namespace Raindrop::Core::Scene{
 	class EntityComponentsRegistry{
 		public:
-			EntityComponentsRegistry(uint32_t entityCount, uint32_t componentCount);
+			EntityComponentsRegistry(Context& context, uint32_t entityCount, uint32_t componentCount);
 			~EntityComponentsRegistry();
 
 			ComponentHandleID& get(EntityID entity, ComponentID component);

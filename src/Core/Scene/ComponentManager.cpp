@@ -1,7 +1,7 @@
 #include <Raindrop/Core/Scene/ComponentManager.hpp>
 
 namespace Raindrop::Core::Scene{
-	ComponentManager::ComponentManager(uint32_t componentSize, size_t typeID, uint32_t size, ConstructorPtr constructor, DestructorPtr destructor) : _componentSize{componentSize}, _typeID{typeID}, _size{size}, _constructor{constructor}, _destructor{destructor}{
+	ComponentManager::ComponentManager(Context& context, uint32_t componentSize, size_t typeID, uint32_t size, ConstructorPtr constructor, DestructorPtr destructor) : _context{context}, _componentSize{componentSize}, _typeID{typeID}, _size{size}, _constructor{constructor}, _destructor{destructor}{
 		_components.resize(size * componentSize);
 
 		for (uint32_t i=0; i<size; i++){
