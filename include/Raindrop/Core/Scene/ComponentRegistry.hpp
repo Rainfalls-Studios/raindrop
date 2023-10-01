@@ -18,20 +18,9 @@ namespace Raindrop::Core::Scene{
 			uint32_t size() const;
 			uint32_t usedSize() const;
 
-			template<typename T>
-			void registerComponent(uint32_t size){
-				registerComponent(sizeof(T), typeid(T).hash_code(), size, [](void* component){new (component) T();}, [](void* component){reinterpret_cast<T*>(component)->~T();});
-			}
-
-			template<typename T>
-			void unregisterComponent(){
-				unregisterComponent(typeid(T).hash_code());
-			}
-
-			template<typename T>
-			T& getComponent(ComponentHandleID id){
-				return *reinterpret_cast<T*>(getComponent(typeid(T).hash_code(), id));
-			}
+			template<typename T> void registerComponent(uint32_t size);
+			template<typename T> void unregisterComponent();
+			template<typename T> T& getComponent(ComponentHandleID id);
 
 			ComponentHandleID createHandle(ComponentID component, EntityID entity);
 			void destroyHandle(ComponentID component, ComponentHandleID handle, EntityID entity);
@@ -47,6 +36,8 @@ namespace Raindrop::Core::Scene{
 
 			ComponentID getNextID();
 	};
+
+	#include <Raindrop/Core/Scene/tpp/ComponentRegistry.tpp>
 }
 
 #endif

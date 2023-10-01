@@ -74,7 +74,7 @@ namespace Raindrop::Core::Scene{
 			Scene* _scene;
 	};
 
-	#include <Raindrop/Core/Scene/Entity.tpp>
+	#include <Raindrop/Core/Scene/tpp/Entity.tpp>
 }
 
 #endif

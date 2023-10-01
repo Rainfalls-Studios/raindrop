@@ -16,7 +16,7 @@ namespace Raindrop::Core::Event{
 
 	class EventManager{
 		public:
-			EventManager();
+			EventManager(Core::Context& core);
 			~EventManager();
 
 			void subscribe(const std::string& name, Callback callback);
@@ -26,6 +26,8 @@ namespace Raindrop::Core::Event{
 			MouseEvents& mouseEvents();
 
 		private:
+			std::unique_ptr<Context> _context;
+
 			std::unordered_map<std::string, std::list<Callback>> _nameToCallbacksMap;
 			std::unique_ptr<KeyEvents> _keyEvents;
 			std::unique_ptr<MouseEvents> _mouseEvents;

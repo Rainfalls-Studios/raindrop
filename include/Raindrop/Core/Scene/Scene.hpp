@@ -55,7 +55,7 @@ namespace Raindrop::Core::Scene{
 			void registerComponents();
 	};
 
-	#include <Raindrop/Core/Scene/Scene.tpp>
+	#include <Raindrop/Core/Scene/tpp/Scene.tpp>
 }
 
 #endif

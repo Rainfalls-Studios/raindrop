@@ -8,8 +8,6 @@ namespace Raindrop::Core::Scene{
 		public:
 			Component() = default;
 			virtual ~Component() = default;
-
-			virtual void UI(EngineContext& context){};
 	};
 }
 
