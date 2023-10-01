@@ -1,29 +1,34 @@
 #include <Raindrop/Core/Asset/AssetManager.hpp>
 #include <Raindrop/Core/Asset/AssetFactory.hpp>
 #include <Raindrop/Core/Asset/Asset.hpp>
+#include <Raindrop/Core/Asset/Context.hpp>
 
 namespace Raindrop::Core::Asset{
-	AssetManager::AssetManager(){
-		el::Logger* customLogger = el::Loggers::getLogger("AssetManager");
-		customLogger->configurations()->set(el::Level::Global, el::ConfigurationType::Format, "%datetime %level [%logger]: %msg");
-		CLOG(INFO, "AssetManager") << "New Asset Manager";
+	struct AssetManager::FactoryData{
+		std::shared_ptr<AssetFactory> factory;
+		std::size_t typeID;
+	};
+
+	AssetManager::AssetManager(Core::Context& core){
+		_context = std::make_unique<Context>(core);
+
+		_context->logger.info("Initializing Asset manager...");
+		_context->logger.info("Asset manager initialized without any critical error");
 	}
 
 	AssetManager::~AssetManager(){
-		CLOG(INFO, "AssetManager") << "Destroying Asset Manager";
-	}
-
-	void AssetManager::destroyLink(const std::filesystem::path& extension){
-		_extensionToFactory.erase(extension);
+		_context->logger.info("Terminating Asset manager...");
+		_factories.clear();
+		_context->logger.info("Asset manager terminated without any critical error");
 	}
 
 	std::weak_ptr<Asset> AssetManager::loadOrGet(const std::filesystem::path& path){
-		CLOG(INFO, "AssetManager") << "requirering file : " << path;
+		_context->logger.info("Requirering asset %ls", path.c_str());
 
 		auto it = _pathToAsset.find(path);
 		if (it != _pathToAsset.end()){
 			if (!it->second.expired()){
-				CLOG(TRACE, "AssetManager") << "Succefuly found asset file : " << path;
+				_context->logger.trace("Succesfuly found asset file %ls", path.c_str());
 				return it->second;
 			}
 			_pathToAsset.erase(it);
@@ -31,14 +36,26 @@ namespace Raindrop::Core::Asset{
 
 		AssetFactory* Factory = findFactory(path.extension());
 		if (!Factory){
-			std::stringstream err;
-			err << "Failed to find the asset Factory corresponding to " << path.extension() << " extension : " << path;
-			throw std::runtime_error(err.str());
+			_context->logger.error("Failed to find the asset factory corresponding to %ls extension : %ls", path.extension().c_str(), path.c_str());
+			throw std::runtime_error("Failed to find asset factory");
 		}
-		auto asset = Factory->createAsset(path);
-		_pathToAsset[path] = asset;
 
+		_context->logger.info("Loading %ls from asset factory...", path.c_str());
+
+		std::shared_ptr<Asset> asset;
+		try{
+			asset = Factory->createAsset(path);
+		} catch (const std::exception &e){
+			_context->logger.error("Failed to load asset %ls : %s", path.c_str(), e.what());
+			throw std::runtime_error("Failed to load asset");
+		}
+
+		_context->logger.info("Asset %ls loaded with success !", path.c_str());
+
+
+		_pathToAsset[path] = asset;
 		asset->_path = path;
+
 		return asset;
 	}
 
@@ -79,5 +96,4 @@ namespace Raindrop::Core::Asset{
 		if (it == _factories.end()) return;
 		_factories.erase(it);
 	}
-
 }

@@ -1,9 +1,10 @@
 #ifndef __RAINDROP_CORE_ASSET_COMMON_HPP__
 #define __RAINDROP_CORE_ASSET_COMMON_HPP__
 
-#include <Raindrop/common.hpp>
+#include <Raindrop/Core/common.hpp>
 
 namespace Raindrop::Core::Asset{
+	struct Context;
 	class AssetManager;
 	class AssetFactory;
 	class Asset;
