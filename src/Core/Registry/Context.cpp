@@ -3,5 +3,5 @@
 namespace Raindrop::Core::Registry{
     Context::Context(Core::Context& core) :
         core{core},
-        logger("Registry"){}
+        logger("Core::Registry"){}
 }

@@ -22,7 +22,7 @@ namespace Raindrop::Graphics::Internal{
 				static constexpr bool REQUIRE_VALIDATION = true;
 			#endif
 
-			Instance(GraphicsContext& context);
+			Instance(Context& context);
 			~Instance();
 
 			Instance(const Instance&) = delete;
@@ -31,7 +31,7 @@ namespace Raindrop::Graphics::Internal{
 			VkInstance get() const;
 
 		private:
-			GraphicsContext& _context;
+			Context& _context;
 			VkInstance _instance = VK_NULL_HANDLE;
 
 			std::vector<const char*> _requiredExtensions;

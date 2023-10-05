@@ -1,15 +1,15 @@
 #ifndef __RAINDROP_GRAPHICS_INTERNAL_WINDOW_HPP__
 #define __RAINDROP_GRAPHICS_INTERNAL_WINDOW_HPP__
 
+#include <SDL2/SDL.h>
 #include <Raindrop/Graphics/Internal/common.hpp>
 
 namespace Raindrop::Graphics::Internal{
 	class Window{
 		public:
-			Window(GraphicsContext& context);
+			Window(Context& context);
 			virtual ~Window();
 			
-			// THIS SHOULD ONLY BE CALLED ONCE
 			void createSurface();
 			void destroySurface();
 
@@ -22,7 +22,7 @@ namespace Raindrop::Graphics::Internal{
 			bool loaded() const;
 			SDL_Window* get() const;
 
-			void events(ImGUI* gui = nullptr);
+			void events();
 			
 			bool resized() const;
 			void resetResizedFlag();
@@ -31,10 +31,9 @@ namespace Raindrop::Graphics::Internal{
 			std::vector<const char*> vulkanExtensions();
 		
 		private:
-			GraphicsContext& _context;
+			Context& _context;
 			SDL_Window* _window;
 			VkSurfaceKHR _surface;
-
 
 			void quitEvent();
 			void windowEvent(SDL_Event& e);

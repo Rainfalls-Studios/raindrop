@@ -9,8 +9,8 @@
 #include <Raindrop/Core/Scene/SceneManager.hpp>
 
 namespace Raindrop::Core{
-    struct Context{
-        spdlog::logger logger;
+	struct Context{
+		spdlog::logger logger;
 
 		Registry::Registry registry;
 		Event::EventManager eventManager;
@@ -19,7 +19,7 @@ namespace Raindrop::Core{
 
 		Context();
 		~Context() = default;
-    };
+	};
 }
 
 #endif 

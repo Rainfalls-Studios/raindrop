@@ -1,52 +1,47 @@
 #include <Raindrop/Graphics/Internal/Instance.hpp>
 #include <Raindrop/Graphics/Internal/Window.hpp>
-#include <Raindrop/Graphics/GraphicsContext.hpp>
+#include <Raindrop/Graphics/Internal/Context.hpp>
 
-static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData, void *pUserData) {
-
-	if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT){
-		fprintf(stderr, "%s\n", pCallbackData->pMessage);
-		
-		return VK_FALSE;
+static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData, void *pUserData){
+	Raindrop::Graphics::Internal::Context* context = static_cast<Raindrop::Graphics::Internal::Context*>(pUserData);
+	spdlog::level::level_enum level;
+	switch (messageSeverity){
+		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT: level = spdlog::level::trace; return;
+		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT: level = spdlog::level::info; return;
+		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT: level = spdlog::level::warn; return;
+		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT: level = spdlog::level::err; return;
 	}
 
+	context->logger.log(level, "%s", pCallbackData->pMessage);
 	return VK_FALSE;
 }
 
-static inline VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo, const VkAllocationCallbacks *pAllocator, VkDebugUtilsMessengerEXT *pDebugMessenger) {
+static inline VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo, const VkAllocationCallbacks *pAllocator, VkDebugUtilsMessengerEXT *pDebugMessenger){
 	auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
-
-	if (func != nullptr) {
-		return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
-	} else {
-		return VK_ERROR_EXTENSION_NOT_PRESENT;
-	}
+	if (func) return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
+	return VK_ERROR_EXTENSION_NOT_PRESENT;
 }
 
 static inline void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks *pAllocator){
-
 	auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
-	if (func != nullptr) {
-		func(instance, debugMessenger, pAllocator);
-	}	
+	if (func) func(instance, debugMessenger, pAllocator);
 }
 
 namespace Raindrop::Graphics::Internal{
-	Instance::Instance(GraphicsContext& context) : _context{context}{
-		el::Logger* customLogger = el::Loggers::getLogger("Engine.Graphics.Instance");
-		customLogger->configurations()->set(el::Level::Global, el::ConfigurationType::Format, "%datetime %level [%logger]: %msg");
-
+	Instance::Instance(Context& context) : _context{context}{
+		_context.logger.info("Initializing vulkan Instance...");
 		_requiredExtensions.insert(_requiredExtensions.end(), REQUIRED_EXTENSIONS.begin(), REQUIRED_EXTENSIONS.end());
 		requireGraphicsExtensions();
 		build();
 
 		_context.window.createSurface();
+		_context.logger.info("Vulkan Instance initialized without any critical error");
 	}
 
 	Instance::~Instance(){
 		_context.window.destroySurface();
 		if (_instance){
-			vkDestroyInstance(_instance, _context.allocationCallbacks);
+			vkDestroyInstance(_instance, _context.graphics.allocationCallbacks);
 			_instance = VK_NULL_HANDLE;
 		}
 	}
@@ -93,8 +88,8 @@ namespace Raindrop::Graphics::Internal{
 		checkExtensions();
 		checkLayers();
 
-		if (vkCreateInstance(&info, _context.allocationCallbacks, &_instance) != VK_SUCCESS){
-			CLOG(ERROR, "Engine.Graphics.Instance") << "Failed to create vulkan instance";
+		if (vkCreateInstance(&info, _context.graphics.allocationCallbacks, &_instance) != VK_SUCCESS){
+			_context.logger.error("Failed to create vulkan instance");
 			throw std::runtime_error("Failed to create vulkan instance");
 		}
 	}
@@ -129,10 +124,13 @@ namespace Raindrop::Graphics::Internal{
 		}
 
 		if (!layers.empty()){
-			throw MissingLayer(*layers.begin());
+			_context.logger.warn("Missing %d vulkan instance layer(s) : ", layers.size());
+			for (const auto& l : layers){
+				_context.logger.warn("\t- %s", l);
+			}
+			throw std::runtime_error("Missing layer");
 		}
 	}
-
 
 	void Instance::checkValidationLayers(){
 		uint32_t count;
@@ -152,7 +150,8 @@ namespace Raindrop::Graphics::Internal{
 			}
 
 			if (!layerFound){
-				throw MissingLayer(layerName);
+				_context.logger.warn("Missing vulkan validation layer(s) : %s", layerName);
+				throw std::runtime_error("Missing validation layer");
 			}
 		}
 	}
@@ -170,6 +169,6 @@ namespace Raindrop::Graphics::Internal{
 		info.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
 
 		info.pfnUserCallback = debugCallback;
-		info.pUserData = nullptr;
+		info.pUserData = &_context;
 	}
 }

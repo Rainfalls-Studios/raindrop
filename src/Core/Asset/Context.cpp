@@ -3,5 +3,5 @@
 namespace Raindrop::Core::Asset{
 	Context::Context(Core::Context& core) : 
 		core{core},
-		logger("Asset"){}
+		logger("Core::Asset"){}
 }

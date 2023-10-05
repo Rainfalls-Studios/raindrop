@@ -2,6 +2,7 @@
 #define __RAINDROP_GRAPHICS_INTERNAL_DEVICE_HPP__
 
 #include <Raindrop/Graphics/Internal/common.hpp>
+#include <Raindrop/Graphics/Internal/PhysicalDevice.hpp>
 
 namespace Raindrop::Graphics::Internal{
 	class Device{
@@ -9,14 +10,14 @@ namespace Raindrop::Graphics::Internal{
 			static constexpr std::array<const char*, 1> REQUIRED_EXTENSIONS = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 			static constexpr std::array<const char*, 0> REQUIRED_LAYERS = {};
 
-			Device(GraphicsContext& context);
+			Device(Context& context);
 			~Device();
 
 			Device(const Device&) = delete;
 			Device& operator=(const Device&) = delete;
 
 			VkDevice get() const;
-			VkPhysicalDevice getPhysicalDevice() const;
+			const PhysicalDevice& getPhysicalDevice() const;
 
 			std::vector<VkQueueFamilyProperties> getQueueFamilyProperties();
 			uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
@@ -26,11 +27,10 @@ namespace Raindrop::Graphics::Internal{
 
 			void waitIdle();
 
-
 		private:
-			GraphicsContext& _context;
+			Context& _context;
 
-			VkPhysicalDevice _physicalDevice;
+			PhysicalDevice _physicalDevice;
 			VkDevice _device;
 
 			VkQueue _graphicsQueue = VK_NULL_HANDLE;

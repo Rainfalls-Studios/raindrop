@@ -1,29 +1,31 @@
 #include <Raindrop/Graphics/Internal/Device.hpp>
-#include <Raindrop/Graphics/Internal/Window.hpp>
-#include <Raindrop/Graphics/GraphicsContext.hpp>
+#include <Raindrop/Graphics/Internal/Context.hpp>
 
-namespace Raindrop::Graphics::Iternal{
-	Device::Device(GraphicsContext& context) : _context{context}{
-		el::Logger* customLogger = el::Loggers::getLogger("Engine.Graphics.Device");
-		customLogger->configurations()->set(el::Level::Global, el::ConfigurationType::Format, "%datetime %level [%logger]: %msg");
+namespace Raindrop::Graphics::Internal{
+	Device::Device(Context& context) : _context{context}{
+		_context.logger.info("Initializing vulkan device...");
 
 		findPhysicalDevice();
-
-		vkGetPhysicalDeviceProperties(_physicalDevice, &_properties);
-
+		vkGetPhysicalDeviceProperties(_physicalDevice.get(), &_properties);
 		build();
+
+		_context.logger.info("Vulkan device initialized without any critical error");
 	}
 
 	Device::~Device(){
-		vkDestroyDevice(_device, _context.allocationCallbacks);
+		_context.logger.info("Terminating vulkan device...");
+		auto& allocationCallbacks = _context.graphics.allocationCallbacks;
+		vkDestroyDevice(_device, allocationCallbacks);
+		_context.logger.info("Vulkan device terminated without any critical error");
 	}
 
 	void Device::findPhysicalDevice(){
+		_context.logger.trace("Looking for suitable physical device...");
 		uint32_t count = 0;
 		vkEnumeratePhysicalDevices(_context.instance.get(), &count, nullptr);
 
 		if (count == 0){
-			CLOG(ERROR, "Engine.Graphics.Device") << "Cannot find any physical device supporting vulkan";
+			_context.logger.error("Cannot find any graphics card with vulkan support");
 			throw std::runtime_error("Failed to find physical device with Vulkan support");
 		}
 
@@ -37,7 +39,7 @@ namespace Raindrop::Graphics::Iternal{
 			}
 		}
 
-		CLOG(ERROR, "Engine.Graphics.Device") << "Cannot find a suitable physical device";
+		_context.logger.error("Cannot find a suitable physical device");
 		throw std::runtime_error("Failed to find a suitable physical device");
 	}
 
@@ -55,25 +57,27 @@ namespace Raindrop::Graphics::Iternal{
 		return _device;
 	}
 
-	VkPhysicalDevice Device::getPhysicalDevice() const{
+	const PhysicalDevice& Device::getPhysicalDevice() const{
 		return _physicalDevice;
 	}
 
 	void Device::build(){
+		auto& allocationCallbacks = _context.graphics.allocationCallbacks;
+
 		if (!isExtensionsSupported()){
+			_context.logger.error("Failed to build a vulkan device, unsuported required extensions");
 			throw std::runtime_error("unsupported extensions");
 		}
 
 		if (!isLayersSupported()){
+			_context.logger.error("Failed to build a vulkan device, unsuported required layers");
 			throw std::runtime_error("unsupported layers");
 		}
 
 		VkDeviceCreateInfo info{};
 		info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 		
-		VkPhysicalDeviceFeatures features;
-		vkGetPhysicalDeviceFeatures(_physicalDevice, &features);
-		info.pEnabledFeatures = &features;
+		const VkPhysicalDeviceFeatures& features = _physicalDevice.features();
 
 		info.ppEnabledExtensionNames = REQUIRED_EXTENSIONS.data();
 		info.ppEnabledLayerNames = REQUIRED_LAYERS.data();
@@ -81,7 +85,7 @@ namespace Raindrop::Graphics::Iternal{
 		info.enabledExtensionCount = static_cast<uint32_t>(REQUIRED_EXTENSIONS.size());
 		info.enabledLayerCount = static_cast<uint32_t>(REQUIRED_LAYERS.size());
 
-		std::vector<VkQueueFamilyProperties> familyProperties = getQueueFamilyProperties();
+		const std::vector<VkQueueFamilyProperties>& familyProperties = _physicalDevice.queueFamilyProperties();
 		std::vector<VkDeviceQueueCreateInfo> queueCreateInfos(familyProperties.size());
 		std::vector<std::vector<float>> priorities(familyProperties.size());
 
@@ -103,27 +107,27 @@ namespace Raindrop::Graphics::Iternal{
 		info.pQueueCreateInfos = queueCreateInfos.data();
 		info.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
 
-		if (vkCreateDevice(_physicalDevice, &info, _context.allocationCallbacks, &_device) != VK_SUCCESS){
-			CLOG(ERROR, "Engine.Graphics.Device") << "Failed to create vulkan device";
+		if (vkCreateDevice(_physicalDevice.get(), &info, allocationCallbacks, &_device) != VK_SUCCESS){
+			_context.logger.error("Failed to create vulkan device");
 			throw std::runtime_error("failed to create vulkan device");
 		}
 
-		_context.graphics.familyIndex = getGraphicsFamily();
-		_context.present.familyIndex = getPresentFamily();
-		_context.transfert.familyIndex = getTransfertFamily();
+		// _context.graphics.familyIndex = getGraphicsFamily();
+		// _context.present.familyIndex = getPresentFamily();
+		// _context.transfert.familyIndex = getTransfertFamily();
 
-		vkGetDeviceQueue(_device, _context.graphics.familyIndex, 0, &_context.graphics.queue);
-		vkGetDeviceQueue(_device, _context.present.familyIndex, 0, &_context.present.queue);
+		// vkGetDeviceQueue(_device, _context.graphics.familyIndex, 0, &_context.graphics.queue);
+		// vkGetDeviceQueue(_device, _context.present.familyIndex, 0, &_context.present.queue);
 
-		if (_context.graphics.familyIndex == _context.transfert.familyIndex || _context.present.familyIndex == _context.transfert.familyIndex){
-			if (familyProperties[_context.transfert.familyIndex].queueCount > 1){
-				vkGetDeviceQueue(_device, _context.transfert.familyIndex, 1, &_context.transfert.queue);
-			} else {
-				vkGetDeviceQueue(_device, _context.transfert.familyIndex, 0, &_context.transfert.queue);
-			}
-		} else {
-			vkGetDeviceQueue(_device, _context.transfert.familyIndex, 0, &_context.transfert.queue);
-		}
+		// if (_context.graphics.familyIndex == _context.transfert.familyIndex || _context.present.familyIndex == _context.transfert.familyIndex){
+		// 	if (familyProperties[_context.transfert.familyIndex].queueCount > 1){
+		// 		vkGetDeviceQueue(_device, _context.transfert.familyIndex, 1, &_context.transfert.queue);
+		// 	} else {
+		// 		vkGetDeviceQueue(_device, _context.transfert.familyIndex, 0, &_context.transfert.queue);
+		// 	}
+		// } else {
+		// 	vkGetDeviceQueue(_device, _context.transfert.familyIndex, 0, &_context.transfert.queue);
+		// }
 	}
 
 	bool Device::isExtensionsSupported(){
@@ -141,43 +145,15 @@ namespace Raindrop::Graphics::Iternal{
 	}
 
 	bool Device::isExtensionSupported(const char* extensionName){
-		uint32_t count=0;
-		vkEnumerateDeviceExtensionProperties(_physicalDevice, nullptr, &count, nullptr);
-
-		if (count == 0) return false;
-		std::vector<VkExtensionProperties> extensions(count);
-		vkEnumerateDeviceExtensionProperties(_physicalDevice, nullptr, &count, extensions.data());
-		
-		for (auto &e : extensions){
-			if (strcmp(e.extensionName, extensionName) == 0) return true;
-		}
-		return false;
+		return _physicalDevice.isExtensionSupported(extensionName);
 	}
 
 	bool Device::isLayerSupported(const char* layerName){
-		uint32_t count=0;
-		vkEnumerateDeviceLayerProperties(_physicalDevice, &count, nullptr);
-
-		if (count == 0) return false;
-		std::vector<VkLayerProperties> layers(count);
-		vkEnumerateDeviceLayerProperties(_physicalDevice, &count, layers.data());
-		
-		for (auto &l : layers){
-			if (strcmp(l.layerName, layerName) == 0) return true;
-		}
-		return false;
-	}
-
-	std::vector<VkQueueFamilyProperties> Device::getQueueFamilyProperties(){
-		uint32_t queueCount = 0;
-		vkGetPhysicalDeviceQueueFamilyProperties(_physicalDevice, &queueCount, nullptr);
-		std::vector<VkQueueFamilyProperties> properties(queueCount);
-		vkGetPhysicalDeviceQueueFamilyProperties(_physicalDevice, &queueCount, properties.data());
-		return properties;
+		return _physicalDevice.isLayerSupported(layerName);
 	}
 
 	uint32_t Device::getGraphicsFamily(){
-		auto properties = getQueueFamilyProperties();
+		const auto& properties = _physicalDevice.queueFamilyProperties();
 		
 		for (uint32_t i=0; i<properties.size(); i++){
 			if (properties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT){
@@ -188,7 +164,7 @@ namespace Raindrop::Graphics::Iternal{
 	}
 
 	uint32_t Device::getTransfertFamily(){
-		auto properties = getQueueFamilyProperties();
+		const auto& properties = _physicalDevice.queueFamilyProperties();
 		
 		for (uint32_t i=0; i<properties.size(); i++){
 			if (properties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT){
@@ -199,11 +175,11 @@ namespace Raindrop::Graphics::Iternal{
 	}
 
 	uint32_t Device::getPresentFamily(){
-		auto properties = getQueueFamilyProperties();
+		const auto& properties = _physicalDevice.queueFamilyProperties();
 		
 		for (uint32_t i=0; i<properties.size(); i++){
 			VkBool32 supported;
-			vkGetPhysicalDeviceSurfaceSupportKHR(_physicalDevice, i, _context.window.surface(), &supported);
+			vkGetPhysicalDeviceSurfaceSupportKHR(_physicalDevice.get(), i, _context.window.surface(), &supported);
 			return i;
 		}
 		throw std::runtime_error("failed to find a present family");
@@ -211,7 +187,7 @@ namespace Raindrop::Graphics::Iternal{
 
 	uint32_t Device::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties){
 		VkPhysicalDeviceMemoryProperties memProperties;
-		vkGetPhysicalDeviceMemoryProperties(_physicalDevice, &memProperties);
+		vkGetPhysicalDeviceMemoryProperties(_physicalDevice.get(), &memProperties);
 
 		for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
 			if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
@@ -219,26 +195,27 @@ namespace Raindrop::Graphics::Iternal{
 			}
 		}
 
-		throw "failed to find suitable memory type";
+		_context.logger.warn("Failed to find suitable memory type filter (filter : %x; properties: %x)", typeFilter, properties);
+		throw std::runtime_error("failed to find suitable memory type");
 	}
 
 	SwapchainSupport Device::getSwapchainSupport(VkSurfaceKHR surface) const{
 		SwapchainSupport support;
 
-		vkGetPhysicalDeviceSurfaceCapabilitiesKHR(_physicalDevice, surface, &support.capabilities);
+		vkGetPhysicalDeviceSurfaceCapabilitiesKHR(_physicalDevice.get(), surface, &support.capabilities);
 
 		uint32_t count;
 
-		vkGetPhysicalDeviceSurfaceFormatsKHR(_physicalDevice, surface, &count, nullptr);
+		vkGetPhysicalDeviceSurfaceFormatsKHR(_physicalDevice.get(), surface, &count, nullptr);
 		if (count){
 			support.formats.resize(count);
-			vkGetPhysicalDeviceSurfaceFormatsKHR(_physicalDevice, surface, &count, support.formats.data());
+			vkGetPhysicalDeviceSurfaceFormatsKHR(_physicalDevice.get(), surface, &count, support.formats.data());
 		}
 
-		vkGetPhysicalDeviceSurfacePresentModesKHR(_physicalDevice, surface, &count, nullptr);
+		vkGetPhysicalDeviceSurfacePresentModesKHR(_physicalDevice.get(), surface, &count, nullptr);
 		if (count){
 			support.presentModes.resize(count);
-			vkGetPhysicalDeviceSurfacePresentModesKHR(_physicalDevice, surface, &count, support.presentModes.data());
+			vkGetPhysicalDeviceSurfacePresentModesKHR(_physicalDevice.get(), surface, &count, support.presentModes.data());
 		}
 
 		support.supported = !support.formats.empty() && !support.presentModes.empty();
@@ -252,5 +229,4 @@ namespace Raindrop::Graphics::Iternal{
 	const VkPhysicalDeviceProperties& Device::properties() const{
 		return _properties;
 	}
-
 }

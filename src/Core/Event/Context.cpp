@@ -3,5 +3,5 @@
 namespace Raindrop::Core::Event{
     Context::Context(Core::Context& core) :
         core{core},
-        logger("Event"){}
+        logger("Core::Event"){}
 }

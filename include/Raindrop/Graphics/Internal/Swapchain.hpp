@@ -16,7 +16,7 @@ namespace Raindrop::Graphics::Internal{
 				VkImageView imageView = VK_NULL_HANDLE;
 			};
 
-			Swapchain(GraphicsContext& context);
+			Swapchain(Context& context);
 			~Swapchain();
 
 			void rebuildSwapchain();
@@ -44,16 +44,16 @@ namespace Raindrop::Graphics::Internal{
 
 		private:
 			struct SwapchainData{
-				GraphicsContext& _context;
-				VkSwapchainKHR _swapchain = VK_NULL_HANDLE;			
+				Context& _context;
+				VkSwapchainKHR _swapchain = VK_NULL_HANDLE;
 				std::vector<Frame> _frames;
 
 				~SwapchainData();
-				SwapchainData(GraphicsContext& _context);
+				SwapchainData(Context& _context);
 			};
 
-			GraphicsContext& _context;
-			SwapchainSupport _swapchainSupport;
+			Context& _context;
+			SwapchainSupport _swapchainSupport;  
 
 			std::unique_ptr<SwapchainData> _swapchain = nullptr;
 			std::unique_ptr<SwapchainData> _oldSwapchain = nullptr;

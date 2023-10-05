@@ -1,14 +1,11 @@
 #include <Raindrop/Graphics/Internal/Swapchain.hpp>
-#include <Raindrop/Graphics/Internal/PhysicalDevice.hpp>
-#include <Raindrop/Graphics/Internal/Device.hpp>
-#include <Raindrop/Graphics/GraphicsContext.hpp>
+#include <Raindrop/Graphics/Internal/Context.hpp>
+
+// #include <Raindrop/Graphics/GraphicsContext.hpp>
 
 namespace Raindrop::Graphics::Internal{
-	Swapchain::Swapchain(GraphicsContext& context) : _context{context}{
-		el::Logger* customLogger = el::Loggers::getLogger("Engine.Graphics.Swapchain");
-		customLogger->configurations()->set(el::Level::Global, el::ConfigurationType::Format, "%datetime %level [%logger]: %msg");
-
-		CLOG(INFO, "Engine.Graphics.Swapchain") << "Creating swapchain...";
+	Swapchain::Swapchain(Context& context) : _context{context}{
+		_context.logger.info("Initializing vulkan swapchain...");
 
 		_swapchainSupport = _context.device.getSwapchainSupport(_context.window.surface());
 
@@ -16,17 +13,19 @@ namespace Raindrop::Graphics::Internal{
 		createRenderPass();	
 		rebuildSwapchain();
 
-		CLOG(INFO, "Engine.Graphics.Swapchain") << "Created swapchain with success !";
+		_context.logger.info("Vulkan swapchain initialized without any critical error");
 	}
 
 	Swapchain::~Swapchain(){
-		CLOG(INFO, "Engine.Graphics.Swapchain") << "Destroying swapchain...";
+		_context.logger.info("Termination vulkan swapchain...");
+		auto device = _context.device.get();
+		auto allocationCallbacks = _context.graphics.allocationCallbacks;
 
 		_oldSwapchain.reset();
 		_swapchain.reset();
-		if (_renderPass) vkDestroyRenderPass(_context.device.get(), _renderPass, _context.allocationCallbacks);
+		if (_renderPass) vkDestroyRenderPass(device, _renderPass, allocationCallbacks);
 
-		CLOG(INFO, "Engine.Graphics.Swapchain") << "Swapchain destroyed with success !";
+		_context.logger.info("Vulkan swapchain terminating without any critical error");
 	}
 	
 	void Swapchain::setExtent(VkExtent2D extent){
@@ -46,7 +45,10 @@ namespace Raindrop::Graphics::Internal{
 	}
 
 	void Swapchain::rebuildSwapchain(){
-		CLOG(INFO, "Engine.Graphics.Swapchain") << "Building/Rebuilding swapchain...";
+		auto& device = _context.device;
+		auto& allocationCallbacks = _context.graphics.allocationCallbacks;
+
+		_context.logger.info("Rebuilding vulkan swapchain...");
 
 		_context.device.waitIdle();
 		
@@ -61,7 +63,7 @@ namespace Raindrop::Graphics::Internal{
 		bool hasFormatChanged = surfaceFormat.format != _surfaceFormat.format;
 
 		if (hasColorSpaceChanged || hasFormatChanged){
-			CLOG(ERROR, "Engine.Graphics.Swapchain") << "The swapchain surface format and/or color space has changed";
+			_context.logger.error("The swapchain surface format and / or color space has changed");
 			throw std::runtime_error("The surface format and/or color space has changed");
 		}
 
@@ -85,7 +87,7 @@ namespace Raindrop::Graphics::Internal{
 		info.imageArrayLayers = 1;
 		info.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-		if (vkCreateSwapchainKHR(_context.device.get(), &info, _context.allocationCallbacks, &_swapchain->_swapchain) != VK_SUCCESS){
+		if (vkCreateSwapchainKHR(device.get(), &info, allocationCallbacks, &_swapchain->_swapchain) != VK_SUCCESS){
 			throw std::runtime_error("Failed to create window vulkan swapchain !");
 		}
 
@@ -95,7 +97,7 @@ namespace Raindrop::Graphics::Internal{
 		createSyncObjects();
 		_currentFrame = 0;
 
-		CLOG(INFO, "Engine.Graphics.Swapchain") << "Swapchain Built/Rebuilt with success !";
+		_context.logger.info("The vulkan swapchain has been rebuilt without any critical error");
 	}
 
 	void Swapchain::findSurfaceFormat(){
@@ -146,6 +148,9 @@ namespace Raindrop::Graphics::Internal{
 	}
 
 	void Swapchain::createRenderPass(){
+		auto& device = _context.device;
+		auto& allocationCallbacks = _context.graphics.allocationCallbacks;
+
 		VkAttachmentDescription colorAttachment{};
 		colorAttachment.format = _imageFormat;
 		colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -182,12 +187,16 @@ namespace Raindrop::Graphics::Internal{
 		renderPassInfo.dependencyCount = 1;
 		renderPassInfo.pDependencies = &dependency;
 
-		if (vkCreateRenderPass(_context.device.get(), &renderPassInfo, _context.allocationCallbacks, &_renderPass) != VK_SUCCESS){
-			throw std::runtime_error("Failed to create swapchain's render pass");
+		if (vkCreateRenderPass(device.get(), &renderPassInfo, allocationCallbacks, &_renderPass) != VK_SUCCESS){
+			_context.logger.error("Failed to create the vulkan swapchain render pass");
+			throw std::runtime_error("Failed to create render pass");
 		}
 	}
 
 	void Swapchain::createImageViews(){
+		auto& device = _context.device;
+		auto& allocationCallbacks = _context.graphics.allocationCallbacks;
+
 		for (auto &f : _swapchain->_frames){
 			VkImageViewCreateInfo viewInfo{};
 			viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -200,8 +209,8 @@ namespace Raindrop::Graphics::Internal{
 			viewInfo.subresourceRange.baseArrayLayer = 0;
 			viewInfo.subresourceRange.layerCount = 1;
 
-			if (vkCreateImageView(_context.device.get(), &viewInfo, _context.allocationCallbacks, &f.imageView) !=
-				VK_SUCCESS) {
+			if (vkCreateImageView(device.get(), &viewInfo, allocationCallbacks, &f.imageView) != VK_SUCCESS){
+				_context.logger.error("Failed to create a vulkan swapchain attachment image view");
 				throw std::runtime_error("failed to create texture image view!");
 			}
 		}
@@ -220,6 +229,9 @@ namespace Raindrop::Graphics::Internal{
 	}
 
 	void Swapchain::createFramebuffers(){
+		auto& device = _context.device;
+		auto& allocationCallbacks = _context.graphics.allocationCallbacks;
+
 		for (auto &f : _swapchain->_frames){
 			VkFramebufferCreateInfo framebufferInfo = {};
 			framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
@@ -230,13 +242,17 @@ namespace Raindrop::Graphics::Internal{
 			framebufferInfo.height = _extent.height;
 			framebufferInfo.layers = 1;
 
-			if (vkCreateFramebuffer(_context.device.get(), &framebufferInfo, _context.allocationCallbacks, &f.framebuffer) != VK_SUCCESS) {
-				throw std::runtime_error("failed to create vulkan swapchain framebuffer");
+			if (vkCreateFramebuffer(device.get(), &framebufferInfo, allocationCallbacks, &f.framebuffer) != VK_SUCCESS){
+				_context.logger.error("Failed to create a vulkan swapchain framebuffer");
+				throw std::runtime_error("failed to create a framebuffer");
 			}
 		}
 	}
 
 	void Swapchain::createSyncObjects(){
+		auto& device = _context.device;
+		auto& allocationCallbacks = _context.graphics.allocationCallbacks;
+
 		VkSemaphoreCreateInfo semaphoreInfo = {};
 		semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
@@ -245,14 +261,20 @@ namespace Raindrop::Graphics::Internal{
 		fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
 		for (auto &f : _swapchain->_frames) {
-			if (vkCreateSemaphore(_context.device.get(), &semaphoreInfo, _context.allocationCallbacks, &f.imageAvailable) != VK_SUCCESS)
-				throw std::runtime_error("failed to create vulkan swapchain semaphore");
+			if (vkCreateSemaphore(device.get(), &semaphoreInfo, allocationCallbacks, &f.imageAvailable) != VK_SUCCESS){
+				_context.logger.error("Failed to create a vulkan swapchain attachment semaphore");
+				throw std::runtime_error("failed to create image available semaphore");
+			}
 			
-			if (vkCreateSemaphore(_context.device.get(), &semaphoreInfo, _context.allocationCallbacks, &f.imageFinished) != VK_SUCCESS)
-				throw std::runtime_error("failed to create vulkan swapchain semaphore");
+			if (vkCreateSemaphore(device.get(), &semaphoreInfo, allocationCallbacks, &f.imageFinished) != VK_SUCCESS){
+				_context.logger.error("Failed to create a vulkan swapchain attachment semaphore");
+				throw std::runtime_error("failed to create image finished semaphore");
+			}
 			
-			if (vkCreateFence(_context.device.get(), &fenceInfo, _context.allocationCallbacks, &f.inFlightFence) != VK_SUCCESS)
-				throw std::runtime_error("failed to create vulkan swapchain fence");
+			if (vkCreateFence(device.get(), &fenceInfo, allocationCallbacks, &f.inFlightFence) != VK_SUCCESS){
+				_context.logger.error("Failed to create a vulkan swapchain attachment fence");
+				throw std::runtime_error("failed to create in flight fence");
+			}
 		}
 	}
 	
@@ -264,6 +286,9 @@ namespace Raindrop::Graphics::Internal{
 	}
 
 	VkResult Swapchain::submitCommandBuffer(VkCommandBuffer* buffers){
+		auto& device = _context.device;
+		auto& allocationCallbacks = _context.graphics.allocationCallbacks;
+
 		if (_swapchain->_frames[_currentFrame].imageInFlight != VK_NULL_HANDLE)
 			vkWaitForFences(_context.device.get(), 1, &_swapchain->_frames[_currentFrame].imageInFlight, VK_TRUE, UINT64_MAX);
 		
@@ -285,9 +310,12 @@ namespace Raindrop::Graphics::Internal{
 		submitInfo.signalSemaphoreCount = 1;
 		submitInfo.pSignalSemaphores = signalSemaphores;
 
-		vkResetFences(_context.device.get(), 1, &_swapchain->_frames[_currentFrame].inFlightFence);
-		if (vkQueueSubmit(_context.graphics.queue, 1, &submitInfo, _swapchain->_frames[_currentFrame].inFlightFence) != VK_SUCCESS)
-			throw "failed to submit draw command buffer";
+		vkResetFences(device.get(), 1, &_swapchain->_frames[_currentFrame].inFlightFence);
+
+		if (vkQueueSubmit(_context.graphics.queue, 1, &submitInfo, _swapchain->_frames[_currentFrame].inFlightFence) != VK_SUCCESS){
+			_context.logger.error("Failed to submit graphics framebuffer to graphics queue");
+			throw std::runtime_error("Failed to submit framebuffer");
+		}
 
 		VkPresentInfoKHR presentInfo = {};
 		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -371,16 +399,19 @@ namespace Raindrop::Graphics::Internal{
 	}
 	
 	Swapchain::SwapchainData::~SwapchainData(){
+		auto& device = _context.device;
+		auto& allocationCallbacks = _context.graphics.allocationCallbacks;
+
 		_context.device.waitIdle();
 		for (auto &frame : _frames){
-			if (frame.framebuffer != VK_NULL_HANDLE) vkDestroyFramebuffer(_context.device.get(), frame.framebuffer, _context.allocationCallbacks);
-			if (frame.imageView != VK_NULL_HANDLE) vkDestroyImageView(_context.device.get(), frame.imageView, _context.allocationCallbacks);
-			if (frame.imageAvailable != VK_NULL_HANDLE) vkDestroySemaphore(_context.device.get(), frame.imageAvailable, _context.allocationCallbacks);
-			if (frame.imageFinished != VK_NULL_HANDLE) vkDestroySemaphore(_context.device.get(), frame.imageFinished, _context.allocationCallbacks);
-			if (frame.inFlightFence != VK_NULL_HANDLE) vkDestroyFence(_context.device.get(), frame.inFlightFence, _context.allocationCallbacks);
+			if (frame.framebuffer != VK_NULL_HANDLE) vkDestroyFramebuffer(device.get(), frame.framebuffer, allocationCallbacks);
+			if (frame.imageView != VK_NULL_HANDLE) vkDestroyImageView(device.get(), frame.imageView, allocationCallbacks);
+			if (frame.imageAvailable != VK_NULL_HANDLE) vkDestroySemaphore(device.get(), frame.imageAvailable, allocationCallbacks);
+			if (frame.imageFinished != VK_NULL_HANDLE) vkDestroySemaphore(device.get(), frame.imageFinished, allocationCallbacks);
+			if (frame.inFlightFence != VK_NULL_HANDLE) vkDestroyFence(device.get(), frame.inFlightFence, allocationCallbacks);
 		}
-		if (_swapchain) vkDestroySwapchainKHR(_context.device.get(), _swapchain, _context.allocationCallbacks);
+		if (_swapchain) vkDestroySwapchainKHR(device.get(), _swapchain, allocationCallbacks);
 	}
 
-	Swapchain::SwapchainData::SwapchainData(GraphicsContext& context) : _context{context}{}
+	Swapchain::SwapchainData::SwapchainData(Context& context) : _context{context}{}
 }

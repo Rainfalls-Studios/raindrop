@@ -3,5 +3,5 @@
 namespace Raindrop::Core::Scene{
 	Context::Context(Core::Context& core) : 
 		core{core},
-		logger("Scene"){}
+		logger("Core::Scene"){}
 }
