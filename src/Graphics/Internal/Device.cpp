@@ -111,6 +111,7 @@ namespace Raindrop::Graphics::Internal{
 			_context.logger.error("Failed to create vulkan device");
 			throw std::runtime_error("failed to create vulkan device");
 		}
+		
 
 		// _context.graphics.familyIndex = getGraphicsFamily();
 		// _context.present.familyIndex = getPresentFamily();

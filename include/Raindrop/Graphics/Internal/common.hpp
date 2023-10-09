@@ -12,6 +12,7 @@ namespace Raindrop::Graphics::Internal{
 	class Device;
 	class Swapchain;
 	class Window;
+	class QueueHandler;
 }
 
 #endif

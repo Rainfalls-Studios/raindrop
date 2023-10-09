@@ -33,10 +33,6 @@ namespace Raindrop::Graphics::Internal{
 			PhysicalDevice _physicalDevice;
 			VkDevice _device;
 
-			VkQueue _graphicsQueue = VK_NULL_HANDLE;
-			VkQueue _presentQueue = VK_NULL_HANDLE;
-			VkQueue _transfertQueue = VK_NULL_HANDLE;
-
 			VkPhysicalDeviceProperties _properties;
 
 			void findPhysicalDevice();

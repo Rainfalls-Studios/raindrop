@@ -12,6 +12,7 @@ namespace Raindrop::Graphics::Internal{
 		findSurfaceFormat();
 		createRenderPass();	
 		rebuildSwapchain();
+		queryQueues();
 
 		_context.logger.info("Vulkan swapchain initialized without any critical error");
 	}
@@ -312,7 +313,7 @@ namespace Raindrop::Graphics::Internal{
 
 		vkResetFences(device.get(), 1, &_swapchain->_frames[_currentFrame].inFlightFence);
 
-		if (vkQueueSubmit(_context.graphics.queue, 1, &submitInfo, _swapchain->_frames[_currentFrame].inFlightFence) != VK_SUCCESS){
+		if (vkQueueSubmit(_graphicsQueue, 1, &submitInfo, _swapchain->_frames[_currentFrame].inFlightFence) != VK_SUCCESS){
 			_context.logger.error("Failed to submit graphics framebuffer to graphics queue");
 			throw std::runtime_error("Failed to submit framebuffer");
 		}
@@ -329,7 +330,7 @@ namespace Raindrop::Graphics::Internal{
 
 		presentInfo.pImageIndices = &_currentFrame;
 
-		auto result = vkQueuePresentKHR(_context.present.queue, &presentInfo);
+		auto result = vkQueuePresentKHR(_presentQueue, &presentInfo);
 
 		_currentFrame = (_currentFrame + 1) % _frameCount;
 
@@ -396,6 +397,29 @@ namespace Raindrop::Graphics::Internal{
 
 	std::vector<Swapchain::Frame>& Swapchain::getFramesData(){
 		return _swapchain->_frames;
+	}
+
+	void Swapchain::queryQueues(){
+		try{
+			VkQueue queue = _context.queueHandler.get({VK_QUEUE_GRAPHICS_BIT, true});
+			_presentQueue = queue;
+			_graphicsQueue = queue;
+			return;
+		} catch (const std::exception &){}
+
+		try{
+			_presentQueue = _context.queueHandler.get({0, true});
+		} catch (const std::exception &){
+			_context.logger.error("Cannot find a suitable present queue");
+			throw std::runtime_error("Failed to find a suitable present queue");
+		}
+
+		try{
+			_graphicsQueue = _context.queueHandler.get(VK_QUEUE_GRAPHICS_BIT);
+		} catch (const std::exception &){
+			_context.logger.error("Cannot find a suitable graphics queue");
+			throw std::runtime_error("Failed to find a suitable graphics queue");
+		}
 	}
 	
 	Swapchain::SwapchainData::~SwapchainData(){

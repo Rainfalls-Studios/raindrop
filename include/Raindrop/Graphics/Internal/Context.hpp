@@ -8,6 +8,7 @@
 #include <Raindrop/Graphics/Internal/Window.hpp>
 #include <Raindrop/Graphics/Internal/PhysicalDevice.hpp>
 #include <Raindrop/Graphics/Internal/Device.hpp>
+#include <Raindrop/Graphics/Internal/QueueHandler.hpp>
 #include <Raindrop/Graphics/Internal/Swapchain.hpp>
 
 namespace Raindrop::Graphics::Internal{
@@ -19,6 +20,7 @@ namespace Raindrop::Graphics::Internal{
 		Instance instance;
 		PhysicalDevice physicalDevice;
 		Device device;
+		QueueHandler queueHandler;
 		Swapchain swapchain;
 
 		Context(Graphics::Context& graphics);
