@@ -46,4 +46,5 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # set(EDITOR_PATH "${CMAKE_CURRENT_SOURCE_DIR}/.editor/")
 
 # add_subdirectory(src)
+add_subdirectory(src)
 add_subdirectory(tests)

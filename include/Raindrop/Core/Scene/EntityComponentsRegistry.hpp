@@ -17,6 +17,7 @@ namespace Raindrop::Core::Scene{
 			uint32_t entityCount() const;
 
 		private:
+			Context& _context;
 			std::vector<std::vector<ComponentHandleID>> _ids;
 
 	};

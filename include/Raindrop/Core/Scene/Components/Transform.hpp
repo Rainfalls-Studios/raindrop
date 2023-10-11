@@ -14,8 +14,6 @@ namespace Raindrop::Core::Scene::Components{
 			glm::vec3 scale = glm::vec3(1, 1, 1);
 			glm::quat rotation = glm::quat(1.f, 1.f, 0.f, 0.f);
 
-			virtual void UI(EngineContext& context) override;
-
 	};
 }
 

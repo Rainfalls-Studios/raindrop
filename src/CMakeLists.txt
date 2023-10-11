@@ -1,24 +1,22 @@
-set(PCH_TARGET "${CMAKE_CURRENT_BINARY_DIR}/precompiled_common.pch")
-add_library(pch_target INTERFACE)
-target_precompile_headers(pch_target INTERFACE ${PCH_PATH})
+file(GLOB SOURCES *.cpp)
+add_library(Raindrop STATIC ${SOURCES})
 
-# === ENGINE ===
+find_package(Boost REQUIRED COMPONENTS Filesystem)
+find_package(glm REQUIRED)
+find_package(spdlog REQUIRED)
 
-option(RAINDROP_EDITOR "compile the engine into editor mode, which mean with editor menu and debug features" ON)
+include_directories(
+	"${CMAKE_SOURCE_DIR}/include"
+	BOOST_INCLUDE_DIRS
+	GLM_INCLUDE_DIRS
+	SPDLOG_INCLUDE_DIRS
+)
 
-if (${RAINDROP_EDITOR})
-	add_definitions(-DRAINDROP_EDITOR -DRAINDROP_EDITOR_PATH="${EDITOR_PATH}")
-endif()
+add_subdirectory(Core)
 
-file(GLOB_RECURSE SOURCES *.cpp)
-add_library(RaindropEngine STATIC ${SOURCES})
-
-message("${Vulkan_GLSLC_EXECUTABLE}")
-target_link_libraries(RaindropEngine PRIVATE Vulkan::Vulkan ${SHADERC_LIBRARY} SDL2::SDL2-static tinyobjloader::tinyobjloader Boost::filesystem)
-target_link_libraries(RaindropEngine PUBLIC easyloggingpp tinyxml2 imgui pch_target ImGuizmo)
-
-set_target_properties(RaindropEngine PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
-    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
-    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+target_link_libraries(Raindrop PRIVATE
+	Raindrop::Core
+	Boost::filesystem
+	spdlog::spdlog
+	glm
 )

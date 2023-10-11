@@ -5,6 +5,8 @@
 #include <Raindrop/Core/Event/enums.hpp>
 
 namespace Raindrop::Core::Event{
+	using Callback = std::function<void()>;
+	
 	struct Context;
 	class EventManager;
 	class KeyEvents;

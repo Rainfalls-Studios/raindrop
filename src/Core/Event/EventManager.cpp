@@ -6,8 +6,8 @@ namespace Raindrop::Core::Event{
 		_context = std::make_unique<Context>(core);
 		_context->logger.info("Intializing Event manager ...");
 
-		_keyEvents = std::make_unique<KeyEvents>();	
-		_mouseEvents = std::make_unique<MouseEvents>();
+		_keyEvents = std::make_unique<KeyEvents>(*_context);	
+		_mouseEvents = std::make_unique<MouseEvents>(*_context);
 
 		_context->logger.info("Event manager initialized without any critical error");
 	}

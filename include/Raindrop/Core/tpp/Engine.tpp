@@ -1,6 +1,6 @@
 template<typename T>
 std::weak_ptr<T> Engine::loadOrGet(const std::filesystem::path& path){
-	return std::static_pointer_cast<T>(loadorGet(path).lock());
+	return std::static_pointer_cast<T>(loadOrGet(path).lock());
 }
 
 template<typename T, typename... Args>

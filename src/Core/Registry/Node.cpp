@@ -36,29 +36,29 @@ namespace Raindrop::Core::Registry{
 	}
 
 	void Node::load(const std::filesystem::path& path){
-		_context.logger.info("Loading registry file from %ls", path.c_str());
+		_context.logger.info("Loading registry file from %s", path.string().c_str());
 
 		try{
 			boost::property_tree::read_json(path.string(), _impl->tree);
 		} catch (const boost::property_tree::json_parser_error& e){
-			_context.logger.error("Failed to load registry from %ls : %s", path.c_str(), e.what());
+			_context.logger.error("Failed to load registry from %s : %s", path.string().c_str(), e.what());
 			return;
 		}
 
-		_context.logger.info("Loaded %ls with success !", path.c_str());
+		_context.logger.info("Loaded %s with success !", path.string().c_str());
 	}
 
 	void Node::save(const std::filesystem::path& path){
-		_context.logger.info("Saving registry file at %ls", path.c_str());
+		_context.logger.info("Saving registry file at %s", path.string().c_str());
 
 		try{
 			boost::property_tree::write_json(path.string(), _impl->tree);
 		} catch (const boost::property_tree::json_parser_error& e){
-			_context.logger.error("Failed to save registry at %ls : %s", path.c_str(), e.what());
+			_context.logger.error("Failed to save registry at %s : %s", path.string().c_str(), e.what());
 			return;
 		}
 		
-		_context.logger.info("Saved %ls with success !", path.c_str());
+		_context.logger.info("Saved %s with success !", path.string().c_str());
 	}
 
 	std::string Node::format(const std::string& str){

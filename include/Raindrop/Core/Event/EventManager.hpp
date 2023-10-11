@@ -11,9 +11,6 @@
 #include <Raindrop/Core/Event/MouseEvents.hpp>
 
 namespace Raindrop::Core::Event{
-
-	using Callback = std::function<void()>;
-
 	class EventManager{
 		public:
 			EventManager(Core::Context& core);

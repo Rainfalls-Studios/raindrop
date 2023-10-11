@@ -7,7 +7,7 @@
 namespace Raindrop::Graphics{
 	class Camera{
 		public:
-			Camera(GraphicsContext& context, uint32_t width, uint32_t height);
+			Camera(Context& context, uint32_t width, uint32_t height);
 			~Camera();
 			
 			Projections::OrthographicProjection& orthographic();
@@ -19,8 +19,7 @@ namespace Raindrop::Graphics{
 			const glm::mat4& projection() const;
 
 		protected:
-
-			GraphicsContext& _context;
+			Context& _context;
 
 			std::unique_ptr<Projections::Projection> _projection;
 			Projections::ProjectionType _projectionType;
