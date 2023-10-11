@@ -5,6 +5,7 @@
 #include <Raindrop/Graphics/Utils/enums.hpp>
 
 namespace Raindrop::Graphics::Utils{
+	struct Context;
 	class FormatUtilities;
 }
 

@@ -6,7 +6,7 @@
 namespace Raindrop::Graphics::Utils{
 	class FormatUtilities{
 		public:
-			FormatUtilities(GraphicsContext& context);
+			FormatUtilities(Context& context);
 
 			VkFormat bestFormatBuffer(uint32_t flags, VkFormatFeatureFlags features);
 			VkFormat bestFormatOptimalTiling(uint32_t flags, VkFormatFeatureFlags features);
@@ -15,7 +15,7 @@ namespace Raindrop::Graphics::Utils{
 			bool is(VkFormat format, uint32_t flags);
 
 		private:
-			GraphicsContext& _context;
+			Context& _context;
 
 			std::set<VkFormat> getSet(uint32_t flags);
 	};

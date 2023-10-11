@@ -1,5 +1,5 @@
 #include <Raindrop/Graphics/Utils/FormatUtilities.hpp>
-#include <Raindrop/Graphics/GraphicsContext.hpp>
+#include <Raindrop/Graphics/Utils/Context.hpp>
 
 static std::set<VkFormat> colorFormats = {
 	VK_FORMAT_R4G4_UNORM_PACK8,
@@ -1298,7 +1298,7 @@ namespace Raindrop::Graphics::Utils{
 		return empty;
 	};
 
-	FormatUtilities::FormatUtilities(GraphicsContext& context) : _context{context}{}
+	FormatUtilities::FormatUtilities(Context& context) : _context{context}{}
 
 	std::set<VkFormat> FormatUtilities::getSet(uint32_t flags){
 		std::set<VkFormat> formats;
@@ -1326,10 +1326,12 @@ namespace Raindrop::Graphics::Utils{
 	}
 	
 	VkFormat FormatUtilities::bestFormatBuffer(uint32_t flags, VkFormatFeatureFlags features){
+		auto& device = _context.graphics.internal.device;
+
 		auto set = getSet(flags);
 		for (auto format : set){
 			VkFormatProperties propeties;
-			vkGetPhysicalDeviceFormatProperties(_context.device.getPhysicalDevice(), format, &propeties);
+			vkGetPhysicalDeviceFormatProperties(device.getPhysicalDevice().get(), format, &propeties);
 			if (propeties.bufferFeatures & features){
 				return format;
 			}
@@ -1338,10 +1340,12 @@ namespace Raindrop::Graphics::Utils{
 	}
 
 	VkFormat FormatUtilities::bestFormatOptimalTiling(uint32_t flags, VkFormatFeatureFlags features){
+		auto& device = _context.graphics.internal.device;
+
 		auto set = getSet(flags);
 		for (auto format : set){
 			VkFormatProperties propeties;
-			vkGetPhysicalDeviceFormatProperties(_context.device.getPhysicalDevice(), format, &propeties);
+			vkGetPhysicalDeviceFormatProperties(device.getPhysicalDevice().get(), format, &propeties);
 			if (propeties.optimalTilingFeatures & features){
 				return format;
 			}
@@ -1350,10 +1354,12 @@ namespace Raindrop::Graphics::Utils{
 	}
 
 	VkFormat FormatUtilities::bestFormatLinearTiling(uint32_t flags, VkFormatFeatureFlags features){
+		auto& device = _context.graphics.internal.device;
+		
 		auto set = getSet(flags);
 		for (auto format : set){
 			VkFormatProperties propeties;
-			vkGetPhysicalDeviceFormatProperties(_context.device.getPhysicalDevice(), format, &propeties);
+			vkGetPhysicalDeviceFormatProperties(device.getPhysicalDevice().get(), format, &propeties);
 			if (propeties.linearTilingFeatures & features){
 				return format;
 			}

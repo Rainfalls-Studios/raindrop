@@ -3,22 +3,11 @@
 
 namespace Raindrop::Graphics{
 	Context::Context(Core::Context& core) :
-		logger{"Graphics"},
 		core{core},
-		registry{core.registry["Graphics"]}
-		// window{*this},
-		// instance{*this},
-		// device{*this},
-		// formats{*this},
-		// swapchain{*this},
-		// graphics{*this},
-		// present{*this},
-		// transfert{*this},
-		// // layouts{*this},
-		// renderPasses{*this},
-		// descriptorPool{*this}
-		// // dummyTexture{*this},
-		// // shaderCompiler{*this}{
+		logger("Raindrop::Graphics"),
+		registry{core.registry["Graphics"]},
+		internal(*this),
+		utils(*this)
 	{}
 
 	// Context::~Context(){

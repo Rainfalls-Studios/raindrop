@@ -9,6 +9,7 @@ namespace Raindrop::Graphics{
 	class Engine;
 	class FrameState;
 	class Camera;
+	class Buffer;
 }
 
 #endif

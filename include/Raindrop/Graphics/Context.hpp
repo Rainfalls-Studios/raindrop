@@ -7,6 +7,7 @@
 #include <Raindrop/Core/Context.hpp>
 #include <Raindrop/Graphics/common.hpp>
 #include <Raindrop/Graphics/Internal/Context.hpp>
+#include <Raindrop/Graphics/Utils/Context.hpp>
 // #include <Raindrop/Core/Registry/Registry.hpp>
 // #include <Raindrop/Graphics/GlobalDescriptorPool.hpp>
 // #include <Raindrop/Graphics/RenderPassesManager.hpp>
@@ -24,7 +25,6 @@
 // #include <Raindrop/Graphics/Queues/GraphicsFamily.hpp>
 // #include <Raindrop/Graphics/Queues/TransfertFamily.hpp>
 
-// TODO add queues
 namespace Raindrop::Graphics{
 	struct Context{
 		Context(Core::Context& core);
@@ -40,12 +40,8 @@ namespace Raindrop::Graphics{
 		VkAllocationCallbacks* allocationCallbacks = nullptr;
 
 		Internal::Context internal;
-		// Internal::Window window;
-		// Internal::Instance instance;
-		// Internal::Device device;
-		// Internal::Swapchain swapchain;
+		Utils::Context utils;
 
-		// Utils::FormatUtilities formats;
 		// GlobalDescriptorPool descriptorPool;
 		// // Shaders::ShaderCompiler shaderCompiler;
 		// RenderPassesManager renderPasses;

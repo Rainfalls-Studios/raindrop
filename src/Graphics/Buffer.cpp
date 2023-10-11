@@ -1,8 +1,7 @@
 #include <Raindrop/Graphics/Buffer.hpp>
-#include <Raindrop/Graphics/GraphicsContext.hpp>
+#include <Raindrop/Graphics/Context.hpp>
 
 namespace Raindrop::Graphics{
-
 	VkDeviceSize getAlignment(VkDeviceSize instanceSize, VkDeviceSize minOffsetAlignment) {
 		if (minOffsetAlignment > 0) {
 			return (instanceSize + minOffsetAlignment - 1) & ~(minOffsetAlignment - 1);
@@ -10,7 +9,7 @@ namespace Raindrop::Graphics{
 		return instanceSize;
 	}
 
-	Buffer::Buffer(GraphicsContext& context) : _context{context}{}
+	Buffer::Buffer(Context& context) : _context{context}{}
 
 	Buffer::~Buffer(){
 		unmap();
@@ -18,6 +17,17 @@ namespace Raindrop::Graphics{
 	}
 
 	void Buffer::allocateInstances(VkDeviceSize instanceSize, uint32_t instanceCount, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceSize minOffsetAlignment){
+		auto& device = _context.internal.device;
+		auto& allocationCallbacks = _context.allocationCallbacks;
+
+		_context.logger.debug("allocating buffer || instance size : %d, instance count : %d, usageFlags : %x, memoryPropertyFlags : %x, minimal offeset : %d",
+			instanceSize,
+			instanceCount,
+			usageFlags,
+			memoryPropertyFlags,
+			minOffsetAlignment
+		);
+
 		free();
 		
 		_instanceSize = instanceSize;
@@ -31,23 +41,25 @@ namespace Raindrop::Graphics{
 		bufferInfo.usage = usageFlags;
 		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-		if (vkCreateBuffer(_context.device.get(), &bufferInfo, nullptr, &_buffer) != VK_SUCCESS) {
-			throw std::runtime_error("failed to create vertex buffer!");
+		if (vkCreateBuffer(device.get(), &bufferInfo, allocationCallbacks, &_buffer) != VK_SUCCESS){
+			_context.logger.error("Failed to create a buffer");
+			throw std::runtime_error("Failed to create buffer");
 		}
 
 		VkMemoryRequirements memRequirements;
-		vkGetBufferMemoryRequirements(_context.device.get(), _buffer, &memRequirements);
+		vkGetBufferMemoryRequirements(device.get(), _buffer, &memRequirements);
 
 		VkMemoryAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 		allocInfo.allocationSize = memRequirements.size;
-		allocInfo.memoryTypeIndex = _context.device.findMemoryType(memRequirements.memoryTypeBits, memoryPropertyFlags);
+		allocInfo.memoryTypeIndex = device.findMemoryType(memRequirements.memoryTypeBits, memoryPropertyFlags);
 
-		if (vkAllocateMemory(_context.device.get(), &allocInfo, nullptr, &_memory) != VK_SUCCESS) {
-			throw std::runtime_error("failed to allocate vertex buffer memory!");
+		if (vkAllocateMemory(device.get(), &allocInfo, nullptr, &_memory) != VK_SUCCESS) {
+			_context.logger.error("Failed to allocate a buffer memory");
+			throw std::runtime_error("Failed to allocate buffer memory");
 		}
 
-		vkBindBufferMemory(_context.device.get(), _buffer, _memory, 0);
+		vkBindBufferMemory(device.get(), _buffer, _memory, 0);
 	}
 
 	void Buffer::allocate(VkDeviceSize size, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceSize minOffsetAlignment){
@@ -56,22 +68,27 @@ namespace Raindrop::Graphics{
 	}
 
 	void Buffer::free(){
-		if (_buffer) vkDestroyBuffer(_context.device.get(), _buffer, nullptr);
-		if (_memory) vkFreeMemory(_context.device.get(), _memory, nullptr);
+		auto& device = _context.internal.device;
+		auto& allocationCallbacks = _context.allocationCallbacks;
+
+		if (_buffer) vkDestroyBuffer(device.get(), _buffer, allocationCallbacks);
+		if (_memory) vkFreeMemory(device.get(), _memory, allocationCallbacks);
 	}
 
 	VkResult Buffer::map(VkDeviceSize size, VkDeviceSize offset){
-		return vkMapMemory(_context.device.get(), _memory, offset, size, 0, &_mapped);
+		auto& device = _context.internal.device;
+		return vkMapMemory(device.get(), _memory, offset, size, 0, &_mapped);
 	}
 
 	void Buffer::unmap(){
+		auto& device = _context.internal.device;
 		if (_mapped){
-			vkUnmapMemory(_context.device.get(), _memory);
+			vkUnmapMemory(device.get(), _memory);
 			_mapped = nullptr;
 		}
 	}
 
-	void Buffer::writeToBuffer(void *data, VkDeviceSize size, VkDeviceSize offset) {
+	void Buffer::writeToBuffer(void *data, VkDeviceSize size, VkDeviceSize offset){
 		if (size == VK_WHOLE_SIZE) {
 			memcpy(_mapped, data, _instanceSize * _instanceCount);
 		} else {
@@ -81,22 +98,26 @@ namespace Raindrop::Graphics{
 		}
 	}
 
-	VkResult Buffer::flush(VkDeviceSize size, VkDeviceSize offset) {
+	VkResult Buffer::flush(VkDeviceSize size, VkDeviceSize offset){
+		auto& device = _context.internal.device;
+
 		VkMappedMemoryRange mappedRange = {};
 		mappedRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
 		mappedRange.memory = _memory;
 		mappedRange.offset = offset;
 		mappedRange.size = size;
-		return vkFlushMappedMemoryRanges(_context.device.get(), 1, &mappedRange);
+		return vkFlushMappedMemoryRanges(device.get(), 1, &mappedRange);
 	}
 
-	VkResult Buffer::invalidate(VkDeviceSize size, VkDeviceSize offset) {
+	VkResult Buffer::invalidate(VkDeviceSize size, VkDeviceSize offset){
+		auto& device = _context.internal.device;
+
 		VkMappedMemoryRange mappedRange = {};
 		mappedRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
 		mappedRange.memory = _memory;
 		mappedRange.offset = offset;
 		mappedRange.size = size;
-		return vkInvalidateMappedMemoryRanges(_context.device.get(), 1, &mappedRange);
+		return vkInvalidateMappedMemoryRanges(device.get(), 1, &mappedRange);
 	}
 
 	VkDescriptorBufferInfo Buffer::descriptorInfo(VkDeviceSize size, VkDeviceSize offset) {

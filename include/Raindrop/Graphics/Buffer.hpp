@@ -6,7 +6,7 @@
 namespace Raindrop::Graphics{
 	class Buffer{
 		public:
-			Buffer(GraphicsContext& context);
+			Buffer(Context& context);
 			~Buffer();
 
 			Buffer(const Buffer&) = delete;
@@ -38,7 +38,7 @@ namespace Raindrop::Graphics{
 			uint32_t instanceSize() const;
 
 		private:
-			GraphicsContext& _context;
+			Context& _context;
 			VkDeviceMemory _memory = VK_NULL_HANDLE;
 			VkBuffer _buffer = VK_NULL_HANDLE;
 			void* _mapped = nullptr;
