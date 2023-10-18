@@ -13,6 +13,7 @@ namespace Raindrop::Graphics::Utils{
 			VkFormat bestFormatLinearTiling(uint32_t flags, VkFormatFeatureFlags features);
 
 			bool is(VkFormat format, uint32_t flags);
+			std::size_t size(VkFormat format);
 
 		private:
 			Context& _context;

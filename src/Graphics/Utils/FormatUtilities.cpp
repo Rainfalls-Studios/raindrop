@@ -1371,4 +1371,18 @@ namespace Raindrop::Graphics::Utils{
 		auto set = getSet(flags);
 		return set.contains(format);
 	}
+
+	std::size_t FormatUtilities::size(VkFormat format){
+		if (bit8Formats.count(format) > 0) return 8 / 8;
+		if (bit16Formats.count(format) > 0) return 16 / 8;
+		if (bit32Formats.count(format) > 0) return 32 / 8;
+		if (bit48Formats.count(format) > 0) return 48 / 8;
+		if (bit64Formats.count(format) > 0) return 64 / 8;
+		if (bit96Formats.count(format) > 0) return 96 / 8;
+		if (bit128Formats.count(format) > 0) return 128 / 8;
+		if (bit192Formats.count(format) > 0) return 192 / 8;
+		if (bit256Formats.count(format) > 0) return 256 / 8;
+		throw std::runtime_error("Could not find format");
+		return 0;
+	}
 }

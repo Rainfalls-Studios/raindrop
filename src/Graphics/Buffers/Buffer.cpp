@@ -1,8 +1,8 @@
-#include <Raindrop/Graphics/Buffer.hpp>
-#include <Raindrop/Graphics/Context.hpp>
+#include <Raindrop/Graphics/Buffers/Buffer.hpp>
+#include <Raindrop/Graphics/Buffers/Context.hpp>
 
-namespace Raindrop::Graphics{
-	VkDeviceSize getAlignment(VkDeviceSize instanceSize, VkDeviceSize minOffsetAlignment) {
+namespace Raindrop::Graphics::Buffers{
+	inline VkDeviceSize getAlignment(VkDeviceSize instanceSize, VkDeviceSize minOffsetAlignment) {
 		if (minOffsetAlignment > 0) {
 			return (instanceSize + minOffsetAlignment - 1) & ~(minOffsetAlignment - 1);
 		}
@@ -17,8 +17,8 @@ namespace Raindrop::Graphics{
 	}
 
 	void Buffer::allocateInstances(VkDeviceSize instanceSize, uint32_t instanceCount, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceSize minOffsetAlignment){
-		auto& device = _context.internal.device;
-		auto& allocationCallbacks = _context.allocationCallbacks;
+		auto& device = _context.graphics.internal.device;
+		auto& allocationCallbacks = _context.graphics.allocationCallbacks;
 
 		_context.logger.debug("allocating buffer || instance size : %d, instance count : %d, usageFlags : %x, memoryPropertyFlags : %x, minimal offeset : %d",
 			instanceSize,
@@ -68,27 +68,27 @@ namespace Raindrop::Graphics{
 	}
 
 	void Buffer::free(){
-		auto& device = _context.internal.device;
-		auto& allocationCallbacks = _context.allocationCallbacks;
+		auto& device = _context.graphics.internal.device;
+		auto& allocationCallbacks = _context.graphics.allocationCallbacks;
 
 		if (_buffer) vkDestroyBuffer(device.get(), _buffer, allocationCallbacks);
 		if (_memory) vkFreeMemory(device.get(), _memory, allocationCallbacks);
 	}
 
 	VkResult Buffer::map(VkDeviceSize size, VkDeviceSize offset){
-		auto& device = _context.internal.device;
+		auto& device = _context.graphics.internal.device;
 		return vkMapMemory(device.get(), _memory, offset, size, 0, &_mapped);
 	}
 
 	void Buffer::unmap(){
-		auto& device = _context.internal.device;
+		auto& device = _context.graphics.internal.device;
 		if (_mapped){
 			vkUnmapMemory(device.get(), _memory);
 			_mapped = nullptr;
 		}
 	}
 
-	void Buffer::writeToBuffer(void *data, VkDeviceSize size, VkDeviceSize offset){
+	void Buffer::write(void *data, VkDeviceSize size, VkDeviceSize offset){
 		if (size == VK_WHOLE_SIZE) {
 			memcpy(_mapped, data, _instanceSize * _instanceCount);
 		} else {
@@ -99,7 +99,7 @@ namespace Raindrop::Graphics{
 	}
 
 	VkResult Buffer::flush(VkDeviceSize size, VkDeviceSize offset){
-		auto& device = _context.internal.device;
+		auto& device = _context.graphics.internal.device;
 
 		VkMappedMemoryRange mappedRange = {};
 		mappedRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
@@ -110,7 +110,7 @@ namespace Raindrop::Graphics{
 	}
 
 	VkResult Buffer::invalidate(VkDeviceSize size, VkDeviceSize offset){
-		auto& device = _context.internal.device;
+		auto& device = _context.graphics.internal.device;
 
 		VkMappedMemoryRange mappedRange = {};
 		mappedRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
@@ -125,7 +125,7 @@ namespace Raindrop::Graphics{
 	}
 
 	void Buffer::writeToIndex(void *data, int index) {
-		writeToBuffer(data, _instanceSize, index * _alignmentSize);
+		write(data, _instanceSize, index * _alignmentSize);
 	}
 
 	VkResult Buffer::flushIndex(int index) {
@@ -158,5 +158,18 @@ namespace Raindrop::Graphics{
 
 	uint32_t Buffer::instanceSize() const{
 		return _instanceSize;
+	}
+
+	void Buffer::update(VkCommandBuffer commandBuffer, void* data, VkDeviceSize size, VkDeviceSize offset){
+		vkCmdUpdateBuffer(commandBuffer, _buffer, offset, size, data);
+	}
+
+	void Buffer::copy(VkCommandBuffer commandBuffer, VkBuffer destination, VkDeviceSize size, VkDeviceSize sourceOffset, VkDeviceSize destinationOffset){
+		VkBufferCopy region;
+		region.dstOffset = destinationOffset;
+		region.srcOffset = sourceOffset;
+		region.size = size;
+
+		vkCmdCopyBuffer(commandBuffer, _buffer, destination, 1, &region);
 	}
 }

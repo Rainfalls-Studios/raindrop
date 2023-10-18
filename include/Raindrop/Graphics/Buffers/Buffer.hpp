@@ -1,9 +1,9 @@
-#ifndef __RAINDROP_GRAPHICS_BUFFER_HPP__
-#define __RAINDROP_GRAPHICS_BUFFER_HPP__
+#ifndef __RAINDROP_GRAPHICS_BUFFERS_BUFFER_HPP__
+#define __RAINDROP_GRAPHICS_BUFFERS_BUFFER_HPP__
 
-#include <Raindrop/Graphics/common.hpp>
+#include <Raindrop/Graphics/Buffers/common.hpp>
 
-namespace Raindrop::Graphics{
+namespace Raindrop::Graphics::Buffers{
 	class Buffer{
 		public:
 			Buffer(Context& context);
@@ -20,7 +20,7 @@ namespace Raindrop::Graphics{
 			VkResult map(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
   			void unmap();
 
-			void writeToBuffer(void* data, VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
+			void write(void* data, VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
 			VkResult flush(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
 			VkDescriptorBufferInfo descriptorInfo(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
 			VkResult invalidate(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
@@ -34,8 +34,14 @@ namespace Raindrop::Graphics{
 			VkDeviceMemory memory() const;
 			void* mapped();
 
+			void update(VkCommandBuffer commandBuffer, void* data, VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
+			void copy(VkCommandBuffer commandBuffer, VkBuffer destination, VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize sourceOffset = 0, VkDeviceSize destinationOffset = 0);
+			void copyToImage();
+
 			uint32_t instanceCount() const;
 			uint32_t instanceSize() const;
+
+			operator VkBuffer() const;
 
 		private:
 			Context& _context;

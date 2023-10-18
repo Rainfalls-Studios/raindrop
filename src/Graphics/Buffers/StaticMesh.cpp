@@ -1,10 +1,10 @@
-#include <Raindrop/Graphics/Mesh/StaticMesh.hpp>
-#include <Raindrop/Graphics/Buffer.hpp>
-#include <Raindrop/Graphics/GraphicsContext.hpp>
-#include <Raindrop/Graphics/FrameState.hpp>
+#include <Raindrop/Graphics/Buffers/StaticMesh.hpp>
+#include <Raindrop/Graphics/Buffers/Buffer.hpp>
+#include <Raindrop/Graphics/Buffers/Context.hpp>
+// #include <Raindrop/Graphics/FrameState.hpp>
 
-namespace Raindrop::Graphics::Mesh{
-	StaticMesh::StaticMesh(GraphicsContext& context, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices) : _context{context}{
+namespace Raindrop::Graphics::Buffers{
+	StaticMesh::StaticMesh(Context& context, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices) : _context{context}{
 		createVBO(vertices);
 		createIBO(indices);
 	}

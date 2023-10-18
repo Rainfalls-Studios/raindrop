@@ -1,13 +1,13 @@
-#ifndef __RAINDROP_GRAPHICS_MESH_STATIC_MESH_HPP__
-#define __RAINDROP_GRAPHICS_MESH_STATIC_MESH_HPP__
+#ifndef __RAINDROP_GRAPHICS_BUFFERS_STATIC_MESH_HPP__
+#define __RAINDROP_GRAPHICS_BUFFERS_STATIC_MESH_HPP__
 
-#include <Raindrop/Graphics/Mesh/common.hpp>
-#include <Raindrop/Graphics/Mesh/Mesh.hpp>
+#include <Raindrop/Graphics/Buffers/common.hpp>
+#include <Raindrop/Graphics/Buffers/Mesh.hpp>
 
-namespace Raindrop::Graphics::Mesh{
+namespace Raindrop::Graphics::Buffers{
 	class StaticMesh : public Mesh{
 		public:
-			StaticMesh(GraphicsContext& context, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices = {});
+			StaticMesh(Context& context, const HostMesh& mesh);
 			virtual ~StaticMesh() override;
 			
 			virtual bool hasVertexBuffer() const override;
@@ -17,7 +17,7 @@ namespace Raindrop::Graphics::Mesh{
 			virtual const Buffer& indexBuffer() const override;
 		
 		private:
-			GraphicsContext& _context;
+			Context& _context;
 
 			std::unique_ptr<Buffer> _vbo;
 			std::unique_ptr<Buffer> _ibo;

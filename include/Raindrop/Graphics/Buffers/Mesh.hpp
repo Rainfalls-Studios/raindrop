@@ -1,9 +1,9 @@
-#ifndef __RAINDROP_GRAPHICS_MESH_MESH_HPP__
-#define __RAINDROP_GRAPHICS_MESH_MESH_HPP__
+#ifndef __RAINDROP_GRAPHICS_BUFFERS_MESH_HPP__
+#define __RAINDROP_GRAPHICS_BUFFERS_MESH_HPP__
 
-#include <Raindrop/Graphics/Mesh/common.hpp>
+#include <Raindrop/Graphics/Buffers/common.hpp>
 
-namespace Raindrop::Graphics::Mesh{
+namespace Raindrop::Graphics::Buffers{
 	class Mesh{
 		public:
 			Mesh() = default;
