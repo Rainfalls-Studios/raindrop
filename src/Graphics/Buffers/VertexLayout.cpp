@@ -97,6 +97,14 @@ namespace Raindrop::Graphics::Buffers{
 	std::size_t VertexLayout::attributeOffset(const std::string& name) const{
 		return attributeOffset(attributeId(name));
 	}
+	
+	std::size_t VertexLayout::attributeBinding(std::size_t id) const{
+		return static_cast<std::size_t>(_attributes[id].binding);
+	}
+
+	std::size_t VertexLayout::attributeBinding(const std::string& name) const{
+		return attributeBinding(attributeId(name));
+	}
 
 	//  BINDING
 	void VertexLayout::setBindingInputRate(std::size_t binding, VkVertexInputRate inputRate){
@@ -158,4 +166,13 @@ namespace Raindrop::Graphics::Buffers{
 	bool VertexLayout::operator!=(const VertexLayout& other) const{
 		return _attributes != other._attributes || _bindings != other._bindings;
 	}
+
+	std::size_t VertexLayout::size() const{
+		std::size_t size = 0;
+		for (const auto& binding : _bindings){
+			size += static_cast<std::size_t>(binding.stride);
+		}
+		return size;
+	}
+
 }

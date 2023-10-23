@@ -29,6 +29,9 @@ namespace Raindrop::Graphics::Buffers{
 			std::size_t attributeOffset(std::size_t id) const;
 			std::size_t attributeOffset(const std::string& name) const;
 
+			std::size_t attributeBinding(std::size_t id) const;
+			std::size_t attributeBinding(const std::string& name) const;
+
 			//  BINDING
 			void setBindingInputRate(std::size_t binding, VkVertexInputRate inputRate);
 			VkVertexInputRate bindingInputRate(std::size_t binding) const;
@@ -40,6 +43,8 @@ namespace Raindrop::Graphics::Buffers{
 			std::size_t attributeCount() const;
 			std::size_t bindingCount() const;
 			std::size_t attributeCountAtBinding(std::size_t binding) const;
+
+			std::size_t size() const;
 
 		private:
 			Context& _context;

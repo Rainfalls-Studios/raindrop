@@ -12,23 +12,25 @@ namespace Raindrop::Graphics::Buffers{
 			
 			const VertexLayout& vertexLayout() const;
 
-			template<typename T> T& get(const std::string& attribute, std::size_t vertex);
-			template<typename T> const T& get(const std::string& attribute, std::size_t vertex) const;
+			template<typename T> T& get(const std::string& attribute, std::size_t index);
+			template<typename T> const T& get(const std::string& attribute, std::size_t index) const;
+
+			Vertex get(std::size_t index);
+			const Vertex get(std::size_t index) const;
 
 			void resize(std::size_t size);
 			void* data(std::size_t binding);
 
 			std::size_t bindings() const;
+			std::size_t bindingSize(std::size_t binding) const;
 			std::size_t vertexCount() const;
 			std::size_t size() const;
-
-			Vertex get(std::size_t vertex);
-			const Vertex get(std::size_t vertex) const;
 
 			std::size_t indexSize() const;
 			VkIndexType indexType() const;
 			std::size_t indexCount() const;
 
+			bool hashIndices() const;
 			const void* indices() const;
 
 			void mergeVerticies();
