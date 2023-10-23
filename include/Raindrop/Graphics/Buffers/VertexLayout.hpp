@@ -5,12 +5,16 @@
 
 namespace Raindrop::Graphics::Buffers{
 	class VertexLayout{
+		friend class Vertex;
 		public:
 			VertexLayout(Context& context);
 			~VertexLayout();
 
 			VertexLayout(const VertexLayout& other);
 			const VertexLayout& operator=(const VertexLayout& other) = delete;
+
+			bool operator==(const VertexLayout& other) const;
+			bool operator!=(const VertexLayout& other) const;
 
 			std::size_t addAttribute(const std::string &name, std::size_t binding, VkFormat format);
 			void removeAttribute(std::size_t id);

@@ -15,73 +15,71 @@ std::size_t hashVoidPointer(const void* data, std::size_t len) {
 }
 
 namespace Raindrop::Graphics::Buffers{
-	Vertex::Vertex() : _layout{nullptr}{}
-	
+	Vertex::Vertex(const VertexLayout& layout) : _layout{std::make_unique<VertexLayout>(layout)}{	
+		_reference = false;
 
-	Vertex::Vertex(const VertexLayout& layout) :
-		_layout{std::make_unique<VertexLayout>(layout)},
-		_reference{false}{
-		_attributes.resize(_layout->attributeCount());
+		_attributes.resize(layout.attributeCount());
+		for (std::size_t i=0; i<_attributes.size(); i++){
+			void*& attribute = _attributes[i];
+			std::size_t size = layout.attributeSize(i);
 
-		auto names = _layout->attributesNames();
+			attribute = std::malloc(size);
+			if (!attribute){
+				_layout->_context.logger.critical("Malloc error !");
+				throw std::runtime_error("Malloc error");
+			}
 
-		for (const auto& name : names){
-			std::size_t id = _layout->id(name);
-			std::size_t size = _layout->attributeSize(name);
-
-			_attributes[id] = std::malloc(size);
-			if (!_attributes[id]) throw std::system_error();
-
-			std::memset(_attributes[id], 0, size);
+			std::memset(attribute, 0, size);
 		}
 	}
 
-	Vertex::Vertex(const VertexLayout& layout, const std::vector<void*>& attributes) :
-		_layout{std::make_unique<VertexLayout>(layout)},
-		_attributes{attributes},
-		_reference{true}{}
+	Vertex::Vertex(const VertexLayout& layout, const std::vector<void*>& attributes) : _layout{std::make_unique<VertexLayout>(layout)}{
+		_reference = true;
+		_attributes = attributes;
+	}
 
 	Vertex::~Vertex(){
-		if (!_reference){
-			for (auto& attribute : _attributes){
-				std::free(attribute);
-			}
+		if (_reference) return;
+		for (auto& attribute : _attributes){
+			if (attribute) std::free(attribute);
 		}
-		_layout.reset();
 	}
 
-	const VertexLayout& Vertex::layout() const{
-		return *_layout;
-	}
+	Vertex::Vertex(const Vertex& other) : Vertex(*other._layout){
+		for (std::size_t i=0; i<_attributes.size(); i++){
+			std::size_t size = _layout->attributeSize(i);
+			void* dest = _attributes[i];
+			const void* src = other._attributes[i];
 
-	void* Vertex::get(const std::string& attribute){
-		return _attributes[_layout->id(attribute)];
-	}
-
-	const void* Vertex::get(const std::string& attribute) const{
-		return _attributes[_layout->id(attribute)];
+			std::memcpy(dest, src, size);
+		}
 	}
 
 	bool Vertex::operator==(const Vertex& other) const{
-		if (other._layout != _layout) return false;
+		if (*_layout != *other._layout) return false;
 
 		for (std::size_t i=0; i<_attributes.size(); i++){
+			std::size_t size = _layout->attributeSize(i);
 			const void* a = _attributes[i];
 			const void* b = other._attributes[i];
-
-			const std::string& name = _layout->name(i);
-			std::size_t size = _layout->attributeSize(name);
 
 			if (std::memcmp(a, b, size) != 0) return false;
 		}
 		return true;
 	}
 
+	bool Vertex::operator!=(const Vertex& other) const{
+		return !(*this == other);
+	}
+
+	const VertexLayout& Vertex::layout() const{
+		return *_layout;
+	}
+
 	std::size_t Vertex::hash(std::size_t seed) const{
 		for (std::size_t i=0; i<_attributes.size(); i++){
 			const void* attribute = _attributes[i];
-			const std::string& name = _layout->name(i);
-			std::size_t size = _layout->attributeSize(name);
+			std::size_t size = _layout->attributeSize(i);
 
 			std::size_t hash = hashVoidPointer(attribute, size);
 			seed ^= hash + 0x9e3779b9 + (seed << 6) + (seed >> 2);

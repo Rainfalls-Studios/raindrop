@@ -150,4 +150,12 @@ namespace Raindrop::Graphics::Buffers{
 
 		return _bindings[binding];
 	}
+	
+	bool VertexLayout::operator==(const VertexLayout& other) const{
+		return _attributes == other._attributes && _bindings == other._bindings;
+	}
+
+	bool VertexLayout::operator!=(const VertexLayout& other) const{
+		return _attributes != other._attributes || _bindings != other._bindings;
+	}
 }

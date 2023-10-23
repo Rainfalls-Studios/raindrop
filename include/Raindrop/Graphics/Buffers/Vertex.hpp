@@ -7,15 +7,15 @@
 namespace Raindrop::Graphics::Buffers{
 	class Vertex{
 		public:
-			Vertex();
 			Vertex(const VertexLayout& layout);
 			Vertex(const VertexLayout& layout, const std::vector<void*>& attributes);
 			~Vertex();
 
 			Vertex(const Vertex& other);
-			const Vertex& operator=(const Vertex& other) const;
+			const Vertex& operator=(const Vertex& other) const = delete;
 
 			bool operator==(const Vertex& other) const;
+			bool operator!=(const Vertex& other) const;
 
 			const VertexLayout& layout() const;
 
