@@ -25,16 +25,27 @@ namespace Raindrop::Graphics::Buffers{
 			Vertex get(std::size_t vertex);
 			const Vertex get(std::size_t vertex) const;
 
+			std::size_t indexSize() const;
+			VkIndexType indexType() const;
+			std::size_t indexCount() const;
+
+			const void* indices() const;
+
+			void mergeVerticies();
+
 		private:
 			Context& _context;
 			std::unique_ptr<VertexLayout> _vertexLayout;
 
 			struct Binding{
-				std::vector<uint8_t> data;
+				std::vector<std::uint8_t> data;
 			};
 
 			std::vector<Binding> _bindings;
 			std::size_t _vertexCount;
+
+			std::vector<std::uint8_t> _indices;
+			std::size_t _indexSize;
 			
 			void* get(const std::string& attribute, std::size_t vertex);
 			const void* get(const std::string& attribute, std::size_t vertex) const;

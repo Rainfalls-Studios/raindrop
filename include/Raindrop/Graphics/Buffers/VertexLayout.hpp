@@ -33,6 +33,7 @@ namespace Raindrop::Graphics::Buffers{
 			std::vector<std::string> attributesNames() const;
 
 			std::size_t id(const std::string& name) const;
+			const std::string& name(std::size_t id) const;
 
 		private:
 			struct AttributeData{

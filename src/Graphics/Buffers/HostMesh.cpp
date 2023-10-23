@@ -69,4 +69,41 @@ namespace Raindrop::Graphics::Buffers{
 		
 		return Vertex(_context, data);
 	}
+
+	
+	std::size_t HostMesh::indexSize() const{
+		return _indexSize;
+	}
+
+	VkIndexType HostMesh::indexType() const{
+		switch (_indexSize){
+			case 8: return VK_INDEX_TYPE_UINT8_EXT;
+			case 16: return VK_INDEX_TYPE_UINT16;
+			case 32: return VK_INDEX_TYPE_UINT32;
+		}
+		return VK_INDEX_TYPE_NONE_KHR;
+	}
+
+	std::size_t HostMesh::indexCount() const{
+		return _indices.size();
+	}
+
+	const void* HostMesh::indices() const{
+		return static_cast<const void*>(_indices.data());
+	}
+
+	void HostMesh::mergeVerticies(){
+
+		// TODO :: add uint8_t and uint16_t support
+		_indexSize = sizeof(uint32_t);
+		std::unordered_map<Vertex, uint32_t> uniqueVertices;
+
+		for (std::size_t i=0; i<_vertexCount; i++){
+			Vertex vertex = get(i);
+
+			if (uniqueVertices.count(vertex) == 0){
+				uniqueVertices[vertex] = uniqueVertexCount;
+			}
+		}
+	}
 }

@@ -131,4 +131,15 @@ namespace Raindrop::Graphics::Buffers{
 		}
 		return size;
 	}
+
+	const std::string& VertexLayout::name(std::size_t id) const{
+		std::size_t i=0;
+		auto it = _attributes.begin();
+		while (i<id && it != _attributes.end()){
+			it++;
+			i++;
+		}
+
+		return it->first;
+	}
 }

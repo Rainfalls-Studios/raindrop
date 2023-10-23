@@ -2,6 +2,7 @@
 #define __RAINDROP_GRAPHICS_INTERNAL_CONTEXT_HPP__
 
 #include <spdlog/spdlog.h>
+
 #include <Raindrop/Graphics/Context.hpp>
 #include <Raindrop/Graphics/Internal/common.hpp>
 #include <Raindrop/Graphics/Internal/Instance.hpp>

@@ -44,7 +44,7 @@ namespace Raindrop::Graphics::Buffers{
 		Buffer staginBuffer(_context);
 		staginBuffer.allocate(sizeof(uint32_t) * indices.size(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
 		staginBuffer.map();
-		staginBuffer.writeToBuffer((void*)indices.data());
+		staginBuffer.write((void*)indices.data());
 		staginBuffer.flush();
 
 		_ibo = std::make_unique<Buffer>(_context);
