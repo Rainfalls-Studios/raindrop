@@ -1,0 +1,11 @@
+file(GLOB_RECURSE SOURCES *.cpp)
+add_executable(RaindropIntegrationTests ${SOURCES})
+# target_link_libraries(RaindropIntegrationTests RaindropEngine gtest_main gtest ${Vulkan_LIBRARIES} SDL2::SDL2-static)
+
+# add_definitions(-DRESOURCES_PATH="${RESOURCE_PATH}")
+
+set_target_properties(RaindropIntegrationTests PROPERTIES
+	RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+	LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+	ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+)
