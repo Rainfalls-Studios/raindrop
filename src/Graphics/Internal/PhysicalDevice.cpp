@@ -11,6 +11,39 @@ namespace Raindrop::Graphics::Internal{
 		reset();
 	}
 
+	
+	uint32_t PhysicalDevice::apiVersion() const{
+		return _properties.apiVersion;
+	}
+
+	uint32_t PhysicalDevice::driverVersion() const{
+		return _properties.driverVersion;
+	}
+
+	uint32_t PhysicalDevice::vendorID() const{
+		return _properties.vendorID;
+	}
+
+	uint32_t PhysicalDevice::deviceID() const{
+		return _properties.deviceID;
+	}
+
+	VkPhysicalDeviceType PhysicalDevice::type() const{
+		return _properties.deviceType;
+	}
+
+	const char* PhysicalDevice::name() const{
+		return _properties.deviceName;
+	}
+	
+	const VkPhysicalDeviceSparseProperties& PhysicalDevice::sparseProperties() const{
+		return _properties.sparseProperties;
+	}
+
+	const VkPhysicalDeviceLimits& PhysicalDevice::limits() const{
+		return _properties.limits;
+	}
+
 	const VkPhysicalDeviceFeatures& PhysicalDevice::features() const{
 		return _features;
 	}

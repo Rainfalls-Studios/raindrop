@@ -9,43 +9,45 @@ namespace Raindrop::Graphics::Buffers{
 			VertexLayout(Context& context);
 			~VertexLayout();
 
-			void addAttribute(const std::string &name, uint32_t binding, VkFormat format);
+			VertexLayout(const VertexLayout& other);
+			const VertexLayout& operator=(const VertexLayout& other) = delete;
+
+			std::size_t addAttribute(const std::string &name, std::size_t binding, VkFormat format);
+			void removeAttribute(std::size_t id);
 			void removeAttribute(const std::string& name);
 
-			void setBinding(uint32_t binding);
-			void setInputRate(VkVertexInputRate inputRate);
-
-			VkFormat attributeFormat(const std::string& name) const;
-			std::size_t attributeOffset(const std::string& name) const;
+			std::size_t attributeSize(std::size_t id) const;
 			std::size_t attributeSize(const std::string& name) const;
-			uint32_t attributeBinding(const std::string& name) const;
 
+			const std::string& attributeName(std::size_t id) const;
+			std::size_t attributeId(const std::string& name) const;
+
+			std::size_t attributeOffset(std::size_t id) const;
+			std::size_t attributeOffset(const std::string& name) const;
+
+			//  BINDING
+			void setBindingInputRate(std::size_t binding, VkVertexInputRate inputRate);
+			VkVertexInputRate bindingInputRate(std::size_t binding) const;
 			std::size_t bindingSize(std::size_t binding) const;
 
-			std::size_t size() const;
-			uint32_t binding() const;
-			VkVertexInputRate inputRate() const;
+			const VkVertexInputAttributeDescription* attributeDescriptions() const;
+			const VkVertexInputBindingDescription* bindingDescriptions() const;
+
 			std::size_t attributeCount() const;
-
-			std::vector<VkVertexInputAttributeDescription> attributes() const;
-			const VkVertexInputBindingDescription* description() const;
-
-			std::vector<std::string> attributesNames() const;
-
-			std::size_t id(const std::string& name) const;
-			const std::string& name(std::size_t id) const;
+			std::size_t bindingCount() const;
+			std::size_t attributeCountAtBinding(std::size_t binding) const;
 
 		private:
-			struct AttributeData{
-				std::size_t id;
-				VkVertexInputAttributeDescription description;
-			};
-
 			Context& _context;
-			std::unordered_map<std::string, AttributeData> _attributes;
-			VkVertexInputBindingDescription _description;
 
-			const AttributeData& get(const std::string& name) const;
+			std::vector<VkVertexInputAttributeDescription> _attributes;
+			std::vector<VkVertexInputBindingDescription> _bindings;
+
+
+			std::unordered_map<std::string, std::size_t> _nameToAttributeID;
+
+			const VkVertexInputBindingDescription& getBinding(std::size_t binding) const;
+			VkVertexInputBindingDescription& getBinding(std::size_t binding);
 	};
 }
 

@@ -25,6 +25,7 @@ namespace Raindrop::Graphics::Internal{
 		Swapchain swapchain;
 
 		Context(Graphics::Context& graphics);
+		VkPhysicalDeviceLimits& limits() const;
 	};
 }
 

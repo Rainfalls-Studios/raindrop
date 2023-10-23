@@ -10,9 +10,18 @@ namespace Raindrop::Graphics::Internal{
 
 			PhysicalDevice& operator=(VkPhysicalDevice device);
 
+			uint32_t apiVersion() const;
+			uint32_t driverVersion() const;
+			uint32_t vendorID() const;
+			uint32_t deviceID() const;
+			VkPhysicalDeviceType type() const;
+			const char* name() const;
+
+			const VkPhysicalDeviceSparseProperties& sparseProperties() const;
 			const VkPhysicalDeviceFeatures& features() const;
 			const VkPhysicalDeviceProperties& properties() const;
 			const VkPhysicalDeviceMemoryProperties& memoryProperties() const;
+			const VkPhysicalDeviceLimits& limits() const;
 
 			const std::vector<VkPhysicalDeviceToolProperties>& toolProperties() const;
 			const std::vector<VkQueueFamilyProperties>& queueFamilyProperties() const;
@@ -45,6 +54,7 @@ namespace Raindrop::Graphics::Internal{
 			void getFamilyProperties();
 			void getExtensionProperties();
 			void getLayerProperties();
+			void getlimits();
 
 			void reset();
 	};

@@ -2,144 +2,152 @@
 #include <Raindrop/Graphics/Buffers/Context.hpp>
 
 namespace Raindrop::Graphics::Buffers{
-	VertexLayout::VertexLayout(Context& context) : _context{context}, _description{}{}
+	VertexLayout::VertexLayout(Context& context) : _context{context}{}
 	VertexLayout::~VertexLayout(){}
+	
+	VertexLayout::VertexLayout(const VertexLayout& other) : 
+		_context{other._context},
+		_attributes{other._attributes},
+		_bindings{other._bindings},
+		_nameToAttributeID{other._nameToAttributeID}
+	{}
 
-	void VertexLayout::addAttribute(const std::string &name, uint32_t binding, VkFormat format){
-		VkVertexInputAttributeDescription description;
+	std::size_t VertexLayout::addAttribute(const std::string &name, std::size_t binding, VkFormat format){
+		if (name.empty()){
+			throw std::runtime_error("Cannot have an unnamed vertex attribute");
+		}
 
-		description.location = static_cast<uint32_t>(_attributes.size());
-		description.format = format;
-		description.binding = binding;
-		description.offset = _description.stride;
+		if (binding > _context.graphics.internal.limits().maxVertexInputBindings){
+			_context.logger.error("TVertex binding out of limitation range (%d > %d)", binding, _context.graphics.internal.limits().maxVertexInputBindings);
+			throw std::out_of_range("Vertex binding out of limitation range");
+		}
 
-		_description.stride += static_cast<uint32_t>(_context.graphics.utils.formats.size(format));
+		if (_bindings.size() < binding+1){
+			_bindings.resize(binding+1);
+		}
 
-		AttributeData attribute;
-		attribute.description = description;
-		attribute.id = _attributes.size();
+		VkVertexInputAttributeDescription attribute;
+		attribute.binding = static_cast<uint32_t>(binding);
+		attribute.location = static_cast<uint32_t>(attributeCountAtBinding(binding));
+		attribute.format = format;
+		
+		uint32_t& bindingStride = _bindings[binding].stride;
+		attribute.offset = bindingStride;
+		bindingStride += _context.graphics.utils.formats.size(format);
 
-		_attributes[name] = attribute;
+		std::size_t id = _attributes.size();
+		_attributes.push_back(attribute);
+
+		_nameToAttributeID[name] = id;
+		return id;
+	}
+
+	void VertexLayout::removeAttribute(std::size_t id){
+		for (const auto& pair : _nameToAttributeID){
+			if (pair.second != id) continue;
+			_nameToAttributeID.erase(pair.first);
+			break;
+		}
+
+		uint32_t binding = _attributes[id].binding;
+		_attributes.erase(_attributes.begin() + id);
+
+		uint32_t offset = 0;
+		for (auto& attribute : _attributes){
+			if (attribute.binding == binding){
+				attribute.offset = offset;
+				offset += _context.graphics.utils.formats.size(attribute.format);
+			}
+		}
+
+		_bindings[static_cast<std::size_t>(binding)].stride = offset;
 	}
 
 	void VertexLayout::removeAttribute(const std::string& name){
-		auto it = _attributes.find(name);
-		if (it == _attributes.end());
-
-		_attributes.erase(name);
-
-		uint32_t offset = 0;
-		std::size_t index = 0;
-
-		for (auto &attribute : _attributes){
-			auto& description = attribute.second.description;
-
-			attribute.second.id = index;
-			description.offset = offset;
-
-			offset += _context.graphics.utils.formats.size(description.format);
-			index++;
-		}
-		_description.stride = offset;
-	}
-	
-	void VertexLayout::setBinding(uint32_t binding){
-		_description.binding = binding;
+		removeAttribute(attributeId(name));
 	}
 
-	void VertexLayout::setInputRate(VkVertexInputRate inputRate){
-		_description.inputRate = inputRate;
-	}
-
-	VkFormat VertexLayout::attributeFormat(const std::string& name) const{
-		return get(name).description.format;
-
-	}
-
-	std::size_t VertexLayout::attributeOffset(const std::string& name) const{
-		return get(name).description.offset;
+	std::size_t VertexLayout::attributeSize(std::size_t id) const{
+		return _context.graphics.utils.formats.size(_attributes[id].format);
 	}
 
 	std::size_t VertexLayout::attributeSize(const std::string& name) const{
-		return _context.graphics.utils.formats.size(attributeFormat(name));
+		return attributeSize(attributeId(name));
 	}
 
-	uint32_t VertexLayout::attributeBinding(const std::string& name) const{
-		return get(name).description.binding;
+	const std::string& VertexLayout::attributeName(std::size_t id) const{
+		for (const auto& pair : _nameToAttributeID){
+			if (pair.second == id) return pair.first;
+		}
+		return "";
 	}
 
-	std::size_t VertexLayout::size() const{
-		return _description.stride;
-	}
-
-	const VertexLayout::AttributeData& VertexLayout::get(const std::string& name) const{
-		auto it = _attributes.find(name);
-		if (it == _attributes.end()){
-			throw std::runtime_error("Could not find attribute");
+	std::size_t VertexLayout::attributeId(const std::string& name) const{
+		auto it = _nameToAttributeID.find(name);
+		if (it == _nameToAttributeID.end()){
+			return std::numeric_limits<std::size_t>::quiet_NaN();
 		}
 		return it->second;
 	}
-	
-	std::vector<VkVertexInputAttributeDescription> VertexLayout::attributes() const{
-		std::vector<VkVertexInputAttributeDescription> vec(_attributes.size());
 
-		std::size_t i = 0;
-		for (const auto& attribute : _attributes){
-			vec[i] = attribute.second.description;
-			i++;
-		}
-
-		return vec;
+	std::size_t VertexLayout::attributeOffset(std::size_t id) const{
+		return _attributes[id].offset;
 	}
 
-	const VkVertexInputBindingDescription* VertexLayout::description() const{
-		return &_description;
+	std::size_t VertexLayout::attributeOffset(const std::string& name) const{
+		return attributeOffset(attributeId(name));
 	}
 
-	uint32_t VertexLayout::binding() const{
-		return _description.binding;
+	//  BINDING
+	void VertexLayout::setBindingInputRate(std::size_t binding, VkVertexInputRate inputRate){
+		getBinding(binding).inputRate = inputRate;
 	}
 
-	VkVertexInputRate VertexLayout::inputRate() const{
-		return _description.inputRate;
+	VkVertexInputRate VertexLayout::bindingInputRate(std::size_t binding) const{
+		return getBinding(binding).inputRate;
 	}
 
-	std::size_t VertexLayout::id(const std::string& name) const{
-		return get(name).id;
+	std::size_t VertexLayout::bindingSize(std::size_t binding) const{
+		return static_cast<std::size_t>(getBinding(binding).stride);
+	}
+
+	const VkVertexInputAttributeDescription* VertexLayout::attributeDescriptions() const{
+		return _attributes.data();
+	}
+
+	const VkVertexInputBindingDescription* VertexLayout::bindingDescriptions() const{
+		return _bindings.data();
 	}
 
 	std::size_t VertexLayout::attributeCount() const{
 		return _attributes.size();
 	}
 
-	std::vector<std::string> VertexLayout::attributesNames() const{
-		std::vector<std::string> names(_attributes.size());
-		std::size_t i=0;
-		for (const auto& a : _attributes){
-			names[i] = a.first;
-			i++;
-		}
-		return names;
+	std::size_t VertexLayout::bindingCount() const{
+		return _bindings.size();
 	}
 
-	std::size_t VertexLayout::bindingSize(std::size_t binding) const{
+	std::size_t VertexLayout::attributeCountAtBinding(std::size_t binding) const{
 		std::size_t size = 0;
-		for (const auto& attribute : _attributes){
-			const auto& description = attribute.second.description;
-			if (description.binding != static_cast<uint32_t>(binding)) continue;
-			size += _context.graphics.utils.formats.size(description.format);
+		for (auto& attribute : _attributes){
+			if (attribute.binding == static_cast<uint32_t>(binding)) size++;
 		}
 		return size;
 	}
-
-	const std::string& VertexLayout::name(std::size_t id) const{
-		std::size_t i=0;
-		auto it = _attributes.begin();
-		while (i<id && it != _attributes.end()){
-			it++;
-			i++;
+	
+	const VkVertexInputBindingDescription& VertexLayout::getBinding(std::size_t binding) const{
+		if (binding > _bindings.size()){
+			throw std::out_of_range("binding ID out of range");
 		}
 
-		return it->first;
+		return _bindings[binding];
+	}
+
+	VkVertexInputBindingDescription& VertexLayout::getBinding(std::size_t binding){
+		if (binding > _bindings.size()){
+			throw std::out_of_range("binding ID out of range");
+		}
+
+		return _bindings[binding];
 	}
 }
