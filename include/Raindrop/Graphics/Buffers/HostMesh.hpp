@@ -19,7 +19,7 @@ namespace Raindrop::Graphics::Buffers{
 			const Vertex get(std::size_t index) const;
 
 			void resize(std::size_t size);
-			void* data(std::size_t binding);
+			const void* data(std::size_t binding) const;
 
 			std::size_t bindings() const;
 			std::size_t bindingSize(std::size_t binding) const;

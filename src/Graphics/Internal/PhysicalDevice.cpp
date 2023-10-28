@@ -10,7 +10,6 @@ namespace Raindrop::Graphics::Internal{
 		_device = device;
 		reset();
 	}
-
 	
 	uint32_t PhysicalDevice::apiVersion() const{
 		return _properties.apiVersion;

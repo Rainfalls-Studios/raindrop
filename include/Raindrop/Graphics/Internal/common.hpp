@@ -3,16 +3,24 @@
 
 #include <Raindrop/Graphics/common.hpp>
 #include <Raindrop/Graphics/Internal/SwapchainSupport.hpp>
+#include <Raindrop/Graphics/Internal/structs.hpp>
 
 namespace Raindrop::Graphics::Internal{
 	struct Context;
 	struct SwapchainSupport;
+	struct QueueProperties;
 	class Instance;
 	class PhysicalDevice;
 	class Device;
 	class Swapchain;
 	class Window;
 	class QueueHandler;
+	class QueueFamily;
+	class Queue;
+	class CommandPools;
+	class CommandPool;
+	class CommandBuffer;
 }
+
 
 #endif

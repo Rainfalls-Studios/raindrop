@@ -26,7 +26,7 @@ namespace Raindrop::Graphics::Buffers{
 		}
 	}
 
-	void* HostMesh::data(std::size_t binding){
+	const void* HostMesh::data(std::size_t binding) const{
 		return _bindings[binding].data.data();
 	}
 

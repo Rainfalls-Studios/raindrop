@@ -13,6 +13,7 @@ namespace Raindrop::Core{
 		spdlog::logger logger;
 
 		Registry::Registry registry;
+		Registry::Registry temp;
 		Event::EventManager eventManager;
 		Asset::AssetManager assetManager;
 		Scene::SceneManager sceneManager;

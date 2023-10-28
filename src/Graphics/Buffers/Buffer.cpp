@@ -16,11 +16,11 @@ namespace Raindrop::Graphics::Buffers{
 		free();
 	}
 
-	void Buffer::allocateInstances(VkDeviceSize instanceSize, uint32_t instanceCount, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceSize minOffsetAlignment){
+	void Buffer::allocateInstances(VkDeviceSize instanceSize, std::size_t instanceCount, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceSize minOffsetAlignment){
 		auto& device = _context.graphics.internal.device;
 		auto& allocationCallbacks = _context.graphics.allocationCallbacks;
 
-		_context.logger.debug("allocating buffer || instance size : %d, instance count : %d, usageFlags : %x, memoryPropertyFlags : %x, minimal offeset : %d",
+		_context.logger.debug("allocating buffer... :: instance size : %d, instance count : %d, usageFlags : %x, memoryPropertyFlags : %x, minimal offeset : %d",
 			instanceSize,
 			instanceCount,
 			usageFlags,
@@ -88,7 +88,7 @@ namespace Raindrop::Graphics::Buffers{
 		}
 	}
 
-	void Buffer::write(void *data, VkDeviceSize size, VkDeviceSize offset){
+	void Buffer::write(const void *data, VkDeviceSize size, VkDeviceSize offset){
 		if (size == VK_WHOLE_SIZE) {
 			memcpy(_mapped, data, _instanceSize * _instanceCount);
 		} else {
@@ -124,7 +124,7 @@ namespace Raindrop::Graphics::Buffers{
 		return VkDescriptorBufferInfo{_buffer, offset, size};
 	}
 
-	void Buffer::writeToIndex(void *data, int index) {
+	void Buffer::writeToIndex(const void *data, int index) {
 		write(data, _instanceSize, index * _alignmentSize);
 	}
 
@@ -152,12 +152,16 @@ namespace Raindrop::Graphics::Buffers{
 		return _mapped;
 	}
 	
-	uint32_t Buffer::instanceCount() const{
+	std::size_t Buffer::instanceCount() const{
 		return _instanceCount;
 	}
 
-	uint32_t Buffer::instanceSize() const{
+	std::size_t Buffer::instanceSize() const{
 		return _instanceSize;
+	}
+
+	std::size_t Buffer::size() const{
+		return _instanceCount * _instanceSize;
 	}
 
 	void Buffer::update(VkCommandBuffer commandBuffer, void* data, VkDeviceSize size, VkDeviceSize offset){

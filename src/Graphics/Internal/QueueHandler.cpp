@@ -1,32 +1,12 @@
 #include <Raindrop/Graphics/Internal/QueueHandler.hpp>
 #include <Raindrop/Graphics/Internal/Context.hpp>
+#include <Raindrop/Graphics/Internal/QueueFamily.hpp>
 
 namespace Raindrop::Graphics::Internal{
-	struct QueueHandler::FamilyInfo{
-		const VkQueueFamilyProperties& properties;
-		uint32_t familyIndex;
-		uint32_t suitablility;
-
-		FamilyInfo(const VkQueueFamilyProperties& properties, uint32_t familyIndex) : properties{properties}, familyIndex{familyIndex}{}
-
-		bool operator>(const FamilyInfo& other) const{
-			return suitablility > other.suitablility;
-		}
-
-		bool operator<(const FamilyInfo& other) const{
-			return suitablility > other.suitablility;
-		}
-	};
-
-	QueueHandler::QueueHandler(Context& context) : _context{context}, _queues{10, QueueProperties::hash}{
+	QueueHandler::QueueHandler(Context& context) : _context{context}{
 		_context.logger.info("Initializing queue handler...");
 
-		std::vector<VkQueueFamilyProperties> familyProperties = _context.device.getQueueFamilyProperties();
-		_remainingQueueCount.reserve(familyProperties.size());
-
-		for (uint32_t i=0; i<familyProperties.size(); i++){
-			_remainingQueueCount[i] = familyProperties[i].queueCount;
-		}
+		populateFamilies();
 
 		_context.logger.info("Queue handler initialized");
 	}
@@ -37,46 +17,66 @@ namespace Raindrop::Graphics::Internal{
 		_context.logger.info("Queue handler terminated");
 	}
 
-	VkQueue QueueHandler::get(const QueueProperties& properties){
-		auto it = _queues.find(properties);
-		if (it != _queues.end()) return it->second.queue;
+	void QueueHandler::populateFamilies(){
+		auto physicalDevice = _context.physicalDevice.get();
+		auto surface = _context.window.surface();
+
+		uint32_t count = 0;
+		vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &count, nullptr);
+
+		std::vector<VkQueueFamilyProperties> properties(count);
+		vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &count, properties.data());
+
+		for (std::size_t i=0; i<properties.size(); i++){
+			auto& queueProperties = properties[i];
+
+			VkBool32 supportPresent;
+			if (vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, i, surface, &supportPresent) != VK_SUCCESS){
+				_context.logger.error("Failed to query family surface support");
+				throw std::runtime_error("Failed to query family surface support");
+			}
+
+			QueueProperties queueInfo{
+				queueProperties.queueFlags,
+				static_cast<bool>(supportPresent)
+			};
+			
+			_families.push_back(std::make_unique<QueueFamily>(*this, i, queueProperties.queueCount, queueInfo));
+		}
 	}
 
-	VkQueue QueueHandler::query(const QueueProperties& properties){
-		auto& device = _context.device;
-
-		std::vector<VkQueueFamilyProperties> familyProperties = _context.device.getQueueFamilyProperties();
-		std::list<FamilyInfo> infos;
-
-		for (uint32_t i=0; i<familyProperties.size(); i++){
-			infos.push_back(FamilyInfo(familyProperties[i], i));
-		}
-
-		infos.sort(std::greater<uint32_t>());
-
-		FamilyInfo* bestCase = nullptr;
-		uint32_t bestSuitability = -1;
-
-		for (auto& info : infos){
-			if (info.suitablility < 0) continue;
-			if (info.suitablility > bestSuitability){
-				bestCase = &info;
-				bestSuitability = info.suitablility;
+	QueueFamily& QueueHandler::get(std::size_t index){
+		auto it = std::find_if(
+			_families.begin(),
+			_families.end(),
+			[&index](const QueueFamily& queueFamily){
+				return queueFamily.index() == index;
 			}
+		);
+
+		if (it == _families.end()){
+			_context.logger.warn("Failed to find queue family at %d index", index);
+			throw std::runtime_error("Failed to find queue family at given index");
 		}
 
-		if (bestCase == nullptr){
-			_context.logger.warn("Could not find a unused suitable queue");
-			throw std::runtime_error("Cannot find a unused suitable queue");
-		}		
+		return *it;
+	}
 
-		QueueData queue;
-		queue.familyIndex = bestCase->familyIndex;
-		queue.queueIndex = _remainingQueueCount[queue.familyIndex]--;
+	const QueueFamily& QueueHandler::get(std::size_t index) const{
+		auto it = std::find_if(
+			_families.begin(),
+			_families.end(),
+			[&index](const QueueFamily& queueFamily){
+				return queueFamily.index() == index;
+			}
+		);
 
-		vkGetDeviceQueue(device.get(), queue.familyIndex, queue.queueIndex, &queue.queue);
-		_queues[properties] = queue;
-		return queue.queue;
+		if (it == _families.end()){
+			_context.logger.warn("Failed to find queue family at %d index", index);
+			throw std::runtime_error("Failed to find queue family at given index");
+		}
+
+		return *it;
 	}
 
 	static uint32_t countSetBitsDifference(uint32_t a, uint32_t b) {
@@ -91,48 +91,38 @@ namespace Raindrop::Graphics::Internal{
 		return count;
 	}
 
-	void QueueHandler::testFamiliesSuitability(const QueueProperties& properties, std::list<FamilyInfo>& families){
+	std::list<QueueFamily&> QueueHandler::getByProperies(const QueueProperties& properties){
 		auto& device = _context.device;
 
-		for (auto& family : families){
-			auto& familyProperties = family.properties;
-			family.suitablility = -1;
+		std::vector<int> suitabilities(_families.size());
 
-			if (_remainingQueueCount[family.familyIndex] == 0) continue;
-			if (!(properties.flags & familyProperties.queueFlags)) continue;
+		for (auto& family : _families){
+			auto& suitability = suitabilities[family->index()];
+			const auto& familyProperties = family->properties();
 
-			if (properties.present){
-				VkBool32 supported;
-				vkGetPhysicalDeviceSurfaceSupportKHR(
-					device.getPhysicalDevice().get(),
-					family.familyIndex,
-					_context.window.surface(),
-					&supported
-				);
+			suitability = -1;
 
-				if (!supported) continue;
-			}
+			if ((properties.flags & familyProperties.flags) != familyProperties.flags) continue;
+			if (properties.present && !familyProperties.present) continue;
 
-			family.suitablility = (sizeof(VkQueueFlags) * 8) - countSetBitsDifference(familyProperties.queueFlags, properties.flags);
+			suitability = static_cast<int>((sizeof(VkQueueFlags) * 8) - countSetBitsDifference(familyProperties.flags, properties.flags));
 		}
-	}
 
-	QueueHandler::QueueProperties::QueueProperties(VkQueueFlags flags, bool present) : flags{flags}, present{present}{}
-	QueueHandler::QueueProperties& QueueHandler::QueueProperties::operator=(VkQueueFlags flags){
-		this->flags = flags;
-		present = false;
-		return *this;
-	}
+		std::list<QueueFamily&> output;
+		for (auto& family : _families){
+			output.push_back(*family);
+		}
 
-	bool QueueHandler::QueueProperties::operator==(const QueueProperties& other) const{
-		return present == other.present && flags == other.flags;
-	}
+		output.remove_if(
+			[&suitabilities](const QueueFamily& family){
+				return suitabilities[family.index()] < 0;
+			}
+		);
 
-	bool QueueHandler::QueueProperties::operator!=(const QueueProperties& other) const{
-		return present != other.present || flags != other.flags;
-	}
+		output.sort([&suitabilities](const QueueFamily& a, const QueueFamily& b){
+			return suitabilities[a.index()] < suitabilities[b.index()];
+		});
 
-	std::size_t QueueHandler::QueueProperties::hash(const QueueProperties& properties){
-		return std::hash<bool>{}(properties.present) ^ std::hash<uint32_t>{}(static_cast<uint32_t>(properties.flags));
+		return output;
 	}
 }

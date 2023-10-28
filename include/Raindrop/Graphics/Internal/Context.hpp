@@ -11,6 +11,7 @@
 #include <Raindrop/Graphics/Internal/Device.hpp>
 #include <Raindrop/Graphics/Internal/QueueHandler.hpp>
 #include <Raindrop/Graphics/Internal/Swapchain.hpp>
+#include <Raindrop/Graphics/Internal/CommandPools.hpp>
 
 namespace Raindrop::Graphics::Internal{
 	struct Context{
@@ -22,10 +23,12 @@ namespace Raindrop::Graphics::Internal{
 		PhysicalDevice physicalDevice;
 		Device device;
 		QueueHandler queueHandler;
+		CommandPools commandPools;
 		Swapchain swapchain;
 
 		Context(Graphics::Context& graphics);
-		VkPhysicalDeviceLimits& limits() const;
+		
+		const VkPhysicalDeviceLimits& limits() const;
 	};
 }
 

@@ -6,7 +6,7 @@
 namespace Raindrop::Core::Registry{
 	class Node{
 		public:
-			Node(Node& node);
+			Node(const Node& node);
 			~Node();
 
 			bool operator==(const Node& other) const;

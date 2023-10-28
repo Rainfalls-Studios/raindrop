@@ -13,8 +13,8 @@ namespace Raindrop::Core::Registry{
 		Impl(pt::ptree& tree) : tree{tree}{}
 	};
 
-	Node::Node(Node& node) : _context{node._context}{
-		_impl = std::move(node._impl); 
+	Node::Node(const Node& node) : _context{node._context}{
+		_impl = std::make_unique<Impl>(node._impl); 
 	}
 
 	Node::Node(Context& context, Impl impl) : _context{context}{

@@ -4,6 +4,7 @@ namespace Raindrop::Core{
 	Context::Context() : 
 		logger("Core"),
 		registry(*this),
+		temp(*this),
 		eventManager(*this),
 		assetManager(*this),
 		sceneManager(*this)

@@ -13,17 +13,22 @@ namespace Raindrop::Graphics::Buffers{
 			virtual bool hasVertexBuffer() const override;
 			virtual bool hasIndexBuffer() const override;
 
-			virtual const Buffer& vertexBuffer() const override;
+			virtual const Buffer& vertexBuffer(std::size_t index) const override;
 			virtual const Buffer& indexBuffer() const override;
+
+			virtual std::size_t vertexBufferCount() const override;
 		
 		private:
 			Context& _context;
+			const VertexLayout& _layout;
 
-			std::unique_ptr<Buffer> _vbo;
-			std::unique_ptr<Buffer> _ibo;
+			struct SubmitInfo;
 
-			void createVBO(const std::vector<Vertex>& vertices);
-			void createIBO(const std::vector<uint32_t>& indices);
+			std::vector<std::unique_ptr<Buffer>> _vertexBuffers;
+			std::unique_ptr<Buffer> _indexBuffer;
+
+			void createVertexBuffers(const HostMesh& mesh, SubmitInfo& submitInfo);
+			void createIndexBuffer(const HostMesh& mesh, SubmitInfo& submitInfo);
 	};
 }
 

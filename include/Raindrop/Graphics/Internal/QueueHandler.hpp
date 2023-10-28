@@ -5,40 +5,23 @@
 
 namespace Raindrop::Graphics::Internal{
 	class QueueHandler{
+		friend class QueueFamily;
+		friend class Queue;
 		public:
-			struct QueueProperties{
-				bool present;
-				VkQueueFlags flags;
-
-				QueueProperties(VkQueueFlags flags, bool present = false);
-				QueueProperties& operator=(VkQueueFlags flags);
-
-				bool operator==(const QueueProperties& other) const;
-				bool operator!=(const QueueProperties& other) const;
-
-				static std::size_t hash(const QueueProperties& properties);
-			};
-
 			QueueHandler(Context& context);
 			~QueueHandler();
 
-			VkQueue get(const QueueProperties& properties);
+			std::list<QueueFamily&> getByProperies(const QueueProperties& properties);
+
+			QueueFamily& get(std::size_t index);
+			const QueueFamily& get(std::size_t index) const;
 
 		private:
-			struct QueueData{
-				VkQueue queue;
-				uint32_t familyIndex;
-				uint32_t queueIndex;
-			};
-
-			struct FamilyInfo;
-
 			Context& _context;
-			std::unordered_map<QueueProperties, QueueData, decltype(QueueProperties::hash)> _queues;
-			std::vector<uint32_t> _remainingQueueCount;
 
-			VkQueue query(const QueueProperties& properties);
-			void testFamiliesSuitability(const QueueProperties& properties, std::list<FamilyInfo>& families);
+			std::list<std::unique_ptr<QueueFamily>> _families;
+
+			void populateFamilies();
 	};
 }
 

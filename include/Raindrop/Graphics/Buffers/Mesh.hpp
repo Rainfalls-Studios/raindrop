@@ -12,8 +12,10 @@ namespace Raindrop::Graphics::Buffers{
 			virtual bool hasVertexBuffer() const = 0;
 			virtual bool hasIndexBuffer() const = 0;
 
-			virtual const Buffer& vertexBuffer() const = 0;
+			virtual const Buffer& vertexBuffer(std::size_t index) const = 0;
 			virtual const Buffer& indexBuffer() const = 0;
+
+			virtual std::size_t vertexBufferCount() const = 0;
 	};
 }
 

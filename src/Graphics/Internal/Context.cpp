@@ -5,9 +5,13 @@ namespace Raindrop::Graphics::Internal{
 		graphics{graphics},
 		logger("Graphics::Internal"),
 		window(*this),
-		instance(*this){}
+		instance(*this),
+		device(*this),
+		queueHandler(*this),
+		commandPools(*this),
+		swapchain(*this){}
 
-	VkPhysicalDeviceLimits& Context::limits() const{
+	const VkPhysicalDeviceLimits& Context::limits() const{
 		return physicalDevice.limits();
 	}
 }
