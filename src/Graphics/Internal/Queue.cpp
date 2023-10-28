@@ -58,4 +58,8 @@ namespace Raindrop::Graphics::Internal{
 			throw std::runtime_error("Failed to submit command buffer");
 		}
 	}
+
+	bool Queue::operator==(const Queue& other) const{
+		return _queue == other._queue; 
+	}
 }

@@ -3,7 +3,7 @@
 
 #include <spdlog/spdlog.h>
 
-#include <Raindrop/Graphics/Context.hpp>
+#include <Raindrop/Graphics/common.hpp>
 #include <Raindrop/Graphics/Internal/common.hpp>
 #include <Raindrop/Graphics/Internal/Instance.hpp>
 #include <Raindrop/Graphics/Internal/Window.hpp>
@@ -31,5 +31,7 @@ namespace Raindrop::Graphics::Internal{
 		const VkPhysicalDeviceLimits& limits() const;
 	};
 }
+
+#include <Raindrop/Graphics/Context.hpp>
 
 #endif

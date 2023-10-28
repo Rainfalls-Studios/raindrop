@@ -1,4 +1,5 @@
 #include <Raindrop/Graphics/Internal/QueueFamily.hpp>
+#include <Raindrop/Graphics/Internal/Queue.hpp>
 
 namespace Raindrop::Graphics::Internal{
 	QueueFamily::QueueFamily(QueueHandler& queueHandler, std::size_t familyIndex, std::size_t queueCount, const QueueProperties& properties) : 

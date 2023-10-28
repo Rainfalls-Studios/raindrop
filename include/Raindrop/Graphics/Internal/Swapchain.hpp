@@ -52,8 +52,8 @@ namespace Raindrop::Graphics::Internal{
 				SwapchainData(Context& _context);
 			};
 
-			VkQueue _presentQueue;
-			VkQueue _graphicsQueue;
+			Queue* _presentQueue;
+			Queue* _graphicsQueue;
 
 			Context& _context;
 			SwapchainSupport _swapchainSupport;  

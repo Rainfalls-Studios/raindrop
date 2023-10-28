@@ -11,7 +11,7 @@ namespace Raindrop::Graphics::Internal{
 			QueueHandler(Context& context);
 			~QueueHandler();
 
-			std::list<QueueFamily&> getByProperies(const QueueProperties& properties);
+			std::list<std::reference_wrapper<QueueFamily>> getByProperies(const QueueProperties& properties);
 
 			QueueFamily& get(std::size_t index);
 			const QueueFamily& get(std::size_t index) const;

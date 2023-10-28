@@ -3,10 +3,10 @@
 
 #include <spdlog/spdlog.h>
 
-#include <Raindrop/Graphics/Context.hpp>
+#include <Raindrop/Graphics/common.hpp>
 #include <Raindrop/Graphics/Utils/common.hpp>
 #include <Raindrop/Graphics/Utils/FormatUtilities.hpp>
-#include <Raindrop/Graphics/Utils/stringToVulkan.hpp>
+#include <Raindrop/Graphics/Utils/StringToVulkan.hpp>
 
 namespace Raindrop::Graphics::Utils{
 	struct Context{
@@ -14,9 +14,12 @@ namespace Raindrop::Graphics::Utils{
 
 		spdlog::logger logger;
 		FormatUtilities formats;
+		StringToVulkan stringToVulkan;
 
 		Context(Graphics::Context& graphics);
 	};
 }
+
+#include <Raindrop/Graphics/Context.hpp>
 
 #endif

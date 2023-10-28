@@ -13,9 +13,12 @@ include_directories(
 )
 
 add_subdirectory(Core)
+add_subdirectory(Graphics)
 
 target_link_libraries(Raindrop PRIVATE
 	Raindrop::Core
+	Raindrop::Graphics
+	
 	Boost::filesystem
 	spdlog::spdlog
 	glm

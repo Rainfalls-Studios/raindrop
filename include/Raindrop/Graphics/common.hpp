@@ -3,6 +3,7 @@
 
 #include <vulkan/vulkan.h>
 #include <Raindrop/common.hpp>
+#include <Raindrop/Core/common.hpp>
 
 namespace Raindrop::Graphics{
 	struct Context;

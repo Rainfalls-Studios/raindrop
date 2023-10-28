@@ -3,6 +3,7 @@
 namespace Raindrop::Graphics::Utils{
 	Context::Context(Graphics::Context& graphics) :
 		graphics{graphics},
-		logger(graphics.logger.name() + "::Utils"),
-		formats(*this){}
+		logger("Raindrop::Graphics::Utils"),
+		formats(*this),
+		stringToVulkan(*this){}
 }

@@ -66,11 +66,11 @@ namespace Raindrop::Graphics::Internal{
 		}
 
 		std::unique_ptr<CommandBuffer> cmdBuffer = std::make_unique<CommandBuffer>(*this, commandBuffer, level);
-		_commandBuffers.push_back(cmdBuffer);
-		return *cmdBuffer;
+		_commandBuffers.push_back(std::move(cmdBuffer));
+		return *_commandBuffers.back();
 	}
 
-	std::vector<CommandBuffer&> CommandPool::allocate(VkCommandBufferLevel level, std::size_t count){
+	std::vector<std::reference_wrapper<CommandBuffer>> CommandPool::allocate(VkCommandBufferLevel level, std::size_t count){
 		auto device = _context.device.get();
 
 		VkCommandBufferAllocateInfo info{};
@@ -85,13 +85,12 @@ namespace Raindrop::Graphics::Internal{
 			throw std::runtime_error("Failed to allocate command buffers");
 		}
 
-		std::vector<CommandBuffer&> cmdBuffers;
-		cmdBuffers.reserve(count);
+		std::vector<std::reference_wrapper<CommandBuffer>> cmdBuffers;
 
 		for (std::size_t i=0; i<count; i++){
 			std::unique_ptr<CommandBuffer> cmdBuffer = std::make_unique<CommandBuffer>(*this, commandBuffers[i], level);
-			_commandBuffers.push_back(cmdBuffer);
-			cmdBuffers.push_back(*cmdBuffer);
+			_commandBuffers.push_back(std::move(cmdBuffer));
+			cmdBuffers.emplace_back(std::ref(*_commandBuffers.back()));
 		}
 
 		return cmdBuffers;
@@ -110,7 +109,7 @@ namespace Raindrop::Graphics::Internal{
 		vkFreeCommandBuffers(device, _commandPool, 1, &cmdBuffer);
 	}
 
-	void CommandPool::free(const std::vector<CommandBuffer&>& commandBuffers){
+	void CommandPool::free(const std::vector<std::reference_wrapper<CommandBuffer>>& commandBuffers){
 		for (std::size_t i=0; i<commandBuffers.size(); i++){
 			free(commandBuffers[i]);
 		}

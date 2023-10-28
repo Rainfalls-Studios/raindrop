@@ -3,7 +3,7 @@
 #include <Raindrop/Graphics/Projections/PerspectiveProjection.hpp>
 
 namespace Raindrop::Graphics{
-	Camera::Camera(GraphicsContext& context, uint32_t width, uint32_t height) :
+	Camera::Camera(Context& context, std::size_t width, std::size_t height) :
 		_context{context}{
 			
 		setProjection(Projections::PERSPECTIVE);

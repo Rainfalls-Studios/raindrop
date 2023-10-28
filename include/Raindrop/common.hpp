@@ -4,7 +4,6 @@
 #include <Raindrop/pch.hpp>
 
 namespace Raindrop{
-	struct Context;
 	class Raindrop;
 	class Scene;
 	class Entity;

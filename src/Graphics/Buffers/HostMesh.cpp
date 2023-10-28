@@ -116,10 +116,10 @@ namespace Raindrop::Graphics::Buffers{
 
 				for (std::size_t binding = 0; binding < _bindings.size(); binding++){
 					std::size_t size = _vertexLayout->bindingSize(binding);
-					void* dest = uniqueBindings[binding].data[i * size];
-					const void* src = _bindings[binding].data[i * size];
+					void* dest = &uniqueBindings[binding].data[i * size];
+					const void* src = &_bindings[binding].data[i * size];
 
-					std::memcpy(dest, src, size)
+					std::memcpy(dest, src, size);
 				}
 			}
 

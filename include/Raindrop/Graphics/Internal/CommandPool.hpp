@@ -20,10 +20,10 @@ namespace Raindrop::Graphics::Internal{
 			void trim(VkCommandPoolTrimFlags flags = 0);
 
 			CommandBuffer& allocate(VkCommandBufferLevel level);
-			std::vector<CommandBuffer&> allocate(VkCommandBufferLevel level, std::size_t count);
+			std::vector<std::reference_wrapper<CommandBuffer>> allocate(VkCommandBufferLevel level, std::size_t count);
 
 			void free(CommandBuffer& commandBuffer);
-			void free(const std::vector<CommandBuffer&>& commandBuffers);
+			void free(const std::vector<std::reference_wrapper<CommandBuffer>>& commandBuffers);
 
 		private:
 			Context& _context;

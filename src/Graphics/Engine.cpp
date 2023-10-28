@@ -17,7 +17,6 @@ namespace Raindrop::Graphics{
 	}
 }
 
-
 // #include <Raindrop/Graphics/Renderer.hpp>
 // #include <Raindrop/Graphics/FrameState.hpp>
 // #include <Raindrop/Scene.hpp>

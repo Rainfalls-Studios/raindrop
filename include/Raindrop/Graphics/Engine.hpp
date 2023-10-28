@@ -9,7 +9,7 @@ namespace Raindrop::Graphics{
 			Engine(Core::Context& core);
 			~Engine();
 
-			void registerSceneComponents(Core::Scene::Scene& scene);
+			// void registerSceneComponents(Core::Scene::Scene& scene);
 
 			FrameState begin();
 			void end(FrameState& state);

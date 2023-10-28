@@ -79,7 +79,7 @@ namespace Raindrop::Graphics::Buffers{
 		for (const auto& pair : _nameToAttributeID){
 			if (pair.second == id) return pair.first;
 		}
-		return "";
+		throw std::runtime_error("invalid ID");
 	}
 
 	std::size_t VertexLayout::attributeId(const std::string& name) const{
@@ -160,11 +160,14 @@ namespace Raindrop::Graphics::Buffers{
 	}
 	
 	bool VertexLayout::operator==(const VertexLayout& other) const{
-		return _attributes == other._attributes && _bindings == other._bindings;
+		return !(*this != other);
 	}
 
 	bool VertexLayout::operator!=(const VertexLayout& other) const{
-		return _attributes != other._attributes || _bindings != other._bindings;
+		if (_attributes.size() != other._attributes.size() || _bindings.size() != other._bindings.size()) return true;
+		if (std::memcmp(_attributes.data(), other._attributes.data(), sizeof(_attributes[0]) * _attributes.size()) != 0) return true;
+		if (std::memcmp(_bindings.data(), other._bindings.data(), sizeof(_bindings[0]) * _bindings.size()) != 0) return true;
+		return false;
 	}
 
 	std::size_t VertexLayout::size() const{
@@ -174,5 +177,4 @@ namespace Raindrop::Graphics::Buffers{
 		}
 		return size;
 	}
-
 }

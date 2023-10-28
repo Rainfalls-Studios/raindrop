@@ -9,6 +9,8 @@ namespace Raindrop::Graphics::Internal{
 			Queue(QueueFamily& family, std::size_t index);
 			~Queue();
 
+			bool operator==(const Queue& other) const;
+
 			VkQueue get() const;
 			QueueFamily& family();
 			const QueueFamily& family() const;

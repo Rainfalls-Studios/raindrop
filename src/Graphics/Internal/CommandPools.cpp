@@ -1,14 +1,17 @@
 #include <Raindrop/Graphics/Internal/CommandPools.hpp>
 #include <Raindrop/Graphics/Internal/Context.hpp>
 #include <Raindrop/Graphics/Internal/CommandPool.hpp>
+#include <Raindrop/Graphics/Internal/QueueFamily.hpp>
 
 namespace Raindrop::Graphics::Internal{
+
+
 	CommandPools::CommandPools(Context& context) : _context{context}, _commandPools(10, PoolInfo::hash){}
 	CommandPools::~CommandPools(){}
 
 	CommandPool& CommandPools::pool(const QueueProperties& properties, VkCommandPoolCreateFlags flags){
 		PoolInfo info;
-		info.familyIndex = _context.queueHandler.familyIndex(properties);
+		info.familyIndex = _context.queueHandler.getByProperies(properties).front().get().index();
 		info.flags = flags;
 
 		auto it = _commandPools.find(info);
@@ -18,7 +21,7 @@ namespace Raindrop::Graphics::Internal{
 
 	const CommandPool& CommandPools::pool(const QueueProperties& properties, VkCommandPoolCreateFlags flags) const{
 		PoolInfo info;
-		info.familyIndex = _context.queueHandler.familyIndex(properties);
+		info.familyIndex = _context.queueHandler.getByProperies(properties).front().get().index();
 		info.flags = flags;
 
 		auto it = _commandPools.find(info);
@@ -28,6 +31,10 @@ namespace Raindrop::Graphics::Internal{
 
 	std::size_t CommandPools::PoolInfo::hash(const PoolInfo& info){
 		return std::hash<uint32_t>{}(info.familyIndex) ^ std::hash<VkFlags>{}(info.flags);
+	}
+
+	bool CommandPools::PoolInfo::operator==(const PoolInfo& other) const{
+		return familyIndex == other.familyIndex && flags != other.flags;
 	}
 
 	CommandPool& CommandPools::create(const PoolInfo& info){

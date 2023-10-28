@@ -9,6 +9,7 @@ namespace Raindrop::Graphics::Internal{
 	PhysicalDevice& PhysicalDevice::operator=(VkPhysicalDevice device){
 		_device = device;
 		reset();
+		return *this;
 	}
 	
 	uint32_t PhysicalDevice::apiVersion() const{

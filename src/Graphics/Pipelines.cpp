@@ -1,10 +1,10 @@
-#include <Raindrop/Graphics/Pipelines.hpp>
+// #include <Raindrop/Graphics/Pipelines.hpp>
 
-namespace Raindrop::Graphics{
-	Pipelines::Pipelines(GraphicsContext& context) :
-		_context{context},
-		sun{context}{
-	}
+// namespace Raindrop::Graphics{
+// 	Pipelines::Pipelines(GraphicsContext& context) :
+// 		_context{context},
+// 		sun{context}{
+// 	}
 
-	Pipelines::~Pipelines(){}
-}
+// 	Pipelines::~Pipelines(){}
+// }

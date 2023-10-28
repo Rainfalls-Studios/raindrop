@@ -14,7 +14,7 @@ namespace Raindrop::Core::Registry{
 	};
 
 	Node::Node(const Node& node) : _context{node._context}{
-		_impl = std::make_unique<Impl>(node._impl); 
+		_impl = std::make_unique<Impl>(node._impl->tree); 
 	}
 
 	Node::Node(Context& context, Impl impl) : _context{context}{

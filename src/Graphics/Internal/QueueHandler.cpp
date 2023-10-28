@@ -49,8 +49,8 @@ namespace Raindrop::Graphics::Internal{
 		auto it = std::find_if(
 			_families.begin(),
 			_families.end(),
-			[&index](const QueueFamily& queueFamily){
-				return queueFamily.index() == index;
+			[&index](const std::unique_ptr<QueueFamily>& queueFamily){
+				return queueFamily->index() == index;
 			}
 		);
 
@@ -59,15 +59,15 @@ namespace Raindrop::Graphics::Internal{
 			throw std::runtime_error("Failed to find queue family at given index");
 		}
 
-		return *it;
+		return *it->get();
 	}
 
 	const QueueFamily& QueueHandler::get(std::size_t index) const{
 		auto it = std::find_if(
 			_families.begin(),
 			_families.end(),
-			[&index](const QueueFamily& queueFamily){
-				return queueFamily.index() == index;
+			[&index](const std::unique_ptr<QueueFamily>& queueFamily){
+				return queueFamily->index() == index;
 			}
 		);
 
@@ -76,7 +76,7 @@ namespace Raindrop::Graphics::Internal{
 			throw std::runtime_error("Failed to find queue family at given index");
 		}
 
-		return *it;
+		return *it->get();
 	}
 
 	static uint32_t countSetBitsDifference(uint32_t a, uint32_t b) {
@@ -91,7 +91,7 @@ namespace Raindrop::Graphics::Internal{
 		return count;
 	}
 
-	std::list<QueueFamily&> QueueHandler::getByProperies(const QueueProperties& properties){
+	std::list<std::reference_wrapper<QueueFamily>> QueueHandler::getByProperies(const QueueProperties& properties){
 		auto& device = _context.device;
 
 		std::vector<int> suitabilities(_families.size());
@@ -108,7 +108,7 @@ namespace Raindrop::Graphics::Internal{
 			suitability = static_cast<int>((sizeof(VkQueueFlags) * 8) - countSetBitsDifference(familyProperties.flags, properties.flags));
 		}
 
-		std::list<QueueFamily&> output;
+		std::list<std::reference_wrapper<QueueFamily>> output;
 		for (auto& family : _families){
 			output.push_back(*family);
 		}

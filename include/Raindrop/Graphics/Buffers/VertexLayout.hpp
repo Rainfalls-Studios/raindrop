@@ -52,7 +52,6 @@ namespace Raindrop::Graphics::Buffers{
 			std::vector<VkVertexInputAttributeDescription> _attributes;
 			std::vector<VkVertexInputBindingDescription> _bindings;
 
-
 			std::unordered_map<std::string, std::size_t> _nameToAttributeID;
 
 			const VkVertexInputBindingDescription& getBinding(std::size_t binding) const;

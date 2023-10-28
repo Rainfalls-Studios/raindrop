@@ -1,5 +1,7 @@
 #include <Raindrop/Graphics/Internal/Swapchain.hpp>
 #include <Raindrop/Graphics/Internal/Context.hpp>
+#include <Raindrop/Graphics/Internal/QueueFamily.hpp>
+#include <Raindrop/Graphics/Internal/Queue.hpp>
 
 // #include <Raindrop/Graphics/GraphicsContext.hpp>
 
@@ -313,7 +315,7 @@ namespace Raindrop::Graphics::Internal{
 
 		vkResetFences(device.get(), 1, &_swapchain->_frames[_currentFrame].inFlightFence);
 
-		if (vkQueueSubmit(_graphicsQueue, 1, &submitInfo, _swapchain->_frames[_currentFrame].inFlightFence) != VK_SUCCESS){
+		if (_graphicsQueue->submit(1, &submitInfo, _swapchain->_frames[_currentFrame].inFlightFence) != VK_SUCCESS){
 			_context.logger.error("Failed to submit graphics framebuffer to graphics queue");
 			throw std::runtime_error("Failed to submit framebuffer");
 		}
@@ -330,7 +332,7 @@ namespace Raindrop::Graphics::Internal{
 
 		presentInfo.pImageIndices = &_currentFrame;
 
-		auto result = vkQueuePresentKHR(_presentQueue, &presentInfo);
+		auto result = _presentQueue->present(&presentInfo);
 
 		_currentFrame = (_currentFrame + 1) % _frameCount;
 
@@ -400,26 +402,33 @@ namespace Raindrop::Graphics::Internal{
 	}
 
 	void Swapchain::queryQueues(){
-		try{
-			VkQueue queue = _context.queueHandler.get({VK_QUEUE_GRAPHICS_BIT, true});
-			_presentQueue = queue;
-			_graphicsQueue = queue;
+		std::list<std::reference_wrapper<QueueFamily>> families;
+
+		families = _context.queueHandler.getByProperies({0, true});
+
+		if (!families.empty()){
+			auto& queue = families.front().get().get(0);
+
+			_presentQueue = &queue;
+			_graphicsQueue = &queue;
 			return;
-		} catch (const std::exception &){}
-
-		try{
-			_presentQueue = _context.queueHandler.get({0, true});
-		} catch (const std::exception &){
-			_context.logger.error("Cannot find a suitable present queue");
-			throw std::runtime_error("Failed to find a suitable present queue");
+		}
+		
+		families = _context.queueHandler.getByProperies(VK_QUEUE_GRAPHICS_BIT);
+		if (families.empty()){
+			_context.logger.error("Cannot find a suitable graphics queue for the swapchain");
+			throw std::runtime_error("Cannot find a suitable graphics queue for the swapchain");
 		}
 
-		try{
-			_graphicsQueue = _context.queueHandler.get(VK_QUEUE_GRAPHICS_BIT);
-		} catch (const std::exception &){
-			_context.logger.error("Cannot find a suitable graphics queue");
-			throw std::runtime_error("Failed to find a suitable graphics queue");
+		_graphicsQueue = &families.front().get().get(0);
+
+		families = _context.queueHandler.getByProperies({0, true});
+		if (families.empty()){
+			_context.logger.error("Cannot find a suitable present queue for the swapchain");
+			throw std::runtime_error("Cannot find a suitable present queue for the swapchain");
 		}
+
+		_presentQueue = &families.front().get().get(0);
 	}
 	
 	Swapchain::SwapchainData::~SwapchainData(){

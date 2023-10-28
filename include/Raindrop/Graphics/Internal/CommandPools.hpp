@@ -19,10 +19,12 @@ namespace Raindrop::Graphics::Internal{
 				VkCommandPoolCreateFlags flags;
 
 				static std::size_t hash(const PoolInfo& info);
+
+				bool operator==(const PoolInfo& other) const;
 			};
 
 			Context& _context;
-			std::unordered_map<PoolInfo, std::unique_ptr<CommandPool>, decltype(PoolInfo::hash)> _commandPools;
+			std::unordered_map<PoolInfo, std::unique_ptr<CommandPool>, decltype(&PoolInfo::hash)> _commandPools;
 
 			CommandPool& create(const PoolInfo& info);
 	};
