@@ -7,13 +7,20 @@
 #include <Raindrop/Graphics/Buffers/VertexLayout.hpp>
 
 namespace Raindrop::Graphics::Buffers{
-	struct Context{
-		Graphics::Context& graphics;
-		spdlog::logger logger;
+	class Context{
+		public:
+			Context(Graphics::Context& graphics);
 
-		VertexLayout defaultLayout;
+			Graphics::Context& graphics();
+			spdlog::logger& logger();
+			VertexLayout& defaultLayout();
+		
+		private:
+			Graphics::Context& _graphics;
+			spdlog::logger _logger;
 
-		Context(Graphics::Context& graphics);
+			VertexLayout _defaultLayout;
+
 	};
 }
 

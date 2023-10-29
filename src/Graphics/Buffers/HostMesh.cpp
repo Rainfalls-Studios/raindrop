@@ -17,7 +17,7 @@ namespace Raindrop::Graphics::Buffers{
 
 	void HostMesh::resize(std::size_t size){
 		if (!_vertexLayout){
-			_context.logger.warn("Cannot resize a host mesh without a valid vertex layout !");
+			_context.logger().warn("Cannot resize a host mesh without a valid vertex layout !");
 			throw std::runtime_error("Cannot resize a host mesh without a valid vertex layout !");
 		}
 

@@ -12,7 +12,7 @@
 // 	}
 
 // 	SceneRenderPass::~SceneRenderPass(){
-// 		auto device = _context.device.get();
+// 		auto device = _context.device().get();
 // 		auto allocationCallbacks = _context.allocationCallbacks;
 
 // 		if (_renderPass) vkDestroyRenderPass(device, _renderPass, allocationCallbacks);
@@ -31,7 +31,7 @@
 // 	}
 
 // 	void SceneRenderPass::createRenderPass(){
-// 		auto device = _context.device.get();
+// 		auto device = _context.device().get();
 // 		auto allocationCallbacks = _context.allocationCallbacks;
 
 // 		VkAttachmentReference depthAttachmentRef{};

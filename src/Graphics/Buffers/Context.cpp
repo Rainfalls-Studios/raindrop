@@ -2,13 +2,26 @@
 
 namespace Raindrop::Graphics::Buffers{
 	Context::Context(Graphics::Context& graphics) : 
-		graphics{graphics},
-		logger("Raindrop::Graphics::Buffers"),
-		defaultLayout(*this){
+		_graphics{graphics},
+		_logger("Raindrop::Graphics::Buffers"),
+		_defaultLayout(*this){
 		
-		defaultLayout.addAttribute("position", 0, VK_FORMAT_R32G32B32_SFLOAT);
-		defaultLayout.addAttribute("normal", 0, VK_FORMAT_R32G32B32_SFLOAT);
-		defaultLayout.addAttribute("UV", 0, VK_FORMAT_R32G32_SFLOAT);
-		defaultLayout.addAttribute("color", 0, VK_FORMAT_R32G32B32_SFLOAT);
+		_defaultLayout.addAttribute("position", 0, VK_FORMAT_R32G32B32_SFLOAT);
+		_defaultLayout.addAttribute("normal", 0, VK_FORMAT_R32G32B32_SFLOAT);
+		_defaultLayout.addAttribute("UV", 0, VK_FORMAT_R32G32_SFLOAT);
+		_defaultLayout.addAttribute("color", 0, VK_FORMAT_R32G32B32_SFLOAT);
+	}
+
+	
+	Graphics::Context& Context::graphics(){
+		return _graphics;
+	}
+	
+	spdlog::logger& Context::logger(){
+		return _logger;
+	}
+
+	VertexLayout& Context::defaultLayout(){
+		return _defaultLayout;
 	}
 }

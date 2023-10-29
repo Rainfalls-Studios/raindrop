@@ -7,7 +7,7 @@
 namespace Raindrop::Core::Event{
 	using Callback = std::function<void()>;
 	
-	struct Context;
+	class Context;
 	class EventManager;
 	class KeyEvents;
 	class MouseEvents;

@@ -7,7 +7,7 @@
 // 	}
 
 // 	Shader::~Shader(){
-// 		if (_shader) vkDestroyShaderModule(_context.device.get(), _shader, _context.allocationCallbacks);
+// 		if (_shader) vkDestroyShaderModule(_context.device().get(), _shader, _context.allocationCallbacks);
 // 	}
 
 // 	void Shader::createShaderModule(const std::vector<char>& code){
@@ -16,7 +16,7 @@
 // 		createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
 // 		createInfo.codeSize = static_cast<uint32_t>(code.size());
 
-// 		if (vkCreateShaderModule(_context.device.get(), &createInfo, _context.allocationCallbacks, &_shader) != VK_SUCCESS){
+// 		if (vkCreateShaderModule(_context.device().get(), &createInfo, _context.allocationCallbacks, &_shader) != VK_SUCCESS){
 // 			throw std::runtime_error("Failed to create shader module");
 // 		}
 // 	}

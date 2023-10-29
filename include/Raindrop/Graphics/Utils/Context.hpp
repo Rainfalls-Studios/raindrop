@@ -9,14 +9,23 @@
 #include <Raindrop/Graphics/Utils/StringToVulkan.hpp>
 
 namespace Raindrop::Graphics::Utils{
-	struct Context{
-		Graphics::Context& graphics;
+	class Context{
+		public:
+			Context(Graphics::Context& graphics);
+			
+			Graphics::Context& graphics();
+			spdlog::logger& logger();
 
-		spdlog::logger logger;
-		FormatUtilities formats;
-		StringToVulkan stringToVulkan;
+			FormatUtilities& formats();
+			StringToVulkan& stringToVulkan();
 
-		Context(Graphics::Context& graphics);
+		private:
+			Graphics::Context& _graphics;
+
+			spdlog::logger _logger;
+			FormatUtilities _formats;
+			StringToVulkan _stringToVulkan;
+
 	};
 }
 

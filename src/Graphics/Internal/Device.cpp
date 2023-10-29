@@ -3,34 +3,34 @@
 
 namespace Raindrop::Graphics::Internal{
 	Device::Device(Context& context) : _context{context}{
-		_context.logger.info("Initializing vulkan device...");
+		_context.logger().info("Initializing vulkan device...");
 
 		findPhysicalDevice();
 		vkGetPhysicalDeviceProperties(_physicalDevice.get(), &_properties);
 		build();
 
-		_context.logger.info("Vulkan device initialized without any critical error");
+		_context.logger().info("Vulkan device initialized without any critical error");
 	}
 
 	Device::~Device(){
-		_context.logger.info("Terminating vulkan device...");
-		auto& allocationCallbacks = _context.graphics.allocationCallbacks;
+		_context.logger().info("Terminating vulkan device...");
+		auto& allocationCallbacks = _context.graphics().allocationCallbacks();
 		vkDestroyDevice(_device, allocationCallbacks);
-		_context.logger.info("Vulkan device terminated without any critical error");
+		_context.logger().info("Vulkan device terminated without any critical error");
 	}
 
 	void Device::findPhysicalDevice(){
-		_context.logger.trace("Looking for suitable physical device...");
+		_context.logger().trace("Looking for suitable physical device...");
 		uint32_t count = 0;
-		vkEnumeratePhysicalDevices(_context.instance.get(), &count, nullptr);
+		vkEnumeratePhysicalDevices(_context.instance().get(), &count, nullptr);
 
 		if (count == 0){
-			_context.logger.error("Cannot find any graphics card with vulkan support");
+			_context.logger().error("Cannot find any graphics card with vulkan support");
 			throw std::runtime_error("Failed to find physical device with Vulkan support");
 		}
 
 		std::vector<VkPhysicalDevice> physicalDevices(count);
-		vkEnumeratePhysicalDevices(_context.instance.get(), &count, physicalDevices.data());
+		vkEnumeratePhysicalDevices(_context.instance().get(), &count, physicalDevices.data());
 
 		for (auto &device : physicalDevices){
 			if (isPhysicalDeviceSuitable(device)){
@@ -39,7 +39,7 @@ namespace Raindrop::Graphics::Internal{
 			}
 		}
 
-		_context.logger.error("Cannot find a suitable physical device");
+		_context.logger().error("Cannot find a suitable physical device");
 		throw std::runtime_error("Failed to find a suitable physical device");
 	}
 
@@ -47,8 +47,8 @@ namespace Raindrop::Graphics::Internal{
 		uint32_t surfaceFormatCount = 0;
 		uint32_t presentModeCount = 0;
 
-		vkGetPhysicalDeviceSurfaceFormatsKHR(device, _context.window.surface(), &surfaceFormatCount, nullptr);
-		vkGetPhysicalDeviceSurfacePresentModesKHR(device, _context.window.surface(), &presentModeCount, nullptr);
+		vkGetPhysicalDeviceSurfaceFormatsKHR(device, _context.window().surface(), &surfaceFormatCount, nullptr);
+		vkGetPhysicalDeviceSurfacePresentModesKHR(device, _context.window().surface(), &presentModeCount, nullptr);
 
 		return surfaceFormatCount && presentModeCount;
 	}
@@ -62,15 +62,15 @@ namespace Raindrop::Graphics::Internal{
 	}
 
 	void Device::build(){
-		auto& allocationCallbacks = _context.graphics.allocationCallbacks;
+		auto& allocationCallbacks = _context.graphics().allocationCallbacks();
 
 		if (!isExtensionsSupported()){
-			_context.logger.error("Failed to build a vulkan device, unsuported required extensions");
+			_context.logger().error("Failed to build a vulkan device, unsuported required extensions");
 			throw std::runtime_error("unsupported extensions");
 		}
 
 		if (!isLayersSupported()){
-			_context.logger.error("Failed to build a vulkan device, unsuported required layers");
+			_context.logger().error("Failed to build a vulkan device, unsuported required layers");
 			throw std::runtime_error("unsupported layers");
 		}
 
@@ -108,7 +108,7 @@ namespace Raindrop::Graphics::Internal{
 		info.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
 
 		if (vkCreateDevice(_physicalDevice.get(), &info, allocationCallbacks, &_device) != VK_SUCCESS){
-			_context.logger.error("Failed to create vulkan device");
+			_context.logger().error("Failed to create vulkan device");
 			throw std::runtime_error("failed to create vulkan device");
 		}
 	}
@@ -162,7 +162,7 @@ namespace Raindrop::Graphics::Internal{
 		
 		for (uint32_t i=0; i<properties.size(); i++){
 			VkBool32 supported;
-			vkGetPhysicalDeviceSurfaceSupportKHR(_physicalDevice.get(), i, _context.window.surface(), &supported);
+			vkGetPhysicalDeviceSurfaceSupportKHR(_physicalDevice.get(), i, _context.window().surface(), &supported);
 			return i;
 		}
 		throw std::runtime_error("failed to find a present family");
@@ -178,7 +178,7 @@ namespace Raindrop::Graphics::Internal{
 			}
 		}
 
-		_context.logger.warn("Failed to find suitable memory type filter (filter : %x; properties: %x)", typeFilter, properties);
+		_context.logger().warn("Failed to find suitable memory type filter (filter : %x; properties: %x)", typeFilter, properties);
 		throw std::runtime_error("failed to find suitable memory type");
 	}
 

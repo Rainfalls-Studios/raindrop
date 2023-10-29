@@ -33,10 +33,10 @@
 
 // 	Texture::~Texture(){
 // 		CLOG(INFO, "Engine.Graphics.Texture") << "Destroying texture...";
-// 		if (_image) vkDestroyImage(_context.device.get(), _image, _context.allocationCallbacks);
-// 		if (_memory) vkFreeMemory(_context.device.get(), _memory, _context.allocationCallbacks);
-// 		if (_imageView) vkDestroyImageView(_context.device.get(), _imageView, _context.allocationCallbacks);
-// 		if (_sampler) vkDestroySampler(_context.device.get(), _sampler, _context.allocationCallbacks);
+// 		if (_image) vkDestroyImage(_context.device().get(), _image, _context.allocationCallbacks);
+// 		if (_memory) vkFreeMemory(_context.device().get(), _memory, _context.allocationCallbacks);
+// 		if (_imageView) vkDestroyImageView(_context.device().get(), _imageView, _context.allocationCallbacks);
+// 		if (_sampler) vkDestroySampler(_context.device().get(), _sampler, _context.allocationCallbacks);
 // 		CLOG(INFO, "Engine.Graphics.Texture") << "Texture destroyed with success !";
 // 	}
 
@@ -92,25 +92,25 @@
 // 		imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
 // 		imageInfo.flags = 0;
 
-// 		if (vkCreateImage(_context.device.get(), &imageInfo, nullptr, &_image) != VK_SUCCESS){
+// 		if (vkCreateImage(_context.device().get(), &imageInfo, nullptr, &_image) != VK_SUCCESS){
 // 			CLOG(ERROR, "Engine.Graphics.Texture") << "Failed to create texture image";
 // 			throw std::runtime_error("failed to create image");
 // 		}
 
 // 		VkMemoryRequirements memRequirements;
-// 		vkGetImageMemoryRequirements(_context.device.get(), _image, &memRequirements);
+// 		vkGetImageMemoryRequirements(_context.device().get(), _image, &memRequirements);
 
 // 		VkMemoryAllocateInfo allocInfo{};
 // 		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 // 		allocInfo.allocationSize = memRequirements.size;
-// 		allocInfo.memoryTypeIndex = _context.device.findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+// 		allocInfo.memoryTypeIndex = _context.device().findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-// 		if (vkAllocateMemory(_context.device.get(), &allocInfo, nullptr, &_memory) != VK_SUCCESS){
+// 		if (vkAllocateMemory(_context.device().get(), &allocInfo, nullptr, &_memory) != VK_SUCCESS){
 // 			CLOG(ERROR, "Engine.Graphics.Texture") << "Failed to allocate texture memory";
 // 			throw std::runtime_error("failed to allocate image memory");
 // 		}
 
-// 		vkBindImageMemory(_context.device.get(), _image, _memory, 0);
+// 		vkBindImageMemory(_context.device().get(), _image, _memory, 0);
 
 // 		VkCommandBuffer commandBuffer = _context.transfert.commandPool.beginSingleTime();
 
@@ -188,7 +188,7 @@
 // 		info.subresourceRange.baseArrayLayer = 0;
 // 		info.subresourceRange.layerCount = 1;
 
-// 		if (vkCreateImageView(_context.device.get(), &info, _context.allocationCallbacks, &_imageView) != VK_SUCCESS){
+// 		if (vkCreateImageView(_context.device().get(), &info, _context.allocationCallbacks, &_imageView) != VK_SUCCESS){
 // 			CLOG(ERROR, "Engine.Graphics.Texture") << "Failed to create texture image view";
 // 			throw std::runtime_error("failed to create texture image view");
 // 		}
@@ -203,7 +203,7 @@
 // 		info.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
 // 		info.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
 // 		info.anisotropyEnable = VK_TRUE;
-// 		info.maxAnisotropy = _context.device.properties().limits.maxSamplerAnisotropy;
+// 		info.maxAnisotropy = _context.device().properties().limits.maxSamplerAnisotropy;
 // 		info.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
 // 		info.unnormalizedCoordinates = VK_FALSE;
 // 		info.compareEnable = VK_FALSE;
@@ -213,7 +213,7 @@
 // 		info.minLod = 0.f;
 // 		info.maxLod = 0.f;
 
-// 		if (vkCreateSampler(_context.device.get(), &info, _context.allocationCallbacks, &_sampler) != VK_SUCCESS){
+// 		if (vkCreateSampler(_context.device().get(), &info, _context.allocationCallbacks, &_sampler) != VK_SUCCESS){
 // 			CLOG(ERROR, "Engine.Graphics.Texture") << "Failed to create texture sampler";
 // 			throw std::runtime_error("failed to create texture sampler");
 // 		}

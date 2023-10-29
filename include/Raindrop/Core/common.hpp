@@ -4,7 +4,7 @@
 #include <Raindrop/common.hpp>
 
 namespace Raindrop::Core{
-	struct Context;
+	class Context;
 	class Engine;
 }
 

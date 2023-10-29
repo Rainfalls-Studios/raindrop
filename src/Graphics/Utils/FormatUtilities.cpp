@@ -1326,7 +1326,7 @@ namespace Raindrop::Graphics::Utils{
 	}
 	
 	VkFormat FormatUtilities::bestFormatBuffer(uint32_t flags, VkFormatFeatureFlags features){
-		auto& device = _context.graphics.internal.device;
+		auto& device = _context.graphics().internal().device();
 
 		auto set = getSet(flags);
 		for (auto format : set){
@@ -1340,7 +1340,7 @@ namespace Raindrop::Graphics::Utils{
 	}
 
 	VkFormat FormatUtilities::bestFormatOptimalTiling(uint32_t flags, VkFormatFeatureFlags features){
-		auto& device = _context.graphics.internal.device;
+		auto& device = _context.graphics().internal().device();
 
 		auto set = getSet(flags);
 		for (auto format : set){
@@ -1354,7 +1354,7 @@ namespace Raindrop::Graphics::Utils{
 	}
 
 	VkFormat FormatUtilities::bestFormatLinearTiling(uint32_t flags, VkFormatFeatureFlags features){
-		auto& device = _context.graphics.internal.device;
+		auto& device = _context.graphics().internal().device();
 		
 		auto set = getSet(flags);
 		for (auto format : set){

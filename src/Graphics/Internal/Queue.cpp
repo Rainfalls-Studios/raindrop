@@ -9,7 +9,7 @@ namespace Raindrop::Graphics::Internal{
 		_family{family},
 		_index{queueIndex}{
 
-		auto device = _family._queueHandler._context.device.get();
+		auto device = _family._queueHandler._context.device().get();
 		vkGetDeviceQueue(device, family.index(), queueIndex, &_queue);
 	}
 		
@@ -54,7 +54,7 @@ namespace Raindrop::Graphics::Internal{
 		info.waitSemaphoreCount = 0;
 		
 		if (submit(1, &info, VK_NULL_HANDLE) != VK_SUCCESS){
-			_family._queueHandler._context.logger.error("Failed to submit a command buffer");
+			_family._queueHandler._context.logger().error("Failed to submit a command buffer");
 			throw std::runtime_error("Failed to submit command buffer");
 		}
 	}

@@ -15,7 +15,7 @@
 // 	void GlobalDescriptorPool::createPool(){
 // 		destroyPool();
 
-// 		auto device = _context.device.get();
+// 		auto device = _context.device().get();
 
 // 		VkDescriptorPoolSize pool_sizes[] = {
 // 			{VK_DESCRIPTOR_TYPE_SAMPLER, 1000},
@@ -44,7 +44,7 @@
 // 	}
 
 // 	void GlobalDescriptorPool::destroyPool(){
-// 		auto device = _context.device.get();
+// 		auto device = _context.device().get();
 // 		auto allocationCallbacks = _context.allocationCallbacks;
 
 // 		if (_pool != VK_NULL_HANDLE) vkDestroyDescriptorPool(device, _pool, allocationCallbacks);

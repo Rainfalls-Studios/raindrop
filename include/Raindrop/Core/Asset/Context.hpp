@@ -5,11 +5,17 @@
 #include <Raindrop/Core/Asset/common.hpp>
 
 namespace Raindrop::Core::Asset{
-	struct Context{
-		Core::Context& core;
-		spdlog::logger logger;
+	class Context{
+		public:
+			Context(Core::Context& core);
 
-		Context(Core::Context& core);
+			Core::Context& core();
+			spdlog::logger& logger();
+		
+		private:
+			Core::Context& _core;
+			spdlog::logger _logger;
+
 	};
 }
 

@@ -2,6 +2,15 @@
 
 namespace Raindrop::Core::Scene{
 	Context::Context(Core::Context& core) : 
-		core{core},
-		logger("Core::Scene"){}
+		_core{core},
+		_logger("Raindrop::Core::Scene")
+	{}
+	
+	Core::Context& Context::core(){
+		return _core;
+	}
+	
+	spdlog::logger& Context::logger(){
+		return _logger;
+	}
 }

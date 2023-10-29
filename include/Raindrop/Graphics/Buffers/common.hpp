@@ -4,7 +4,7 @@
 #include <Raindrop/Graphics/common.hpp>
 
 namespace Raindrop::Graphics::Buffers{
-	struct Context;
+	class Context;
 	class Buffer;
 	class Vertex;
 	class VertexLayout;

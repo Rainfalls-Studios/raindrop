@@ -39,13 +39,13 @@
 // 	}
 
 // 	SceneFramebuffer::~SceneFramebuffer(){
-// 		if (_framebuffer) vkDestroyFramebuffer(_context.device.get(), _framebuffer, _context.allocationCallbacks);
+// 		if (_framebuffer) vkDestroyFramebuffer(_context.device().get(), _framebuffer, _context.allocationCallbacks);
 		
 // 		for (auto &a : _attachments){
-// 			if (a.imageView) vkDestroyImageView(_context.device.get(), a.imageView, _context.allocationCallbacks);
-// 			if (a.image) vkDestroyImage(_context.device.get(), a.image, _context.allocationCallbacks);
-// 			if (a.memory) vkFreeMemory(_context.device.get(), a.memory, _context.allocationCallbacks);
-// 			if (a.sampler) vkDestroySampler(_context.device.get(), a.sampler, _context.allocationCallbacks);
+// 			if (a.imageView) vkDestroyImageView(_context.device().get(), a.imageView, _context.allocationCallbacks);
+// 			if (a.image) vkDestroyImage(_context.device().get(), a.image, _context.allocationCallbacks);
+// 			if (a.memory) vkFreeMemory(_context.device().get(), a.memory, _context.allocationCallbacks);
+// 			if (a.sampler) vkDestroySampler(_context.device().get(), a.sampler, _context.allocationCallbacks);
 // 		}
 // 	}
 
@@ -60,32 +60,32 @@
 // 			imageInfo.extent.width = _width;
 // 			imageInfo.extent.height = _height;
 
-// 			uint32_t familyIndices[] = {_context.graphics.familyIndex};
+// 			uint32_t familyIndices[] = {_context.graphics().familyIndex};
 
 // 			imageInfo.pQueueFamilyIndices = familyIndices;
 // 			imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 // 			imageInfo.queueFamilyIndexCount = sizeof(familyIndices) / sizeof(uint32_t);
 			
-// 			if (vkCreateImage(_context.device.get(), &imageInfo, _context.allocationCallbacks, &attachment.image) != VK_SUCCESS){
+// 			if (vkCreateImage(_context.device().get(), &imageInfo, _context.allocationCallbacks, &attachment.image) != VK_SUCCESS){
 // 				CLOG(ERROR, "Engine.Graphics.SceneFramebuffer") << "Failed to create world framebuffer attachment (" << i << ") image";
 // 				throw std::runtime_error("Failed to create world framebuffer attachment image");
 // 			}
 
 // 			VkMemoryRequirements requirements;
-// 			vkGetImageMemoryRequirements(_context.device.get(), attachment.image, &requirements);
+// 			vkGetImageMemoryRequirements(_context.device().get(), attachment.image, &requirements);
 
 // 			VkMemoryAllocateInfo allocationInfo{};
 // 			allocationInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-// 			allocationInfo.memoryTypeIndex = _context.device.findMemoryType(requirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+// 			allocationInfo.memoryTypeIndex = _context.device().findMemoryType(requirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 // 			allocationInfo.allocationSize = requirements.size;
 			
 
-// 			if (vkAllocateMemory(_context.device.get(), &allocationInfo, _context.allocationCallbacks, &attachment.memory) != VK_SUCCESS){
+// 			if (vkAllocateMemory(_context.device().get(), &allocationInfo, _context.allocationCallbacks, &attachment.memory) != VK_SUCCESS){
 // 				CLOG(ERROR, "Engine.Graphics.SceneFramebuffer") << "Failed to allocate world framebuffer attachment memory";
 // 				throw std::runtime_error("Failed to allocate world framebuffer attachment memory");
 // 			}
 
-// 			if (vkBindImageMemory(_context.device.get(), attachment.image, attachment.memory, 0) != VK_SUCCESS){
+// 			if (vkBindImageMemory(_context.device().get(), attachment.image, attachment.memory, 0) != VK_SUCCESS){
 // 				CLOG(ERROR, "Engine.graphics.SceneFramebuffer") << "Failed to bind world framebuffer attachment image memory";
 // 				throw std::runtime_error("Failed to bind world framebuffer attachment image memory");
 // 			}
@@ -94,7 +94,7 @@
 // 			imageViewInfo = attachments[i].imageView;
 // 			imageViewInfo.image = attachment.image;
 
-// 			if (vkCreateImageView(_context.device.get(), &imageViewInfo, _context.allocationCallbacks, &attachment.imageView) != VK_SUCCESS){
+// 			if (vkCreateImageView(_context.device().get(), &imageViewInfo, _context.allocationCallbacks, &attachment.imageView) != VK_SUCCESS){
 // 				CLOG(ERROR, "Engine.Graphics.SceneFramebuffer") << "Failed to create world framebuffer attachment (" << i << ") image view";
 // 				throw std::runtime_error("Failed to create world framebuffer attachment image view");
 // 			}
@@ -117,7 +117,7 @@
 // 			samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK;
 // 			samplerInfo.unnormalizedCoordinates = VK_FALSE;
 
-// 			if (vkCreateSampler(_context.device.get(), &samplerInfo, _context.allocationCallbacks, &attachment.sampler) != VK_SUCCESS){
+// 			if (vkCreateSampler(_context.device().get(), &samplerInfo, _context.allocationCallbacks, &attachment.sampler) != VK_SUCCESS){
 // 				CLOG(ERROR, "Engine.Graphics.SceneFramebuffer") << "Failed to create world framebuffer attachment (" << i << ") sampler";
 // 				throw std::runtime_error("Failed to create sampler");
 // 			}
@@ -141,7 +141,7 @@
 // 		info.attachmentCount = imageViews.size();
 // 		info.renderPass = _context.renderPasses.scene.get();
 		
-// 		if (vkCreateFramebuffer(_context.device.get(), &info, _context.allocationCallbacks, &_framebuffer) != VK_SUCCESS){
+// 		if (vkCreateFramebuffer(_context.device().get(), &info, _context.allocationCallbacks, &_framebuffer) != VK_SUCCESS){
 // 			CLOG(ERROR, "Engine.Graphics.SceneFramebuffer") << "Failed to create world framebuffer";
 // 			throw std::runtime_error("Failed to create world framebuffer");
 // 		}
@@ -243,7 +243,7 @@
 // 	void SceneFramebuffer::allocDescriptorSet(){
 // 		freeDescriptorSet();
 
-// 		auto device = _context.device.get();
+// 		auto device = _context.device().get();
 // 		auto pool = _context.descriptorPool.get();
 
 // 		VkDescriptorSetLayout layout = _context.layouts.scene.get();
@@ -277,11 +277,11 @@
 // 		write.descriptorCount = static_cast<uint32_t>(images.size());
 // 		write.dstSet = _descriptorSet;
 
-// 		vkUpdateDescriptorSets(_context.device.get(), 1, &write, 0, nullptr);
+// 		vkUpdateDescriptorSets(_context.device().get(), 1, &write, 0, nullptr);
 // 	}
 
 // 	void SceneFramebuffer::freeDescriptorSet(){
-// 		auto device = _context.device.get();
+// 		auto device = _context.device().get();
 // 		auto pool = _context.descriptorPool.get();
 
 // 		if (_descriptorSet != VK_NULL_HANDLE) vkFreeDescriptorSets(device, pool, 1, &_descriptorSet);

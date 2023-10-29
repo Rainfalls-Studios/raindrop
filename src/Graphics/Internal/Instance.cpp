@@ -12,7 +12,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityF
 		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT: level = spdlog::level::err; return VK_FALSE;
 	}
 
-	context->logger.log(level, "%s", pCallbackData->pMessage);
+	context->logger().log(level, "%s", pCallbackData->pMessage);
 	return VK_FALSE;
 }
 
@@ -29,19 +29,19 @@ static inline void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUti
 
 namespace Raindrop::Graphics::Internal{
 	Instance::Instance(Context& context) : _context{context}{
-		_context.logger.info("Initializing vulkan Instance...");
+		_context.logger().info("Initializing vulkan Instance...");
 		_requiredExtensions.insert(_requiredExtensions.end(), REQUIRED_EXTENSIONS.begin(), REQUIRED_EXTENSIONS.end());
 		requireGraphicsExtensions();
 		build();
 
-		_context.window.createSurface();
-		_context.logger.info("Vulkan Instance initialized without any critical error");
+		_context.window().createSurface();
+		_context.logger().info("Vulkan Instance initialized without any critical error");
 	}
 
 	Instance::~Instance(){
-		_context.window.destroySurface();
+		_context.window().destroySurface();
 		if (_instance){
-			vkDestroyInstance(_instance, _context.graphics.allocationCallbacks);
+			vkDestroyInstance(_instance, _context.graphics().allocationCallbacks());
 			_instance = VK_NULL_HANDLE;
 		}
 	}
@@ -88,8 +88,8 @@ namespace Raindrop::Graphics::Internal{
 		checkExtensions();
 		checkLayers();
 
-		if (vkCreateInstance(&info, _context.graphics.allocationCallbacks, &_instance) != VK_SUCCESS){
-			_context.logger.error("Failed to create vulkan instance");
+		if (vkCreateInstance(&info, _context.graphics().allocationCallbacks(), &_instance) != VK_SUCCESS){
+			_context.logger().error("Failed to create vulkan instance");
 			throw std::runtime_error("Failed to create vulkan instance");
 		}
 	}
@@ -124,9 +124,9 @@ namespace Raindrop::Graphics::Internal{
 		}
 
 		if (!layers.empty()){
-			_context.logger.warn("Missing %d vulkan instance layer(s) : ", layers.size());
+			_context.logger().warn("Missing %d vulkan instance layer(s) : ", layers.size());
 			for (const auto& l : layers){
-				_context.logger.warn("\t- %s", l);
+				_context.logger().warn("\t- %s", l);
 			}
 			throw std::runtime_error("Missing layer");
 		}
@@ -150,14 +150,14 @@ namespace Raindrop::Graphics::Internal{
 			}
 
 			if (!layerFound){
-				_context.logger.warn("Missing vulkan validation layer(s) : %s", layerName);
+				_context.logger().warn("Missing vulkan validation layer(s) : %s", layerName);
 				throw std::runtime_error("Missing validation layer");
 			}
 		}
 	}
 
 	void Instance::requireGraphicsExtensions(){
-		auto extensions = _context.window.vulkanExtensions();
+		auto extensions = _context.window().vulkanExtensions();
 		_requiredExtensions.insert(_requiredExtensions.end(), extensions.begin(), extensions.end());
 	}
 

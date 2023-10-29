@@ -17,7 +17,7 @@ namespace Raindrop::Core::Scene{
 	static constexpr ComponentHandleID INVALID_COMPONENT_HANDLE_ID = ~0;
 	static constexpr SceneID INVALID_SCENE_ID = ~0;
 
-	struct Context;
+	class Context;
 	class Entity;
 	class Scene;
 	class Component;

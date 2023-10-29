@@ -6,7 +6,7 @@
 #include <Raindrop/Graphics/Internal/structs.hpp>
 
 namespace Raindrop::Graphics::Internal{
-	struct Context;
+	class Context;
 	struct SwapchainSupport;
 	struct QueueProperties;
 	class Instance;

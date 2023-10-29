@@ -21,7 +21,7 @@ namespace Raindrop::Graphics::ForwardShader{
 	}
 
 	RenderPass::~RenderPass(){
-		auto device = _context.device.get();
+		auto device = _context.device().get();
 		auto allocationCallbacks = _context.allocationCallbacks;
 
 		if (_renderPass) vkDestroyRenderPass(device, _renderPass, allocationCallbacks);
@@ -55,7 +55,7 @@ namespace Raindrop::Graphics::ForwardShader{
 		renderPassInfo.dependencyCount = 1;
 		renderPassInfo.pDependencies = &dependency;
 
-		if (vkCreateRenderPass(_context.device.get(), &renderPassInfo, _context.allocationCallbacks, &_renderPass) != VK_SUCCESS){
+		if (vkCreateRenderPass(_context.device().get(), &renderPassInfo, _context.allocationCallbacks, &_renderPass) != VK_SUCCESS){
 			CLOG(ERROR, "Engine.Graphics.ForwardShader") << "Failed to create forward shader render pass";
 			throw std::runtime_error("Failed to create forward shader render pass");
 		}

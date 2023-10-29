@@ -2,6 +2,15 @@
 
 namespace Raindrop::Core::Event{
     Context::Context(Core::Context& core) :
-        core{core},
-        logger("Core::Event"){}
+        _core{core},
+        _logger("Raindrop::Core::Event")
+    {}
+
+    Core::Context& Context::core(){
+        return _core;
+    }
+
+    spdlog::logger& Context::logger(){
+        return _logger;
+    }
 }

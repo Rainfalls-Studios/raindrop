@@ -20,7 +20,7 @@
 // 	void SceneDescriptorSetLayout::createSetLayout(){
 // 		destroySetLayout();
 
-// 		auto device = _context.device.get();
+// 		auto device = _context.device().get();
 // 		auto allocationCallbacks = _context.allocationCallbacks;
 
 // 		std::vector<VkDescriptorSetLayoutBinding> bindings(attachments.size());
@@ -45,7 +45,7 @@
 // 	}
 
 // 	void SceneDescriptorSetLayout::destroySetLayout(){
-// 		auto device = _context.device.get();
+// 		auto device = _context.device().get();
 // 		auto allocationCallbacks = _context.allocationCallbacks;
 
 // 		if (_setLayout) vkDestroyDescriptorSetLayout(device, _setLayout, allocationCallbacks);

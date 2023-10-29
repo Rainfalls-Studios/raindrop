@@ -29,7 +29,7 @@ namespace Raindrop::Graphics::Internal{
 		info.flags = usage;
 
 		if (vkBeginCommandBuffer(_commandBuffer, &info) != VK_SUCCESS){
-			_pool._context.logger.error("Failed to submit a command buffer");
+			_pool._context.logger().error("Failed to submit a command buffer");
 			throw std::runtime_error("Failed to begin command buffer");
 		}
 

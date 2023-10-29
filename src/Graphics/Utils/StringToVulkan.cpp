@@ -1334,7 +1334,7 @@ namespace Raindrop::Graphics::Utils{
 				if (it != _map.end()){
 					out |= it->second;
 				} else {
-					_context.logger.warn("Unknow vulkan flags %s", token.c_str());
+					_context.logger().warn("Unknow vulkan flags %s", token.c_str());
 				}
 			}
 		}

@@ -8,32 +8,32 @@ namespace Raindrop::Graphics::Internal{
 	static constexpr uint32_t DEFAULT_WINDOW_HEIGHT = 720;
 
 	Window::Window(Context& context) : _context{context}{
-		_context.logger.info("Initializing the SDL2 API...");
+		_context.logger().info("Initializing the SDL2 API...");
 		if (SDL_Init(SDL_INIT_VIDEO) != 0){
-			_context.logger.error("Failed to initialize the SDL2 API : %s", SDL_GetError());
+			_context.logger().error("Failed to initialize the SDL2 API : %s", SDL_GetError());
 			throw std::runtime_error("Failed initialize SDL2 API");
 		}
-		_context.logger.info("SDL2 API initialized without any critical error");
+		_context.logger().info("SDL2 API initialized without any critical error");
 
-		_context.logger.info("Initializing SDL2 Window...");
+		_context.logger().info("Initializing SDL2 Window...");
 		_window = SDL_CreateWindow("Raindrop::Graphics window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE);
 		if (!_window){
-			_context.logger.error("Failed to initialize SDL2 Window : %s", SDL_GetError());
+			_context.logger().error("Failed to initialize SDL2 Window : %s", SDL_GetError());
 			throw std::runtime_error("Failed to create SDL2 Window");
 		}
-		_context.logger.info("SDL2 Window initialized without any critical error");
+		_context.logger().info("SDL2 Window initialized without any critical error");
 	}
 
 	Window::~Window(){
 		if (_window){
-			_context.logger.info("Termintating SDL2 Window...");
+			_context.logger().info("Termintating SDL2 Window...");
 			SDL_DestroyWindow(_window);
-			_context.logger.info("SDL2 Window terminated without any critical error");
+			_context.logger().info("SDL2 Window terminated without any critical error");
 		}
 
-		_context.logger.info("Terminating SDL2 API...");
+		_context.logger().info("Terminating SDL2 API...");
 		SDL_Quit();
-		_context.logger.info("SDL2 API terminated without any critical error");
+		_context.logger().info("SDL2 API terminated without any critical error");
 	}
 
 	std::vector<const char*> Window::vulkanExtensions(){
@@ -48,19 +48,19 @@ namespace Raindrop::Graphics::Internal{
 	}
 
 	void Window::createSurface(){
-		_context.logger.debug("Creating SDL2 Vulkan surface");
-		if (SDL_Vulkan_CreateSurface(_window, _context.instance.get(), &_surface) == SDL_FALSE){
-			_context.logger.error("Failed to create SDL2 Vulkan surface : %s", SDL_GetError());
+		_context.logger().debug("Creating SDL2 Vulkan surface");
+		if (SDL_Vulkan_CreateSurface(_window, _context.instance().get(), &_surface) == SDL_FALSE){
+			_context.logger().error("Failed to create SDL2 Vulkan surface : %s", SDL_GetError());
 			throw std::runtime_error("Failed to create SDL2 Vulkan surface");
 		}
-		_context.logger.debug("SDL2 Vulkan surface created without any critical error");
+		_context.logger().debug("SDL2 Vulkan surface created without any critical error");
 	}
 
 	void Window::destroySurface(){
 		if (_surface){
-			_context.logger.debug("Destroying SDL2 Vulkan surface");
-			vkDestroySurfaceKHR(_context.instance.get(), _surface, _context.graphics.allocationCallbacks);
-			_context.logger.debug("SDL2 Vulkan surface destroyed without any critical error");
+			_context.logger().debug("Destroying SDL2 Vulkan surface");
+			vkDestroySurfaceKHR(_context.instance().get(), _surface, _context.graphics().allocationCallbacks());
+			_context.logger().debug("SDL2 Vulkan surface destroyed without any critical error");
 		}
 	}
 
@@ -122,18 +122,18 @@ namespace Raindrop::Graphics::Internal{
 	}
 
 	void Window::quitEvent(){
-		auto& ev = _context.graphics.core.eventManager;
+		auto& ev = _context.graphics().core().eventManager();
 		ev.trigger("Raindrop.Graphics.Internal.Window.Quit");
 	}
 
 	void Window::windowResizedEvent(SDL_WindowEvent& e){
-		auto& ev = _context.graphics.core.eventManager;
+		auto& ev = _context.graphics().core().eventManager();
 		_resized = true;
 		ev.trigger("Raindrop.Graphics.Internal.Window.Resized");
 	}
 
 	void Window::mouseMotionEvent(SDL_Event& e){
-		auto& ev = _context.graphics.core.eventManager;
+		auto& ev = _context.graphics().core().eventManager();
 		ev.trigger("Raindrop.Graphics.Internal.Window.Mouse.Mouved");
 		ev.mouseEvents().pos() = glm::vec2(e.motion.x, e.motion.y);
 		ev.mouseEvents().relPos() = glm::vec2(e.motion.xrel, e.motion.yrel);
@@ -149,13 +149,13 @@ namespace Raindrop::Graphics::Internal{
 	}
 
 	void Window::mouseDown(SDL_Event& e){
-		auto& ev = _context.graphics.core.eventManager;
+		auto& ev = _context.graphics().core().eventManager();
 		ev.trigger("Raindrop.Graphics.Internal.Window.Mouse.ButtonDown");
 		ev.mouseEvents().state(SDLToRaindropMouseButton(e.button.button)) = Core::Event::BUTTON_DOWN;
 	}
 
 	void Window::mouseUp(SDL_Event& e){
-		auto& ev = _context.graphics.core.eventManager;
+		auto& ev = _context.graphics().core().eventManager();
 		ev.trigger("Raindrop.Graphics.Internal.Window.Mouse.ButtonUp");
 		ev.mouseEvents().state(SDLToRaindropMouseButton(e.button.button)) = Core::Event::BUTTON_UP;
 	}
@@ -169,13 +169,13 @@ namespace Raindrop::Graphics::Internal{
 	}
 
 	void Window::keyDown(SDL_Event& e){
-		auto& ev = _context.graphics.core.eventManager;
+		auto& ev = _context.graphics().core().eventManager();
 		ev.trigger("Raindrop.Graphics.Internal.Window.Keyboard.KeyDown");
 		ev.keyEvents()[static_cast<Core::Event::Key>(e.key.keysym.scancode)] = Core::Event::KEY_PRESSED;
 	}
 
 	void Window::keyUp(SDL_Event& e){
-		auto& ev = _context.graphics.core.eventManager;
+		auto& ev = _context.graphics().core().eventManager();
 		ev.trigger("Raindrop.Graphics.Internal.Window.Keyboard.KeyUp");
 		ev.keyEvents()[static_cast<Core::Event::Key>(e.key.keysym.scancode)] = Core::Event::KEY_RELEASED;
 	}

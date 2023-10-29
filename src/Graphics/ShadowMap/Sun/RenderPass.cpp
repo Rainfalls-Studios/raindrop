@@ -22,7 +22,7 @@ namespace Raindrop::Graphics::ShadowMap::Sun{
 	}
 
 	RenderPass::~RenderPass(){
-		if (_renderPass) vkDestroyRenderPass(_context.device.get(), _renderPass, _context.allocationCallbacks);
+		if (_renderPass) vkDestroyRenderPass(_context.device().get(), _renderPass, _context.allocationCallbacks);
 	}
 
 	VkRenderPass RenderPass::get() const{
@@ -57,7 +57,7 @@ namespace Raindrop::Graphics::ShadowMap::Sun{
 		renderPassInfo.dependencyCount = 1;
 		renderPassInfo.pDependencies = &dependency;
 
-		if (vkCreateRenderPass(_context.device.get(), &renderPassInfo, _context.allocationCallbacks, &_renderPass) != VK_SUCCESS){
+		if (vkCreateRenderPass(_context.device().get(), &renderPassInfo, _context.allocationCallbacks, &_renderPass) != VK_SUCCESS){
 			CLOG(ERROR, "Engine.Graphics.ShadowMap.Sun.RenderPass") << "Failed to create sun shadow map render pass";
 			throw std::runtime_error("Failed to create sun shadow map render pass");
 		}

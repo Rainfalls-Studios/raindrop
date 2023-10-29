@@ -25,7 +25,7 @@
 // 		info.bindingCount = 1;
 // 		info.pBindings = &binding;
 		
-// 		auto device = _context.device.get();
+// 		auto device = _context.device().get();
 // 		auto allocationCallbacks = _context.allocationCallbacks;
 		
 // 		if (vkCreateDescriptorSetLayout(device, &info, allocationCallbacks, &sunShadowMapLayout) != VK_SUCCESS){
@@ -38,7 +38,7 @@
 // 	}
 
 // 	void DescriptorLayouts::destroyLightsLayouts(){
-// 		auto device = _context.device.get();
+// 		auto device = _context.device().get();
 // 		auto allocationCallbacks = _context.allocationCallbacks;
 
 // 		if (sunShadowMapLayout) vkDestroyDescriptorSetLayout(device, sunShadowMapLayout, allocationCallbacks);

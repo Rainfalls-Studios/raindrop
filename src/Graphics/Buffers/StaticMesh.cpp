@@ -14,9 +14,9 @@ namespace Raindrop::Graphics::Buffers{
 		Internal::Queue& queue;
 
 		SubmitInfo(Context& context) : 
-			commandPool{context.graphics.internal.commandPools.pool(VK_QUEUE_TRANSFER_BIT, VK_COMMAND_POOL_CREATE_TRANSIENT_BIT)},
+			commandPool{context.graphics().internal().commandPools().pool(VK_QUEUE_TRANSFER_BIT, VK_COMMAND_POOL_CREATE_TRANSIENT_BIT)},
 			commandBuffer{commandPool.allocate(VK_COMMAND_BUFFER_LEVEL_PRIMARY)},
-			queue{context.graphics.internal.queueHandler.get(commandPool.familyIndex()).get(0)} {
+			queue{context.graphics().internal().queueHandler().get(commandPool.familyIndex()).get(0)} {
 
 		}
 	};

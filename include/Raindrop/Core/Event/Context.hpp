@@ -5,12 +5,18 @@
 #include <Raindrop/Core/Event/common.hpp>
 
 namespace Raindrop::Core::Event{
-    struct Context{
-        Core::Context& core;
-        spdlog::logger logger;
+	class Context{
+		public:
+			Context(Core::Context& context);
 
-        Context(Core::Context& context);
-    };
+			Core::Context& core();
+			spdlog::logger& logger();
+		
+		private:
+			Core::Context& _core;
+			spdlog::logger _logger;
+
+	};
 }
 
 #endif

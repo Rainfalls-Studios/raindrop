@@ -25,7 +25,7 @@ namespace Raindrop::Graphics::Buffers{
 
 			attribute = std::malloc(size);
 			if (!attribute){
-				_layout->_context.logger.critical("Malloc error !");
+				_layout->_context.logger().critical("Malloc error !");
 				throw std::runtime_error("Malloc error");
 			}
 

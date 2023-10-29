@@ -17,8 +17,8 @@ namespace Raindrop::Graphics::Buffers{
 			throw std::runtime_error("Cannot have an unnamed vertex attribute");
 		}
 
-		if (binding > _context.graphics.internal.limits().maxVertexInputBindings){
-			_context.logger.error("TVertex binding out of limitation range (%d > %d)", binding, _context.graphics.internal.limits().maxVertexInputBindings);
+		if (binding > _context.graphics().internal().limits().maxVertexInputBindings){
+			_context.logger().error("TVertex binding out of limitation range (%d > %d)", binding, _context.graphics().internal().limits().maxVertexInputBindings);
 			throw std::out_of_range("Vertex binding out of limitation range");
 		}
 
@@ -33,7 +33,7 @@ namespace Raindrop::Graphics::Buffers{
 		
 		uint32_t& bindingStride = _bindings[binding].stride;
 		attribute.offset = bindingStride;
-		bindingStride += _context.graphics.utils.formats.size(format);
+		bindingStride += _context.graphics().utils().formats().size(format);
 
 		std::size_t id = _attributes.size();
 		_attributes.push_back(attribute);
@@ -56,7 +56,7 @@ namespace Raindrop::Graphics::Buffers{
 		for (auto& attribute : _attributes){
 			if (attribute.binding == binding){
 				attribute.offset = offset;
-				offset += _context.graphics.utils.formats.size(attribute.format);
+				offset += _context.graphics().utils().formats().size(attribute.format);
 			}
 		}
 
@@ -68,7 +68,7 @@ namespace Raindrop::Graphics::Buffers{
 	}
 
 	std::size_t VertexLayout::attributeSize(std::size_t id) const{
-		return _context.graphics.utils.formats.size(_attributes[id].format);
+		return _context.graphics().utils().formats().size(_attributes[id].format);
 	}
 
 	std::size_t VertexLayout::attributeSize(const std::string& name) const{

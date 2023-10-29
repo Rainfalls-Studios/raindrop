@@ -6,7 +6,7 @@
 #include <Raindrop/Core/common.hpp>
 
 namespace Raindrop::Graphics{
-	struct Context;
+	class Context;
 	class Engine;
 	class FrameState;
 	class Camera;

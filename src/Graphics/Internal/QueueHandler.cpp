@@ -4,22 +4,22 @@
 
 namespace Raindrop::Graphics::Internal{
 	QueueHandler::QueueHandler(Context& context) : _context{context}{
-		_context.logger.info("Initializing queue handler...");
+		_context.logger().info("Initializing queue handler...");
 
 		populateFamilies();
 
-		_context.logger.info("Queue handler initialized");
+		_context.logger().info("Queue handler initialized");
 	}
 
 	QueueHandler::~QueueHandler(){
-		_context.logger.info("Terminating queue handler...");
+		_context.logger().info("Terminating queue handler...");
 
-		_context.logger.info("Queue handler terminated");
+		_context.logger().info("Queue handler terminated");
 	}
 
 	void QueueHandler::populateFamilies(){
-		auto physicalDevice = _context.physicalDevice.get();
-		auto surface = _context.window.surface();
+		auto physicalDevice = _context.physicalDevice().get();
+		auto surface = _context.window().surface();
 
 		uint32_t count = 0;
 		vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &count, nullptr);
@@ -32,7 +32,7 @@ namespace Raindrop::Graphics::Internal{
 
 			VkBool32 supportPresent;
 			if (vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, i, surface, &supportPresent) != VK_SUCCESS){
-				_context.logger.error("Failed to query family surface support");
+				_context.logger().error("Failed to query family surface support");
 				throw std::runtime_error("Failed to query family surface support");
 			}
 
@@ -55,7 +55,7 @@ namespace Raindrop::Graphics::Internal{
 		);
 
 		if (it == _families.end()){
-			_context.logger.warn("Failed to find queue family at %d index", index);
+			_context.logger().warn("Failed to find queue family at %d index", index);
 			throw std::runtime_error("Failed to find queue family at given index");
 		}
 
@@ -72,7 +72,7 @@ namespace Raindrop::Graphics::Internal{
 		);
 
 		if (it == _families.end()){
-			_context.logger.warn("Failed to find queue family at %d index", index);
+			_context.logger().warn("Failed to find queue family at %d index", index);
 			throw std::runtime_error("Failed to find queue family at given index");
 		}
 
@@ -92,7 +92,7 @@ namespace Raindrop::Graphics::Internal{
 	}
 
 	std::list<std::reference_wrapper<QueueFamily>> QueueHandler::getByProperies(const QueueProperties& properties){
-		auto& device = _context.device;
+		auto& device = _context.device();
 
 		std::vector<int> suitabilities(_families.size());
 

@@ -33,7 +33,7 @@
 // 		info.pAttachments = imageViews.data();
 // 		info.attachmentCount = imageViews.size();
 
-// 		auto device = _context.device.get();
+// 		auto device = _context.device().get();
 // 		auto allocationCallbacks = _context.allocationCallbacks;
 
 // 		if (vkCreateFramebuffer(device, &info, allocationCallbacks, &_framebuffer) != VK_SUCCESS){
@@ -42,7 +42,7 @@
 // 	}
 
 // 	Framebuffer::~Framebuffer(){
-// 		auto device = _context.device.get();
+// 		auto device = _context.device().get();
 // 		auto allocationCallbacks = _context.allocationCallbacks;
 
 // 		if (_framebuffer) vkDestroyFramebuffer(device, _framebuffer, allocationCallbacks);

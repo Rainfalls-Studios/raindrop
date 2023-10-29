@@ -24,7 +24,7 @@
 // 		info.tiling = builder.tiling();
 // 		info.usage = builder.usage();
 
-// 		auto device = _context.device.get();
+// 		auto device = _context.device().get();
 // 		auto allocationCallbacks = _context.allocationCallbacks;
 
 // 		if (vkCreateImage(device, &info, allocationCallbacks, &_image) != VK_SUCCESS){
@@ -36,20 +36,20 @@
 
 // 		VkMemoryAllocateInfo allocationInfo{};
 // 		allocationInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-// 		allocationInfo.memoryTypeIndex = _context.device.findMemoryType(requirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+// 		allocationInfo.memoryTypeIndex = _context.device().findMemoryType(requirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 // 		allocationInfo.allocationSize = requirements.size;
 
 // 		if (vkAllocateMemory(device, &allocationInfo, allocationCallbacks, &_memory) != VK_SUCCESS){
 // 			throw std::runtime_error("Failed to allocate image memory");
 // 		}
 
-// 		if (vkBindImageMemory(_context.device.get(), _image, _memory, 0) != VK_SUCCESS){
+// 		if (vkBindImageMemory(_context.device().get(), _image, _memory, 0) != VK_SUCCESS){
 // 			throw std::runtime_error("Failed to bind image memory");
 // 		}
 // 	}
 
 // 	Image::~Image(){
-// 		auto device = _context.device.get();
+// 		auto device = _context.device().get();
 // 		auto allocationCallbacks = _context.allocationCallbacks;
 
 // 		if (_image) vkDestroyImage(device, _image, allocationCallbacks);

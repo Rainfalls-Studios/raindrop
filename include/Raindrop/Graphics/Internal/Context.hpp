@@ -14,21 +14,36 @@
 #include <Raindrop/Graphics/Internal/CommandPools.hpp>
 
 namespace Raindrop::Graphics::Internal{
-	struct Context{
-		Graphics::Context& graphics;
-		spdlog::logger logger;
+	class Context{
+		public:
+			Context(Graphics::Context& graphics);
 
-		Window window;
-		Instance instance;
-		PhysicalDevice physicalDevice;
-		Device device;
-		QueueHandler queueHandler;
-		CommandPools commandPools;
-		Swapchain swapchain;
+			const VkPhysicalDeviceLimits& limits() const;
 
-		Context(Graphics::Context& graphics);
+			Graphics::Context& graphics();
+			spdlog::logger& logger();
+
+			Window& window();
+			Instance& instance();
+			PhysicalDevice& physicalDevice();
+			Device& device();
+			QueueHandler& queueHandler();
+			CommandPools& commandPools();
+			Swapchain& swapchain();
+
+		private:
+			Graphics::Context& _graphics;
+			spdlog::logger _logger;
+
+			Window _window;
+			Instance _instance;
+			PhysicalDevice _physicalDevice;
+			Device _device;
+			QueueHandler _queueHandler;
+			CommandPools _commandPools;
+			Swapchain _swapchain;
+
 		
-		const VkPhysicalDeviceLimits& limits() const;
 	};
 }
 

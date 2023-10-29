@@ -14,11 +14,11 @@ namespace Raindrop::Core::Scene{
 	Scene::Scene(Context& context, uint32_t entityCount, uint32_t componentCount) : _context{context}{
 		_root = INVALID_ENTITY_ID;
 
-		_context.logger.info("Initializing Scene...");
+		_context.logger().info("Initializing Scene...");
 		_componentRegistry = std::make_unique<ComponentRegistry>(_context, componentCount);
 		_entityComponentsRegistry = std::make_unique<EntityComponentsRegistry>(_context, entityCount, componentCount);
 		_entityManager = std::make_unique<EntityManager>(_context, entityCount);
-		_context.logger.info("Scene initialized without any ciritcal error");
+		_context.logger().info("Scene initialized without any ciritcal error");
 
 		registerComponents();
 		_root = createEntity();
@@ -33,11 +33,11 @@ namespace Raindrop::Core::Scene{
 	}
 
 	Scene::~Scene(){
-		_context.logger.info("Terminating Scene...");
+		_context.logger().info("Terminating Scene...");
 		_componentRegistry.reset();
 		_entityComponentsRegistry.reset();
 		_entityManager.reset();
-		_context.logger.info("Scene terminated scene without any critical error");
+		_context.logger().info("Scene terminated scene without any critical error");
 	}
 	
 	const std::string& Scene::name() const{
@@ -84,7 +84,7 @@ namespace Raindrop::Core::Scene{
 
 	void Scene::destroyEntity(EntityID ID){
 		if (ID == _root){
-			_context.logger.warn("Cannot destroy the root entity of the scene (%s)", _name.c_str());
+			_context.logger().warn("Cannot destroy the root entity of the scene (%s)", _name.c_str());
 			throw std::runtime_error("Cannot destroy root");
 		}
 		

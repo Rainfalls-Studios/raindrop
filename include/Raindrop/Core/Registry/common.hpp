@@ -4,7 +4,7 @@
 #include <Raindrop/Core/common.hpp>
 
 namespace Raindrop::Core::Registry{
-	struct Context;
+	class Context;
 	class Registry;
 	class Node;
 }

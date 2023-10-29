@@ -2,11 +2,35 @@
 
 namespace Raindrop::Core{
 	Context::Context() : 
-		logger("Core"),
-		registry(*this),
-		temp(*this),
-		eventManager(*this),
-		assetManager(*this),
-		sceneManager(*this)
+		_logger("Core"),
+		_registry(*this),
+		_temp(*this),
+		_eventManager(*this),
+		_assetManager(*this),
+		_sceneManager(*this)
 	{}
+	
+	spdlog::logger& Context::logger(){
+		return _logger;
+	}
+	
+	Registry::Registry& Context::registry(){
+		return _registry;
+	}
+
+	Registry::Registry& Context::temp(){
+		return _temp;
+	}
+
+	Event::EventManager& Context::eventManager(){
+		return _eventManager;
+	}
+
+	Asset::AssetManager& Context::assetManager(){
+		return _assetManager;
+	}
+
+	Scene::SceneManager& Context::sceneManager(){
+		return _sceneManager;
+	}
 }

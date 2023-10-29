@@ -17,12 +17,12 @@
 
 // 		CLOG(INFO, "Engine.Graphics.GUI") << "Loading IMGUI...";
 
-// 		auto window = _context.window.get();
-// 		auto instance = _context.instance.get();
-// 		auto physicalDevice = _context.device.getPhysicalDevice();
-// 		auto device = _context.device.get();
+// 		auto window = _context.window().get();
+// 		auto instance = _context.instance().get();
+// 		auto physicalDevice = _context.device().getPhysicalDevice();
+// 		auto device = _context.device().get();
 // 		auto renderPass = _context.swapchain.renderPass();
-// 		auto graphicsQueue = _context.graphics.queue;
+// 		auto graphicsQueue = _context.graphics().queue;
 
 // 		VkDescriptorPoolSize pool_sizes[] = {
 // 			{VK_DESCRIPTOR_TYPE_SAMPLER, 1000},
@@ -81,7 +81,7 @@
 
 // 	ImGUI::~ImGUI(){
 // 		CLOG(INFO, "Engine.Graphics.GUI") << "Destroying IMGUI...";
-// 		vkDestroyDescriptorPool(_context.device.get(), _imguiPool, nullptr);
+// 		vkDestroyDescriptorPool(_context.device().get(), _imguiPool, nullptr);
 // 		ImGui_ImplVulkan_Shutdown();
 // 		CLOG(INFO, "Engine.Graphics.GUI") << "IMGUI destroyed with success !";
 // 	}

@@ -24,7 +24,7 @@ namespace Raindrop::Core::Scene{
 
 	ComponentID ComponentRegistry::getNextID(){
 		if (_IDsPool.empty()){
-			_context.logger.error("Cannot register a new component. The component registry is full !");
+			_context.logger().error("Cannot register a new component. The component registry is full !");
 			throw std::runtime_error("Cannot add another component !");
 		}
 		ComponentID id = _IDsPool.front();

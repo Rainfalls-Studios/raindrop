@@ -11,8 +11,8 @@ namespace Raindrop::Graphics::Internal{
 	{}
 
 	CommandPool::~CommandPool(){
-		auto device = _context.device.get();
-		auto& allocationCallbacks = _context.graphics.allocationCallbacks;
+		auto device = _context.device().get();
+		auto& allocationCallbacks = _context.graphics().allocationCallbacks();
 
 		if (_commandPool) vkDestroyCommandPool(device, _commandPool, allocationCallbacks);
 		_commandPool = VK_NULL_HANDLE;
@@ -37,21 +37,21 @@ namespace Raindrop::Graphics::Internal{
 	void CommandPool::reset(VkCommandPoolResetFlags flags){
 		assert(isResetable());
 
-		auto device = _context.device.get();
+		auto device = _context.device().get();
 
 		if (vkResetCommandPool(device, _commandPool, flags) != VK_SUCCESS){
-			_context.logger.error("Failed to reset command pool");
+			_context.logger().error("Failed to reset command pool");
 			throw std::runtime_error("Failed to reset command pool");
 		}
 	}
 
 	void CommandPool::trim(VkCommandPoolTrimFlags flags){
-		auto device = _context.device.get();
+		auto device = _context.device().get();
 		vkTrimCommandPool(device, _commandPool, flags);
 	}
 
 	CommandBuffer& CommandPool::allocate(VkCommandBufferLevel level){
-		auto device = _context.device.get();
+		auto device = _context.device().get();
 
 		VkCommandBufferAllocateInfo info{};
 		info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -61,7 +61,7 @@ namespace Raindrop::Graphics::Internal{
 
 		VkCommandBuffer commandBuffer;
 		if (vkAllocateCommandBuffers(device, &info, &commandBuffer) != VK_SUCCESS){
-			_context.logger.error("Failed to allocate a command buffer");
+			_context.logger().error("Failed to allocate a command buffer");
 			throw std::runtime_error("Failed to allocate command buffer");
 		}
 
@@ -71,7 +71,7 @@ namespace Raindrop::Graphics::Internal{
 	}
 
 	std::vector<std::reference_wrapper<CommandBuffer>> CommandPool::allocate(VkCommandBufferLevel level, std::size_t count){
-		auto device = _context.device.get();
+		auto device = _context.device().get();
 
 		VkCommandBufferAllocateInfo info{};
 		info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -81,7 +81,7 @@ namespace Raindrop::Graphics::Internal{
 
 		std::vector<VkCommandBuffer> commandBuffers(count);
 		if (vkAllocateCommandBuffers(device, &info, commandBuffers.data()) != VK_SUCCESS){
-			_context.logger.error("Failed to allocate %d command buffers", count);
+			_context.logger().error("Failed to allocate %d command buffers", count);
 			throw std::runtime_error("Failed to allocate command buffers");
 		}
 
@@ -103,7 +103,7 @@ namespace Raindrop::Graphics::Internal{
 			}
 		);
 		
-		auto device = _context.device.get();
+		auto device = _context.device().get();
 		VkCommandBuffer cmdBuffer = commandBuffer.get();
 
 		vkFreeCommandBuffers(device, _commandPool, 1, &cmdBuffer);

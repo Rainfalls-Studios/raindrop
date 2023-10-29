@@ -34,7 +34,7 @@
 // 	}
 
 // 	ImageView::~ImageView(){
-// 		auto device = _context.device.get();
+// 		auto device = _context.device().get();
 // 		auto allocationCallbacks = _context.allocationCallbacks;
 
 // 		if (_imageView) vkDestroyImageView(device, _imageView, allocationCallbacks);

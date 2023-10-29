@@ -5,12 +5,18 @@
 #include <Raindrop/Core/Registry/common.hpp>
 
 namespace Raindrop::Core::Registry{
-    struct Context{
-        Core::Context& core;
-        spdlog::logger logger;
+	class Context{
+		public:
+			Context(Core::Context& core);
 
-        Context(Core::Context& core);
-    };
+			Core::Context& core();
+			spdlog::logger& logger();
+
+		private:
+			Core::Context& _core;
+			spdlog::logger _logger;
+
+	};
 }
 
 #endif

@@ -4,15 +4,15 @@
 namespace Raindrop::Graphics{
 	Engine::Engine(Core::Context& core){
 		_context = std::make_unique<Context>(core);
-		_context->logger.info("Initializing Graphics Engine...");
+		_context->logger().info("Initializing Graphics Engine...");
 
-		_context->logger.info("Graphics Engine initialized without any critical error");
+		_context->logger().info("Graphics Engine initialized without any critical error");
 	}
 
 	Engine::~Engine(){
-		_context->logger.info("Terminating Graphics Engine...");
+		_context->logger().info("Terminating Graphics Engine...");
 
-		_context->logger.info("Graphics Engine terminated without any critical error");
+		_context->logger().info("Graphics Engine terminated without any critical error");
 		_context.reset();
 	}
 }
@@ -58,7 +58,7 @@ namespace Raindrop::Graphics{
 // 	}
 
 // 	FrameState Renderer::begin(){
-// 		auto& window = _context.window;
+// 		auto& window = _context.window();
 // 		auto& swapchain = _context.swapchain;
 
 // 		FrameState frameState;
@@ -75,7 +75,7 @@ namespace Raindrop::Graphics{
 // 			throw std::runtime_error("failed to acquire swap chain image!");
 // 		}
 
-// 		frameState.commandBuffer = _context.graphics.commandBuffers.getCommandBuffer(currentFrameID());
+// 		frameState.commandBuffer = _context.graphics().commandBuffers.getCommandBuffer(currentFrameID());
 // 		VkCommandBufferBeginInfo beginInfo{};
 // 		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
@@ -87,9 +87,9 @@ namespace Raindrop::Graphics{
 
 
 // 	void Renderer::end(FrameState& state){
-// 		_context.window.events();
+// 		_context.window().events();
 
-// 		auto& window = _context.window;
+// 		auto& window = _context.window();
 // 		auto& swapchain = _context.swapchain;
 // 		VkCommandBuffer& commandBuffer = state.commandBuffer;
 

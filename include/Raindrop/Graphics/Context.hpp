@@ -26,21 +26,32 @@
 // #include <Raindrop/Graphics/Queues/TransfertFamily.hpp>
 
 namespace Raindrop::Graphics{
-	struct Context{
-		Context(Core::Context& core);
-		~Context();
+	class Context{
+		public:
+			Context(Core::Context& core);
+			~Context();
 
-		Context(const Context &) = delete;
-		Context& operator=(const Context &) = delete;
+			Context(const Context &) = delete;
+			Context& operator=(const Context &) = delete;
 
-		spdlog::logger logger;
-		Core::Context& core;
+			Core::Context& core();
+			spdlog::logger& logger();
 
-		Core::Registry::Node registry;
-		VkAllocationCallbacks* allocationCallbacks = nullptr;
+			Core::Registry::Node& registry();
+			VkAllocationCallbacks*& allocationCallbacks();
 
-		Internal::Context internal;
-		Utils::Context utils;
+			Internal::Context& internal();
+			Utils::Context& utils();
+		
+		private:
+			Core::Context& _core;
+			spdlog::logger _logger;
+
+			Core::Registry::Node _registry;
+			VkAllocationCallbacks* _allocationCallbacks = nullptr;
+
+			Internal::Context _internal;
+			Utils::Context _utils;
 
 		// GlobalDescriptorPool descriptorPool;
 		// // Shaders::ShaderCompiler shaderCompiler;

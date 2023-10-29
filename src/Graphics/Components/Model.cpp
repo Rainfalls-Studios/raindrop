@@ -7,7 +7,7 @@
 namespace Raindrop::Graphics::Components{
 	Model::Model(GraphicsContext& context) : _context{context}{
 		auto pool = _context.descriptorPool.get();
-		auto device = _context.device.get();
+		auto device = _context.device().get();
 
 		VkDescriptorSetLayout layout = reinterpret_cast<VkDescriptorSetLayout>(_context.gRegistry["layout"]);
 
@@ -27,7 +27,7 @@ namespace Raindrop::Graphics::Components{
 
 	Model::~Model(){
 		auto pool = _context.descriptorPool.get();
-		auto device = _context.device.get();
+		auto device = _context.device().get();
 
 		vkFreeDescriptorSets(device, pool, 1, &_descriptorSet);
 	}
@@ -57,7 +57,7 @@ namespace Raindrop::Graphics::Components{
 		write.descriptorCount = 1;
 		write.dstSet = _descriptorSet;
 
-		vkUpdateDescriptorSets(_context.device.get(), 1, &write, 0, nullptr);
+		vkUpdateDescriptorSets(_context.device().get(), 1, &write, 0, nullptr);
 	}
 
 	Graphics::Model* Model::model() const{

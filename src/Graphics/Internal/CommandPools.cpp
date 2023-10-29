@@ -11,7 +11,7 @@ namespace Raindrop::Graphics::Internal{
 
 	CommandPool& CommandPools::pool(const QueueProperties& properties, VkCommandPoolCreateFlags flags){
 		PoolInfo info;
-		info.familyIndex = _context.queueHandler.getByProperies(properties).front().get().index();
+		info.familyIndex = _context.queueHandler().getByProperies(properties).front().get().index();
 		info.flags = flags;
 
 		auto it = _commandPools.find(info);
@@ -21,7 +21,7 @@ namespace Raindrop::Graphics::Internal{
 
 	const CommandPool& CommandPools::pool(const QueueProperties& properties, VkCommandPoolCreateFlags flags) const{
 		PoolInfo info;
-		info.familyIndex = _context.queueHandler.getByProperies(properties).front().get().index();
+		info.familyIndex = _context.queueHandler().getByProperies(properties).front().get().index();
 		info.flags = flags;
 
 		auto it = _commandPools.find(info);
@@ -38,8 +38,8 @@ namespace Raindrop::Graphics::Internal{
 	}
 
 	CommandPool& CommandPools::create(const PoolInfo& info){
-		auto device = _context.device.get();
-		auto& allocationCallbacks = _context.graphics.allocationCallbacks;
+		auto device = _context.device().get();
+		auto& allocationCallbacks = _context.graphics().allocationCallbacks();
 
 		VkCommandPoolCreateInfo createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -49,7 +49,7 @@ namespace Raindrop::Graphics::Internal{
 		VkCommandPool pool;
 
 		if (vkCreateCommandPool(device, &createInfo, allocationCallbacks, &pool) != VK_SUCCESS){
-			_context.logger.error("Failed to create a command pool");
+			_context.logger().error("Failed to create a command pool");
 			throw std::runtime_error("Failed to create a command pool");
 		}
 

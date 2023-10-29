@@ -72,12 +72,12 @@ namespace Raindrop::Graphics::Components{
 		// write.descriptorCount = 1;
 		// write.dstSet = _descriptorSet;
 
-		// vkUpdateDescriptorSets(_context.device.get(), 1, &write, 0, nullptr);
+		// vkUpdateDescriptorSets(_context.device().get(), 1, &write, 0, nullptr);
 	}
 
 	void Sun::createDescriptorSet(){
 		auto pool = _context.descriptorPool.get();
-		auto device = _context.device.get();
+		auto device = _context.device().get();
 
 		VkDescriptorSetLayout layout = _context.layouts.sunShadowMapLayout;
 
@@ -94,7 +94,7 @@ namespace Raindrop::Graphics::Components{
 
 	void Sun::destroyDescriptorSet(){
 		auto pool = _context.descriptorPool.get();
-		auto device = _context.device.get();
+		auto device = _context.device().get();
 		
 		if (_descriptorSet) vkFreeDescriptorSets(device, pool, 1, &_descriptorSet);
 	}

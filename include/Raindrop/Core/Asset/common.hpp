@@ -4,7 +4,7 @@
 #include <Raindrop/Core/common.hpp>
 
 namespace Raindrop::Core::Asset{
-	struct Context;
+	class Context;
 	class AssetManager;
 	class AssetFactory;
 	class Asset;

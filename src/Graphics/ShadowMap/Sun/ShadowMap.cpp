@@ -70,11 +70,11 @@
 
 // 	ShadowMap::~ShadowMap(){
 // 		CLOG(INFO, "Engine.Graphics.ShadowMap.ShadowMap") << "Destroying sun shadow map...";
-// 		if (_memory) vkFreeMemory(_context.device.get(), _memory, _context.allocationCallbacks);
-// 		if (_image) vkDestroyImage(_context.device.get(), _image, _context.allocationCallbacks);
-// 		if (_imageView) vkDestroyImageView(_context.device.get(), _imageView, _context.allocationCallbacks);
-// 		if (_sampler) vkDestroySampler(_context.device.get(), _sampler, _context.allocationCallbacks);
-// 		if (_framebuffer) vkDestroyFramebuffer(_context.device.get(), _framebuffer, _context.allocationCallbacks);
+// 		if (_memory) vkFreeMemory(_context.device().get(), _memory, _context.allocationCallbacks);
+// 		if (_image) vkDestroyImage(_context.device().get(), _image, _context.allocationCallbacks);
+// 		if (_imageView) vkDestroyImageView(_context.device().get(), _imageView, _context.allocationCallbacks);
+// 		if (_sampler) vkDestroySampler(_context.device().get(), _sampler, _context.allocationCallbacks);
+// 		if (_framebuffer) vkDestroyFramebuffer(_context.device().get(), _framebuffer, _context.allocationCallbacks);
 // 		CLOG(INFO, "Engine.Graphics.ShadowMap.ShadowMap") << "Sun shadow map destroyed with success !";
 // 	}
 
@@ -97,7 +97,7 @@
 // 		info.attachmentCount = 1;
 // 		info.renderPass = _context.renderPasses.sun.get();
 		
-// 		if (vkCreateFramebuffer(_context.device.get(), &info, _context.allocationCallbacks, &_framebuffer) != VK_SUCCESS){
+// 		if (vkCreateFramebuffer(_context.device().get(), &info, _context.allocationCallbacks, &_framebuffer) != VK_SUCCESS){
 // 			CLOG(ERROR, "Engine.Graphics.WorldFramebuffer") << "Failed to create world framebuffer";
 // 			throw std::runtime_error("Failed to create world framebuffer");
 // 		}
@@ -110,13 +110,13 @@
 // 		imageInfo.extent.width = _width;
 // 		imageInfo.extent.height = _height;
 
-// 		uint32_t familyIndices[] = {_context.graphics.familyIndex};
+// 		uint32_t familyIndices[] = {_context.graphics().familyIndex};
 
 // 		imageInfo.pQueueFamilyIndices = familyIndices;
 // 		imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 // 		imageInfo.queueFamilyIndexCount = sizeof(familyIndices) / sizeof(uint32_t);
 		
-// 		if (vkCreateImage(_context.device.get(), &imageInfo, _context.allocationCallbacks, &_image) != VK_SUCCESS){
+// 		if (vkCreateImage(_context.device().get(), &imageInfo, _context.allocationCallbacks, &_image) != VK_SUCCESS){
 // 			CLOG(ERROR, "Engine.Graphics.ShadowMap.ShadowMap") << "Failed to create sun shadow map attachment image";
 // 			throw std::runtime_error("Failed to create sun shadow map attachment image");
 // 		}
@@ -124,19 +124,19 @@
 
 // 	void ShadowMap::allocateMemory(){
 // 		VkMemoryRequirements requirements;
-// 		vkGetImageMemoryRequirements(_context.device.get(), _image, &requirements);
+// 		vkGetImageMemoryRequirements(_context.device().get(), _image, &requirements);
 
 // 		VkMemoryAllocateInfo allocationInfo{};
 // 		allocationInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-// 		allocationInfo.memoryTypeIndex = _context.device.findMemoryType(requirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+// 		allocationInfo.memoryTypeIndex = _context.device().findMemoryType(requirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 // 		allocationInfo.allocationSize = requirements.size;
 
-// 		if (vkAllocateMemory(_context.device.get(), &allocationInfo, _context.allocationCallbacks, &_memory) != VK_SUCCESS){
+// 		if (vkAllocateMemory(_context.device().get(), &allocationInfo, _context.allocationCallbacks, &_memory) != VK_SUCCESS){
 // 			CLOG(ERROR, "Engine.Graphics.ShadowMap.ShadowMap") << "Failed to allocate sun shadow map attachment memory";
 // 			throw std::runtime_error("Failed to allocate sun shadow map attachment memory");
 // 		}
 
-// 		if (vkBindImageMemory(_context.device.get(), _image, _memory, 0) != VK_SUCCESS){
+// 		if (vkBindImageMemory(_context.device().get(), _image, _memory, 0) != VK_SUCCESS){
 // 			CLOG(ERROR, "Engine.graphics.ShadowMap.ShadowMap") << "Failed to bind sun shadow map attachment image memory";
 // 			throw std::runtime_error("Failed to bind sun shadow map attachment image memory");
 // 		}
@@ -147,7 +147,7 @@
 // 		imageViewInfo = attachment.imageView;
 // 		imageViewInfo.image = _image;
 
-// 		if (vkCreateImageView(_context.device.get(), &imageViewInfo, _context.allocationCallbacks, &_imageView) != VK_SUCCESS){
+// 		if (vkCreateImageView(_context.device().get(), &imageViewInfo, _context.allocationCallbacks, &_imageView) != VK_SUCCESS){
 // 			CLOG(ERROR, "Engine.Graphics.ShadowMap.ShadowMap") << "Failed to create sun shadow map attachment image view";
 // 			throw std::runtime_error("Failed to create sun shadow map attachment image view");
 // 		}
@@ -172,7 +172,7 @@
 // 		samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
 // 		samplerInfo.unnormalizedCoordinates = VK_FALSE;
 
-// 		if (vkCreateSampler(_context.device.get(), &samplerInfo, _context.allocationCallbacks, &_sampler) != VK_SUCCESS){
+// 		if (vkCreateSampler(_context.device().get(), &samplerInfo, _context.allocationCallbacks, &_sampler) != VK_SUCCESS){
 // 			CLOG(ERROR, "Engine.Graphics.ShadowMap.ShadowMap") << "Failed to create sun shadow map attachment sampler";
 // 			throw std::runtime_error("Failed to create sun shadow map attachment sampler");
 // 		}

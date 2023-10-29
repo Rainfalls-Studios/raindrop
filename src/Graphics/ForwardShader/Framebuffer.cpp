@@ -84,7 +84,7 @@
 // 	}
 
 // 	Framebuffer::~Framebuffer(){
-// 		auto device = _context.device.get();
+// 		auto device = _context.device().get();
 // 		auto allocationCallbacks = _context.allocationCallbacks;
 
 // 		if (_framebuffer) vkDestroyFramebuffer(device, _framebuffer, allocationCallbacks);
@@ -100,13 +100,13 @@
 // 		imageInfo.extent.width = _width;
 // 		imageInfo.extent.height = _height;
 		
-// 		uint32_t familyIndices[] = {_context.graphicsFamily};
+// 		uint32_t familyIndices[] = {_context.graphics()Family};
 
 // 		imageInfo.pQueueFamilyIndices = familyIndices;
 // 		imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 // 		imageInfo.queueFamilyIndexCount = sizeof(familyIndices) / sizeof(uint32_t);
 
-// 		if (vkCreateImage(_context.device.get(), &imageInfo, _context.allocationCallbacks, &_image) != VK_SUCCESS){
+// 		if (vkCreateImage(_context.device().get(), &imageInfo, _context.allocationCallbacks, &_image) != VK_SUCCESS){
 // 			CLOG(ERROR, "Engine.Graphics.ForwardShader") << "Failed to create forward shader attachment image";
 // 			throw std::runtime_error("Failed to create forward shader attachment image");
 // 		}
@@ -114,22 +114,22 @@
 
 // 	void Framebuffer::allocateMemory(){
 // 		VkMemoryRequirements requirements;
-// 		vkGetImageMemoryRequirements(_context.device.get(), _image, &requirements);
+// 		vkGetImageMemoryRequirements(_context.device().get(), _image, &requirements);
 
 // 		VkMemoryAllocateInfo allocationInfo{};
 // 		allocationInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-// 		allocationInfo.memoryTypeIndex = _context.device.findMemoryType(requirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+// 		allocationInfo.memoryTypeIndex = _context.device().findMemoryType(requirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 // 		allocationInfo.allocationSize = requirements.size;
 		
 
-// 		if (vkAllocateMemory(_context.device.get(), &allocationInfo, _context.allocationCallbacks, &_memory) != VK_SUCCESS){
+// 		if (vkAllocateMemory(_context.device().get(), &allocationInfo, _context.allocationCallbacks, &_memory) != VK_SUCCESS){
 // 			CLOG(ERROR, "Engine.Graphics.ForwardShader") << "Failed to allocate forward shader attachment memory";
 // 			throw std::runtime_error("Failed to allocate forward shader attachment memory");
 // 		}
 // 	}
 
 // 	void Framebuffer::bindImageMemory(){
-// 		if (vkBindImageMemory(_context.device.get(), _image, _memory, 0) != VK_SUCCESS){
+// 		if (vkBindImageMemory(_context.device().get(), _image, _memory, 0) != VK_SUCCESS){
 // 			CLOG(ERROR, "Engine.graphics.ForwardShader") << "Failed to bind forward shader attachment image memory";
 // 			throw std::runtime_error("Failed to bind forward shader attachment image memory");
 // 		}
@@ -140,7 +140,7 @@
 // 		imageViewInfo = attachment.imageView;
 // 		imageViewInfo.image = _image;
 
-// 		if (vkCreateImageView(_context.device.get(), &imageViewInfo, _context.allocationCallbacks, &_imageView) != VK_SUCCESS){
+// 		if (vkCreateImageView(_context.device().get(), &imageViewInfo, _context.allocationCallbacks, &_imageView) != VK_SUCCESS){
 // 			CLOG(ERROR, "Engine.Graphics.ForwardShader") << "Failed to create forward shader attachment image view";
 // 			throw std::runtime_error("Failed to create forward shader attachment image view");
 // 		}
@@ -165,7 +165,7 @@
 // 		samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK;
 // 		samplerInfo.unnormalizedCoordinates = VK_FALSE;
 
-// 		if (vkCreateSampler(_context.device.get(), &samplerInfo, _context.allocationCallbacks, &_sampler) != VK_SUCCESS){
+// 		if (vkCreateSampler(_context.device().get(), &samplerInfo, _context.allocationCallbacks, &_sampler) != VK_SUCCESS){
 // 			CLOG(ERROR, "Engine.Graphics.ForwardShader") << "Failed to create forward shader attachment sampler";
 // 			throw std::runtime_error("Failed to create forward shader sampler");
 // 		}
@@ -183,7 +183,7 @@
 // 		info.attachmentCount = 1;
 // 		info.renderPass = _context.renderPasses.forwardShader.get();
 		
-// 		if (vkCreateFramebuffer(_context.device.get(), &info, _context.allocationCallbacks, &_framebuffer) != VK_SUCCESS){
+// 		if (vkCreateFramebuffer(_context.device().get(), &info, _context.allocationCallbacks, &_framebuffer) != VK_SUCCESS){
 // 			CLOG(ERROR, "Engine.Graphics.ForwardShader") << "Failed to create forward shader framebuffer";
 // 			throw std::runtime_error("Failed to create forward shader framebuffer");
 // 		}
