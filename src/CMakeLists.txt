@@ -21,5 +21,5 @@ target_link_libraries(Raindrop PRIVATE
 	
 	Boost::filesystem
 	spdlog::spdlog
-	glm
+	glm::glm
 )

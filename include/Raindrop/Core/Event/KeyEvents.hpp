@@ -11,8 +11,9 @@ namespace Raindrop::Core::Event{
 
 			KeyState& state(Key key);
 			const KeyState& state(Key key) const;
-			KeyState& operator[](Key key);
-			const KeyState& operator[](Key key) const;
+
+			inline KeyState& operator[](Key key);
+			inline const KeyState& operator[](Key key) const;
 
 			void clear();
 			
@@ -20,6 +21,8 @@ namespace Raindrop::Core::Event{
 			Context& _context;
 			KeyState _keys[static_cast<int>(KEY_COUNT)];
 	};
+
+	#include <Raindrop/Core/Event/inl/KeyEvents.inl>
 }
 
 #endif

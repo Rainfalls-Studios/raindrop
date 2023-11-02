@@ -9,14 +9,17 @@ namespace Raindrop::Core::Registry{
 			Node(const Node& node);
 			~Node();
 
-			bool operator==(const Node& other) const;
-			bool operator!=(const Node& other) const;
+			bool same(const Node& other) const;
+			bool different(const Node& other) const;
+
+			inline bool operator==(const Node& other) const;
+			inline bool operator!=(const Node& other) const;
 
 			Node get(const std::string& path);
 			const Node get(const std::string& path) const;
 
-			Node operator[](const std::string& path);
-			const Node operator[](const std::string& path) const;
+			inline Node operator[](const std::string& path);
+			inline const Node operator[](const std::string& path) const;
 
 			void remove(const std::string& path);
 			std::string format(const std::string& str);
@@ -44,6 +47,8 @@ namespace Raindrop::Core::Registry{
 		protected:
 			Node(Context& context);
 	};
+
+	#include <Raindrop/Core/Registry/inl/Node.inl>
 }
 
 #endif

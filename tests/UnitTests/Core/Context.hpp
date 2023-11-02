@@ -2,7 +2,7 @@
 #define __RAINDROP_TESTS_UNITTESTS_CORE_CONTEXT_HPP__
 
 #include <common.hpp>
-#include <Core/Asset/AssetManager.hpp>
+#include <Core/Asset/AssetManagerMock.hpp>
 #include <Raindrop/Core/Context.hpp>
 
 namespace Raindrop::UnitTests::Core{
@@ -13,13 +13,11 @@ namespace Raindrop::UnitTests::Core{
 
 			MOCK_METHOD(void, Context, ());
 
-			MOCK_METHOD(spdlog::logger&, logger, ());
 			MOCK_METHOD(::Raindrop::Core::Registry::Registry&, registry, ());
 			MOCK_METHOD(::Raindrop::Core::Registry::Registry&, temp, ());
 			MOCK_METHOD(::Raindrop::Core::Event::EventManager&, eventManager, ());
 			MOCK_METHOD(::Raindrop::Core::Asset::AssetManager&, assetManager, ());
 			MOCK_METHOD(::Raindrop::Core::Scene::SceneManager&, sceneManager, ());
-
 	};
 
 	class ContextFixture : public ::testing::Test {
@@ -28,8 +26,7 @@ namespace Raindrop::UnitTests::Core{
 				assetManagerMock(context){}
 
 			virtual void SetUp() override {
-				ON_CALL(context, logger()).WillByDefault(::testing::Return(context.logger()));
-				ON_CALL(context, assetManager()).WillByDefault(::testing::Return(::testing::Ref(assetManagerMock)));
+				ON_CALL(context, assetManager()).WillByDefault(::testing::ReturnRef(assetManagerMock));
 			}
 
 			ContextMock context;

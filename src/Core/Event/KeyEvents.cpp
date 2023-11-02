@@ -19,12 +19,4 @@ namespace Raindrop::Core::Event{
 			_keys[i] = KEY_RELEASED;
 		}
 	}
-
-	KeyState& KeyEvents::operator[](Key key){
-		return state(key);
-	}
-
-	const KeyState& KeyEvents::operator[](Key key) const{
-		return state(key);
-	}
 }

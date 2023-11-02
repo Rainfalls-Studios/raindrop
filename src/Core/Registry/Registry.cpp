@@ -10,4 +10,6 @@ namespace Raindrop::Core::Registry{
 	Registry::Registry(Core::Context& core) :
 		_context{std::make_unique<Context>(core)},
 		Node(*_context){}
+	
+	Registry::~Registry(){}
 }

@@ -27,11 +27,11 @@ namespace Raindrop::Core::Registry{
 		_impl.reset();
 	}
 	
-	bool Node::operator==(const Node& other) const{
+	bool Node::same(const Node& other) const{
 		return _impl->tree == other._impl->tree;
 	}
 
-	bool Node::operator!=(const Node& other) const{
+	bool Node::different(const Node& other) const{
 		return _impl->tree != other._impl->tree;
 	}
 
@@ -91,14 +91,6 @@ namespace Raindrop::Core::Registry{
 
 	const Node Node::get(const std::string& path) const{
 		return Node(_context, _impl->tree.get_child(path));
-	}
-
-	Node Node::operator[](const std::string& path){
-		return get(path);
-	}
-
-	const Node Node::operator[](const std::string& path) const{
-		return get(path);
 	}
 
 	void Node::remove(const std::string& path){
