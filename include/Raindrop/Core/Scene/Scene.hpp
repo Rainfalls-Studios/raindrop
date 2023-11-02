@@ -4,6 +4,7 @@
 #include <Raindrop/Core/Scene/common.hpp>
 
 namespace Raindrop::Core::Scene{
+	// TODO: replace uint32 and size_t by std::size_t
 	class Scene{
 		public:
 			Scene(Context& context, uint32_t entityCount = 1024, uint32_t componentCount = 128);

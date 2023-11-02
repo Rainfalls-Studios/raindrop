@@ -11,7 +11,6 @@ namespace Raindrop::UnitTests::Core::Event{
 			ContextMock(::Raindrop::Core::Context& context) : Context(context){};
 
 			MOCK_METHOD(::Raindrop::Core::Context&, core, ());
-			MOCK_METHOD(spdlog::logger&, logger, ());
 	};
 }
 

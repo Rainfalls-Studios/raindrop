@@ -4,6 +4,7 @@
 #include <Raindrop/Core/Scene/common.hpp>
 
 namespace Raindrop::Core::Scene{
+	// TODO: change uint32_t and size_t to std::size_t
 	class ComponentRegistry{
 		public:
 			ComponentRegistry(Context& context, uint32_t size);

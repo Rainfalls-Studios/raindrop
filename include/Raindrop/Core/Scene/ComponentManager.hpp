@@ -4,13 +4,16 @@
 #include <Raindrop/Core/Scene/common.hpp>
 
 namespace Raindrop::Core::Scene{
+	// TODO: add const methods
+	// TODO: add operator overloads
 	class ComponentManager{
 		public:
-			ComponentManager(Context& context, uint32_t componentSize, size_t typeID, uint32_t size, ConstructorPtr constructor, DestructorPtr destructor);
+			// TODO: refactor constructor
+			ComponentManager(Context& context, std::size_t componentSize, std::size_t typeID, std::size_t size, ConstructorPtr constructor, DestructorPtr destructor);
 			~ComponentManager();
 
 			void* get(ComponentHandleID id);
-			uint32_t size() const;
+			std::size_t size() const;
 
 			ComponentHandleID createComponent();
 			void destroyComponent(ComponentHandleID id);
@@ -36,9 +39,9 @@ namespace Raindrop::Core::Scene{
 			ConstructorPtr _constructor;
 			DestructorPtr _destructor;
 			
-			uint32_t _componentSize;
-			uint32_t _size;
-			size_t _typeID;
+			std::size_t _componentSize;
+			std::size_t _size;
+			std::size_t _typeID;
 	};
 }
 

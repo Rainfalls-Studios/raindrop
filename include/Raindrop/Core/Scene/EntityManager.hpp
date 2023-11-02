@@ -4,8 +4,6 @@
 #include <Raindrop/Core/Scene/common.hpp>
 
 namespace Raindrop::Core::Scene{
-	using EntityID = uint32_t;
-
 	class EntityManager{
 		public:
 			EntityManager(Context& context, uint32_t size);

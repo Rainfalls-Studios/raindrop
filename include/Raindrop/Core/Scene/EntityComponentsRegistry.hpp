@@ -4,6 +4,7 @@
 #include <Raindrop/Core/Scene/common.hpp>
 
 namespace Raindrop::Core::Scene{
+	// TODO: convert uint32_t types to std::size_t
 	class EntityComponentsRegistry{
 		public:
 			EntityComponentsRegistry(Context& context, uint32_t entityCount, uint32_t componentCount);
