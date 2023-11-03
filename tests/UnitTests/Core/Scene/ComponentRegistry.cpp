@@ -7,16 +7,16 @@ static constexpr std::size_t componentCount = 1000;
 using Component = int;
 
 namespace Raindrop::UnitTests::Core::Scene{
+	// CONSTRUCTORS
+	TEST_F(ContextFixture, ComponentRegistry_valid_constructor){
+		EXPECT_NO_THROW(::Raindrop::Core::Scene::ComponentRegistry(context, componentTypeCount));
+	}
+
 	class ComponentRegistryFixture : public ContextFixture{
 		public:
 			ComponentRegistryFixture() : registry{context, componentTypeCount}{}
 			::Raindrop::Core::Scene::ComponentRegistry registry;
 	};
-
-	// CONSTRUCTORS
-	TEST_F(ContextFixture, ComponentRegistry_valid_constructor){
-		EXPECT_NO_THROW(::Raindrop::Core::Scene::ComponentRegistry(context, componentTypeCount));
-	}
 
 	// METHODS
 	TEST_F(ComponentRegistryFixture, size){
