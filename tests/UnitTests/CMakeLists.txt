@@ -1,8 +1,6 @@
 find_package(GTest REQUIRED)
 include(GoogleTest)
 
-# message(${RAINDROP_INCLUDE_DIRS})
-
 file(GLOB_RECURSE SOURCES *.cpp)
 add_executable(RaindropUnitTests ${SOURCES})
 

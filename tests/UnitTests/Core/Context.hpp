@@ -2,7 +2,6 @@
 #define __RAINDROP_TESTS_UNITTESTS_CORE_CONTEXT_HPP__
 
 #include <common.hpp>
-#include <Core/Asset/AssetManagerMock.hpp>
 #include <Raindrop/Core/Context.hpp>
 
 namespace Raindrop::UnitTests::Core{
@@ -22,15 +21,12 @@ namespace Raindrop::UnitTests::Core{
 
 	class ContextFixture : public ::testing::Test {
 		public:
-			ContextFixture() : 
-				assetManagerMock(context){}
-
 			virtual void SetUp() override {
-				ON_CALL(context, assetManager()).WillByDefault(::testing::ReturnRef(assetManagerMock));
+				// ON_CALL(context, assetManager()).WillByDefault(::testing::ReturnRef(assetManagerMock));
+				// ON_CALL(contex, registry()).Wil
 			}
 
 			ContextMock context;
-			Asset::AssetManagerMock assetManagerMock;
 	};
 }
 

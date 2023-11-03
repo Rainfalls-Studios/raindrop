@@ -1,9 +1,9 @@
-#ifndef __RAINDROP_TESTS_UNITTESTS_CORE_SCENE_COMPONENT_REGISTRY_MOCK__HPP__
-#define __RAINDROP_TESTS_UNITTESTS_CORE_SCENE_COMPONENT_REGISTRY_MOCK__HPP__
+#ifndef __RAINDROP_TESTS_UNITTESTS_CORE_SCENE_COMPONENT_REGISTRY__HPP__
+#define __RAINDROP_TESTS_UNITTESTS_CORE_SCENE_COMPONENT_REGISTRY__HPP__
 
 #include <common.hpp>
 #include <Raindrop/Core/Scene/ComponentRegistry.hpp>
-#include <Core/Context.hpp>
+#include <Core/Scene/Context.hpp>
 
 namespace Raindrop::UnitTests::Core::Scene{
 	class ComponentRegistryMock : public ::Raindrop::Core::Scene::ComponentRegistry{

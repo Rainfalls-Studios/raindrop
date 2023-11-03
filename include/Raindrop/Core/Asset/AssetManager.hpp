@@ -4,6 +4,7 @@
 #include <Raindrop/Core/Asset/common.hpp>
 
 namespace Raindrop::Core::Asset{
+	// TODO: add asset root path
 	class AssetManager{
 		friend class Core::Engine;
 		public:

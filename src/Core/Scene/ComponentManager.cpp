@@ -1,7 +1,10 @@
 #include <Raindrop/Core/Scene/ComponentManager.hpp>
 
 namespace Raindrop::Core::Scene{
-	ComponentManager::ComponentManager(Context& context, uint32_t componentSize, size_t typeID, uint32_t size, ConstructorPtr constructor, DestructorPtr destructor) : _context{context}, _componentSize{componentSize}, _typeID{typeID}, _size{size}, _constructor{constructor}, _destructor{destructor}{
+	ComponentManager::ComponentManager(Context& context, std::size_t componentSize, std::size_t typeID, std::size_t size, ConstructorPtr constructor, DestructorPtr destructor) : _context{context}, _componentSize{componentSize}, _typeID{typeID}, _size{size}, _constructor{constructor}, _destructor{destructor}{
+		assert(componentSize != 0 && "the component size cannot be null");
+		assert(size != 0 && "the component manager cannot have an null amount of component");
+		
 		_components.resize(size * componentSize);
 
 		for (uint32_t i=0; i<size; i++){
@@ -21,7 +24,7 @@ namespace Raindrop::Core::Scene{
 		return static_cast<char*>(_components.data()) + (id * _componentSize);
 	}
 
-	uint32_t ComponentManager::size() const{
+	std::size_t ComponentManager::size() const{
 		return _size;
 	}
 

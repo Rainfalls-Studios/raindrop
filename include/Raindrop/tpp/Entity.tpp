@@ -15,7 +15,7 @@ const T& Entity::getComponent() const{
 
 template<typename T>
 T& Entity::createComponent(){
-	//TODO: entity component default value - https://trello.com/c/PbH8emBI/12-entity-component-default-value
+	// TODO: entity component default value - https://trello.com/c/PbH8emBI/12-entity-component-default-value
 	return _entity.createComponent<T>();
 }
 
