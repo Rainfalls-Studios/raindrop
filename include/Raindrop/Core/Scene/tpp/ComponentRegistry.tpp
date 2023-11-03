@@ -1,6 +1,6 @@
 template<typename T>
-void ComponentRegistry::registerComponent(uint32_t size){
-	registerComponent(sizeof(T), typeid(T).hash_code(), size, [](void* component){new (component) T();}, [](void* component){reinterpret_cast<T*>(component)->~T();});
+ComponentID ComponentRegistry::registerComponent(uint32_t size){
+	return registerComponent(sizeof(T), typeid(T).hash_code(), size, [](void* component){new (component) T();}, [](void* component){reinterpret_cast<T*>(component)->~T();});
 }
 
 template<typename T>

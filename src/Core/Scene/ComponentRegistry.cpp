@@ -16,6 +16,10 @@ namespace Raindrop::Core::Scene{
 	}
 
 	ComponentID ComponentRegistry::registerComponent(uint32_t componentSize, size_t typeID, uint32_t size, ConstructorPtr constructor, DestructorPtr destructor){
+		if (registred(typeID)){
+			throw std::runtime_error("Cannot register the same component twice !");
+		}
+
 		ComponentID id = getNextID();
 		_managers[id] = std::make_unique<ComponentManager>(_context, componentSize, typeID, size, constructor, destructor);
 		_typeIDtoComponentID[typeID] = id;

@@ -19,7 +19,7 @@ namespace Raindrop::Core::Scene{
 			uint32_t size() const;
 			uint32_t usedSize() const;
 
-			template<typename T> void registerComponent(uint32_t size);
+			template<typename T> ComponentID registerComponent(uint32_t size);
 			template<typename T> void unregisterComponent();
 			template<typename T> T& getComponent(ComponentHandleID id);
 
