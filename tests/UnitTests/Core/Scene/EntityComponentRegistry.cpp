@@ -4,7 +4,6 @@
 
 static constexpr std::size_t entityCount = 150;
 static constexpr std::size_t componentCount = 1000;
-using Component = int;
 
 namespace Raindrop::UnitTests::Core::Scene{
 	TEST_F(ContextFixture, valid_EntityComponentRegistryFixture_constructor){
