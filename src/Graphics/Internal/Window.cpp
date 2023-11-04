@@ -1,5 +1,6 @@
 #include <Raindrop/Graphics/Internal/Window.hpp>
 #include <Raindrop/Graphics/Internal/Context.hpp>
+#include <Raindrop/Core/Engine.hpp>
 
 #include <SDL2/SDL_vulkan.h>
 

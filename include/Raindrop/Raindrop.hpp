@@ -3,7 +3,7 @@
 
 #include <Raindrop/common.hpp>
 #include <Raindrop/Core/common.hpp>
-// #include <Raindrop/Graphics/Engine.hpp>
+#include <Raindrop/Graphics/Engine.hpp>
 // #include <Raindrop/components.hpp>
 
 namespace Raindrop{
@@ -23,7 +23,7 @@ namespace Raindrop{
 
 		private:
 			std::unique_ptr<Core::Engine> _core;
-			// std::unique_ptr<Graphics::Engine> _graphics;
+			std::unique_ptr<Graphics::Engine> _graphics;
 
 			bool _launched;
 

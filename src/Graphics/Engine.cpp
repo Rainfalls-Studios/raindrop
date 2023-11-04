@@ -2,7 +2,7 @@
 #include <Raindrop/Graphics/Context.hpp>
 
 namespace Raindrop::Graphics{
-	Engine::Engine(Core::Context& core){
+	Engine::Engine(Core::Engine& core){
 		_context = std::make_unique<Context>(core);
 		_context->logger().info("Initializing Graphics Engine...");
 

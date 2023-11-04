@@ -6,23 +6,12 @@
 namespace Raindrop::Graphics{
 	class Engine{
 		public:
-			Engine(Core::Context& core);
+			Engine(Core::Engine& core);
 			~Engine();
 
-			// void registerSceneComponents(Core::Scene::Scene& scene);
-
-			FrameState begin();
-			void end(FrameState& state);
-
-			void renderScene(FrameState& state, const Scene& scene);
 
 		private:
 			std::unique_ptr<Context> _context;
-			// SceneRenderer _sceneRenderer;
-
-			uint32_t currentFrameID();
-
-			void renderSceneWithCamera(FrameState& state, const Scene& scene, Camera& camera);
 
 			// std::unique_ptr<BaseRender::WireMesh::Renderer> _wireMesh;
 			// Factory::Factories _factories;

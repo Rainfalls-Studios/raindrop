@@ -10,8 +10,6 @@ namespace Raindrop::UnitTests::Core{
 			ContextMock() :
 				::Raindrop::Core::Context(){}
 
-			MOCK_METHOD(void, Context, ());
-
 			MOCK_METHOD(::Raindrop::Core::Registry::Registry&, registry, ());
 			MOCK_METHOD(::Raindrop::Core::Registry::Registry&, temp, ());
 			MOCK_METHOD(::Raindrop::Core::Event::EventManager&, eventManager, ());

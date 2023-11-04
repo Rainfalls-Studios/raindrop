@@ -9,6 +9,7 @@ namespace Raindrop{
 		// 	_launched = false;
 		// });
 		_core = std::make_unique<Core::Engine>();
+		_graphics = std::make_unique<Graphics::Engine>(*_core);
 	}
 
 	Raindrop::~Raindrop(){

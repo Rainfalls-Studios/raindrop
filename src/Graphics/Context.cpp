@@ -1,8 +1,8 @@
 #include <Raindrop/Graphics/Context.hpp>
-#include <Raindrop/Core/Context.hpp>
+#include <Raindrop/Core/Engine.hpp>
 
 namespace Raindrop::Graphics{
-	Context::Context(Core::Context& core) :
+	Context::Context(Core::Engine& core) :
 		_core{core},
 		_logger("Raindrop::Graphics"),
 		_registry{_core.registry()["Graphics"]},
@@ -10,7 +10,9 @@ namespace Raindrop::Graphics{
 		_utils(*this)
 	{}
 
-	Core::Context& Context::core(){
+	Context::~Context(){}
+
+	Core::Engine& Context::core(){
 		return _core;
 	}
 

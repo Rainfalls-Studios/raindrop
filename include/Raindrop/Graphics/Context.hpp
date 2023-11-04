@@ -28,13 +28,13 @@
 namespace Raindrop::Graphics{
 	class Context{
 		public:
-			Context(Core::Context& core);
+			Context(Core::Engine& core);
 			~Context();
 
 			Context(const Context &) = delete;
 			Context& operator=(const Context &) = delete;
 
-			Core::Context& core();
+			Core::Engine& core();
 			spdlog::logger& logger();
 
 			Core::Registry::Node& registry();
@@ -44,7 +44,7 @@ namespace Raindrop::Graphics{
 			Utils::Context& utils();
 		
 		private:
-			Core::Context& _core;
+			Core::Engine& _core;
 			spdlog::logger _logger;
 
 			Core::Registry::Node _registry;
