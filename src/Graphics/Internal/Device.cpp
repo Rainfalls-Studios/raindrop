@@ -6,7 +6,6 @@ namespace Raindrop::Graphics::Internal{
 		_context.logger().info("Initializing vulkan device...");
 
 		findPhysicalDevice();
-		vkGetPhysicalDeviceProperties(_physicalDevice.get(), &_properties);
 		build();
 
 		_context.logger().info("Vulkan device initialized without any critical error");
@@ -34,10 +33,11 @@ namespace Raindrop::Graphics::Internal{
 
 		for (auto &device : physicalDevices){
 			if (isPhysicalDeviceSuitable(device)){
-				_physicalDevice = device;
+				_context.physicalDevice() = device;
 				return;
 			}
 		}
+
 
 		_context.logger().error("Cannot find a suitable physical device");
 		throw std::runtime_error("Failed to find a suitable physical device");
@@ -57,12 +57,9 @@ namespace Raindrop::Graphics::Internal{
 		return _device;
 	}
 
-	const PhysicalDevice& Device::getPhysicalDevice() const{
-		return _physicalDevice;
-	}
-
 	void Device::build(){
 		auto& allocationCallbacks = _context.graphics().allocationCallbacks();
+		auto& physicalDevice = _context.physicalDevice();
 
 		if (!isExtensionsSupported()){
 			_context.logger().error("Failed to build a vulkan device, unsuported required extensions");
@@ -77,7 +74,7 @@ namespace Raindrop::Graphics::Internal{
 		VkDeviceCreateInfo info{};
 		info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 		
-		const VkPhysicalDeviceFeatures& features = _physicalDevice.features();
+		const VkPhysicalDeviceFeatures& features = physicalDevice.features();
 
 		info.ppEnabledExtensionNames = REQUIRED_EXTENSIONS.data();
 		info.ppEnabledLayerNames = REQUIRED_LAYERS.data();
@@ -85,7 +82,7 @@ namespace Raindrop::Graphics::Internal{
 		info.enabledExtensionCount = static_cast<uint32_t>(REQUIRED_EXTENSIONS.size());
 		info.enabledLayerCount = static_cast<uint32_t>(REQUIRED_LAYERS.size());
 
-		const std::vector<VkQueueFamilyProperties>& familyProperties = _physicalDevice.queueFamilyProperties();
+		const std::vector<VkQueueFamilyProperties>& familyProperties = physicalDevice.queueFamilyProperties();
 		std::vector<VkDeviceQueueCreateInfo> queueCreateInfos(familyProperties.size());
 		std::vector<std::vector<float>> priorities(familyProperties.size());
 
@@ -107,7 +104,7 @@ namespace Raindrop::Graphics::Internal{
 		info.pQueueCreateInfos = queueCreateInfos.data();
 		info.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
 
-		if (vkCreateDevice(_physicalDevice.get(), &info, allocationCallbacks, &_device) != VK_SUCCESS){
+		if (vkCreateDevice(physicalDevice.get(), &info, allocationCallbacks, &_device) != VK_SUCCESS){
 			_context.logger().error("Failed to create vulkan device");
 			throw std::runtime_error("failed to create vulkan device");
 		}
@@ -128,15 +125,15 @@ namespace Raindrop::Graphics::Internal{
 	}
 
 	bool Device::isExtensionSupported(const char* extensionName){
-		return _physicalDevice.isExtensionSupported(extensionName);
+		return _context.physicalDevice().isExtensionSupported(extensionName);
 	}
 
 	bool Device::isLayerSupported(const char* layerName){
-		return _physicalDevice.isLayerSupported(layerName);
+		return _context.physicalDevice().isLayerSupported(layerName);
 	}
 
 	uint32_t Device::getGraphicsFamily(){
-		const auto& properties = _physicalDevice.queueFamilyProperties();
+		const auto& properties = _context.physicalDevice().queueFamilyProperties();
 		
 		for (uint32_t i=0; i<properties.size(); i++){
 			if (properties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT){
@@ -147,7 +144,7 @@ namespace Raindrop::Graphics::Internal{
 	}
 
 	uint32_t Device::getTransfertFamily(){
-		const auto& properties = _physicalDevice.queueFamilyProperties();
+		const auto& properties = _context.physicalDevice().queueFamilyProperties();
 		
 		for (uint32_t i=0; i<properties.size(); i++){
 			if (properties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT){
@@ -158,19 +155,22 @@ namespace Raindrop::Graphics::Internal{
 	}
 
 	uint32_t Device::getPresentFamily(){
-		const auto& properties = _physicalDevice.queueFamilyProperties();
+		auto& physicalDevice = _context.physicalDevice();
+		const auto& properties = physicalDevice.queueFamilyProperties();
 		
 		for (uint32_t i=0; i<properties.size(); i++){
 			VkBool32 supported;
-			vkGetPhysicalDeviceSurfaceSupportKHR(_physicalDevice.get(), i, _context.window().surface(), &supported);
+			vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice.get(), i, _context.window().surface(), &supported);
 			return i;
 		}
 		throw std::runtime_error("failed to find a present family");
 	}
 
 	uint32_t Device::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties){
+
+		auto& physicalDevice = _context.physicalDevice();
 		VkPhysicalDeviceMemoryProperties memProperties;
-		vkGetPhysicalDeviceMemoryProperties(_physicalDevice.get(), &memProperties);
+		vkGetPhysicalDeviceMemoryProperties(physicalDevice.get(), &memProperties);
 
 		for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
 			if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
@@ -182,34 +182,7 @@ namespace Raindrop::Graphics::Internal{
 		throw std::runtime_error("failed to find suitable memory type");
 	}
 
-	SwapchainSupport Device::getSwapchainSupport(VkSurfaceKHR surface) const{
-		SwapchainSupport support;
-
-		vkGetPhysicalDeviceSurfaceCapabilitiesKHR(_physicalDevice.get(), surface, &support.capabilities);
-
-		uint32_t count;
-
-		vkGetPhysicalDeviceSurfaceFormatsKHR(_physicalDevice.get(), surface, &count, nullptr);
-		if (count){
-			support.formats.resize(count);
-			vkGetPhysicalDeviceSurfaceFormatsKHR(_physicalDevice.get(), surface, &count, support.formats.data());
-		}
-
-		vkGetPhysicalDeviceSurfacePresentModesKHR(_physicalDevice.get(), surface, &count, nullptr);
-		if (count){
-			support.presentModes.resize(count);
-			vkGetPhysicalDeviceSurfacePresentModesKHR(_physicalDevice.get(), surface, &count, support.presentModes.data());
-		}
-
-		support.supported = !support.formats.empty() && !support.presentModes.empty();
-		return support;
-	}
-
 	void Device::waitIdle(){
 		vkDeviceWaitIdle(_device);
-	}
-
-	const VkPhysicalDeviceProperties& Device::properties() const{
-		return _properties;
 	}
 }

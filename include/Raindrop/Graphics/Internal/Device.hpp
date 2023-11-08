@@ -17,20 +17,14 @@ namespace Raindrop::Graphics::Internal{
 			Device& operator=(const Device&) = delete;
 
 			VkDevice get() const;
-			const PhysicalDevice& getPhysicalDevice() const;
 
 			std::vector<VkQueueFamilyProperties> getQueueFamilyProperties();
 			uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-
-			SwapchainSupport getSwapchainSupport(VkSurfaceKHR surface) const;
-			const VkPhysicalDeviceProperties& properties() const;
 
 			void waitIdle();
 
 		private:
 			Context& _context;
-
-			PhysicalDevice _physicalDevice;
 			VkDevice _device;
 
 			VkPhysicalDeviceProperties _properties;
