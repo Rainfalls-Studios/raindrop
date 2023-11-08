@@ -13,14 +13,17 @@ namespace Raindrop::Core::Scene{
 	EntityComponentsRegistry::~EntityComponentsRegistry(){}
 
 	ComponentHandleID& EntityComponentsRegistry::get(EntityID entity, ComponentID component){
+		checkEntityRange(component, entity);
 		return _ids[component][entity];
 	}
 
 	const ComponentHandleID& EntityComponentsRegistry::get(EntityID entity, ComponentID component) const{
+		checkEntityRange(component, entity);
 		return _ids[component][entity];
 	}
 
 	void EntityComponentsRegistry::set(EntityID entity, ComponentID component, ComponentHandleID handle){
+		checkEntityRange(component, entity);
 		_ids[component][entity] = handle;
 	}
 	
@@ -31,4 +34,16 @@ namespace Raindrop::Core::Scene{
 	uint32_t EntityComponentsRegistry::entityCount() const{
 		return _ids[0].size();
 	}
+
+	void EntityComponentsRegistry::checkComponentRange(ComponentID component) const{
+		if (component >= _ids.size())
+			throw std::out_of_range("invalid component ID");
+	}
+
+	void EntityComponentsRegistry::checkEntityRange(ComponentID component, EntityID entity) const{
+		checkComponentRange(component);
+		if (entity >= _ids[component].size())
+			throw std::out_of_range("invalid entity ID");
+	}
+
 }

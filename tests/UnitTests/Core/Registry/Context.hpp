@@ -5,28 +5,15 @@
 #include <Raindrop/Core/Registry/Context.hpp>
 #include <Core/Context.hpp>
 
-namespace Raindrop::UnitTests::Core::Registry{
-	class ContextMock : public ::Raindrop::Core::Registry::Context{
-		public:
-			ContextMock(::Raindrop::Core::Context& context) : Context(context){};
-
-			MOCK_METHOD(::Raindrop::Core::Registry::Context&, core, ());
-	};
-
-	class ContextFixture : public ::testing::Test{
-		public:
-			ContextFixture() :
-				core(),
-				context(core)
-			{}
-
-			virtual void SetUp() override{
-				ON_CALL(context, core()).WillByDefault(::testing::ReturnRef(core));
-			}
-			
-			testing::NiceMock<Core::ContextMock> core;
-			ContextMock context;
-	};
-}
+class CoreRegistryContextFixture : public ::testing::Test{
+	public:
+		CoreRegistryContextFixture() :
+			core(),
+			context(core)
+		{}
+		
+		testing::NiceMock<::Raindrop::Core::Context> core;
+		::Raindrop::Core::Registry::Context context;
+};
 
 #endif

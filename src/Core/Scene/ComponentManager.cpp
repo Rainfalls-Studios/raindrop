@@ -8,7 +8,7 @@ namespace Raindrop::Core::Scene{
 		_components.resize(size * componentSize);
 
 		for (uint32_t i=0; i<size; i++){
-			_IDsPool.push(i);
+			_IDsPool.insert(i);
 		}
 	}
 
@@ -21,7 +21,9 @@ namespace Raindrop::Core::Scene{
 	}
 
 	void* ComponentManager::get(ComponentHandleID id){
-		return static_cast<char*>(_components.data()) + (id * _componentSize);
+		std::size_t offset = id * _componentSize;
+		if (offset > _components.size()) throw std::out_of_range("out of range of the allocated components");
+		return static_cast<char*>(_components.data()) + offset;
 	}
 
 	std::size_t ComponentManager::size() const{
@@ -33,15 +35,20 @@ namespace Raindrop::Core::Scene{
 	}
 
 	ComponentHandleID ComponentManager::createComponent(){
-		ComponentHandleID id = _IDsPool.front();
-		_IDsPool.pop();
+		auto it = _IDsPool.begin();
+		ComponentHandleID id = *it;
+		_IDsPool.erase(it);
 		_constructor(get(id));
 		_usedHandles.push_back(id);
 		return id;
 	}
 
 	void ComponentManager::destroyComponent(ComponentHandleID id){
-		_IDsPool.push(id);
+		if (_IDsPool.find(id) != _IDsPool.end()){
+			throw std::runtime_error("cannot destroy twice the same component");
+		}
+
+		_IDsPool.insert(id);
 		_usedHandles.remove(id);
 		_destructor(get(id));
 	}
@@ -51,7 +58,11 @@ namespace Raindrop::Core::Scene{
 	}
 
 	void ComponentManager::removeEntity(EntityID entity){
-		_entities.remove(entity);
+		auto it = std::find(_entities.begin(), _entities.end(), entity);
+		if (it == _entities.end()){
+			throw std::runtime_error("Cannot remove an unregistred entity");
+		}
+		_entities.erase(it);
 	}
 
 	std::list<EntityID>& ComponentManager::entities(){

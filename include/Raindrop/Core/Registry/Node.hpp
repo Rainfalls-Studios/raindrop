@@ -3,6 +3,9 @@
 
 #include <Raindrop/Core/Registry/common.hpp>
 
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+
 namespace Raindrop::Core::Registry{
 	class Node{
 		public:
@@ -24,7 +27,16 @@ namespace Raindrop::Core::Registry{
 			void remove(const std::string& path);
 			std::string format(const std::string& str);
 
-			template<typename T> T& as() const;
+			template<typename T> T as(){
+				return _impl->tree->get_value<T>();
+			}
+
+			template<typename T> void set(const T& value){
+				data() = std::to_string(value);
+			}
+
+			std::string& data();
+			const std::string& data() const;
 
 			void sort();
 			void revers();
@@ -33,11 +45,15 @@ namespace Raindrop::Core::Registry{
 			uint32_t size() const;
 			bool empty() const;
 
-			void load(const std::filesystem::path& path);
-			void save(const std::filesystem::path& path);
+			void load(const std::string& path);
+			void save(const std::string& path);
 
 		private:
-			struct Impl;
+			struct Impl{
+				std::shared_ptr<boost::property_tree::ptree> tree;
+
+				Impl(const std::shared_ptr<boost::property_tree::ptree>& tree) : tree{tree}{}
+			};
 
 			Context& _context;
 			std::unique_ptr<Impl> _impl;

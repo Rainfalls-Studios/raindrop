@@ -17,7 +17,7 @@ namespace Raindrop::Core::Scene{
 
 		private:
 			Context& _context;
-			std::queue<EntityID> _IDsPool;
+			std::unordered_set<EntityID> _IDsPool;
 			uint32_t _size;
 	};
 }

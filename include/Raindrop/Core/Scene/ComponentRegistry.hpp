@@ -11,7 +11,7 @@ namespace Raindrop::Core::Scene{
 			~ComponentRegistry();
 
 			ComponentID registerComponent(uint32_t componentSize, size_t typeID, uint32_t size, ConstructorPtr constructor, DestructorPtr destructor);
-			void unregisterComponent(ComponentID id);
+			void unregisterComponent(size_t typeID);
 			ComponentID getComponentID(size_t typeID);
 
 			void* getComponent(ComponentID ID, ComponentHandleID handleID);
@@ -34,9 +34,10 @@ namespace Raindrop::Core::Scene{
 			Context& _context;
 			std::unordered_map<size_t, ComponentID> _typeIDtoComponentID;
 			std::vector<std::unique_ptr<ComponentManager>> _managers;
-			std::queue<ComponentID> _IDsPool;
+			std::unordered_set<ComponentID> _IDsPool;
 
 			ComponentID getNextID();
+			void checkRange(ComponentID component) const;
 	};
 
 	#include <Raindrop/Core/Scene/tpp/ComponentRegistry.tpp>

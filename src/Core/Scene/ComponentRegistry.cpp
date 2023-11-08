@@ -7,7 +7,7 @@ namespace Raindrop::Core::Scene{
 		_managers.resize(size);
 
 		for (uint32_t i=0; i<size; i++){
-			_IDsPool.push(i);
+			_IDsPool.insert(i);
 		}
 	}
 
@@ -31,21 +31,30 @@ namespace Raindrop::Core::Scene{
 			_context.logger().error("Cannot register a new component. The component registry is full !");
 			throw std::runtime_error("Cannot add another component !");
 		}
-		ComponentID id = _IDsPool.front();
-		_IDsPool.pop();
+
+		auto it = _IDsPool.begin();
+		ComponentID id = *it;
+		_IDsPool.erase(it);
 		return id;
 	}
 
-	void* ComponentRegistry::getComponent(ComponentID ID, ComponentHandleID handleID){
-		return _managers[ID]->get(handleID);
+	void* ComponentRegistry::getComponent(ComponentID component, ComponentHandleID handleID){
+		checkRange(component);
+		return _managers[component]->get(handleID);
 	}
 
-	void ComponentRegistry::unregisterComponent(ComponentID id){
-		
+	void ComponentRegistry::unregisterComponent(size_t typeID){
+		ComponentID component = getComponentID(typeID);
 
-		_managers[id].reset();
-		_typeIDtoComponentID.erase(id);
-		_IDsPool.push(id);
+		checkRange(component);
+
+		if (_IDsPool.find(component) != _IDsPool.end()){
+			throw std::runtime_error("Cannot unregister twice the came component !");
+		}
+
+		_managers[component].reset();
+		_typeIDtoComponentID.erase(typeID);
+		_IDsPool.insert(component);
 	}
 	
 	uint32_t ComponentRegistry::size() const{
@@ -61,6 +70,7 @@ namespace Raindrop::Core::Scene{
 	}
 	
 	ComponentHandleID ComponentRegistry::createHandle(ComponentID component, EntityID entity){
+		checkRange(component);
 		auto& manager = _managers[component];
 		ComponentHandleID handle = manager->createComponent();
 		manager->addEntity(entity);
@@ -68,6 +78,7 @@ namespace Raindrop::Core::Scene{
 	}
 
 	void ComponentRegistry::destroyHandle(ComponentID component, ComponentHandleID handle, EntityID entity){
+		checkRange(component);
 		auto& manager = _managers[component];
 		manager->destroyComponent(handle);
 		manager->removeEntity(entity);
@@ -78,6 +89,13 @@ namespace Raindrop::Core::Scene{
 	}
 
 	ComponentManager* ComponentRegistry::getManager(ComponentID component){
+		checkRange(component);
 		return _managers[component].get();
 	}
+
+	void ComponentRegistry::checkRange(ComponentID component) const{
+		if (component >= _managers.size())
+			throw std::out_of_range("Invalid component ID");
+	}
+
 }

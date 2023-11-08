@@ -21,6 +21,9 @@ namespace Raindrop::Core::Scene{
 			Context& _context;
 			std::vector<std::vector<ComponentHandleID>> _ids;
 
+			void checkComponentRange(ComponentID component) const;
+			void checkEntityRange(ComponentID component, EntityID entity) const;
+
 	};
 }
 

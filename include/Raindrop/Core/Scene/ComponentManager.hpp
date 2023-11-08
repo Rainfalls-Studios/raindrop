@@ -32,7 +32,7 @@ namespace Raindrop::Core::Scene{
 
 			// create a vector of 1byte data type.
 			std::vector<char> _components;
-			std::queue<ComponentHandleID> _IDsPool;
+			std::unordered_set<ComponentHandleID> _IDsPool;
 			std::list<EntityID> _entities;
 			std::list<ComponentHandleID> _usedHandles;
 			
