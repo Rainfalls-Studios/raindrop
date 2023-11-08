@@ -37,7 +37,8 @@ namespace Raindrop::Graphics{
 			Core::Engine& core();
 			spdlog::logger& logger();
 
-			Core::Registry::Node& registry();
+			Core::Registry::Registry& registry();
+
 			VkAllocationCallbacks*& allocationCallbacks();
 
 			Internal::Context& internal();
@@ -47,7 +48,7 @@ namespace Raindrop::Graphics{
 			Core::Engine& _core;
 			spdlog::logger _logger;
 
-			Core::Registry::Node _registry;
+			Core::Registry::Registry _registry;
 			VkAllocationCallbacks* _allocationCallbacks = nullptr;
 
 			Internal::Context _internal;

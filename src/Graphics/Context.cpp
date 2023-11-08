@@ -5,7 +5,7 @@ namespace Raindrop::Graphics{
 	Context::Context(Core::Engine& core) :
 		_core{core},
 		_logger("Raindrop::Graphics"),
-		_registry{_core.registry()["Graphics"]},
+		_registry{_core.registry().add_child("Graphics", {})},
 		_internal(*this),
 		_utils(*this)
 	{}
@@ -20,7 +20,7 @@ namespace Raindrop::Graphics{
 		return _logger;
 	}
 
-	Core::Registry::Node& Context::registry(){
+	Core::Registry::Registry& Context::registry(){
 		return _registry;
 	}
 
