@@ -1326,12 +1326,12 @@ namespace Raindrop::Graphics::Utils{
 	}
 	
 	VkFormat FormatUtilities::bestFormatBuffer(uint32_t flags, VkFormatFeatureFlags features){
-		auto& device = _context.graphics().internal().device();
+		VkPhysicalDevice device = _context.graphics().internal().physicalDevice().get();
 
 		auto set = getSet(flags);
 		for (auto format : set){
 			VkFormatProperties propeties;
-			vkGetPhysicalDeviceFormatProperties(device.getPhysicalDevice().get(), format, &propeties);
+			vkGetPhysicalDeviceFormatProperties(device, format, &propeties);
 			if (propeties.bufferFeatures & features){
 				return format;
 			}
@@ -1340,12 +1340,12 @@ namespace Raindrop::Graphics::Utils{
 	}
 
 	VkFormat FormatUtilities::bestFormatOptimalTiling(uint32_t flags, VkFormatFeatureFlags features){
-		auto& device = _context.graphics().internal().device();
+		VkPhysicalDevice device = _context.graphics().internal().physicalDevice().get();
 
 		auto set = getSet(flags);
 		for (auto format : set){
 			VkFormatProperties propeties;
-			vkGetPhysicalDeviceFormatProperties(device.getPhysicalDevice().get(), format, &propeties);
+			vkGetPhysicalDeviceFormatProperties(device, format, &propeties);
 			if (propeties.optimalTilingFeatures & features){
 				return format;
 			}
@@ -1354,12 +1354,12 @@ namespace Raindrop::Graphics::Utils{
 	}
 
 	VkFormat FormatUtilities::bestFormatLinearTiling(uint32_t flags, VkFormatFeatureFlags features){
-		auto& device = _context.graphics().internal().device();
+		VkPhysicalDevice device = _context.graphics().internal().physicalDevice().get();
 		
 		auto set = getSet(flags);
 		for (auto format : set){
 			VkFormatProperties propeties;
-			vkGetPhysicalDeviceFormatProperties(device.getPhysicalDevice().get(), format, &propeties);
+			vkGetPhysicalDeviceFormatProperties(device, format, &propeties);
 			if (propeties.linearTilingFeatures & features){
 				return format;
 			}

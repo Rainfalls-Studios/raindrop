@@ -17,6 +17,7 @@ namespace Raindrop::Graphics::Internal{
 	class Context{
 		public:
 			Context(Graphics::Context& graphics);
+			~Context();
 
 			const VkPhysicalDeviceLimits& limits() const;
 
@@ -33,15 +34,15 @@ namespace Raindrop::Graphics::Internal{
 
 		private:
 			Graphics::Context& _graphics;
-			spdlog::logger _logger;
+			std::shared_ptr<spdlog::logger> _logger;
 
-			Window _window;
-			Instance _instance;
-			PhysicalDevice _physicalDevice;
-			Device _device;
-			QueueHandler _queueHandler;
-			CommandPools _commandPools;
-			Swapchain _swapchain;
+			std::unique_ptr<Window> _window;
+			std::unique_ptr<Instance> _instance;
+			std::unique_ptr<PhysicalDevice> _physicalDevice;
+			std::unique_ptr<Device> _device;
+			std::unique_ptr<QueueHandler> _queueHandler;
+			std::unique_ptr<CommandPools> _commandPools;
+			std::unique_ptr<Swapchain> _swapchain;
 
 		
 	};

@@ -22,9 +22,9 @@ namespace Raindrop::Graphics::Utils{
 		private:
 			Graphics::Context& _graphics;
 
-			spdlog::logger _logger;
-			FormatUtilities _formats;
-			StringToVulkan _stringToVulkan;
+			std::shared_ptr<spdlog::logger> _logger;
+			std::unique_ptr<FormatUtilities> _formats;
+			std::unique_ptr<StringToVulkan> _stringToVulkan;
 
 	};
 }

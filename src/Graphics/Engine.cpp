@@ -1,10 +1,15 @@
 #include <Raindrop/Graphics/Engine.hpp>
 #include <Raindrop/Graphics/Context.hpp>
+#include <Raindrop/Graphics/Internal/Context.hpp>
+#include <Raindrop/Graphics/Internal/CommandPool.hpp>
 
 namespace Raindrop::Graphics{
-	Engine::Engine(Core::Engine& core){
+	Engine::Engine(Core::Engine& core) : 
+			_currentFrameID{0}{
 		_context = std::make_unique<Context>(core);
 		_context->logger().info("Initializing Graphics Engine...");
+
+		allocateCommandBuffers();
 
 		_context->logger().info("Graphics Engine initialized without any critical error");
 	}
@@ -12,9 +17,162 @@ namespace Raindrop::Graphics{
 	Engine::~Engine(){
 		_context->logger().info("Terminating Graphics Engine...");
 
+		_context->internal().device().waitIdle();
+
+		freeCommandBuffers();
 		_context->logger().info("Graphics Engine terminated without any critical error");
+
 		_context.reset();
 	}
+
+	void Engine::render(){
+		_context->internal().window().events();
+		
+		VkCommandBuffer commandBuffer = beginFrame();
+
+		if (commandBuffer != nullptr){
+			auto& swapchain = _context->internal().swapchain();
+
+			swapchain.beginRenderPass(commandBuffer);
+
+			
+
+			swapchain.endRenderPass(commandBuffer);
+
+			endFrame();
+		}
+		
+
+		_currentFrameID = (_currentFrameID + 1) % _context->internal().swapchain().frameCount();
+	}
+
+	void Engine::allocateCommandBuffers(){
+		auto& swapchain = _context->internal().swapchain();
+		_framesCommandBuffers.resize(swapchain.frameCount());
+
+		_framesCommandPool = &_context->internal().commandPools().pool({VK_QUEUE_GRAPHICS_BIT, true}, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+		
+		if (_framesCommandPool->allocate(_framesCommandBuffers.data(), VK_COMMAND_BUFFER_LEVEL_PRIMARY, _framesCommandBuffers.size()) != VK_SUCCESS){
+			throw std::runtime_error("Failed to create frames graphics command buffers");
+		}
+	}
+
+	void Engine::freeCommandBuffers(){
+		auto& device = _context->internal().device();
+		_framesCommandPool->free(_framesCommandBuffers.data(), _framesCommandBuffers.size());
+	}
+	
+	VkCommandBuffer Engine::beginFrame(){
+		auto& window = _context->internal().window();
+		auto& swapchain = _context->internal().swapchain();
+
+		VkResult result = swapchain.acquireNextImage();
+		if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+			auto size = window.getSize();
+			swapchain.setExtent(VkExtent2D{size.x, size.y});
+			swapchain.rebuildSwapchain();
+			return nullptr;
+		}
+
+		if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+			throw std::runtime_error("failed to acquire swap chain image!");
+		}
+
+		auto commandBuffer = _framesCommandBuffers[_currentFrameID];
+		VkCommandBufferBeginInfo beginInfo{};
+		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+		if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
+			throw std::runtime_error("failed to begin recording command buffer!");
+		}
+		return commandBuffer;
+	}
+
+	void Engine::endFrame(){
+		auto& window = _context->internal().window();
+		auto& swapchain = _context->internal().swapchain();
+
+		VkCommandBuffer commandBuffer = _framesCommandBuffers[_currentFrameID];
+
+		if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
+			throw std::runtime_error("failed to record command buffer");
+		
+		VkResult result = swapchain.submitCommandBuffer(&commandBuffer);
+
+		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || window.resized()){
+			auto size = window.getSize();
+			window.resetResizedFlag();
+			swapchain.setExtent(VkExtent2D{size.x, size.y});
+			swapchain.rebuildSwapchain();
+		} else if (result != VK_SUCCESS){
+			throw std::runtime_error("failed to submit the command buffer");
+		}
+	}
+	
+	// FrameState Renderer::begin(){
+	// 	_context->window.events(_gui.get());
+
+	// 	FrameState frameState;
+	// 	frameState.commandBuffer = beginFrame();
+
+	// 	return frameState;
+	// }
+
+	// FrameState Renderer::begin(){
+	// 	auto& window = _context.window();
+	// 	auto& swapchain = _context.swapchain;
+
+	// 	FrameState frameState;
+
+	// 	VkResult result = swapchain.acquireNextImage();
+	// 	if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+	// 		auto size = window.getSize();
+	// 		swapchain.setExtent(VkExtent2D{size.x, size.y});
+	// 		swapchain.rebuildSwapchain();
+	// 		return frameState;
+	// 	}
+
+	// 	if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+	// 		throw std::runtime_error("failed to acquire swap chain image!");
+	// 	}
+
+	// 	frameState.commandBuffer = _context.graphics().commandBuffers.getCommandBuffer(currentFrameID());
+	// 	VkCommandBufferBeginInfo beginInfo{};
+	// 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+	// 	if (vkBeginCommandBuffer(frameState.commandBuffer, &beginInfo) != VK_SUCCESS) {
+	// 		throw std::runtime_error("failed to begin recording command buffer!");
+	// 	}
+	// 	return frameState;
+	// }
+
+
+	// void Renderer::end(FrameState& state){
+	// 	_context.window().events();
+
+	// 	auto& window = _context.window();
+	// 	auto& swapchain = _context.swapchain;
+	// 	VkCommandBuffer& commandBuffer = state.commandBuffer;
+
+	// 	swapchain.beginRenderPass(commandBuffer);
+	// 	swapchain.endRenderPass(commandBuffer);
+
+
+	// 	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
+	// 		throw std::runtime_error("failed to record command buffer");
+		
+	// 	VkResult result = swapchain.submitCommandBuffer(&commandBuffer);
+
+	// 	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || window.resized()){
+	// 		auto size = window.getSize();
+	// 		window.resetResizedFlag();
+	// 		swapchain.setExtent(VkExtent2D{size.x, size.y});
+	// 		swapchain.rebuildSwapchain();
+
+	// 	} else if (result != VK_SUCCESS){
+	// 		throw std::runtime_error("failed to submit the command buffer");
+	// 	}
+	// }
 }
 
 // #include <Raindrop/Graphics/Renderer.hpp>
@@ -269,7 +427,7 @@ namespace Raindrop::Graphics{
 // 	// 	vkUpdateDescriptorSets(_context->device.get(), 1, &write, 0, nullptr);
 // 	// }
 
-	
+
 // 	// FrameState Renderer::begin(){
 // 	// 	_context->window.events(_gui.get());
 
@@ -289,6 +447,7 @@ namespace Raindrop::Graphics{
 // 	// 	// // _forwardShader->render(commandBuffer, _editor->cameraDirection(), _editor->cameraPosition());
 
 // 	// 	// // renderGui();
+
 
 // 	// 	// // #ifdef RAINDROP_EDITOR
 // 	// 	// 	// if (_editor->beginRenderPass(commandBuffer)){
@@ -376,26 +535,7 @@ namespace Raindrop::Graphics{
 // 	// 	return commandBuffer;
 // 	// }
 
-// 	// void Renderer::endFrame(){
-// 	// 	auto& window = _context->window;
-// 	// 	auto& swapchain = _context->swapchain;
-
-// 	// 	VkCommandBuffer commandBuffer = getCurrentGraphicsCommandBuffer();
-
-// 	// 	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
-// 	// 		throw std::runtime_error("failed to record command buffer");
-		
-// 	// 	VkResult result = swapchain.submitCommandBuffer(&commandBuffer);
-
-// 	// 	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || window.resized()){
-// 	// 		auto size = window.getSize();
-// 	// 		window.resetResizedFlag();
-// 	// 		swapchain.setExtent(VkExtent2D{size.x, size.y});
-// 	// 		swapchain.rebuildSwapchain();
-// 	// 	} else if (result != VK_SUCCESS){
-// 	// 		throw std::runtime_error("failed to submit the command buffer");
-// 	// 	}
-// 	// }
+// 	// v
 
 // 	// VkCommandBuffer Renderer::getCurrentGraphicsCommandBuffer(){
 // 	// 	return _graphicsCommandBuffers[_context->swapchain.currentFrame()];

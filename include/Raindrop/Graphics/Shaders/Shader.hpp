@@ -1,23 +1,22 @@
 #ifndef __RAINDROP_GRAPHICS_SHADER_HPP__
 #define __RAINDROP_GRAPHICS_SHADER_HPP__
 
-#include <Raindrop/Graphics/common.hpp>
+#include <Raindrop/Graphics/Shaders/common.hpp>
+#include <Raindrop/Core/Asset/Asset.hpp>
 
-namespace Raindrop::Graphics{
+namespace Raindrop::Graphics::Shaders{
 	class Shader : public Core::Asset::Asset{
 		public:
-			Shader(GraphicsContext& context, const std::vector<char>& code, VkShaderStageFlagBits stage);
+			Shader(Context& context, const std::vector<char>& code, VkShaderStageFlagBits stage);
 			virtual ~Shader() override;
 
 			VkShaderModule get() const;
 			VkShaderStageFlagBits stage() const;
 
 		private:
-			GraphicsContext& _context;
-			VkShaderModule _shader = VK_NULL_HANDLE;
+			Context& _context;
+			VkShaderModule _shader;
 			VkShaderStageFlagBits _stage;
-
-			void createShaderModule(const std::vector<char>& code);
 	};
 }
 

@@ -17,9 +17,8 @@ namespace Raindrop::Graphics::Buffers{
 		
 		private:
 			Graphics::Context& _graphics;
-			spdlog::logger _logger;
-
-			VertexLayout _defaultLayout;
+			std::shared_ptr<spdlog::logger> _logger;
+			std::unique_ptr<VertexLayout> _defaultLayout;
 
 	};
 }

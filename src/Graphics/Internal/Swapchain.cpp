@@ -9,7 +9,7 @@ namespace Raindrop::Graphics::Internal{
 	Swapchain::Swapchain(Context& context) : _context{context}{
 		_context.logger().info("Initializing vulkan swapchain...");
 
-		_swapchainSupport = _context.device().getSwapchainSupport(_context.window().surface());
+		_swapchainSupport = _context.physicalDevice().getSwapchainSupport(_context.window().surface());
 
 		findSurfaceFormat();
 		createRenderPass();	
@@ -52,13 +52,12 @@ namespace Raindrop::Graphics::Internal{
 		auto& allocationCallbacks = _context.graphics().allocationCallbacks();
 
 		_context.logger().info("Rebuilding vulkan swapchain...");
-
 		_context.device().waitIdle();
 		
 		std::swap(_swapchain, _oldSwapchain);
 		_swapchain = std::make_unique<SwapchainData>(_context);
 
-		_swapchainSupport = _context.device().getSwapchainSupport(_context.window().surface());
+		_swapchainSupport = _context.physicalDevice().getSwapchainSupport(_context.window().surface());
 		auto surfaceFormat = _surfaceFormat;
 
 		findSurfaceFormat();
@@ -98,8 +97,8 @@ namespace Raindrop::Graphics::Internal{
 		createImageViews();
 		createFramebuffers();
 		createSyncObjects();
-		_currentFrame = 0;
 
+		_currentFrame = 0;
 		_context.logger().info("The vulkan swapchain has been rebuilt without any critical error");
 	}
 
@@ -143,7 +142,7 @@ namespace Raindrop::Graphics::Internal{
 		auto& capabilities = _swapchainSupport.capabilities;
 
 		uint32_t oldFrameCount = _frameCount;
-		_frameCount = std::clamp(_wantedFrameCount, capabilities.minImageCount+1, capabilities.maxImageCount);
+		_frameCount = std::clamp(_wantedFrameCount, capabilities.minImageCount, capabilities.maxImageCount == 0 ? std::numeric_limits<uint32_t>::max() : capabilities.maxImageCount);
 
 		if (oldFrameCount != _frameCount){
 			_swapchain->_frames.resize(_frameCount);
@@ -282,7 +281,7 @@ namespace Raindrop::Graphics::Internal{
 	}
 	
 	VkResult Swapchain::acquireNextImage(){
-		uint32_t index;
+		uint32_t index = _currentFrame;
 		vkWaitForFences(_context.device().get(), 1, &_swapchain->_frames[_currentFrame].inFlightFence, VK_TRUE, std::numeric_limits<uint64_t>::max());
 		VkResult result = vkAcquireNextImageKHR(_context.device().get(), _swapchain->_swapchain, std::numeric_limits<uint64_t>::max(), _swapchain->_frames[_currentFrame].imageAvailable, VK_NULL_HANDLE, &index);
 		return result;
@@ -335,7 +334,6 @@ namespace Raindrop::Graphics::Internal{
 		auto result = _presentQueue->present(&presentInfo);
 
 		_currentFrame = (_currentFrame + 1) % _frameCount;
-
 		return result;
 	}
 

@@ -96,6 +96,18 @@ namespace Raindrop::Graphics::Internal{
 		return cmdBuffers;
 	}
 
+	VkResult CommandPool::allocate(VkCommandBuffer* buffers, VkCommandBufferLevel level, std::size_t count){
+		auto device = _context.device().get();
+
+		VkCommandBufferAllocateInfo info{};
+		info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+		info.commandBufferCount = static_cast<uint32_t>(count);
+		info.commandPool = _commandPool;
+		info.level = level;
+
+		return vkAllocateCommandBuffers(device, &info, buffers);
+	}
+
 	void CommandPool::free(CommandBuffer& commandBuffer){
 		_commandBuffers.remove_if(
 			[&commandBuffer](const std::unique_ptr<CommandBuffer>& cmd){
@@ -113,5 +125,9 @@ namespace Raindrop::Graphics::Internal{
 		for (std::size_t i=0; i<commandBuffers.size(); i++){
 			free(commandBuffers[i]);
 		}
+	}
+
+	void CommandPool::free(VkCommandBuffer* buffers, std::size_t count){
+		vkFreeCommandBuffers(_context.device().get(), _commandPool, static_cast<uint32_t>(count), buffers);
 	}
 }

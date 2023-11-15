@@ -58,12 +58,12 @@ namespace Raindrop::Core{
 		return _context->assetManager().loadOrGet(path);
 	}
 
-	void Engine::registerFactory(const std::shared_ptr<Asset::AssetFactory>& factory, std::size_t typeID){
-		return _context->assetManager().registerFactory(factory, typeID);
+	void Engine::registerFactory(const std::shared_ptr<Asset::AssetFactory>& factory){
+		return _context->assetManager().registerFactory(factory);
 	}
 
-	void Engine::removeFactory(std::size_t typeID){
-		return _context->assetManager().removeFactory(typeID);
+	void Engine::removeFactory(const std::shared_ptr<Asset::AssetFactory>& factory){
+		return _context->assetManager().removeFactory(factory);
 	}
 
 	Scene::SceneManager& Engine::sceneManager(){

@@ -7,6 +7,7 @@
 
 namespace Raindrop{
 	class Scene{
+		friend class Raindrop;
 		public:
 			Scene(const std::shared_ptr<Core::Scene::Scene>& scene);
 			Scene(const Scene& other);

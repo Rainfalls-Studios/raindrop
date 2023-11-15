@@ -14,7 +14,7 @@ namespace Raindrop::Core::Scene{
 
 		private:
 			Core::Context& _core;
-			spdlog::logger _logger;
+			std::shared_ptr<spdlog::logger> _logger;
 
 	};
 }

@@ -124,18 +124,18 @@ namespace Raindrop::Graphics::Internal{
 
 	void Window::quitEvent(){
 		auto& ev = _context.graphics().core().eventManager();
-		ev.trigger("Raindrop.Graphics.Internal.Window.Quit");
+		ev.trigger("Graphics.Internal.Window.Quit");
 	}
 
 	void Window::windowResizedEvent(SDL_WindowEvent& e){
 		auto& ev = _context.graphics().core().eventManager();
 		_resized = true;
-		ev.trigger("Raindrop.Graphics.Internal.Window.Resized");
+		ev.trigger("Graphics.Internal.Window.Resized");
 	}
 
 	void Window::mouseMotionEvent(SDL_Event& e){
 		auto& ev = _context.graphics().core().eventManager();
-		ev.trigger("Raindrop.Graphics.Internal.Window.Mouse.Mouved");
+		ev.trigger("Graphics.Internal.Window.Mouse.Mouved");
 		ev.mouseEvents().pos() = glm::vec2(e.motion.x, e.motion.y);
 		ev.mouseEvents().relPos() = glm::vec2(e.motion.xrel, e.motion.yrel);
 	}
@@ -151,13 +151,13 @@ namespace Raindrop::Graphics::Internal{
 
 	void Window::mouseDown(SDL_Event& e){
 		auto& ev = _context.graphics().core().eventManager();
-		ev.trigger("Raindrop.Graphics.Internal.Window.Mouse.ButtonDown");
+		ev.trigger("Graphics.Internal.Window.Mouse.ButtonDown");
 		ev.mouseEvents().state(SDLToRaindropMouseButton(e.button.button)) = Core::Event::BUTTON_DOWN;
 	}
 
 	void Window::mouseUp(SDL_Event& e){
 		auto& ev = _context.graphics().core().eventManager();
-		ev.trigger("Raindrop.Graphics.Internal.Window.Mouse.ButtonUp");
+		ev.trigger("Graphics.Internal.Window.Mouse.ButtonUp");
 		ev.mouseEvents().state(SDLToRaindropMouseButton(e.button.button)) = Core::Event::BUTTON_UP;
 	}
 	
@@ -171,13 +171,13 @@ namespace Raindrop::Graphics::Internal{
 
 	void Window::keyDown(SDL_Event& e){
 		auto& ev = _context.graphics().core().eventManager();
-		ev.trigger("Raindrop.Graphics.Internal.Window.Keyboard.KeyDown");
+		ev.trigger("Graphics.Internal.Window.Keyboard.KeyDown");
 		ev.keyEvents()[static_cast<Core::Event::Key>(e.key.keysym.scancode)] = Core::Event::KEY_PRESSED;
 	}
 
 	void Window::keyUp(SDL_Event& e){
 		auto& ev = _context.graphics().core().eventManager();
-		ev.trigger("Raindrop.Graphics.Internal.Window.Keyboard.KeyUp");
+		ev.trigger("Graphics.Internal.Window.Keyboard.KeyUp");
 		ev.keyEvents()[static_cast<Core::Event::Key>(e.key.keysym.scancode)] = Core::Event::KEY_RELEASED;
 	}
 

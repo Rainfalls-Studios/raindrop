@@ -4,7 +4,10 @@
 #include <Raindrop/Graphics/common.hpp>
 
 namespace Raindrop::Graphics::Shaders{
+	class Context;
 	class ShaderCompiler;
+	class Shader;
+	class GraphicsPipeline;
 }
 
 #endif

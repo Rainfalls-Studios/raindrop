@@ -12,7 +12,7 @@ namespace Raindrop::Core{
 	class Context{
 		public:
 			Context();
-			~Context() = default;
+			~Context();
 
 			spdlog::logger& logger();
 			
@@ -23,13 +23,13 @@ namespace Raindrop::Core{
 			Scene::SceneManager& sceneManager();
 
 		private:
-			spdlog::logger _logger;
+			std::shared_ptr<spdlog::logger> _logger;
 
-			Registry::Registry _registry;
-			Registry::Registry _temp;
-			Event::EventManager _eventManager;
-			Asset::AssetManager _assetManager;
-			Scene::SceneManager _sceneManager;
+			std::unique_ptr<Registry::Registry> _registry;
+			std::unique_ptr<Registry::Registry> _temp;
+			std::unique_ptr<Event::EventManager> _eventManager;
+			std::unique_ptr<Asset::AssetManager> _assetManager;
+			std::unique_ptr<Scene::SceneManager> _sceneManager;
 	};
 }
 

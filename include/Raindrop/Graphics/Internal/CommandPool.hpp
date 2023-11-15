@@ -19,9 +19,11 @@ namespace Raindrop::Graphics::Internal{
 			void reset(VkCommandPoolResetFlags flags);
 			void trim(VkCommandPoolTrimFlags flags = 0);
 
+			VkResult allocate(VkCommandBuffer* buffers, VkCommandBufferLevel level, std::size_t count);
 			CommandBuffer& allocate(VkCommandBufferLevel level);
 			std::vector<std::reference_wrapper<CommandBuffer>> allocate(VkCommandBufferLevel level, std::size_t count);
 
+			void free(VkCommandBuffer* buffers, std::size_t count);
 			void free(CommandBuffer& commandBuffer);
 			void free(const std::vector<std::reference_wrapper<CommandBuffer>>& commandBuffers);
 

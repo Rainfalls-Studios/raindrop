@@ -2,6 +2,7 @@
 #define __RAINDROP_GRAPHICS_ENGINE_HPP__
 
 #include <Raindrop/Graphics/common.hpp>
+#include <Raindrop/Graphics/Internal/common.hpp>
 
 namespace Raindrop::Graphics{
 	class Engine{
@@ -9,9 +10,16 @@ namespace Raindrop::Graphics{
 			Engine(Core::Engine& core);
 			~Engine();
 
+			void render();
 
 		private:
 			std::unique_ptr<Context> _context;
+			std::vector<VkCommandBuffer> _framesCommandBuffers;
+			Internal::CommandPool* _framesCommandPool;
+			std::size_t _currentFrameID;
+
+			void allocateCommandBuffers();
+			void freeCommandBuffers();
 
 			// std::unique_ptr<BaseRender::WireMesh::Renderer> _wireMesh;
 			// Factory::Factories _factories;
@@ -46,8 +54,8 @@ namespace Raindrop::Graphics{
 			
 			// VkCommandBuffer getCurrentGraphicsCommandBuffer();
 			
-			// VkCommandBuffer beginFrame();
-			// void endFrame();
+			VkCommandBuffer beginFrame();
+			void endFrame();
 
 			// void renderGui();
 			// void renderScene(VkCommandBuffer commmandBuffer);

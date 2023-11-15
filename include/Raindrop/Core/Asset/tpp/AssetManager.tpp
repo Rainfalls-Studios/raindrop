@@ -1,12 +1,9 @@
 template<typename T, typename... Args>
-void AssetManager::registerFactory(Args... args){
+std::shared_ptr<T> AssetManager::registerFactory(Args... args){
 	static_assert(std::is_base_of<AssetFactory, T>::value, "");
-	registerFactory(std::static_pointer_cast<AssetFactory>(std::make_shared<T>(*_context, args...)), typeid(T).hash_code());
-}
-template<typename T>
-void AssetManager::removeFactory(){
-	static_assert(std::is_base_of<AssetFactory, T>::value, "");
-	removeFactory(typeid(T).hash_code());
+	std::shared_ptr<T> factory = std::make_shared<T>(args...);
+	registerFactory(std::static_pointer_cast<AssetFactory>(factory));
+	return factory;
 }
 template<typename T>
 std::weak_ptr<T> AssetManager::loadOrGet(const std::filesystem::path& path){

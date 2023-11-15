@@ -8,6 +8,7 @@
 #include <Raindrop/Graphics/common.hpp>
 #include <Raindrop/Graphics/Internal/Context.hpp>
 #include <Raindrop/Graphics/Utils/Context.hpp>
+#include <Raindrop/Graphics/Shaders/Context.hpp>
 // #include <Raindrop/Core/Registry/Registry.hpp>
 // #include <Raindrop/Graphics/GlobalDescriptorPool.hpp>
 // #include <Raindrop/Graphics/RenderPassesManager.hpp>
@@ -43,16 +44,18 @@ namespace Raindrop::Graphics{
 
 			Internal::Context& internal();
 			Utils::Context& utils();
+			Shaders::Context& shaders();
 		
 		private:
 			Core::Engine& _core;
-			spdlog::logger _logger;
+			std::shared_ptr<spdlog::logger> _logger;
 
 			Core::Registry::Registry _registry;
 			VkAllocationCallbacks* _allocationCallbacks = nullptr;
 
-			Internal::Context _internal;
-			Utils::Context _utils;
+			std::unique_ptr<Internal::Context> _internal;
+			std::unique_ptr<Utils::Context> _utils;
+			std::unique_ptr<Shaders::Context> _shaders;
 
 		// GlobalDescriptorPool descriptorPool;
 		// // Shaders::ShaderCompiler shaderCompiler;

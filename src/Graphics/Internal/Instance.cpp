@@ -33,13 +33,10 @@ namespace Raindrop::Graphics::Internal{
 		_requiredExtensions.insert(_requiredExtensions.end(), REQUIRED_EXTENSIONS.begin(), REQUIRED_EXTENSIONS.end());
 		requireGraphicsExtensions();
 		build();
-
-		_context.window().createSurface();
 		_context.logger().info("Vulkan Instance initialized without any critical error");
 	}
 
 	Instance::~Instance(){
-		_context.window().destroySurface();
 		if (_instance){
 			vkDestroyInstance(_instance, _context.graphics().allocationCallbacks());
 			_instance = VK_NULL_HANDLE;

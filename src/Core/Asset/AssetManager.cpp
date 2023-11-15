@@ -4,11 +4,6 @@
 #include <Raindrop/Core/Asset/Context.hpp>
 
 namespace Raindrop::Core::Asset{
-	struct AssetManager::FactoryData{
-		std::shared_ptr<AssetFactory> factory;
-		std::size_t typeID;
-	};
-
 	AssetManager::AssetManager(Core::Context& core){
 		_context = std::make_unique<Context>(core);
 
@@ -18,7 +13,6 @@ namespace Raindrop::Core::Asset{
 
 	AssetManager::~AssetManager(){
 		_context->logger().info("Terminating Asset manager...");
-		_factories.clear();
 		_context->logger().info("Asset manager terminated without any critical error");
 	}
 
@@ -28,7 +22,7 @@ namespace Raindrop::Core::Asset{
 		auto it = _pathToAsset.find(path);
 		if (it != _pathToAsset.end()){
 			if (!it->second.expired()){
-				_context->logger().trace("Succesfuly found asset file %s", path.string().c_str());
+				_context->logger().trace("Succesfuly found asset file {}", path.string().c_str());
 				return it->second;
 			}
 			_pathToAsset.erase(it);
@@ -36,21 +30,21 @@ namespace Raindrop::Core::Asset{
 
 		AssetFactory* Factory = findFactory(path.extension());
 		if (!Factory){
-			_context->logger().error("Failed to find the asset factory corresponding to %s extension : %s", path.extension().string().c_str(), path.string().c_str());
+			_context->logger().error("Failed to find the asset factory corresponding to {} extension : {}", path.extension().string().c_str(), path.string().c_str());
 			throw std::runtime_error("Failed to find asset factory");
 		}
 
-		_context->logger().info("Loading %s from asset factory...", path.string().c_str());
+		_context->logger().info("Loading {} from asset factory...", path.string().c_str());
 
 		std::shared_ptr<Asset> asset;
 		try{
 			asset = Factory->createAsset(path);
 		} catch (const std::exception &e){
-			_context->logger().error("Failed to load asset %s : %s", path.string().c_str(), e.what());
+			_context->logger().error("Failed to load asset {} : {}", path.string().c_str(), e.what());
 			throw std::runtime_error("Failed to load asset");
 		}
 
-		_context->logger().info("Asset %s loaded with success !", path.string().c_str());
+		_context->logger().info("Asset {} loaded with success !", path.string().c_str());
 
 
 		_pathToAsset[path] = asset;
@@ -73,12 +67,7 @@ namespace Raindrop::Core::Asset{
 		return nullptr;
 	}
 
-	void AssetManager::registerFactory(const std::shared_ptr<AssetFactory>& factory, std::size_t typeID){
-		FactoryData data;
-		data.factory = factory;
-		data.typeID = typeID;
-
-		_factories.push_back(data);
+	void AssetManager::registerFactory(const std::shared_ptr<AssetFactory>& factory){
 		auto exts = factory->extensions();
 
 		for (const auto& e : exts){
@@ -86,14 +75,21 @@ namespace Raindrop::Core::Asset{
 		}
 	}
 
-	void AssetManager::removeFactory(std::size_t typeID){
-		auto it = std::find_if(
-			_factories.begin(),
-			_factories.end(),
-			[typeID](const FactoryData& a){return a.typeID == typeID;}
+	void AssetManager::removeFactory(const std::shared_ptr<AssetFactory>& factory){
+
+		std::erase_if(
+			_extensionToFactory,
+			[&](const auto& pair){
+				return pair.second.lock() == factory;
+			}
 		);
 
-		if (it == _factories.end()) return;
-		_factories.erase(it);
+		for (const auto& pair : _pathToAsset){
+			const auto& asset = pair.second;
+
+			if (factory->has(asset.lock())){
+				_pathToAsset.erase(pair.first);
+			}
+		}
 	}
 }

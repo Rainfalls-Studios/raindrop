@@ -102,7 +102,7 @@ namespace Raindrop::Graphics::Internal{
 
 			suitability = -1;
 
-			if ((properties.flags & familyProperties.flags) != familyProperties.flags) continue;
+			if (properties.flags) if ((properties.flags & familyProperties.flags) != properties.flags) continue;
 			if (properties.present && !familyProperties.present) continue;
 
 			suitability = static_cast<int>((sizeof(VkQueueFlags) * 8) - countSetBitsDifference(familyProperties.flags, properties.flags));

@@ -3,8 +3,11 @@
 
 #include <Raindrop/common.hpp>
 #include <Raindrop/Core/common.hpp>
-#include <Raindrop/Graphics/Engine.hpp>
-// #include <Raindrop/components.hpp>
+#include <Raindrop/Graphics/common.hpp>
+// #include <Raindrop/components.hpp
+#include <Raindrop/Scene.hpp>
+#include <Raindrop/Asset.hpp>
+#include <Raindrop/Event.hpp>
 
 namespace Raindrop{
 	class Raindrop{
@@ -14,20 +17,24 @@ namespace Raindrop{
 
 			void run();
 
-			Scene& scene();
-			const Scene& scene() const;
+			void triggerEvent(const std::string& event);
+			void subscribeEvent(const std::string& event, const EventCallback& callback);
 
-			void setScene(const Scene& scene);
+			Scene createScene(const std::string& name);
+			Scene createOrGetScene(const std::string& name);
+			Scene getScene(const std::string& name);
+			void removeScene(const std::string& name);
+			void removeScene(const Scene& scene);
 
-			Scene createScene();
+			Asset loadOrGet(const std::string& path);
+
+			void exit();
 
 		private:
 			std::unique_ptr<Core::Engine> _core;
 			std::unique_ptr<Graphics::Engine> _graphics;
 
 			bool _launched;
-
-			void render();
 	};
 }
 
