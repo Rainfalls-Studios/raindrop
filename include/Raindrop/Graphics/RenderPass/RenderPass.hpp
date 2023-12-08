@@ -2,7 +2,6 @@
 #define __RAINDROP_GRAPHICS_RENDER_PASS_HPP__
 
 #include <Raindrop/Graphics/RenderPass/common.hpp>
-#include <Raindrop/Graphics/Builders/common.hpp>
 
 namespace Raindrop::Graphics::RenderPass{
 	class RenderPass{
