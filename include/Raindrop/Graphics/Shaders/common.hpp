@@ -7,7 +7,9 @@ namespace Raindrop::Graphics::Shaders{
 	class Context;
 	class ShaderCompiler;
 	class Shader;
+	class ShaderFactory;
 	class GraphicsPipeline;
+	class GraphicsPipelineFactory;
 }
 
 #endif

@@ -16,6 +16,7 @@ namespace Raindrop::Graphics::Internal{
 		_physicalDevice = std::make_unique<PhysicalDevice>();
 		_device = std::make_unique<Device>(*this);
 		_queueHandler = std::make_unique<QueueHandler>(*this);
+		_queues = std::make_unique<Queues>(*this);
 		_commandPools = std::make_unique<CommandPools>(*this);
 		_swapchain = std::make_unique<Swapchain>(*this);
 		_logger->info("Graphics internal context loaded without any critical error");
@@ -26,6 +27,7 @@ namespace Raindrop::Graphics::Internal{
 
 		_swapchain.reset();
 		_commandPools.reset();
+		_queues.reset();
 		_queueHandler.reset();
 		_device.reset();
 		_physicalDevice.reset();
@@ -74,5 +76,9 @@ namespace Raindrop::Graphics::Internal{
 
 	Swapchain& Context::swapchain(){
 		return *_swapchain;
+	}
+
+	Queues& Context::queues(){
+		return *_queues;
 	}
 }

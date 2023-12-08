@@ -1,5 +1,5 @@
-#ifndef __RAINDROP_GRAPHICS_SHADER_HPP__
-#define __RAINDROP_GRAPHICS_SHADER_HPP__
+#ifndef __RAINDROP_GRAPHICS_SHADERS_SHADER_HPP__
+#define __RAINDROP_GRAPHICS_SHADERS_SHADER_HPP__
 
 #include <Raindrop/Graphics/Shaders/common.hpp>
 #include <Raindrop/Core/Asset/Asset.hpp>

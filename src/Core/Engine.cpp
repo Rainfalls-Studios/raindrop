@@ -1,5 +1,6 @@
 #include <Raindrop/Core/Engine.hpp>
 #include <Raindrop/Core/Context.hpp>
+#include <Raindrop/Core/Registry/Registry.hpp>
 
 namespace Raindrop::Core{
 	Engine::Engine(){
@@ -103,14 +104,18 @@ namespace Raindrop::Core{
 	}
 
 	Registry::Registry& Engine::registry(){
-		return _context->registry();
+		return _context->registry().registry();
 	}
 
 	const Registry::Registry& Engine::registry() const{
-		return _context->registry();
+		return _context->registry().registry();
 	}
 
 	Asset::Context& Engine::assetContext(){
 		return *_context->assetManager()._context;
+	}
+
+	Context& Engine::context(){
+		return *_context;
 	}
 }

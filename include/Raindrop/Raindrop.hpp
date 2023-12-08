@@ -4,7 +4,7 @@
 #include <Raindrop/common.hpp>
 #include <Raindrop/Core/common.hpp>
 #include <Raindrop/Graphics/common.hpp>
-// #include <Raindrop/components.hpp
+#include <Raindrop/Core/Registry/Registry.hpp>
 #include <Raindrop/Scene.hpp>
 #include <Raindrop/Asset.hpp>
 #include <Raindrop/Event.hpp>
@@ -28,7 +28,13 @@ namespace Raindrop{
 
 			Asset loadOrGet(const std::string& path);
 
+			// ! TEMP
+			Core::Registry::Registry& registry();
+			
 			void exit();
+
+			Core::Engine& core();
+			Graphics::Engine& graphics();
 
 		private:
 			std::unique_ptr<Core::Engine> _core;

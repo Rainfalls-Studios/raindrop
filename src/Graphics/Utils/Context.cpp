@@ -10,7 +10,6 @@ namespace Raindrop::Graphics::Utils{
 		_logger->info("Loading Graphics Utils context...");
 
 		_formats = std::make_unique<FormatUtilities>(*this);
-		_stringToVulkan = std::make_unique<StringToVulkan>(*this);
 		
 		_logger->info("Graphics Utils context loaded without any critical error");
 	}
@@ -25,9 +24,5 @@ namespace Raindrop::Graphics::Utils{
 
 	FormatUtilities& Context::formats(){
 		return *_formats;
-	}
-
-	StringToVulkan& Context::stringToVulkan(){
-		return *_stringToVulkan;
 	}
 }

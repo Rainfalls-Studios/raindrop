@@ -20,6 +20,7 @@ namespace Raindrop::Graphics::Internal{
 	class CommandPools;
 	class CommandPool;
 	class CommandBuffer;
+	class Queues;
 }
 
 

@@ -400,33 +400,8 @@ namespace Raindrop::Graphics::Internal{
 	}
 
 	void Swapchain::queryQueues(){
-		std::list<std::reference_wrapper<QueueFamily>> families;
-
-		families = _context.queueHandler().getByProperies({0, true});
-
-		if (!families.empty()){
-			auto& queue = families.front().get().get(0);
-
-			_presentQueue = &queue;
-			_graphicsQueue = &queue;
-			return;
-		}
-		
-		families = _context.queueHandler().getByProperies(VK_QUEUE_GRAPHICS_BIT);
-		if (families.empty()){
-			_context.logger().error("Cannot find a suitable graphics queue for the swapchain");
-			throw std::runtime_error("Cannot find a suitable graphics queue for the swapchain");
-		}
-
-		_graphicsQueue = &families.front().get().get(0);
-
-		families = _context.queueHandler().getByProperies({0, true});
-		if (families.empty()){
-			_context.logger().error("Cannot find a suitable present queue for the swapchain");
-			throw std::runtime_error("Cannot find a suitable present queue for the swapchain");
-		}
-
-		_presentQueue = &families.front().get().get(0);
+		_graphicsQueue = &_context.queues().graphicsFamily().get(0);
+		_presentQueue = &_context.queues().presentFamily().get(0);
 	}
 	
 	Swapchain::SwapchainData::~SwapchainData(){

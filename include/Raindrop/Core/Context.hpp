@@ -5,7 +5,7 @@
 
 #include <Raindrop/Core/Asset/AssetManager.hpp>
 #include <Raindrop/Core/Event/EventManager.hpp>
-#include <Raindrop/Core/Registry/Registry.hpp>
+#include <Raindrop/Core/Registry/Context.hpp>
 #include <Raindrop/Core/Scene/SceneManager.hpp>
 
 namespace Raindrop::Core{
@@ -16,8 +16,7 @@ namespace Raindrop::Core{
 
 			spdlog::logger& logger();
 			
-			Registry::Registry& registry();
-			Registry::Registry& temp();
+			Registry::Context& registry();
 			Event::EventManager& eventManager();
 			Asset::AssetManager& assetManager();
 			Scene::SceneManager& sceneManager();
@@ -25,8 +24,7 @@ namespace Raindrop::Core{
 		private:
 			std::shared_ptr<spdlog::logger> _logger;
 
-			std::unique_ptr<Registry::Registry> _registry;
-			std::unique_ptr<Registry::Registry> _temp;
+			std::unique_ptr<Registry::Context> _registry;
 			std::unique_ptr<Event::EventManager> _eventManager;
 			std::unique_ptr<Asset::AssetManager> _assetManager;
 			std::unique_ptr<Scene::SceneManager> _sceneManager;

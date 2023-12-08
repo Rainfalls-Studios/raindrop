@@ -23,6 +23,10 @@ namespace Raindrop::Graphics::Internal{
 			throw std::runtime_error("Failed to create SDL2 Window");
 		}
 		_context.logger().info("SDL2 Window initialized without any critical error");
+
+		_context.graphics().core().registry().set("window.width", DEFAULT_WINDOW_WIDTH);
+		_context.graphics().core().registry().set("window.height", DEFAULT_WINDOW_HEIGHT);
+		_context.graphics().core().registry().set("window.title", "Raindrop::Graphics Window");
 	}
 
 	Window::~Window(){
@@ -67,10 +71,13 @@ namespace Raindrop::Graphics::Internal{
 
 	void Window::setTitle(const char* title){
 		SDL_SetWindowTitle(_window, title);
+		_context.graphics().core().registry().set("window.title", title);
 	}
 
 	void Window::setSize(glm::u32vec2 size){
 		SDL_SetWindowSize(_window, static_cast<int>(size.x), static_cast<int>(size.y));
+		_context.graphics().core().registry().set("window.width", size.x);
+		_context.graphics().core().registry().set("window.height", size.y);
 	}
 
 	void Window::setPosition(glm::u32vec2 position){

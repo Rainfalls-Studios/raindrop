@@ -9,22 +9,11 @@
 #include <Raindrop/Graphics/Internal/Context.hpp>
 #include <Raindrop/Graphics/Utils/Context.hpp>
 #include <Raindrop/Graphics/Shaders/Context.hpp>
-// #include <Raindrop/Core/Registry/Registry.hpp>
-// #include <Raindrop/Graphics/GlobalDescriptorPool.hpp>
-// #include <Raindrop/Graphics/RenderPassesManager.hpp>
-
-// #include <Raindrop/Graphics/Internal/Instance.hpp>
-// #include <Raindrop/Graphics/Internal/Window.hpp>
-// #include <Raindrop/Graphics/Internal/Device.hpp>
-// #include <Raindrop/Graphics/Internal/PhysicalDevice.hpp>
-// #include <Raindrop/Graphics/Internal/Swapchain.hpp>
-
-// #include <Raindrop/Graphics/Utils/FormatUtilities.hpp>
-// #include <Raindrop/Graphics/Utils/stringToVulkan.hpp>
-
-// #include <Raindrop/Graphics/Queues/PresentFamily.hpp>
-// #include <Raindrop/Graphics/Queues/GraphicsFamily.hpp>
-// #include <Raindrop/Graphics/Queues/TransfertFamily.hpp>
+#include <Raindrop/Graphics/Image/Context.hpp>
+#include <Raindrop/Graphics/RenderPass/Context.hpp>
+#include <Raindrop/Graphics/Framebuffer/Context.hpp>
+#include <Raindrop/Graphics/Formats/Context.hpp>
+#include <Raindrop/Graphics/Loader.hpp>
 
 namespace Raindrop::Graphics{
 	class Context{
@@ -38,24 +27,31 @@ namespace Raindrop::Graphics{
 			Core::Engine& core();
 			spdlog::logger& logger();
 
-			Core::Registry::Registry& registry();
-
 			VkAllocationCallbacks*& allocationCallbacks();
 
 			Internal::Context& internal();
 			Utils::Context& utils();
 			Shaders::Context& shaders();
+			Image::Context& image();
+			RenderPass::Context& renderPass();
+			Framebuffer::Context& framebuffer();
+			Formats::Context& formats();
+			Loader& loader();
 		
 		private:
 			Core::Engine& _core;
 			std::shared_ptr<spdlog::logger> _logger;
-
-			Core::Registry::Registry _registry;
+			
 			VkAllocationCallbacks* _allocationCallbacks = nullptr;
 
 			std::unique_ptr<Internal::Context> _internal;
 			std::unique_ptr<Utils::Context> _utils;
 			std::unique_ptr<Shaders::Context> _shaders;
+			std::unique_ptr<Image::Context> _image;
+			std::unique_ptr<RenderPass::Context> _renderPass;
+			std::unique_ptr<Framebuffer::Context> _framebuffer;
+			std::unique_ptr<Formats::Context> _formats;
+			std::unique_ptr<Loader> _loader;
 
 		// GlobalDescriptorPool descriptorPool;
 		// // Shaders::ShaderCompiler shaderCompiler;

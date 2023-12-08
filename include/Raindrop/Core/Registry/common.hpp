@@ -6,6 +6,7 @@
 namespace Raindrop::Core::Registry{
 	class Context;
 	class Registry;
+	class Node;
 }
 
 #endif

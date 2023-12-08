@@ -2,12 +2,12 @@
 #define __RAINDROP_GRAPHICS_FRAMEBUFFER_HPP__
 
 #include <Raindrop/Graphics/common.hpp>
-#include <Raindrop/Graphics/builders/common.hpp>
+#include <Raindrop/Graphics/Builders/common.hpp>
 
 namespace Raindrop::Graphics{
 	class Framebuffer{
 		public:
-			Framebuffer(GraphicsContext& context, const Builders::FramebufferBuilder& builder);
+			Framebuffer(Context& context, const Builders::FramebufferBuilder& builder);
 			~Framebuffer();
 
 			VkFramebuffer get() const;
@@ -18,7 +18,7 @@ namespace Raindrop::Graphics{
 			uint32_t layers() const;
 
 		private:
-			GraphicsContext& _context;
+			Context& _context;
 			VkFramebuffer _framebuffer;
 
 			uint32_t _width;

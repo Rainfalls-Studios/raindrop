@@ -108,6 +108,11 @@ namespace Raindrop::Graphics{
 			throw std::runtime_error("failed to submit the command buffer");
 		}
 	}
+
+	void Engine::loadFromFile(const std::filesystem::path& path){
+		_context->loader().loadFile(path);
+	}
+
 	
 	// FrameState Renderer::begin(){
 	// 	_context->window.events(_gui.get());

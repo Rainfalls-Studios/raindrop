@@ -17,15 +17,12 @@ namespace Raindrop::Graphics::Utils{
 			spdlog::logger& logger();
 
 			FormatUtilities& formats();
-			StringToVulkan& stringToVulkan();
 
 		private:
 			Graphics::Context& _graphics;
 
 			std::shared_ptr<spdlog::logger> _logger;
 			std::unique_ptr<FormatUtilities> _formats;
-			std::unique_ptr<StringToVulkan> _stringToVulkan;
-
 	};
 }
 

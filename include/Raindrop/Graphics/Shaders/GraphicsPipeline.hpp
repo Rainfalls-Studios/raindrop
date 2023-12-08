@@ -1,12 +1,13 @@
-#ifndef __RAINDROP_GRAPHICS_GRAPHICS_PIPELINE_HPP__
-#define __RAINDROP_GRAPHICS_GRAPHICS_PIPELINE_HPP__
+#ifndef __RAINDROP_GRAPHICS_SHADERS_GRAPHICS_PIPELINE_HPP__
+#define __RAINDROP_GRAPHICS_SHADERS_GRAPHICS_PIPELINE_HPP__
 
-#include <Raindrop/Graphics/common.hpp>
+#include <Raindrop/Graphics/Shaders/common.hpp>
+#include <Raindrop/Core/Asset/Asset.hpp>
 
-namespace Raindrop::Graphics{
+namespace Raindrop::Graphics::Shaders{
 	class GraphicsPipeline : public Core::Asset::Asset{
 		public:
-			GraphicsPipeline(GraphicsContext& context, VkGraphicsPipelineCreateInfo info, VkPipelineLayoutCreateInfo layoutInfo, std::vector<std::shared_ptr<Shader>> shaders, std::string name);
+			GraphicsPipeline(Context& context, VkGraphicsPipelineCreateInfo info, VkPipelineLayoutCreateInfo layoutInfo, std::vector<std::shared_ptr<Shader>> shaders, std::string name);
 			virtual ~GraphicsPipeline() override;
 
 			void bind(VkCommandBuffer commandBuffer);
@@ -16,7 +17,7 @@ namespace Raindrop::Graphics{
 			const std::string& name() const;
 
 		private:
-			GraphicsContext& _context;
+			Context& _context;
 			std::string _name;
 			std::vector<std::shared_ptr<Shader>> _shaders;
 

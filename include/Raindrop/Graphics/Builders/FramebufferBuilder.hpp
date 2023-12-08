@@ -1,7 +1,7 @@
 #ifndef __RAINDROP_GARPHICS_BUILDER_FRAMEBUFFER_BUILDER_HPP__
 #define __RAINDROP_GARPHICS_BUILDER_FRAMEBUFFER_BUILDER_HPP__
 
-#include <Raindrop/Graphics/builders/common.hpp>
+#include <Raindrop/Graphics/Builders/common.hpp>
 
 namespace Raindrop::Graphics::Builders{
 	class FramebufferBuilder{

@@ -1,10 +1,12 @@
 #include <Raindrop/Raindrop.hpp>
 #include <Raindrop/Core/Engine.hpp>
 #include <Raindrop/Graphics/Engine.hpp>
+#include <Raindrop/Core/Registry/Registry.hpp>
 
 namespace Raindrop{
 	Raindrop::Raindrop(){
 		_core = std::make_unique<Core::Engine>();
+
 		_graphics = std::make_unique<Graphics::Engine>(*_core);
 	}
 
@@ -58,6 +60,17 @@ namespace Raindrop{
 		_launched = false;
 	}
 
+	Core::Registry::Registry& Raindrop::registry(){
+		return _core->registry();
+	}
+
+	Core::Engine& Raindrop::core(){
+		return *_core;
+	}
+
+	Graphics::Engine& Raindrop::graphics(){
+		return *_graphics;
+	}
 	
 	// Scene& Raindrop::scene(){
 	// 	return _scene;

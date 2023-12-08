@@ -2,10 +2,11 @@
 // #include <Raindrop/Graphics/Builders/FramebufferBuilder.hpp>
 // #include <Raindrop/Graphics/RenderPass.hpp>
 // #include <Raindrop/Graphics/ImageView.hpp>
-// #include <Raindrop/Graphics/GraphicsContext.hpp>
+// #include <Raindrop/Graphics/Context.hpp>
 
 // namespace Raindrop::Graphics{
-// 	Framebuffer::Framebuffer(GraphicsContext& context, const Builders::FramebufferBuilder& builder) : _context{context}{
+// 	Framebuffer::Framebuffer(Context& context, const Builders::FramebufferBuilder& builder) : _context{context}{
+// 		_context.logger().trace("Creating framebuffer... ({}x{}x{})", builder.width(), builder.height(), builder.layers());
 // 		_attachments.resize(builder.attachmentCount());
 // 		_framebuffer = VK_NULL_HANDLE;
 

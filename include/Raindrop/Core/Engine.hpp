@@ -49,6 +49,8 @@ namespace Raindrop::Core{
 			Registry::Registry& registry();
 			const Registry::Registry& registry() const;
 
+			Context& context();
+
 		private:
 			std::unique_ptr<Context> _context;
 

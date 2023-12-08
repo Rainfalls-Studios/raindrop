@@ -11,6 +11,7 @@ namespace Raindrop::Graphics{
 	class FrameState;
 	class Camera;
 	class Buffer;
+	class Loader;
 }
 
 #endif

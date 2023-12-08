@@ -12,12 +12,14 @@ namespace Raindrop::Graphics::Shaders{
 		_compiler = std::make_unique<ShaderCompiler>(*this);
 
 		_shaderFactory = _graphics.core().assetManager().registerFactory<ShaderFactory, Context&>(*this);
+		_graphicsPipelineFactory = _graphics.core().assetManager().registerFactory<GraphicsPipelineFactory, Context&>(*this);
 
 		_logger->info("Graphics Shaders context initialized without any critical error");
 	}
 
 	Context::~Context(){
 		_logger->info("Terminating Graphics Shaders context...");
+		_graphicsPipelineFactory.reset();
 		_shaderFactory.reset();
 		_compiler.reset();
 		_logger->info("Graphics Shaders context terminated without any critical error");
@@ -37,5 +39,9 @@ namespace Raindrop::Graphics::Shaders{
 
 	ShaderFactory& Context::shaderFactory(){
 		return *_shaderFactory;
+	}
+
+	GraphicsPipelineFactory& Context::graphicsPipelineFactory(){
+		return *_graphicsPipelineFactory;
 	}
 }

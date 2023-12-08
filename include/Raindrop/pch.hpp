@@ -2,6 +2,7 @@
 #define __RAINDROP_PCH_HPP__
 
 #include <glm/glm.hpp>
+#include <yaml-cpp/yaml.h>
 
 #include <memory>
 #include <functional>

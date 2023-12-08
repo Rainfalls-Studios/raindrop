@@ -1,0 +1,5 @@
+name: Default pipeline
+shaders:
+  - ${SourceDir}/shaders/shader.vert.glsl.spv
+  - ${SourceDir}/shaders/shader.frag.glsl.spv
+target: 0x00000001
