@@ -86,7 +86,6 @@ namespace Raindrop::Graphics::Utils{
 			MTH_TYPE_PAIR(VkQueryControlFlagBits);
 			MTH_TYPE_PAIR(VkCommandBufferResetFlagBits);
 			MTH_TYPE_PAIR(VkStencilFaceFlagBits);
-
 	};
 }
 

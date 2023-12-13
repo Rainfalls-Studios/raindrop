@@ -4380,449 +4380,882 @@
 			"type": "object",
 			"properties": {
 				"graphics": {
-					"type": "object",
-					"properties": {
-						"formats": {
-							"type": "array",
-							"items": {
-								"type": "object",
-								"properties": {
-									"name": {
-										"type": "string"
-									},
-									"candidates": {
-										"type": "array",
-										"items": {
-											"$ref": "#/definitions/VkFormat"
-										}
-									},
-									"features": {
-										"type": "object",
-										"properties": {
-											"optimalTiling": {
-												"type": "array",
-												"items": {
-													"$ref": "#/definitions/VkFormatFeatureFlagBits"
-												}
-											},
-											"linearTiling": {
-												"type": "array",
-												"items": {
-													"$ref": "#/definitions/VkFormatFeatureFlagBits"
-												}
-											},
-											"buffer": {
-												"type": "array",
-												"items": {
-													"$ref": "#/definitions/VkFormatFeatureFlagBits"
-												}
-											}
-										}
-									},
-									"image": {
-										"type": "object",
-										"properties": {
-											"type": {
-												"$ref": "#/definitions/VkImageType"
-											},
-											"tiling": {
-												"$ref": "#/definitions/VkImageTiling"
-											},
-											"usage": {
-												"type": "array",
-												"items": {
-													"$ref": "#/definitions/VkImageUsageFlagBits"
-												}
-											},
-											"flags": {
-												"type": "array",
-												"items": {
-													"$ref": "#/definitions/VkImageCreateFlagBits"
-												}
-											},
-											"samples": {
-												"type": "array",
-												"items": {
-													"$ref": "#/definitions/VkSampleCountFlagBits"
-												}
-											},
-											"width": {
-												"type": "integer"
-											},
-											"height": {
-												"type": "integer"
-											},
-											"depth": {
-												"type": "integer"
-											},
-											"arrayLayers": {
-												"type": "integer"
-											},
-											"mipLevels": {
-												"type": "integer"
-											}
-										}
-									}
-								}
-							}
-						},
-						"images": {
-							"type": "array",
-							"items": {
-								"type": "object",
-								"properties": {
-									"name": {
-										"type": "string"
-									},
-									"format": {
-										"type": "string"
-									},
-									"extent": {
-										"type": "object",
-										"properties": {
-											"width": {
-												"type": "string"
-											},
-											"height": {
-												"type": "string"
-											}
-										}
-									},
-									"type": {
-										"type": "string"
-									},
-									"usage": {
-										"type": "array",
-										"properties": {
-											"items": {
-												"$ref": "#/definitions/VkImageUsageFlagBits"
-											}
-										}
-									},
-									"initialLayout": {
-										"$ref": "#/definitions/VkImageLayout"
-									},
-									"mipLevels": {
-										"type": "integer"
-									},
-									"arrayLayers": {
-										"type": "integer"
-									},
-									"sampleCount": {
-										"$ref": "#/definitions/VkSampleCountFlagBits"
-									},
-									"tiling": {
-										"$ref": "#/definitions/VkImageTiling"
-									},
-									"queueFamilies": {
-										"type": "array",
-										"properties": {
-											"items": {
-												"type": "string"
-											}
-										}
-									},
-									"features": {
-										"type": "array",
-										"items": {
-											"$ref" : "#/definitions/VkFormatFeatureFlagBits"
-										}
-									}
-								}
-							}
-						},
-						"imageViews": {
-							"type": "array",
-							"properties": {
+					"type": "array",
+					"items": {
+						"properties": {
+							"formats": {
+								"type": "array",
 								"items": {
 									"type": "object",
 									"properties": {
 										"name": {
 											"type": "string"
 										},
-										"base": {
-											"type": "string"
+										"candidates": {
+											"type": "array",
+											"items": {
+												"$ref": "#/definitions/VkFormat"
+											}
 										},
-										"viewType": {
-											"$ref": "#/definitions/VkImageViewType"
+										"features": {
+											"type": "object",
+											"properties": {
+												"optimalTiling": {
+													"type": "array",
+													"items": {
+														"$ref": "#/definitions/VkFormatFeatureFlagBits"
+													}
+												},
+												"linearTiling": {
+													"type": "array",
+													"items": {
+														"$ref": "#/definitions/VkFormatFeatureFlagBits"
+													}
+												},
+												"buffer": {
+													"type": "array",
+													"items": {
+														"$ref": "#/definitions/VkFormatFeatureFlagBits"
+													}
+												}
+											}
+										},
+										"image": {
+											"type": "object",
+											"properties": {
+												"type": {
+													"$ref": "#/definitions/VkImageType"
+												},
+												"tiling": {
+													"$ref": "#/definitions/VkImageTiling"
+												},
+												"usage": {
+													"type": "array",
+													"items": {
+														"$ref": "#/definitions/VkImageUsageFlagBits"
+													}
+												},
+												"flags": {
+													"type": "array",
+													"items": {
+														"$ref": "#/definitions/VkImageCreateFlagBits"
+													}
+												},
+												"samples": {
+													"type": "array",
+													"items": {
+														"$ref": "#/definitions/VkSampleCountFlagBits"
+													}
+												},
+												"width": {
+													"type": "integer"
+												},
+												"height": {
+													"type": "integer"
+												},
+												"depth": {
+													"type": "integer"
+												},
+												"arrayLayers": {
+													"type": "integer"
+												},
+												"mipLevels": {
+													"type": "integer"
+												}
+											}
+										}
+									}
+								}
+							},
+							"images": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"name": {
+											"type": "string"
 										},
 										"format": {
 											"type": "string"
 										},
-										"componentMapping": {
+										"extent": {
 											"type": "object",
 											"properties": {
-												"r": {
-													"$ref": "#/definitions/VkComponentSwizzle"
+												"width": {
+													"type": "string"
 												},
-												"g": {
-													"$ref": "#/definitions/VkComponentSwizzle"
-												},
-												"b": {
-													"$ref": "#/definitions/VkComponentSwizzle"
-												},
-												"a": {
-													"$ref": "#/definitions/VkComponentSwizzle"
+												"height": {
+													"type": "string"
 												}
 											}
 										},
-										"subresourceRange": {
+										"type": {
+											"type": "string"
+										},
+										"usage": {
+											"type": "array",
+											"properties": {
+												"items": {
+													"$ref": "#/definitions/VkImageUsageFlagBits"
+												}
+											}
+										},
+										"initialLayout": {
+											"$ref": "#/definitions/VkImageLayout"
+										},
+										"mipLevels": {
+											"type": "integer"
+										},
+										"arrayLayers": {
+											"type": "integer"
+										},
+										"sampleCount": {
+											"$ref": "#/definitions/VkSampleCountFlagBits"
+										},
+										"tiling": {
+											"$ref": "#/definitions/VkImageTiling"
+										},
+										"queueFamilies": {
+											"type": "array",
+											"properties": {
+												"items": {
+													"type": "string"
+												}
+											}
+										},
+										"features": {
+											"type": "array",
+											"items": {
+												"$ref" : "#/definitions/VkFormatFeatureFlagBits"
+											}
+										}
+									}
+								}
+							},
+							"imageViews": {
+								"type": "array",
+								"properties": {
+									"items": {
+										"type": "object",
+										"properties": {
+											"name": {
+												"type": "string"
+											},
+											"base": {
+												"type": "string"
+											},
+											"viewType": {
+												"$ref": "#/definitions/VkImageViewType"
+											},
+											"format": {
+												"type": "string"
+											},
+											"componentMapping": {
+												"type": "object",
+												"properties": {
+													"r": {
+														"$ref": "#/definitions/VkComponentSwizzle"
+													},
+													"g": {
+														"$ref": "#/definitions/VkComponentSwizzle"
+													},
+													"b": {
+														"$ref": "#/definitions/VkComponentSwizzle"
+													},
+													"a": {
+														"$ref": "#/definitions/VkComponentSwizzle"
+													}
+												}
+											},
+											"subresourceRange": {
+												"type": "object",
+												"properties": {
+													"aspectMack": {
+														"type": "array",
+														"items": {
+															"$ref": "#/definitions/VkImageAspectFlagBits"
+														
+													}
+													},
+													"baseMipLevel": {
+														"type": "integer"
+													},
+													"levelCount": {
+														"type": "integer"
+													},
+													"baseArray": {
+														"type": "integer"
+													},
+													"layerCount": {
+														"type": "integer"
+													}
+												}
+											}
+										}
+									}
+								}
+							},
+							"renderPasses": {
+								"type": "array",
+								"properties": {
+									"items": {
+										"type": "object",
+										"properties": {
+											"name": {
+												"type": "string"
+											},
+											"flags": {
+												"type": "array",
+												"items": {
+													"$ref": "#/definitions/VkRenderPassCreateFlagBits"
+												}
+											},
+											"attachments": {
+												"type": "array",
+												"properties": {
+													"items": {
+														"type": "object",
+														"properties": {
+															"name": {
+																"type": "string"
+															},
+															"flags": {
+																"type": "array",
+																"items": {
+																	"type": "string"
+																}
+															},
+															"format": {
+																"type": "string"
+															},
+															"sampleCount": {
+																"$ref": "#/definitions/VkSampleCountFlagBits"
+															},
+															"loadOp": {
+																"$ref": "#/definitions/VkAttachmentLoadOp"
+															},
+															"storeOp": {
+																"$ref": "#/definitions/VkAttachmentStoreOp"
+															},
+															"stencilLoadOp": {
+																"$ref": "#/definitions/VkStencilOp"
+															},
+															"stencilStoreOp": {
+																"$ref": "#/definitions/VkStencilOp"
+															},
+															"initialLayout": {
+																"$ref": "#/definitions/VkImageLayout"
+															},
+															"finalLayout": {
+																"$ref": "#/definitions/VkImageLayout"
+															}
+														}
+													}
+												}
+											},
+											"subpasses": {
+												"type": "array",
+												"properties": {
+													"items": {
+														"type": "object",
+														"properties": {
+															"name": {
+																"type": "string"
+															},
+															"flags": {
+																"type": "array",
+																"items": {
+																	"$ref": "#/definitions/VkSubpassDescriptionFlagBits"
+																}
+															},
+															"pipelineBindPoint": {
+																"$ref": "#/definitions/VkPipelineBindPoint"
+															},
+															"inputAttachments": {
+																"type": "array",
+																"properties": {
+																	"items": {
+																		"type": "object",
+																		"properties": {
+																			"base": {
+																				"type": "string"
+																			},
+																			"layout": {
+																				"$ref": "#/definitions/VkImageLayout"
+																			}
+																		}
+																	}
+																}
+															},
+															"resolveAttachments": {
+																"type": "array",
+																"properties": {
+																	"items": {
+																		"type": "object",
+																		"properties": {
+																			"base": {
+																				"type": "string"
+																			},
+																			"layout": {
+																				"$ref": "#/definitions/VkImageLayout"
+																			}
+																		}
+																	}
+																}
+															},
+															"colorAttachments": {
+																"type": "array",
+																"properties": {
+																	"items": {
+																		"type": "object",
+																		"properties": {
+																			"base": {
+																				"type": "string"
+																			},
+																			"layout": {
+																				"$ref": "#/definitions/VkImageLayout"
+																			}
+																		}
+																	}
+																}
+															},
+															"preserveAttachments": {
+																"type": "array",
+																"properties": {
+																	"items": {
+																		"type": "string"
+																	}
+																}
+															},
+															"depthAttachment": {
+																"type": "object",
+																"properties": {
+																	"base": {
+																		"type": "string"
+																	},
+																	"layout": {
+																		"$ref": "#/definitions/VkImageLayout"
+																	}
+																}
+															}
+														}
+													}
+												}
+											},
+											"dependencies": {
+												"type": "array",
+												"properties": {
+													"items": {
+														"type": "object",
+														"properties": {
+															"flags": {
+																"type": "array",
+																"items": {
+																	"$ref": "#/definitions/VkDependencyFlagBits"
+																}
+															},
+															"srcSubpass": {
+																"type": "string"
+															},
+															"dstSubpass": {
+																"type": "string"
+															},
+															"srcStageMask": {
+																"type": "array",
+																"items": {
+																	"$ref": "#/definitions/VkPipelineStageFlagBits"
+																}
+															},
+															"dstStageMask": {
+																"type": "array",
+																"items": {
+																	"$ref": "#/definitions/VkPipelineStageFlagBits"
+																}
+															},
+															"srcAccessMask": {
+																"type": "array",
+																"items": {
+																	"$ref": "#/definitions/VkAccessFlagBits"
+																}
+															},
+															"dstAccessMask": {
+																"type": "array",
+																"items": {
+																	"$ref": "#/definitions/VkAccessFlagBits"
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							},
+							"framebuffers": {
+								"type": "array",
+								"properties": {
+									"items": {
+										"type": "object",
+										"properties": {
+											"name": {
+												"type": "string"
+											},
+											"flags": {
+												"type": "array",
+												"items": {
+													"$ref": "#/definitions/VkFramebufferCreateFlagBits"
+												}
+											},
+											"renderPass": {
+												"type": "string"
+											},
+											"attachments": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"width": {
+												"type": "integer"
+											},
+											"height": {
+												"type": "integer"
+											},
+											"layers": {
+												"type": "integer"
+											}
+										}
+									}
+								}
+							},
+							"pipelineLayouts":{
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"name": {
+											"type": "string"
+										},
+										"descriptorSets": {
+											"type": "array",
+											"items": {
+												"type": "string"
+											}
+										},
+										"pushConstants": {
+											"type": "array",
+											"items": {
+												"type": "object",
+												"properties": {
+													"offset": {
+														"type": "integer"
+													},
+													"size": {
+														"type": "integer"
+													},
+													"stages": {
+														"type": "array",
+														"items": {
+															"$ref" : "#/definitions/VkShaderStageFlagBits"
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							},
+							"graphicsPipelines": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"name": {
+											"type": "string"
+										},
+										"flags": {
+											"type": "array",
+											"items": {
+												"$ref": "#/definitions/VkPipelineCreateFlagBits"
+											}
+										},
+										"stages": {
+											"type": "array",
+											"items": {
+												"type": "object",
+												"properties": {
+													"shader": {
+														"type": "string"
+													},
+													"flags": {
+														"type": "array",
+														"items": {
+															"$ref": "#/definitions/VkPipelineShaderStageCreateFlagBits"
+														}
+													},
+													"stage": {
+														"$ref": "#/definitions/VkShaderStageFlagBits"
+													},
+													"specialization": {
+														"type": "object",
+														"properties": {
+
+														}
+													},
+													"name": {
+														"type": "string"
+													}
+												}
+											}
+										},
+										"inputStateCreateInfo": {
 											"type": "object",
 											"properties": {
-												"aspectMack": {
+												"vertexAttributeDescriptions": {
 													"type": "array",
 													"items": {
-														"$ref": "#/definitions/VkImageAspectFlagBits"
-													
-												}
+														"type": "object",
+														"properties": {
+															"binding": {
+																"type": "integer"
+															},
+															"inputRate": {
+																"$ref": "#/definitions/VkVertexInputRate"
+															},
+															"stride": {
+																"type": "integer"
+															}
+														}
+													}
 												},
-												"baseMipLevel": {
-													"type": "integer"
-												},
-												"levelCount": {
-													"type": "integer"
-												},
-												"baseArray": {
-													"type": "integer"
-												},
-												"layerCount": {
-													"type": "integer"
+												"vertexBindingDescriptions": {
+													"type": "array",
+													"items": {
+														"type": "object",
+														"properties": {
+															"location": {
+																"type": "integer"
+															},
+															"binding": {
+																"type": "integer"
+															},
+															"format": {
+																"$ref": "#/definitions/VkFormat"
+															},
+															"offset": {
+																"type": "integer"
+															}
+														}
+													}
 												}
 											}
-										}
-									}
-								}
-							}
-						},
-						"renderPasses": {
-							"type": "array",
-							"properties": {
-								"items": {
-									"type": "object",
-									"properties": {
-										"name": {
-											"type": "string"
 										},
-										"flags": {
-											"type": "array",
-											"items": {
-												"$ref": "#/definitions/VkRenderPassCreateFlagBits"
-											}
-										},
-										"attachments": {
-											"type": "array",
+										"inputAssemblyStateCreateInfo": {
+											"type": "object",
 											"properties": {
-												"items": {
+												"primitiveRestartEnable": {
+													"type": "boolean"
+												},
+												"topology": {
+													"$ref": "#/definitions/VkPrimitiveTopology"
+												}
+											}
+										},
+										"tesselationStateCreateInfo": {
+											"type": "object",
+											"properties": {
+												"patchControlPoints": {
+													"type": "integer"
+												}
+											}
+										},
+										"viewportStateCreateInfo": {
+											"type": "object",
+											"properties": {
+												"viewports": {
+													"type": "array",
+													"items": {
+														"type": "object",
+														"properties": {
+															"x": {
+																"type": "integer"
+															},
+															"y": {
+																"type": "integer"
+															},
+															"width": {
+																"type": "integer"
+															},
+															"height": {
+																"type": "integer"
+															},
+															"minDepth": {
+																"type": "integer"
+															},
+															"maxDepth": {
+																"type": "integer"
+															}
+														}
+													}
+												},
+												"scissors": {
+													"type": "array",
+													"items": {
+														"type": "object",
+														"properties": {
+															"extentWidth": {
+																"type": "integer"
+															},
+															"extentHeight": {
+																"type": "integer"
+															},
+															"offsetX": {
+																"type": "integer"
+															},
+															"offsetY": {
+																"type": "integer"
+															}
+														}
+													}
+												}	
+											}
+										},
+										"rasterizationStateCreateInfo": {
+											"type": "object",
+											"properties": {
+												"depthClampEnable": {
+													"type": "boolean"
+												},
+												"rasterizerDiscardEnable": {
+													"type": "boolean"
+												},
+												"polygonMode": {
+													"$ref": "#/definitions/VkPolygonMode"
+												},
+												"cullMode": {
+													"type": "array",
+													"items": {
+														"$ref": "#/definitions/VkCullModeFlagBits"
+													}
+												},
+												"frontFace": {
+													"$ref": "#/definitions/VkFrontFace"
+												},
+												"depthBiasEnable": {
+													"type": "boolean"
+												},
+												"depthBiasConstantFactor": {
+													"type": "number"
+												},
+												"depthBiasClamp": {
+													"type": "number"
+												},
+												"depthBiasSlopFactor": {
+													"type": "number"
+												},
+												"lineWidth": {
+													"type": "number"
+												}
+											}
+										},
+										"multisampleStateCreateInfo": {
+											"type": "object",
+											"properties": {
+												"rasterizationSamples": {
+													"$ref": "#/definitions/VkSampleCountFlagBits"
+												},
+												"sampleShadingEnable": {
+													"type": "boolean"
+												},
+												"minSampleShading": {
+													"type": "number"
+												},
+												"sampleMask": {
+													"type": "string",
+													"format": "base64"
+												},
+												"alphaToCoverageEnable": {
+													"type": "boolean"
+												},
+												"alphaToOneEnable": {
+													"type": "boolean"
+												}
+											}
+										},
+										"depthStencilStateCreateInfo": {
+											"type": "object",
+											"properties": {
+												"flags": {
+													"type": "array",
+													"items": {
+														"$ref": "#/definitions/VkPipelineDepthStencilStateCreateFlagBits"
+													}
+												},
+												"depthTestEnable": {
+													"type": "boolean"
+												},
+												"depthWriteEnable": {
+													"type": "boolean"
+												},
+												"depthCompareOp": {
+													"$ref": "#/definitions/VkCompareOp"
+												},
+												"depthBoundsTestEnable": {
+													"type": "boolean"
+												},
+												"stencilTestEnable": {
+													"type": "boolean"
+												},
+												"front": {
 													"type": "object",
 													"properties": {
-														"name": {
-															"type": "string"
-														},
-														"flags": {
-															"type": "array",
-															"items": {
-																"type": "string"
-															}
-														},
-														"format": {
-															"type": "string"
-														},
-														"sampleCount": {
-															"$ref": "#/definitions/VkSampleCountFlagBits"
-														},
-														"loadOp": {
-															"$ref": "#/definitions/VkAttachmentLoadOp"
-														},
-														"storeOp": {
-															"$ref": "#/definitions/VkAttachmentStoreOp"
-														},
-														"stencilLoadOp": {
+														"failOp": {
 															"$ref": "#/definitions/VkStencilOp"
 														},
-														"stencilStoreOp": {
+														"passOp": {
 															"$ref": "#/definitions/VkStencilOp"
 														},
-														"initialLayout": {
-															"$ref": "#/definitions/VkImageLayout"
+														"depthFailOp": {
+															"$ref": "#/definitions/VkStencilOp"
 														},
-														"finalLayout": {
-															"$ref": "#/definitions/VkImageLayout"
+														"compareOp": {
+															"$ref": "#/definitions/VkCompareOp"
+														},
+														"compareMask": {
+															"type": "string",
+															"format": "base64"
+														},
+														"writeMask": {
+															"type": "string",
+															"format": "base64"
+														},
+														"reference": {
+															"type": "integer"
 														}
 													}
-												}
-											}
-										},
-										"subpasses": {
-											"type": "array",
-											"properties": {
-												"items": {
+												},
+												"back": {
 													"type": "object",
 													"properties": {
-														"name": {
-															"type": "string"
+														"failOp": {
+															"$ref": "#/definitions/VkStencilOp"
 														},
-														"flags": {
-															"type": "array",
-															"items": {
-																"$ref": "#/definitions/VkSubpassDescriptionFlagBits"
-															}
+														"passOp": {
+															"$ref": "#/definitions/VkStencilOp"
 														},
-														"pipelineBindPoint": {
-															"$ref": "#/definitions/VkPipelineBindPoint"
+														"depthFailOp": {
+															"$ref": "#/definitions/VkStencilOp"
 														},
-														"inputAttachments": {
-															"type": "array",
-															"properties": {
-																"items": {
-																	"type": "object",
-																	"properties": {
-																		"base": {
-																			"type": "string"
-																		},
-																		"layout": {
-																			"$ref": "#/definitions/VkImageLayout"
-																		}
-																	}
-																}
-															}
+														"compareOp": {
+															"$ref": "#/definitions/VkCompareOp"
 														},
-														"resolveAttachments": {
-															"type": "array",
-															"properties": {
-																"items": {
-																	"type": "object",
-																	"properties": {
-																		"base": {
-																			"type": "string"
-																		},
-																		"layout": {
-																			"$ref": "#/definitions/VkImageLayout"
-																		}
-																	}
-																}
-															}
+														"compareMask": {
+															"type": "string",
+															"format": "base64"
 														},
-														"colorAttachments": {
-															"type": "array",
-															"properties": {
-																"items": {
-																	"type": "object",
-																	"properties": {
-																		"base": {
-																			"type": "string"
-																		},
-																		"layout": {
-																			"$ref": "#/definitions/VkImageLayout"
-																		}
-																	}
-																}
-															}
+														"writeMask": {
+															"type": "string",
+															"format": "base64"
 														},
-														"preserveAttachments": {
-															"type": "array",
-															"properties": {
-																"items": {
-																	"type": "string"
-																}
-															}
-														},
-														"depthAttachment": {
-															"type": "object",
-															"properties": {
-																"base": {
-																	"type": "string"
-																},
-																"layout": {
-																	"$ref": "#/definitions/VkImageLayout"
-																}
-															}
+														"reference": {
+															"type": "integer"
 														}
 													}
+												},
+												"minDepthBounds": {
+													"type": "number"
+												},
+												"maxDepthBounds": {
+													"type": "number"
 												}
 											}
 										},
-										"dependencies": {
-											"type": "array",
+										"colorBlendStateCreateInfo":{
+											"type": "object",
 											"properties": {
-												"items": {
+												"flags": {
+													"type": "array",
+													"items": {
+														"$ref": "#/definitions/VkPipelineColorBlendStateCreateFlagBits"
+													}
+												},
+												"logicOpEnable": {
+													"type": "boolean"
+												},
+												"logicOp": {
+													"$ref": "#/definitions/VkLogicOp"
+												},
+												"blendConstants": {
 													"type": "object",
 													"properties": {
-														"flags": {
-															"type": "array",
-															"items": {
-																"$ref": "#/definitions/VkDependencyFlagBits"
-															}
+														"R": {
+															"type": "number"
 														},
-														"srcSubpass": {
-															"type": "string"
+														"G": {
+															"type": "number"
 														},
-														"dstSubpass": {
-															"type": "string"
+														"B": {
+															"type": "number"
 														},
-														"srcStageMask": {
-															"type": "array",
-															"items": {
-																"$ref": "#/definitions/VkPipelineStageFlagBits"
-															}
-														},
-														"dstStageMask": {
-															"type": "array",
-															"items": {
-																"$ref": "#/definitions/VkPipelineStageFlagBits"
-															}
-														},
-														"srcAccessMask": {
-															"type": "array",
-															"items": {
-																"$ref": "#/definitions/VkAccessFlagBits"
-															}
-														},
-														"dstAccessMask": {
-															"type": "array",
-															"items": {
-																"$ref": "#/definitions/VkAccessFlagBits"
+														"A": {
+															"type": "number"
+														}
+													}
+												},
+												"attachments": {
+													"type": "array",
+													"items": {
+														"type": "object",
+														"properties": {
+															"blendEnable": {
+																"type": "boolean"
+															},
+															"srcColorBlendFactor": {
+																"$ref": "#/definitions/VkBlendFactor"
+															},
+															"dstColorBlendFactor": {
+																"$ref": "#/definitions/VkBlendFactor"
+															},
+															"colorBlendOp": {
+																"$ref": "#/definitions/VkBlendOp"
+															},
+															"srcAlphaBlendFactor": {
+																"$ref": "#/definitions/VkBlendFactor"
+															},
+															"dstAlphaBlendFactor": {
+																"$ref": "#/definitions/VkBlendFactor"
+															},
+															"alphaBlendOp": {
+																"$ref": "#/definitions/VkBlendOp"
+															},
+															"colorWriteMask": {
+																"type": "array",
+																"items": {
+																	"$ref": "#/definitions/VkColorComponentFlagBits"
+																}
 															}
 														}
 													}
 												}
 											}
-										}
-									}
-								}
-							}
-						},
-						"framebuffers": {
-							"type": "array",
-							"properties": {
-								"items": {
-									"type": "object",
-									"properties": {
-										"name": {
-											"type": "string"
 										},
-										"flags": {
-											"type": "array",
-											"items": {
-												"$ref": "#/definitions/VkFramebufferCreateFlagBits"
+										"dynamicStateCreateInfo": {
+											"type": "object",
+											"properties": {
+												"dynamicStates": {
+													"type": "array",
+													"items": {
+														"$ref": "#/definitions/VkDynamicState"
+													}
+												}
 											}
 										},
 										"renderPass": {
 											"type": "string"
 										},
-										"attachments": {
-											"type": "array",
-											"items": {
-												"type": "string"
-											}
-										},
-										"width": {
-											"type": "integer"
-										},
-										"height": {
-											"type": "integer"
-										},
-										"layers": {
-											"type": "integer"
+										"layout": {
+											"type": "string"
 										}
 									}
 								}

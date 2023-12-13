@@ -8,7 +8,7 @@ namespace Raindrop::Graphics{
 	Loader::~Loader(){}
 
 	void Loader::loadFile(const std::filesystem::path& path){
-		_context.logger().info("Loading {} file ...", path.string());
+		_context.logger().info("Loading \'{}\" file ...", path.string());
 
 		YAML::Node root = YAML::LoadFile(path);
 
@@ -21,12 +21,33 @@ namespace Raindrop::Graphics{
 	}
 
 	#define TRY(fnc, name) {const auto& child = node[name]; if (child) fnc(child);}
+	#define NODE(name, fnc) {name, [&](const YAML::Node& node){fnc(node);}}
 
 	void Loader::loadNode(const YAML::Node& node){
-		TRY(_context.formats().loader().loadFormats, "formats");
-		TRY(_context.image().loader().loadImages, "images");
-		TRY(_context.image().loader().loadImageViews, "imageViews");
-		TRY(_context.renderPass().loader().loadRenderPasses, "renderPasses");
-		TRY(_context.framebuffer().loader().loadFramebuffers, "framebuffers");
+		using FncType = std::function<void(const YAML::Node&)>;
+		const std::unordered_map<std::string, FncType> nameToFnc = {
+			NODE("formats", _context.formats().loader().loadFormats),
+			NODE("images", _context.image().loader().loadImages),
+			NODE("imageViews", _context.image().loader().loadImageViews),
+			NODE("renderPasses", _context.renderPass().loader().loadRenderPasses),
+			NODE("pipelineLayouts", _context.shaders().loader().loadPipelineLayouts),
+			NODE("graphicsPipelines", _context.shaders().loader().loadGraphicsPipelines),
+			NODE("framebuffers", _context.framebuffer().loader().loadFramebuffers),
+			NODE("import", loadNode)
+		};
+		
+		for (const auto& child : node){
+			for (auto& it : child){
+				std::string tag = it.first.Scalar();
+
+				auto fncIt = nameToFnc.find(tag);
+				if (fncIt == nameToFnc.end()){
+					_context.logger().warn("Cannot recognize \"{}\" node at line {}", tag, it.first.Mark().line);
+					continue;
+				}
+				
+				fncIt->second(it.second);
+			}
+		}
 	}
 }

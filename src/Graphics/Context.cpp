@@ -12,9 +12,9 @@ namespace Raindrop::Graphics{
 		_logger->info("Loading Graphics context...");
 		_internal = std::make_unique<Internal::Context>(*this);
 		_utils = std::make_unique<Utils::Context>(*this);
+		_renderPass = std::make_unique<RenderPass::Context>(*this);
 		_shaders = std::make_unique<Shaders::Context>(*this);
 		_image = std::make_unique<Image::Context>(*this);
-		_renderPass = std::make_unique<RenderPass::Context>(*this);
 		_framebuffer = std::make_unique<Framebuffer::Context>(*this);
 		_formats = std::make_unique<Formats::Context>(*this);
 		_loader = std::make_unique<Loader>(*this);
@@ -26,9 +26,9 @@ namespace Raindrop::Graphics{
 		_loader.reset();
 		_formats.reset();
 		_framebuffer.reset();
-		_renderPass.reset();
 		_image.reset();
 		_shaders.reset();
+		_renderPass.reset();
 		_utils.reset();
 		_internal.reset();
 		_logger->info("Graphics context terminated without any critical error");

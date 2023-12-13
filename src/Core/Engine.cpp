@@ -55,7 +55,7 @@ namespace Raindrop::Core{
 		return _context->assetManager();
 	}
 
-	std::weak_ptr<Asset::Asset> Engine::loadOrGet(const std::filesystem::path& path){
+	std::shared_ptr<Asset::Asset> Engine::loadOrGet(const std::filesystem::path& path){
 		return _context->assetManager().loadOrGet(path);
 	}
 

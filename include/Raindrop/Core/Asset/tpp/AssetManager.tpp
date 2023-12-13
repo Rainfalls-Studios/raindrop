@@ -6,7 +6,7 @@ std::shared_ptr<T> AssetManager::registerFactory(Args... args){
 	return factory;
 }
 template<typename T>
-std::weak_ptr<T> AssetManager::loadOrGet(const std::filesystem::path& path){
+std::shared_ptr<T> AssetManager::loadOrGet(const std::filesystem::path& path){
 	static_assert(std::is_base_of<Asset, T>::value, "");
-	return std::static_pointer_cast<T>(loadOrGet(path).lock());
+	return std::static_pointer_cast<T>(loadOrGet(path));
 }

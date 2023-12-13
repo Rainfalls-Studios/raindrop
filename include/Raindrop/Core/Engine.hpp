@@ -27,11 +27,11 @@ namespace Raindrop::Core{
 			Asset::AssetManager& assetManager();
 			const Asset::AssetManager& assetManager() const;
 
-			std::weak_ptr<Asset::Asset> loadOrGet(const std::filesystem::path& path);
+			std::shared_ptr<Asset::Asset> loadOrGet(const std::filesystem::path& path);
 			void registerFactory(const std::shared_ptr<Asset::AssetFactory>& factory);
 			void removeFactory(const std::shared_ptr<Asset::AssetFactory>& factory);
 
-			template<typename T> std::weak_ptr<T> loadOrGet(const std::filesystem::path& path);
+			template<typename T> std::shared_ptr<T> loadOrGet(const std::filesystem::path& path);
 			template<typename T, typename... Args> void registerFactory(Args... args);
 
 			Scene::SceneManager& sceneManager();

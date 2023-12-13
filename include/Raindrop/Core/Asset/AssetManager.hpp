@@ -11,9 +11,9 @@ namespace Raindrop::Core::Asset{
 			AssetManager(Core::Context& core);
 			~AssetManager();
 
-			std::weak_ptr<Asset> loadOrGet(const std::filesystem::path& path);
+			std::shared_ptr<Asset> loadOrGet(const std::filesystem::path& path);
 
-			template<typename T> std::weak_ptr<T> loadOrGet(const std::filesystem::path& path);
+			template<typename T> std::shared_ptr<T> loadOrGet(const std::filesystem::path& path);
 			template<typename T, typename... Args> std::shared_ptr<T> registerFactory(Args... args);
 
 			void registerFactory(const std::shared_ptr<AssetFactory>& factory);

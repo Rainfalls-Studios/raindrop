@@ -36,7 +36,7 @@ namespace Raindrop::Graphics::Image{
 	}
 
 	void Loader::loadImageViews(const YAML::Node& node){
-		_context.logger().info("Loading image view node");
+		_context.logger().info("Loading image views...");
 		if (!node.IsSequence()){
 			_context.logger().error("Invalid node type ! excepting block sequence"),
 			throw std::runtime_error("Invalid node type");

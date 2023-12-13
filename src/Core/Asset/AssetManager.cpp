@@ -16,35 +16,35 @@ namespace Raindrop::Core::Asset{
 		_context->logger().info("Asset manager terminated without any critical error");
 	}
 
-	std::weak_ptr<Asset> AssetManager::loadOrGet(const std::filesystem::path& path){
-		_context->logger().info("Requirering asset %s", path.string().c_str());
+	std::shared_ptr<Asset> AssetManager::loadOrGet(const std::filesystem::path& path){
+		_context->logger().info("Requirering asset \"{}\"", path.string());
 
 		auto it = _pathToAsset.find(path);
 		if (it != _pathToAsset.end()){
 			if (!it->second.expired()){
-				_context->logger().trace("Succesfuly found asset file {}", path.string().c_str());
-				return it->second;
+				_context->logger().trace("Succesfuly found asset \"{}\"", path.string().c_str());
+				return it->second.lock();
 			}
 			_pathToAsset.erase(it);
 		}
 
 		AssetFactory* Factory = findFactory(path.extension());
 		if (!Factory){
-			_context->logger().error("Failed to find the asset factory corresponding to {} extension : {}", path.extension().string().c_str(), path.string().c_str());
+			_context->logger().error("Failed to find the asset factory corresponding to \"{}\" extension : \"{}\"", path.extension().string(), path.string());
 			throw std::runtime_error("Failed to find asset factory");
 		}
 
-		_context->logger().info("Loading {} from asset factory...", path.string().c_str());
+		_context->logger().trace("Loading \"{}\" from asset factory...", path.string());
 
 		std::shared_ptr<Asset> asset;
 		try{
 			asset = Factory->createAsset(path);
 		} catch (const std::exception &e){
-			_context->logger().error("Failed to load asset {} : {}", path.string().c_str(), e.what());
+			_context->logger().error("Failed to load asset \"{}\" : {}", path.string(), e.what());
 			throw std::runtime_error("Failed to load asset");
 		}
 
-		_context->logger().info("Asset {} loaded with success !", path.string().c_str());
+		_context->logger().info("Asset \"{}\" loaded with success !", path.string());
 
 
 		_pathToAsset[path] = asset;
