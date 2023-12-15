@@ -5,6 +5,8 @@
 #include "config.hpp"
 
 #include <Raindrop/Graphics/Engine.hpp>
+#include <Raindrop/Graphics/Context.hpp>
+#include <Raindrop/Graphics/Shaders/GraphicsPipeline.hpp>
 
 int main(int argc, char** argv){
 	Raindrop::Raindrop engine;
@@ -18,10 +20,18 @@ int main(int argc, char** argv){
 		}
 	);
 
-	// engine.registry().put_child("SourceDir", boost::property_tree::ptree(RESOURCE_DIR));
+	engine.subscribeEvent(
+		"Renderer.preSwapchainRenderPass",
+		[&](){
+			auto& context = engine.graphics().context();
 
-	// try loading a shader
-	// engine.loadOrGet(source / "pipelines/pipeline.ymlgfxpipe");
+			auto commandBuffer = 
+			auto pipeline = context.shaders().graphicsPipelineManager().get("default graphics pipeline");
+
+		}
+	);
+
+	engine.registry().set("resourcesDir", RESOURCE_DIR);
 	
 	engine.graphics().loadFromFile(source / "renderer.yaml");
 	engine.run();

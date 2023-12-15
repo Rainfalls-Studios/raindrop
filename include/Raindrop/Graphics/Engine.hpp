@@ -14,6 +14,9 @@ namespace Raindrop::Graphics{
 
 			void loadFromFile(const std::filesystem::path& path);
 
+			const Context& context() const;
+			Context& context();
+
 		private:
 			std::unique_ptr<Context> _context;
 			std::vector<VkCommandBuffer> _framesCommandBuffers;

@@ -29,7 +29,7 @@ namespace Raindrop::Graphics::RenderPass{
 		return _attachmentDescriptions.data();
 	}
 
-	uint32_t RenderPassBuilder::attachmentCount() const{
+	std::size_t RenderPassBuilder::attachmentCount() const{
 		return _attachmentDescriptions.size();
 	}
 
@@ -37,7 +37,7 @@ namespace Raindrop::Graphics::RenderPass{
 		return _subpasses.data();
 	}
 
-	uint32_t RenderPassBuilder::subpassCount() const{
+	std::size_t RenderPassBuilder::subpassCount() const{
 		return _subpasses.size();
 	}
 
@@ -45,11 +45,11 @@ namespace Raindrop::Graphics::RenderPass{
 		return _dependencies.data();
 	}
 
-	uint32_t RenderPassBuilder::dependencyCount() const{
+	std::size_t RenderPassBuilder::dependencyCount() const{
 		return _dependencies.size();
 	}
 
-	VkRenderPassCreateFlags RenderPassBuilder::flags() const{
+	VkRenderPassCreateFlags& RenderPassBuilder::flags(){
 		return _flags;
 	}
 
@@ -76,50 +76,38 @@ namespace Raindrop::Graphics::RenderPass{
 	}
 
 	void RenderPassBuilder::loadSubpass(const YAML::Node& node){
-		YAML::Mark mark = node.Mark();
+		VkSubpassDescription description;
+		SubpassData data;
 
-		// TO AVOID USELESS COPY
-		_subpasses.push_back({});
-		VkSubpassDescription& description = _subpasses.back();
+		std::string name = "None";
 
-		_subpassDatas.push_back({});
-		SubpassData& data = _subpassDatas.back();
+		try{
+			name = node["name"].as<std::string>();
 
-		std::string name = node["name"].as<std::string>();
+			YAML::decodeVkSubpassDescriptionFlags(node["flags"], description.flags);
+			description.pipelineBindPoint = node["pipelineBindPoint"].as<VkPipelineBindPoint>();
 
-		_subpassToId[name] = _subpasses.size() - 1;
+			loadAttachmentRef(data.inputAttachments, node["inputAttachments"]);
+			loadAttachmentRef(data.resolveAttachments, node["resolveAttachments"]);
+			loadAttachmentRef(data.colorAttachments, node["colorAttachments"]);
+			loadPreserveAttachments(data.preserveAttachments, node["preserveAttachments"]);
+			data.depthAttachment = loadAttachmentReference(node["depthAttachment"]);
 
-		// description.flags = 
-		YAML::decodeVkSubpassDescriptionFlags(node["flags"], description.flags);
-		description.pipelineBindPoint = node["pipelineBindPoint"].as<VkPipelineBindPoint>();
-		// description.
+		} catch (const std::exception& e){
+			_subpasses.pop_back();
+			_subpassDatas.pop_back();
 
-		loadAttachmentRef(data.inputAttachments, node["inputAttachments"]);
-		loadAttachmentRef(data.resolveAttachments, node["resolveAttachments"]);
-		loadAttachmentRef(data.colorAttachments, node["colorAttachments"]);
-		loadPreserveAttachments(data.preserveAttachments, node["preserveAttachments"]);
-		data.depthAttachment = loadAttachmentReference(node["depthAttachment"]);
-
-		if (!data.resolveAttachments.empty()){
-			if (data.resolveAttachments.size() != data.colorAttachments.size()){
-				_context.logger().warn("Threre should be the same ammount of resolve attachment as there is color attachments or none ({} != {}) at line {}", data.resolveAttachments.size(), data.colorAttachments.size(), mark.line);
-				throw std::runtime_error("Invalid resolve attachment count");
-			}
+			_context.logger().error("Failed to load subpass \"{}\" at line {} : {}", name, node.Mark().line, e.what());
+			throw std::runtime_error("Failed to load subpass");
 		}
 
-		description.pDepthStencilAttachment = &data.depthAttachment;
+		std::size_t subpassID = _subpasses.size();
 
-		description.inputAttachmentCount = static_cast<uint32_t>(data.inputAttachments.size());
-		description.pInputAttachments = data.inputAttachments.data();
+		_subpasses.push_back(description);
+		_subpassDatas.push_back(data);
 
-		description.colorAttachmentCount = static_cast<uint32_t>(data.colorAttachments.size());
-		description.pColorAttachments = data.colorAttachments.data();
-
-		description.preserveAttachmentCount = static_cast<uint32_t>(data.preserveAttachments.size());
-		description.pPreserveAttachments = data.preserveAttachments.data();
-
-		// IT IS THE SAME SIZE AS COLOR ATTACHMENTS
-		description.pResolveAttachments = data.resolveAttachments.data();
+		_subpassToId[name] = subpassID;
+		updateSubpass(subpassID);
 	}
 
 	void RenderPassBuilder::loadPreserveAttachments(std::vector<uint32_t>& storage, const YAML::Node& node){
@@ -205,5 +193,105 @@ namespace Raindrop::Graphics::RenderPass{
 		}
 
 		return static_cast<uint32_t>(it->second);	
+	}
+
+	void RenderPassBuilder::setFlags(const VkRenderPassCreateFlags& flags){
+		_flags = flags;
+	}
+
+	const VkRenderPassCreateFlags& RenderPassBuilder::flags() const{
+		return _flags;
+	}
+
+	void RenderPassBuilder::setName(const std::string& name){
+		_name = name;
+	}
+
+	std::string& RenderPassBuilder::name(){
+		return _name;
+	}
+
+	void RenderPassBuilder::setDependencyCount(const std::size_t& count){
+		_dependencies.resize(count);
+	}
+
+	VkSubpassDependency* RenderPassBuilder::dependencies(){
+		return _dependencies.data();
+	}
+			
+	const VkSubpassDependency& RenderPassBuilder::dependency(const std::size_t& id) const{
+		if (id > _dependencies.size()) throw std::out_of_range("Out of range of the dependency");
+		return _dependencies[id];
+	}
+
+	VkSubpassDependency& RenderPassBuilder::dependency(const std::size_t& id){
+		if (id > _dependencies.size()) throw std::out_of_range("Out of range of the dependency");
+		return _dependencies[id];
+	}
+
+	VkSubpassDescription* RenderPassBuilder::subpasses(){
+		return _subpasses.data();
+	}
+
+	const VkSubpassDescription& RenderPassBuilder::subpass(const std::size_t& id) const{
+		return _subpasses[id];
+	}
+
+	VkSubpassDescription& RenderPassBuilder::subpass(const std::size_t& id){
+		return _subpasses[id];
+	}
+
+	void RenderPassBuilder::setSubpassCount(const std::size_t& count){
+		_subpasses.resize(count);
+	}
+
+	RenderPassBuilder::SubpassData& RenderPassBuilder::subpassData(const std::size_t& id){
+		return _subpassDatas[id];
+	}
+
+	const RenderPassBuilder::SubpassData& RenderPassBuilder::subpassData(const std::size_t& id) const{
+		return _subpassDatas[id];
+	}
+
+	void RenderPassBuilder::updateSubpass(const std::size_t& id){
+		auto& subpass = this->subpass(id);
+		auto& data = subpassData(id);
+
+		if (!data.resolveAttachments.empty()){
+			if (data.resolveAttachments.size() != data.colorAttachments.size()){
+				_context.logger().warn("Threre should be the same ammount of resolve attachment as there is color attachments or none ({} != {})", data.resolveAttachments.size(), data.colorAttachments.size());
+				throw std::runtime_error("Invalid resolve attachment count");
+			}
+		}
+		
+		subpass.pDepthStencilAttachment = &data.depthAttachment;
+
+		subpass.inputAttachmentCount = static_cast<uint32_t>(data.inputAttachments.size());
+		subpass.pInputAttachments = data.inputAttachments.data();
+
+		subpass.colorAttachmentCount = static_cast<uint32_t>(data.colorAttachments.size());
+		subpass.pColorAttachments = data.colorAttachments.data();
+
+		subpass.preserveAttachmentCount = static_cast<uint32_t>(data.preserveAttachments.size());
+		subpass.pPreserveAttachments = data.preserveAttachments.data();
+
+		// It is the same size as the color attachments
+		subpass.pResolveAttachments = data.resolveAttachments.data();
+	}
+
+	void RenderPassBuilder::setAttachmentCount(const std::size_t& count){
+		_attachmentDescriptions.resize(count);
+	}
+
+	VkAttachmentDescription* RenderPassBuilder::attachments(){
+		return _attachmentDescriptions.data();
+	}
+
+	const VkAttachmentDescription& RenderPassBuilder::attachment(const std::size_t& id) const{
+		return _attachmentDescriptions[id];
+	}
+	
+	VkAttachmentDescription& RenderPassBuilder::attachment(const std::size_t& id){
+		return _attachmentDescriptions[id];
 	}
 }

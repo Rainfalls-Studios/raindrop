@@ -11,8 +11,10 @@ namespace Raindrop::Graphics::Shaders{
 			~GraphicsPipeline();
 
 			void bind(VkCommandBuffer commandBuffer);
-			
-			VkPipeline pipeline() const;
+			VkPipeline get() const;
+
+			PipelineLayout& lauout();
+			const PipelineLayout& layout() const;
 
 		private:
 			Context& _context;

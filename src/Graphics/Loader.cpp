@@ -20,7 +20,6 @@ namespace Raindrop::Graphics{
 		}
 	}
 
-	#define TRY(fnc, name) {const auto& child = node[name]; if (child) fnc(child);}
 	#define NODE(name, fnc) {name, [&](const YAML::Node& node){fnc(node);}}
 
 	void Loader::loadNode(const YAML::Node& node){

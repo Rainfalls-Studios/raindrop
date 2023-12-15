@@ -66,12 +66,13 @@ namespace Raindrop::Graphics::Shaders{
 
 	void GraphicsPipelineBuilder::loadStage(const YAML::Node& node){
 		YAML::Mark mark = node.Mark();
+		auto& registry = _context.graphics().core().registry();
 
 		VkPipelineShaderStageCreateInfo info{};
 		std::shared_ptr<Shader> shader;
 		
 		try{
-			shader = _context.graphics().core().loadOrGet<Shader>(node["shader"].as<std::string>());
+			shader = _context.graphics().core().loadOrGet<Shader>(registry.get<std::string>(node["shader"].as<std::string>()));
 		} catch (const std::exception &e){
 			_context.logger().warn("Failed to find the shader \"{}\" line {}", node.as<std::string>("None"), mark.line);
 			throw std::runtime_error("Failed to find the shader");

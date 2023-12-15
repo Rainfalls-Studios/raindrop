@@ -396,6 +396,8 @@ raindrop:
             size: 128
             offset: 0
             stages: [VK_SHADER_STAGE_VERTEX_BIT, VK_SHADER_STAGE_FRAGMENT_BIT]
+      - layout:
+        name: "empty pipeline layout"
     
     - graphicsPipelines:
       - defaultPipeline:
@@ -406,11 +408,11 @@ raindrop:
           - name: "main"
             stage: VK_SHADER_STAGE_VERTEX_BIT
             flags: []
-            shader: /home/alexis/Documents/raindrop/tests/Testbed/shaders/shader.vert.glsl.spv
+            shader: ${resourcesDir}/shaders/shader.vert.glsl.spv
           - name: "main"
             stage: VK_SHADER_STAGE_FRAGMENT_BIT
             flags: []
-            shader: /home/alexis/Documents/raindrop/tests/Testbed/shaders/shader.frag.glsl.spv
+            shader: ${resourcesDir}/shaders/shader.frag.glsl.spv
         
         inputStateCreateInfo:
           vertexAttributeDescriptions:

@@ -61,7 +61,15 @@ namespace Raindrop::Graphics::Shaders{
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
 	}
 	
-	VkPipeline GraphicsPipeline::pipeline() const{
+	VkPipeline GraphicsPipeline::get() const{
 		return _pipeline;
+	}
+	
+	PipelineLayout& GraphicsPipeline::lauout(){
+		return *_layout;
+	}
+
+	const PipelineLayout& GraphicsPipeline::layout() const{
+		return *_layout;
 	}
 }

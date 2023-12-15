@@ -15,6 +15,4 @@ foreach(source IN LISTS shaders)
 	list(APPEND SPV_shaders ${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME}.spv)
 endforeach()
 
-add_custom_target(default_shaders ALL DEPENDS ${SPV_shaders})
-
-add_subdirectory(fullscreen)
+add_custom_target(fullscreen_shader ALL DEPENDS ${SPV_shaders})
