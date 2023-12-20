@@ -1,9 +1,12 @@
-#ifndef __RAINDROP_GRAPHICS_INTERNAL_SWAPCHAIN_HPP__
-#define __RAINDROP_GRAPHICS_INTERNAL_SWAPCHAIN_HPP__
+#ifndef __RAINDROP_GRAPHICS_SWAPCHAIN_HPP__
+#define __RAINDROP_GRAPHICS_SWAPCHAIN_HPP__
 
+#include <Raindrop/Graphics/common.hpp>
 #include <Raindrop/Graphics/Internal/common.hpp>
+#include <Raindrop/Graphics/Internal/SwapchainSupport.hpp>
+#include <Raindrop/Graphics/RenderPass/common.hpp>
 
-namespace Raindrop::Graphics::Internal{
+namespace Raindrop::Graphics{
 	class Swapchain{
 		public:
 			struct Frame{
@@ -31,7 +34,9 @@ namespace Raindrop::Graphics::Internal{
 
 			uint32_t frameCount() const;
 			uint32_t currentFrame() const;
-			VkRenderPass renderPass() const;
+
+			const std::shared_ptr<RenderPass::RenderPass>& renderPass() const;
+			std::shared_ptr<RenderPass::RenderPass>& renderPass();
 
 			void beginRenderPass(VkCommandBuffer commandBuffer);
 			void endRenderPass(VkCommandBuffer commandBuffer);
@@ -52,16 +57,16 @@ namespace Raindrop::Graphics::Internal{
 				SwapchainData(Context& _context);
 			};
 
-			Queue* _presentQueue;
-			Queue* _graphicsQueue;
+			Internal::Queue* _presentQueue;
+			Internal::Queue* _graphicsQueue;
 
 			Context& _context;
-			SwapchainSupport _swapchainSupport;  
+			Internal::SwapchainSupport _swapchainSupport;  
 
 			std::unique_ptr<SwapchainData> _swapchain = nullptr;
 			std::unique_ptr<SwapchainData> _oldSwapchain = nullptr;
 
-			VkRenderPass _renderPass = VK_NULL_HANDLE;
+			std::shared_ptr<RenderPass::RenderPass> _renderPass;
 			uint32_t _currentFrame = 0;
 			VkFormat _imageFormat;
 
@@ -89,7 +94,6 @@ namespace Raindrop::Graphics::Internal{
 			void createSyncObjects();
 
 			void queryQueues();
-			
 	};
 }
 

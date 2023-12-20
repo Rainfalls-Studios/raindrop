@@ -18,14 +18,12 @@ namespace Raindrop::Graphics::Internal{
 		_queueHandler = std::make_unique<QueueHandler>(*this);
 		_queues = std::make_unique<Queues>(*this);
 		_commandPools = std::make_unique<CommandPools>(*this);
-		_swapchain = std::make_unique<Swapchain>(*this);
 		_logger->info("Graphics internal context loaded without any critical error");
 	}
 
 	Context::~Context(){
 		_logger->info("Terminating Graphics internal context...");
 
-		_swapchain.reset();
 		_commandPools.reset();
 		_queues.reset();
 		_queueHandler.reset();
@@ -72,10 +70,6 @@ namespace Raindrop::Graphics::Internal{
 
 	CommandPools& Context::commandPools(){
 		return *_commandPools;
-	}
-
-	Swapchain& Context::swapchain(){
-		return *_swapchain;
 	}
 
 	Queues& Context::queues(){

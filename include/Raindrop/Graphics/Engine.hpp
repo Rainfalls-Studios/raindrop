@@ -17,6 +17,8 @@ namespace Raindrop::Graphics{
 			const Context& context() const;
 			Context& context();
 
+			VkCommandBuffer currentFramebuffer() const;
+
 		private:
 			std::unique_ptr<Context> _context;
 			std::vector<VkCommandBuffer> _framesCommandBuffers;

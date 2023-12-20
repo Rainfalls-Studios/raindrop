@@ -16,12 +16,15 @@ namespace Raindrop::Graphics::Buffers{
 			bool operator==(const VertexLayout& other) const;
 			bool operator!=(const VertexLayout& other) const;
 
-			std::size_t addAttribute(const std::string &name, std::size_t binding, VkFormat format);
+			std::size_t addAttribute(const std::string &name, std::size_t binding, VkFormat format, VertexAttributeType type);
 			void removeAttribute(std::size_t id);
 			void removeAttribute(const std::string& name);
 
 			std::size_t attributeSize(std::size_t id) const;
 			std::size_t attributeSize(const std::string& name) const;
+			
+			VertexAttributeType attributeType(const std::size_t id) const;
+			VertexAttributeType attributeType(const std::string& name) const;
 
 			const std::string& attributeName(std::size_t id) const;
 			std::size_t attributeId(const std::string& name) const;
@@ -49,6 +52,11 @@ namespace Raindrop::Graphics::Buffers{
 		private:
 			Context& _context;
 
+			struct AttributesData{
+				VertexAttributeType type;
+			};
+
+			std::vector<AttributesData> _attributeData;
 			std::vector<VkVertexInputAttributeDescription> _attributes;
 			std::vector<VkVertexInputBindingDescription> _bindings;
 

@@ -3,6 +3,7 @@
 
 #include <Raindrop/Graphics/Shaders/common.hpp>
 #include <Raindrop/Graphics/RenderPass/common.hpp>
+#include <Raindrop/Graphics/Buffers/common.hpp>
 
 namespace Raindrop::Graphics::Shaders{
 	class GraphicsPipelineBuilder{
@@ -29,9 +30,8 @@ namespace Raindrop::Graphics::Shaders{
 			const std::shared_ptr<PipelineLayout>& layout() const;
 			const std::shared_ptr<RenderPass::RenderPass>& renderPass() const;
 			const std::list<std::shared_ptr<Shader>>& shaders() const;
+			const std::shared_ptr<Buffers::VertexLayout> vertexLayout() const;
 			uint32_t subpass() const;
-
-
 		
 		private:
 			Context& _context;
@@ -66,6 +66,7 @@ namespace Raindrop::Graphics::Shaders{
 			std::list<std::string> _names;
 			std::string _name;
 			std::unique_ptr<VkSampleMask[]> _sampleMasks;
+			std::shared_ptr<Buffers::VertexLayout> _vertexLayout;
 
 			void loadStage(const YAML::Node& node);
 

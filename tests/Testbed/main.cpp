@@ -20,18 +20,23 @@ int main(int argc, char** argv){
 		}
 	);
 
+	engine.registry().set("resourcesDir", RESOURCE_DIR);
+
+	auto& graphicsContext = engine.graphics().context();
+	auto& registry = engine.registry();
+
 	engine.subscribeEvent(
-		"Renderer.preSwapchainRenderPass",
+		"Renderer.SwapchainRenderPass",
 		[&](){
-			auto& context = engine.graphics().context();
+			auto commandBuffer = engine.graphics().currentFramebuffer();
+			auto pipeline = graphicsContext.shaders().graphicsPipelineManager().get("default graphics pipeline");
+			if (!pipeline) return;
 
-			auto commandBuffer = 
-			auto pipeline = context.shaders().graphicsPipelineManager().get("default graphics pipeline");
-
+			pipeline->bind(commandBuffer);
+			vkCmdDraw(commandBuffer, 6, 1, 0, 0);
 		}
 	);
 
-	engine.registry().set("resourcesDir", RESOURCE_DIR);
 	
 	engine.graphics().loadFromFile(source / "renderer.yaml");
 	engine.run();

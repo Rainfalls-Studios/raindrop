@@ -26,6 +26,7 @@
 #include <deque>
 #include <bitset>
 #include <any>
+#include <optional>
 
 #include <thread>
 #include <mutex>

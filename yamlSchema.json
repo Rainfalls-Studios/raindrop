@@ -4371,6 +4371,21 @@
 				"VK_SHADER_GROUP_SHADER_INTERSECTION_KHR",
 				"VK_SHADER_GROUP_SHADER_MAX_ENUM_KHR"
 			]
+		},
+		"VertexAttributeType": {
+			"type": "string",
+			"enum": [
+				"Position",
+				"Normal",
+				"Uv",
+				"Color",
+				"Tangent",
+				"Bitangent",
+				"BoneWeight",
+				"BoneIndex",
+				"Custom",
+				"None"
+			]
 		}
 	},
 
@@ -4389,7 +4404,8 @@
 									"type": "object",
 									"properties": {
 										"name": {
-											"type": "string"
+											"type": "string",
+											"default": "format"
 										},
 										"candidates": {
 											"type": "array",
@@ -4401,70 +4417,126 @@
 											"type": "object",
 											"properties": {
 												"optimalTiling": {
-													"type": "array",
-													"items": {
-														"$ref": "#/definitions/VkFormatFeatureFlagBits"
-													}
+													"anyOf": [
+														{
+															"type": "array",
+															"items": {
+																"$ref": "#/definitions/VkFormatFeatureFlagBits"
+															}
+														},
+														{
+															"type": "null"
+														}
+													],
+													"default": "~"
 												},
 												"linearTiling": {
-													"type": "array",
-													"items": {
-														"$ref": "#/definitions/VkFormatFeatureFlagBits"
-													}
+													"anyOf": [
+														{
+															"type": "array",
+															"items": {
+																"$ref": "#/definitions/VkFormatFeatureFlagBits"
+															}
+														},
+														{
+															"type": "null"
+														}
+													],
+													"default": "~"
 												},
 												"buffer": {
-													"type": "array",
-													"items": {
-														"$ref": "#/definitions/VkFormatFeatureFlagBits"
-													}
+													"anyOf": [
+														{
+															"type": "array",
+															"items": {
+																"$ref": "#/definitions/VkFormatFeatureFlagBits"
+															}
+														},
+														{
+															"type": "null"
+														}
+													],
+													"default": "~"
 												}
 											}
 										},
 										"image": {
-											"type": "object",
-											"properties": {
-												"type": {
-													"$ref": "#/definitions/VkImageType"
-												},
-												"tiling": {
-													"$ref": "#/definitions/VkImageTiling"
-												},
-												"usage": {
-													"type": "array",
-													"items": {
-														"$ref": "#/definitions/VkImageUsageFlagBits"
+											"anyOf": [
+												{
+													"type": "object",
+													"properties": {
+														"type": {
+															"$ref": "#/definitions/VkImageType",
+															"default": "VK_IMAGE_TYPE_2D"
+														},
+														"tiling": {
+															"$ref": "#/definitions/VkImageTiling",
+															"default": "VK_IMAGE_TILING_OPTIMAL"
+														},
+														"usage": {
+															"type": "array",
+															"items": {
+																"$ref": "#/definitions/VkImageUsageFlagBits"
+															}
+														},
+														"flags": {
+															"anyOf": [
+																{
+																	"type": "array",
+																	"items": {
+																		"$ref": "#/definitions/VkImageCreateFlagBits"
+																	}
+																},
+																{
+																	"type": "null"
+																}
+															],
+															"default": "~"
+														},
+														"samples": {
+															"anyOf": [
+																{
+																	"type": "array",
+																	"items": {
+																		"$ref": "#/definitions/VkSampleCountFlagBits"
+																	}
+																},
+																{
+																	"type": "null"
+																}
+															],
+															"default": "~"
+														},
+														"width": {
+															"type": "integer",
+															"default": "0"
+														},
+														"height": {
+															"type": "integer",
+															"default": "0"
+														},
+														"depth": {
+															"type": "integer",
+															"default": "0"
+														},
+														"arrayLayers": {
+															"type": "integer",
+															"default": "0"
+														},
+														"mipLevels": {
+															"type": "integer",
+															"default": "0"
+														}
 													}
 												},
-												"flags": {
-													"type": "array",
-													"items": {
-														"$ref": "#/definitions/VkImageCreateFlagBits"
-													}
-												},
-												"samples": {
-													"type": "array",
-													"items": {
-														"$ref": "#/definitions/VkSampleCountFlagBits"
-													}
-												},
-												"width": {
-													"type": "integer"
-												},
-												"height": {
-													"type": "integer"
-												},
-												"depth": {
-													"type": "integer"
-												},
-												"arrayLayers": {
-													"type": "integer"
-												},
-												"mipLevels": {
-													"type": "integer"
+												{
+													"type": "null"
 												}
-											}
+											],
+											"default": "~"
 										}
-									}
+									},
+									"required": ["name", "candidates"]
 								}
 							},
 							"images": {
@@ -4482,15 +4554,43 @@
 											"type": "object",
 											"properties": {
 												"width": {
-													"type": "string"
+													"anyOf": [
+														{
+															"type": "string"
+														},
+														{
+															"type": "number"
+														}
+													],
+													"default": "1080"
 												},
 												"height": {
-													"type": "string"
+													"anyOf": [
+														{
+															"type": "string"
+														},
+														{
+															"type": "number"
+														}
+													],
+													"default": "720"
+												},
+												"depth": {
+													"anyOf": [
+														{
+															"type": "string"
+														},
+														{
+															"type": "number"
+														}
+													],
+													"default": "1"
 												}
 											}
 										},
 										"type": {
-											"type": "string"
+											"$ref": "#/definitions/VkImageType",
+											"default": "VK_IMAGE_TYPE_2D"
 										},
 										"usage": {
 											"type": "array",
@@ -4501,19 +4601,24 @@
 											}
 										},
 										"initialLayout": {
-											"$ref": "#/definitions/VkImageLayout"
+											"$ref": "#/definitions/VkImageLayout",
+											"default": "VK_IMAGE_LAYOUT_UNDEFINED"
 										},
 										"mipLevels": {
-											"type": "integer"
+											"type": "integer",
+											"default": "1"
 										},
 										"arrayLayers": {
-											"type": "integer"
+											"type": "integer",
+											"default": "1"
 										},
 										"sampleCount": {
-											"$ref": "#/definitions/VkSampleCountFlagBits"
+											"$ref": "#/definitions/VkSampleCountFlagBits",
+											"default": "VK_SAMPLE_COUNT_1_BIT"
 										},
 										"tiling": {
-											"$ref": "#/definitions/VkImageTiling"
+											"$ref": "#/definitions/VkImageTiling",
+											"default": "VK_IMAGE_TILING_OPTIMAL"
 										},
 										"queueFamilies": {
 											"type": "array",
@@ -4529,7 +4634,8 @@
 												"$ref" : "#/definitions/VkFormatFeatureFlagBits"
 											}
 										}
-									}
+									},
+									"required": ["name", "format", "extent", "usage", "queueFamilies"]
 								}
 							},
 							"imageViews": {
@@ -4545,25 +4651,38 @@
 												"type": "string"
 											},
 											"viewType": {
-												"$ref": "#/definitions/VkImageViewType"
+												"$ref": "#/definitions/VkImageViewType",
+												"default": "VK_IMAGE_VIEW_TYPE_2D"
 											},
 											"format": {
-												"type": "string"
+												"anyOf": [
+													{
+														"type": "string"
+													},
+													{
+														"type": "null"
+													}
+												],
+												"default": "~"
 											},
 											"componentMapping": {
 												"type": "object",
 												"properties": {
 													"r": {
-														"$ref": "#/definitions/VkComponentSwizzle"
+														"$ref": "#/definitions/VkComponentSwizzle",
+														"default": "VK_COMPONENT_SWIZZLE_IDENTITY"
 													},
 													"g": {
-														"$ref": "#/definitions/VkComponentSwizzle"
+														"$ref": "#/definitions/VkComponentSwizzle",
+														"default": "VK_COMPONENT_SWIZZLE_IDENTITY"
 													},
 													"b": {
-														"$ref": "#/definitions/VkComponentSwizzle"
+														"$ref": "#/definitions/VkComponentSwizzle",
+														"default": "VK_COMPONENT_SWIZZLE_IDENTITY"
 													},
 													"a": {
-														"$ref": "#/definitions/VkComponentSwizzle"
+														"$ref": "#/definitions/VkComponentSwizzle",
+														"default": "VK_COMPONENT_SWIZZLE_IDENTITY"
 													}
 												}
 											},
@@ -4571,27 +4690,39 @@
 												"type": "object",
 												"properties": {
 													"aspectMack": {
-														"type": "array",
-														"items": {
-															"$ref": "#/definitions/VkImageAspectFlagBits"
-														
-													}
+														"anyOf": [
+															{
+																"type": "array",
+																"items": {
+																	"$ref": "#/definitions/VkImageAspectFlagBits"
+																}
+															},
+															{
+																"type": "null"
+															}
+														],
+														"default": "~"
 													},
 													"baseMipLevel": {
-														"type": "integer"
+														"type": "integer",
+														"default": "0"
 													},
 													"levelCount": {
-														"type": "integer"
+														"type": "integer",
+														"default": "1"
 													},
 													"baseArray": {
-														"type": "integer"
+														"type": "integer",
+														"default": "0"
 													},
 													"layerCount": {
-														"type": "integer"
+														"type": "integer",
+														"default": "1"
 													}
 												}
 											}
-										}
+										},
+										"required": ["name", "base"]
 									}
 								}
 							},
@@ -4605,10 +4736,18 @@
 												"type": "string"
 											},
 											"flags": {
-												"type": "array",
-												"items": {
-													"$ref": "#/definitions/VkRenderPassCreateFlagBits"
-												}
+												"anyOf": [
+													{
+														"type": "array",
+														"items": {
+															"$ref": "#/definitions/VkRenderPassCreateFlagBits"
+														}
+													},
+													{
+														"type": "null"
+													}
+												],
+												"default": "~"
 											},
 											"attachments": {
 												"type": "array",
@@ -4620,36 +4759,52 @@
 																"type": "string"
 															},
 															"flags": {
-																"type": "array",
-																"items": {
-																	"type": "string"
-																}
+																"anyOf": [
+																	{
+																		"type": "array",
+																		"items": {
+																			"$ref": "#/definitions/VkAttachmentDescriptionFlagBits"
+																		}
+																	},
+																	{
+																		"type": "null"
+																	}
+																],
+																"default": "~"
 															},
 															"format": {
 																"type": "string"
 															},
 															"sampleCount": {
-																"$ref": "#/definitions/VkSampleCountFlagBits"
+																"$ref": "#/definitions/VkSampleCountFlagBits",
+																"default": "VK_SAMPLE_COUNT_1_BIT"
 															},
 															"loadOp": {
-																"$ref": "#/definitions/VkAttachmentLoadOp"
+																"$ref": "#/definitions/VkAttachmentLoadOp",
+																"default": "VK_ATTACHMENT_LOAD_OP_DONT_CARE"
 															},
 															"storeOp": {
-																"$ref": "#/definitions/VkAttachmentStoreOp"
+																"$ref": "#/definitions/VkAttachmentStoreOp",
+																"default": "VK_ATTACHMENT_STORE_OP_STORE"
 															},
 															"stencilLoadOp": {
-																"$ref": "#/definitions/VkStencilOp"
+																"$ref": "#/definitions/VkStencilOp",
+																"default": "VK_ATTACHMENT_LOAD_OP_DONT_CARE"
 															},
 															"stencilStoreOp": {
-																"$ref": "#/definitions/VkStencilOp"
+																"$ref": "#/definitions/VkStencilOp",
+																"default": "VK_ATTACHMENT_STORE_OP_DONT_CARE"
 															},
 															"initialLayout": {
-																"$ref": "#/definitions/VkImageLayout"
+																"$ref": "#/definitions/VkImageLayout",
+																"default": "VK_IMAGE_LAYOUT_UNDEFINED"
 															},
 															"finalLayout": {
-																"$ref": "#/definitions/VkImageLayout"
+																"$ref": "#/definitions/VkImageLayout",
+																"default": "VK_IMAGE_LAYOUT_UNDEFINED"
 															}
-														}
+														},
+														"required": ["name"]
 													}
 												}
 											},
@@ -4663,50 +4818,112 @@
 																"type": "string"
 															},
 															"flags": {
-																"type": "array",
-																"items": {
-																	"$ref": "#/definitions/VkSubpassDescriptionFlagBits"
-																}
+																"anyOf": [
+																	{
+																		"type": "array",
+																		"items": {
+																			"$ref": "#/definitions/VkSubpassDescriptionFlagBits"
+																		}
+																	},
+																	{
+																		"type": "null"
+																	}
+																]
 															},
 															"pipelineBindPoint": {
 																"$ref": "#/definitions/VkPipelineBindPoint"
 															},
 															"inputAttachments": {
-																"type": "array",
-																"properties": {
-																	"items": {
-																		"type": "object",
+																"anyOf": [
+																	{
+																		"type": "array",
 																		"properties": {
-																			"base": {
-																				"type": "string"
-																			},
-																			"layout": {
-																				"$ref": "#/definitions/VkImageLayout"
+																			"items": {
+																				"type": "object",
+																				"properties": {
+																					"base": {
+																						"type": "string"
+																					},
+																					"layout": {
+																						"$ref": "#/definitions/VkImageLayout"
+																					}
+																				}
 																			}
 																		}
+																	},
+																	{
+																		"type": "null"
 																	}
-																}
+																],
+																"default": "~"
 															},
 															"resolveAttachments": {
-																"type": "array",
-																"properties": {
-																	"items": {
-																		"type": "object",
+																"anyOf": [
+																	{
+																		"type": "array",
 																		"properties": {
-																			"base": {
-																				"type": "string"
-																			},
-																			"layout": {
-																				"$ref": "#/definitions/VkImageLayout"
+																			"items": {
+																				"type": "object",
+																				"properties": {
+																					"base": {
+																						"type": "string"
+																					},
+																					"layout": {
+																						"$ref": "#/definitions/VkImageLayout"
+																					}
+																				}
 																			}
 																		}
+																	},
+																	{
+																		"type": "null"
 																	}
-																}
+																],
+																"default": "~"
 															},
 															"colorAttachments": {
-																"type": "array",
-																"properties": {
-																	"items": {
+																"anyOf": [
+																	{
+																		"type": "array",
+																		"properties": {
+																			"items": {
+																				"type": "object",
+																				"properties": {
+																					"base": {
+																						"type": "string"
+																					},
+																					"layout": {
+																						"$ref": "#/definitions/VkImageLayout"
+																					}
+																				}
+																			}
+																		}
+																	},
+																	{
+																		"type": "null"
+																	}
+																],
+																"default": "~"
+															},
+															"preserveAttachments": {
+																"anyOf": [
+																	{
+																		"type": "array",
+																		"properties": {
+																			"items": {
+																				"type": "string"
+																			}
+																		}
+																	},
+																	{
+																		"type": "null"
+																	}
+																],
+																"default": "~"
+															},
+															"depthAttachment": {
+																"anyOf": [
+																	{
 																		"type": "object",
 																		"properties": {
 																			"base": {
@@ -4716,29 +4933,15 @@
 																				"$ref": "#/definitions/VkImageLayout"
 																			}
 																		}
-																	}
-																}
-															},
-															"preserveAttachments": {
-																"type": "array",
-																"properties": {
-																	"items": {
-																		"type": "string"
-																	}
-																}
-															},
-															"depthAttachment": {
-																"type": "object",
-																"properties": {
-																	"base": {
-																		"type": "string"
 																	},
-																	"layout": {
-																		"$ref": "#/definitions/VkImageLayout"
+																	{
+																		"type": "null"
 																	}
-																}
+																],
+																"default": "~"
 															}
-														}
+														},
+														"required": ["name"]
 													}
 												}
 											},
@@ -4749,42 +4952,84 @@
 														"type": "object",
 														"properties": {
 															"flags": {
-																"type": "array",
-																"items": {
-																	"$ref": "#/definitions/VkDependencyFlagBits"
-																}
+																"anyOf": [
+																	{
+																		"type": "array",
+																		"items": {
+																			"$ref": "#/definitions/VkDependencyFlagBits"
+																		}
+																	},
+																	{
+																		"type": "null"
+																	}
+																],
+																"default": "~"
 															},
 															"srcSubpass": {
-																"type": "string"
+																"type": "string",
+																"default": "~"
 															},
 															"dstSubpass": {
 																"type": "string"
 															},
 															"srcStageMask": {
-																"type": "array",
-																"items": {
-																	"$ref": "#/definitions/VkPipelineStageFlagBits"
-																}
+																"anyOf": [
+																	{
+																		"type": "array",
+																		"items": {
+																			"$ref": "#/definitions/VkPipelineStageFlagBits"
+																		}
+																	},
+																	{
+																		"type": "null"
+																	}
+																],
+																"default": "~"
 															},
 															"dstStageMask": {
-																"type": "array",
-																"items": {
-																	"$ref": "#/definitions/VkPipelineStageFlagBits"
-																}
+																"anyOf": [
+																	{
+																		"type": "array",
+																		"items": {
+																			"$ref": "#/definitions/VkPipelineStageFlagBits"
+																		}
+																	},
+																	{
+																		"type": "null"
+																	}
+																],
+																"default": "~"
 															},
 															"srcAccessMask": {
-																"type": "array",
-																"items": {
-																	"$ref": "#/definitions/VkAccessFlagBits"
-																}
+																"anyOf": [
+																	{
+																		"type": "array",
+																		"items": {
+																			"$ref": "#/definitions/VkAccessFlagBits"
+																		}
+																	},
+																	{
+																		"type": "null"
+																	}
+																],
+																"default": "~"
 															},
 															"dstAccessMask": {
-																"type": "array",
-																"items": {
-																	"$ref": "#/definitions/VkAccessFlagBits"
-																}
+																"anyOf": [
+																	{
+																		"type": "array",
+																		"items": {
+																			"$ref": "#/definitions/VkAccessFlagBits"
+																		}
+																	},
+																	{
+																		"type": "null"
+																	}
+																],
+																"default": "~"
 															}
-														}
+														},
+														"required": ["dstSubpass"]
 													}
 												}
 											}
@@ -4802,10 +5047,19 @@
 												"type": "string"
 											},
 											"flags": {
-												"type": "array",
-												"items": {
-													"$ref": "#/definitions/VkFramebufferCreateFlagBits"
-												}
+												"anyOf": [
+													{
+														"type": "array",
+														"items": {
+															"$ref": "#/definitions/VkFramebufferCreateFlagBits"
+														}
+													},
+													{
+														"type": "null"
+													}
+												],
+												"default": "~"
+												
 											},
 											"renderPass": {
 												"type": "string"
@@ -4817,17 +5071,21 @@
 												}
 											},
 											"width": {
-												"type": "integer"
+												"type": "integer",
+												"default": "720"
 											},
 											"height": {
-												"type": "integer"
+												"type": "integer",
+												"default": "720"
 											},
 											"layers": {
-												"type": "integer"
+												"type": "integer",
+												"default": "1"
 											}
 										}
 									}
-								}
+								},
+								"required": ["name", "width", "height", "renderPass", "attachments"]
 							},
 							"pipelineLayouts":{
 								"type": "array",
@@ -4838,32 +5096,50 @@
 											"type": "string"
 										},
 										"descriptorSets": {
-											"type": "array",
-											"items": {
-												"type": "string"
-											}
+											"anyOf": [
+												{
+													"type": "array",
+													"items": {
+														"type": "string"
+													}
+												},
+												{
+													"type": "null"
+												}
+											],
+											"default": "~"
 										},
 										"pushConstants": {
-											"type": "array",
-											"items": {
-												"type": "object",
-												"properties": {
-													"offset": {
-														"type": "integer"
-													},
-													"size": {
-														"type": "integer"
-													},
-													"stages": {
-														"type": "array",
-														"items": {
-															"$ref" : "#/definitions/VkShaderStageFlagBits"
-														}
+											"anyOf": [
+												{
+													"type": "array",
+													"items": {
+														"type": "object",
+														"properties": {
+															"offset": {
+																"type": "integer"
+															},
+															"size": {
+																"type": "integer"
+															},
+															"stages": {
+																"type": "array",
+																"items": {
+																	"$ref" : "#/definitions/VkShaderStageFlagBits"
+																}
+															}
+														},
+														"required": ["offset", "size", "stages"]
 													}
+												},
+												{
+													"type": "null"
 												}
-											}
+											],
+											"default": "~"
 										}
-									}
+									},
+									"required": ["name"]
 								}
 							},
 							"graphicsPipelines": {
@@ -4875,10 +5151,18 @@
 											"type": "string"
 										},
 										"flags": {
-											"type": "array",
-											"items": {
-												"$ref": "#/definitions/VkPipelineCreateFlagBits"
-											}
+											"anyOf": [
+												{
+													"type": "array",
+													"items": {
+														"$ref": "#/definitions/VkPipelineCreateFlagBits"
+													}
+												},
+												{
+													"type": "null"
+												}
+											],
+											"default": "~"
 										},
 										"stages": {
 											"type": "array",
@@ -4886,16 +5170,33 @@
 												"type": "object",
 												"properties": {
 													"shader": {
-														"type": "string"
+														"type": "string",
+														"default": "my/path/to/my/shader.frag"
 													},
 													"flags": {
-														"type": "array",
-														"items": {
-															"$ref": "#/definitions/VkPipelineShaderStageCreateFlagBits"
-														}
+														"anyOf": [
+															{
+																"type": "array",
+																"items": {
+																	"$ref": "#/definitions/VkPipelineShaderStageCreateFlagBits"
+																}
+															},
+															{
+																"type": "null"
+															}
+														],
+														"default": "~"
 													},
 													"stage": {
-														"$ref": "#/definitions/VkShaderStageFlagBits"
+														"anyOf": [
+															{
+																"$ref": "#/definitions/VkShaderStageFlagBits"
+															},
+															{
+																"type": "null"
+															}
+														],
+														"default": "~"
 													},
 													"specialization": {
 														"type": "object",
@@ -4904,61 +5205,80 @@
 														}
 													},
 													"name": {
-														"type": "string"
+														"type": "string",
+														"default": "main"
 													}
-												}
+												},
+												"required": ["shader"]
 											}
 										},
 										"inputStateCreateInfo": {
-											"type": "object",
-											"properties": {
-												"vertexAttributeDescriptions": {
-													"type": "array",
-													"items": {
-														"type": "object",
-														"properties": {
-															"binding": {
-																"type": "integer"
-															},
-															"inputRate": {
-																"$ref": "#/definitions/VkVertexInputRate"
-															},
-															"stride": {
-																"type": "integer"
+											"anyOf": [
+												{
+													"type": "object",
+													"properties": {
+														"vertexAttributeDescriptions": {
+															"type": "array",
+															"items": {
+																"type": "object",
+																"properties": {
+																	"binding": {
+																		"type": "integer"
+																	},
+																	"inputRate": {
+																		"$ref": "#/definitions/VkVertexInputRate"
+																	},
+																	"stride": {
+																		"type": "integer"
+																	}
+																},
+																"required": ["binding", "inputRate", "stride"]
+															}
+														},
+														"vertexBindingDescriptions": {
+															"type": "array",
+															"items": {
+																"type": "object",
+																"properties": {
+																	"location": {
+																		"type": "integer"
+																	},
+																	"binding": {
+																		"type": "integer"
+																	},
+																	"format": {
+																		"$ref": "#/definitions/VkFormat"
+																	},
+																	"offset": {
+																		"type": "integer"
+																	}
+																},
+																"required": ["location", "binding", "format", "offset"]
 															}
 														}
 													}
 												},
-												"vertexBindingDescriptions": {
-													"type": "array",
-													"items": {
-														"type": "object",
-														"properties": {
-															"location": {
-																"type": "integer"
-															},
-															"binding": {
-																"type": "integer"
-															},
-															"format": {
-																"$ref": "#/definitions/VkFormat"
-															},
-															"offset": {
-																"type": "integer"
-															}
+												{
+													"type": "object",
+													"properties": {
+														"layout": {
+															"type": "string"
 														}
-													}
+													},
+													"required": ["layout"]
 												}
-											}
+											]
 										},
 										"inputAssemblyStateCreateInfo": {
 											"type": "object",
 											"properties": {
 												"primitiveRestartEnable": {
-													"type": "boolean"
+													"type": "boolean",
+													"default": "false"
 												},
 												"topology": {
-													"$ref": "#/definitions/VkPrimitiveTopology"
+													"$ref": "#/definitions/VkPrimitiveTopology",
+													"default": "VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST"
 												}
 											}
 										},
@@ -4966,7 +5286,8 @@
 											"type": "object",
 											"properties": {
 												"patchControlPoints": {
-													"type": "integer"
+													"type": "integer",
+													"default": "0"
 												}
 											}
 										},
@@ -4974,50 +5295,84 @@
 											"type": "object",
 											"properties": {
 												"viewports": {
-													"type": "array",
-													"items": {
-														"type": "object",
-														"properties": {
-															"x": {
-																"type": "integer"
-															},
-															"y": {
-																"type": "integer"
-															},
-															"width": {
-																"type": "integer"
-															},
-															"height": {
-																"type": "integer"
-															},
-															"minDepth": {
-																"type": "integer"
-															},
-															"maxDepth": {
-																"type": "integer"
+													"anyOf": [
+														{
+															"type": "array",
+															"items": {
+																"type": "object",
+																"properties": {
+																	"x": {
+																		"type": "integer",
+																		"default": "0"
+																	},
+																	"y": {
+																		"type": "integer",
+																		"default": "0"
+																	},
+																	"width": {
+																		"type": "integer",
+																		"default": "1080"
+																	},
+																	"height": {
+																		"type": "integer",
+																		"default": "720"
+																	},
+																	"minDepth": {
+																		"type": "integer",
+																		"default": "0"
+																	},
+																	"maxDepth": {
+																		"type": "integer",
+																		"default": "1"
+																	}
+																}
 															}
+														},
+														{
+															"type": "integer",
+															"default": "1"
+														},
+														{
+															"type": "null",
+															"default": "~"
 														}
-													}
+													]
 												},
 												"scissors": {
-													"type": "array",
-													"items": {
-														"type": "object",
-														"properties": {
-															"extentWidth": {
-																"type": "integer"
-															},
-															"extentHeight": {
-																"type": "integer"
-															},
-															"offsetX": {
-																"type": "integer"
-															},
-															"offsetY": {
-																"type": "integer"
+													"anyOf": [
+														{
+															"type": "array",
+															"items": {
+																"type": "object",
+																"properties": {
+																	"extentWidth": {
+																		"type": "integer",
+																		"default": "1080"
+																	},
+																	"extentHeight": {
+																		"type": "integer",
+																		"default": "720"
+																	},
+																	"offsetX": {
+																		"type": "integer",
+																		"default": "0"
+																	},
+																	"offsetY": {
+																		"type": "integer",
+																		"default": "0"
+																	}
+																}
 															}
+														},
+														{
+															"type": "integer",
+															"default": "1"
+														},
+														{
+															"type": "null",
+															"default": "~"
 														}
-													}
+													]
 												}	
 											}
 										},
@@ -5025,13 +5380,16 @@
 											"type": "object",
 											"properties": {
 												"depthClampEnable": {
-													"type": "boolean"
+													"type": "boolean",
+													"default": "false"
 												},
 												"rasterizerDiscardEnable": {
-													"type": "boolean"
+													"type": "boolean",
+													"default": "false"
 												},
 												"polygonMode": {
-													"$ref": "#/definitions/VkPolygonMode"
+													"$ref": "#/definitions/VkPolygonMode",
+													"default": "VK_POLYGON_MODE_FILL"
 												},
 												"cullMode": {
 													"type": "array",
@@ -5040,22 +5398,28 @@
 													}
 												},
 												"frontFace": {
-													"$ref": "#/definitions/VkFrontFace"
+													"$ref": "#/definitions/VkFrontFace",
+													"default": "VK_FRONT_FACE_CLOCKWISE"
 												},
 												"depthBiasEnable": {
-													"type": "boolean"
+													"type": "boolean",
+													"default": "true"
 												},
 												"depthBiasConstantFactor": {
-													"type": "number"
+													"type": "number",
+													"default": "0"
 												},
 												"depthBiasClamp": {
-													"type": "number"
+													"type": "number",
+													"default": "0"
 												},
 												"depthBiasSlopFactor": {
-													"type": "number"
+													"type": "number",
+													"default": "0"
 												},
 												"lineWidth": {
-													"type": "number"
+													"type": "number",
+													"default": "1"
 												}
 											}
 										},
@@ -5063,23 +5427,36 @@
 											"type": "object",
 											"properties": {
 												"rasterizationSamples": {
-													"$ref": "#/definitions/VkSampleCountFlagBits"
+													"$ref": "#/definitions/VkSampleCountFlagBits",
+													"default": "VK_SAMPLE_COUNT_1_BIT"
 												},
 												"sampleShadingEnable": {
-													"type": "boolean"
+													"type": "boolean",
+													"default": "false"
 												},
 												"minSampleShading": {
-													"type": "number"
+													"type": "number",
+													"default": "1"
 												},
 												"sampleMask": {
-													"type": "string",
-													"format": "base64"
+													"anyOf": [
+														{
+															"type": "string",
+															"pattern": "^[01]+$"
+														},
+														{
+															"type": "null"
+														}
+													],
+													"default": "~"
 												},
 												"alphaToCoverageEnable": {
-													"type": "boolean"
+													"type": "boolean",
+													"default": "false"
 												},
 												"alphaToOneEnable": {
-													"type": "boolean"
+													"type": "boolean",
+													"default": "false"
 												}
 											}
 										},
@@ -5087,87 +5464,118 @@
 											"type": "object",
 											"properties": {
 												"flags": {
-													"type": "array",
-													"items": {
-														"$ref": "#/definitions/VkPipelineDepthStencilStateCreateFlagBits"
-													}
+													"anyOf": [
+														{
+															"type": "array",
+															"items": {
+																"$ref": "#/definitions/VkPipelineDepthStencilStateCreateFlagBits"
+															}
+														},
+														{
+															"type": "null"
+														}
+													],
+													"default": "~"
 												},
 												"depthTestEnable": {
-													"type": "boolean"
+													"type": "boolean",
+													"default": "true"
 												},
 												"depthWriteEnable": {
-													"type": "boolean"
+													"type": "boolean",
+													"default": "true"
 												},
 												"depthCompareOp": {
-													"$ref": "#/definitions/VkCompareOp"
+													"$ref": "#/definitions/VkCompareOp",
+													"default": "VK_COMPARE_OP_LESS"
 												},
 												"depthBoundsTestEnable": {
-													"type": "boolean"
+													"type": "boolean",
+													"default": "false"
 												},
 												"stencilTestEnable": {
-													"type": "boolean"
+													"type": "boolean",
+													"default": "false"
 												},
 												"front": {
-													"type": "object",
-													"properties": {
-														"failOp": {
-															"$ref": "#/definitions/VkStencilOp"
+													"anyOf": [
+														{
+															"type": "object",
+															"properties": {
+																"failOp": {
+																	"$ref": "#/definitions/VkStencilOp"
+																},
+																"passOp": {
+																	"$ref": "#/definitions/VkStencilOp"
+																},
+																"depthFailOp": {
+																	"$ref": "#/definitions/VkStencilOp"
+																},
+																"compareOp": {
+																	"$ref": "#/definitions/VkCompareOp"
+																},
+																"compareMask": {
+																	"type": "string",
+																	"format": "base64"
+																},
+																"writeMask": {
+																	"type": "string",
+																	"format": "base64"
+																},
+																"reference": {
+																	"type": "integer"
+																}
+															}
 														},
-														"passOp": {
-															"$ref": "#/definitions/VkStencilOp"
-														},
-														"depthFailOp": {
-															"$ref": "#/definitions/VkStencilOp"
-														},
-														"compareOp": {
-															"$ref": "#/definitions/VkCompareOp"
-														},
-														"compareMask": {
-															"type": "string",
-															"format": "base64"
-														},
-														"writeMask": {
-															"type": "string",
-															"format": "base64"
-														},
-														"reference": {
-															"type": "integer"
+														{
+															"type": "null"
 														}
-													}
+													],
+													"default": "~"
 												},
 												"back": {
-													"type": "object",
-													"properties": {
-														"failOp": {
-															"$ref": "#/definitions/VkStencilOp"
+													"anyOf": [
+														{
+															"type": "object",
+															"properties": {
+																"failOp": {
+																	"$ref": "#/definitions/VkStencilOp"
+																},
+																"passOp": {
+																	"$ref": "#/definitions/VkStencilOp"
+																},
+																"depthFailOp": {
+																	"$ref": "#/definitions/VkStencilOp"
+																},
+																"compareOp": {
+																	"$ref": "#/definitions/VkCompareOp"
+																},
+																"compareMask": {
+																	"type": "string",
+																	"format": "base64"
+																},
+																"writeMask": {
+																	"type": "string",
+																	"format": "base64"
+																},
+																"reference": {
+																	"type": "integer"
+																}
+															}
 														},
-														"passOp": {
-															"$ref": "#/definitions/VkStencilOp"
-														},
-														"depthFailOp": {
-															"$ref": "#/definitions/VkStencilOp"
-														},
-														"compareOp": {
-															"$ref": "#/definitions/VkCompareOp"
-														},
-														"compareMask": {
-															"type": "string",
-															"format": "base64"
-														},
-														"writeMask": {
-															"type": "string",
-															"format": "base64"
-														},
-														"reference": {
-															"type": "integer"
+														{
+															"type": "null"
 														}
-													}
+													],
+													"default": "~"
 												},
 												"minDepthBounds": {
-													"type": "number"
+													"type": "number",
+													"default": "0"
 												},
 												"maxDepthBounds": {
-													"type": "number"
+													"type": "number",
+													"default": "1"
 												}
 											}
 										},
@@ -5175,31 +5583,45 @@
 											"type": "object",
 											"properties": {
 												"flags": {
-													"type": "array",
-													"items": {
-														"$ref": "#/definitions/VkPipelineColorBlendStateCreateFlagBits"
-													}
+													"anyOf": [
+														{
+															"type": "array",
+															"items": {
+																"$ref": "#/definitions/VkPipelineColorBlendStateCreateFlagBits"
+															}
+														},
+														{
+															"type": "null"
+														}
+													],
+													"default": "~"
 												},
 												"logicOpEnable": {
-													"type": "boolean"
+													"type": "boolean",
+													"default": "false"
 												},
 												"logicOp": {
-													"$ref": "#/definitions/VkLogicOp"
+													"$ref": "#/definitions/VkLogicOp",
+													"default": "VK_LOGIC_OP_COPY"
 												},
 												"blendConstants": {
 													"type": "object",
 													"properties": {
 														"R": {
-															"type": "number"
+															"type": "number",
+															"default": "1"
 														},
 														"G": {
-															"type": "number"
+															"type": "number",
+															"default": "1"
 														},
 														"B": {
-															"type": "number"
+															"type": "number",
+															"default": "1"
 														},
 														"A": {
-															"type": "number"
+															"type": "number",
+															"default": "1"
 														}
 													}
 												},
@@ -5209,31 +5631,46 @@
 														"type": "object",
 														"properties": {
 															"blendEnable": {
-																"type": "boolean"
+																"type": "boolean",
+																"default": "true"
 															},
 															"srcColorBlendFactor": {
-																"$ref": "#/definitions/VkBlendFactor"
+																"$ref": "#/definitions/VkBlendFactor",
+																"default": "VK_BLEND_FACTOR_SRC_ALPHA"
 															},
 															"dstColorBlendFactor": {
-																"$ref": "#/definitions/VkBlendFactor"
+																"$ref": "#/definitions/VkBlendFactor",
+																"default": "VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA"
 															},
 															"colorBlendOp": {
-																"$ref": "#/definitions/VkBlendOp"
+																"$ref": "#/definitions/VkBlendOp",
+																"default": "VK_BLEND_OP_ADD"
 															},
 															"srcAlphaBlendFactor": {
-																"$ref": "#/definitions/VkBlendFactor"
+																"$ref": "#/definitions/VkBlendFactor",
+																"default": "VK_BLEND_FACTOR_ONE"
 															},
 															"dstAlphaBlendFactor": {
-																"$ref": "#/definitions/VkBlendFactor"
+																"$ref": "#/definitions/VkBlendFactor",
+																"default": "VK_BLEND_FACTOR_ZERO"
 															},
 															"alphaBlendOp": {
-																"$ref": "#/definitions/VkBlendOp"
+																"$ref": "#/definitions/VkBlendOp",
+																"default": "VK_BLEND_OP_ADD"
 															},
 															"colorWriteMask": {
-																"type": "array",
-																"items": {
-																	"$ref": "#/definitions/VkColorComponentFlagBits"
-																}
+																"anyOf": [
+																	{
+																		"type": "array",
+																		"items": {
+																			"$ref": "#/definitions/VkColorComponentFlagBits"
+																		}
+																	},
+																	{
+																		"type": "null"
+																	}
+																],
+																"default": "[VK_COLOR_COMPONENT_R_BIT, VK_COLOR_COMPONENT_G_BIT, VK_COLOR_COMPONENT_B_BIT, VK_COLOR_COMPONENT_A_BIT]"
 															}
 														}
 													}
@@ -5244,10 +5681,17 @@
 											"type": "object",
 											"properties": {
 												"dynamicStates": {
-													"type": "array",
-													"items": {
-														"$ref": "#/definitions/VkDynamicState"
-													}
+													"anyOf": [
+														{
+															"type": "array",
+															"items": {
+																"$ref": "#/definitions/VkDynamicState"
+															}
+														},
+														{
+															"type": "null"
+														}
+													]
 												}
 											}
 										},
@@ -5259,6 +5703,61 @@
 										}
 									}
 								}
+							},
+							"vertexLayouts": {
+								"anyOf": [
+									{
+										"type": "array",
+										"items": {
+											"type": "object",
+											"properties": {
+												"name": {
+													"type": "string"
+												},
+												"bindings": {
+													"anyOf": [
+														{
+															"type": "array",
+															"items": {
+																"type": "object",
+																"properties": {
+																	"inputRate": {
+																		"$ref": "#/definitions/VkVertexInputRate"
+																	},
+																	"attributes": {
+																		"type": "array",
+																		"items": {
+																			"type": "object",
+																			"properties": {
+																				"name": {
+																					"type": "string"
+																				},
+																				"format": {
+																					"$ref": "#/definitions/VkFormat"
+																				},
+																				"type": {
+																					"$ref": "#/definitions/VertexAttributeType"
+																				}
+																			},
+																			"required": ["name", "format"]
+																		}
+																	}
+																}
+															}
+														},
+														{
+															"type": "null"
+														}
+													]
+												}
+											}
+										}
+									},
+									{
+										"type": "null"
+									}
+
+								]
 							}
 						}
 					}

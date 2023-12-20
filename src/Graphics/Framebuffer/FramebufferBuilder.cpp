@@ -23,7 +23,7 @@ namespace Raindrop::Graphics::Framebuffer{
 
 		_width = registry.get<uint32_t>(node["width"].as<std::string>());
 		_height = registry.get<uint32_t>(node["height"].as<std::string>());
-		_layers = registry.get<uint32_t>(node["layers"].as<std::string>());
+		_layers = registry.get<uint32_t>(node["layers"].as<std::string>("1"));
 	}
 
 	void FramebufferBuilder::loadAttachment(const YAML::Node& node){

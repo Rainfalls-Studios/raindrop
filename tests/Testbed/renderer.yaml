@@ -1,8 +1,7 @@
 raindrop:
   graphics:
     - formats:
-      - color:
-        name: "albedo format"
+      - name: "albedo format"
         candidates: [
           VK_FORMAT_R8G8B8_UNORM,
           VK_FORMAT_R8G8B8_UINT,
@@ -12,23 +11,22 @@ raindrop:
 
         features:
           optimalTiling: [VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT]
-          linearTiling: []
-          buffer: []
+          linearTiling: ~
+          buffer: ~
 
         image:
           type: VK_IMAGE_TYPE_2D
           tiling: VK_IMAGE_TILING_OPTIMAL
           usage: [VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_IMAGE_USAGE_SAMPLED_BIT]
-          flags: []
-          samples: []
+          flags: ~
+          samples: ~
           width: 0
           height: 0
           depth: 0
           arrayLayers: 0
           mipLevels: 0
       
-      - vec3:
-        name: "vec3 format"
+      - name: "vec3 format"
         candidates: [
           VK_FORMAT_R32G32B32_SFLOAT,
           VK_FORMAT_R16G16B16_SFLOAT,
@@ -38,23 +36,22 @@ raindrop:
 
         features:
           optimalTiling: [VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT]
-          linearTiling: []
-          buffer: []
+          linearTiling: ~
+          buffer: ~
 
         image:
           type: VK_IMAGE_TYPE_2D
           tiling: VK_IMAGE_TILING_OPTIMAL
           usage: [VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_IMAGE_USAGE_SAMPLED_BIT]
-          flags: []
-          samples: []
+          flags: ~
+          samples: ~
           width: 0
           height: 0
           depth: 0
           arrayLayers: 0
           mipLevels: 0
       
-      - id:
-        name: "id format"
+      - name: "id format"
         candidates: [
           VK_FORMAT_R8_UINT,
           VK_FORMAT_R16_UINT
@@ -62,23 +59,22 @@ raindrop:
 
         features:
           optimalTiling: [VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT]
-          linearTiling: []
-          buffer: []
+          linearTiling: ~
+          buffer: ~
 
         image:
           type: VK_IMAGE_TYPE_2D
           tiling: VK_IMAGE_TILING_OPTIMAL
           usage: [VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_IMAGE_USAGE_SAMPLED_BIT]
-          flags: []
-          samples: []
+          flags: ~
+          samples: ~
           width: 0
           height: 0
           depth: 0
           arrayLayers: 0
           mipLevels: 0
       
-      - depth:
-        name: "depth format"
+      - name: "depth format"
         candidates: [
           VK_FORMAT_D16_UNORM,
           VK_FORMAT_D16_UNORM_S8_UINT,
@@ -89,15 +85,15 @@ raindrop:
 
         features:
           optimalTiling: [VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT]
-          linearTiling: []
-          buffer: []
+          linearTiling: ~
+          buffer: ~
 
         image:
           type: VK_IMAGE_TYPE_2D
           tiling: VK_IMAGE_TILING_OPTIMAL
           usage: [VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_IMAGE_USAGE_SAMPLED_BIT]
-          flags: []
-          samples: []
+          flags: ~
+          samples: ~
           width: 0
           height: 0
           depth: 0
@@ -105,8 +101,7 @@ raindrop:
           mipLevels: 0
 
     - images:
-      - image:
-        name: "albedo image"
+      - name: "albedo image"
         format: "albedo format"
         extent:
           width: ${window.width}
@@ -121,8 +116,7 @@ raindrop:
         queueFamilies: ['${queues.graphicsFamily}']
         features: [VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT]
 
-      - image:
-        name: texture id image
+      - name: texture id image
         format: "id format"
         extent:
           width: ${window.width}
@@ -137,8 +131,7 @@ raindrop:
         queueFamilies: ['${queues.graphicsFamily}']
         features: [VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT]
       
-      - image:
-        name: normals image
+      - name: normals image
         format: "vec3 format"
         extent:
           width: ${window.width}
@@ -153,8 +146,7 @@ raindrop:
         queueFamilies: ['${queues.graphicsFamily}']
         features: [VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT]
 
-      - image:
-        name: positions image
+      - name: positions image
         format: "vec3 format"
         extent:
           width: ${window.width}
@@ -169,8 +161,7 @@ raindrop:
         queueFamilies: ['${queues.graphicsFamily}']
         features: [VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT]
       
-      - image:
-        name: depth image
+      - name: depth image
         format: "depth format"
         extent:
           width: ${window.width}
@@ -186,8 +177,7 @@ raindrop:
         features: [VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT]
 
     - imageViews:
-      - depth:
-        name: depth image view
+      - name: depth image view
         base: depth image
         viewType: VK_IMAGE_VIEW_TYPE_2D
         format: ~
@@ -202,8 +192,8 @@ raindrop:
           levelCount: 1
           baseArray: 0
           layerCount: 1
-      - albedo:
-        name: albedo image view
+          
+      - name: albedo image view
         base: albedo image
         viewType: VK_IMAGE_VIEW_TYPE_2D
         format: ~
@@ -219,8 +209,7 @@ raindrop:
           baseArray: 0
           layerCount: 1
 
-      - textureID:
-        name: texture id image view
+      - name: texture id image view
         base: texture id image
         viewType: VK_IMAGE_VIEW_TYPE_2D
         format: ~
@@ -236,8 +225,7 @@ raindrop:
           baseArray: 0
           layerCount: 1
       
-      - normals:
-        name: normals image view
+      - name: normals image view
         base: normals image
         viewType: VK_IMAGE_VIEW_TYPE_2D
         format: ~
@@ -253,8 +241,7 @@ raindrop:
           baseArray: 0
           layerCount: 1
 
-      - positions:
-        name: positions image view
+      - name: positions image view
         base: positions image
         viewType: VK_IMAGE_VIEW_TYPE_2D
         format: ~
@@ -271,13 +258,11 @@ raindrop:
           layerCount: 1
       
     - renderPasses:
-      - renderPass:
-        name: render pass
+      - name: render pass
         flags: ~
 
         attachments:
-          - attachment: #depth stencil
-            name: depth attachment
+          - name: depth attachment
             flags: ~
             format: "depth format"
             sampleCount: VK_SAMPLE_COUNT_1_BIT
@@ -288,8 +273,7 @@ raindrop:
             initialLayout: VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
             finalLayout: VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
 
-          - attachment: # albedo
-            name: albedo attachment
+          - name: albedo attachment
             flags: ~
             format: "albedo format"
             sampleCount: VK_SAMPLE_COUNT_1_BIT
@@ -300,8 +284,7 @@ raindrop:
             initialLayout: VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
             finalLayout: VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
 
-          - attachment: # texture id
-            name: texture id attachment
+          - name: texture id attachment
             flags: ~
             format: "id format"
             sampleCount: VK_SAMPLE_COUNT_1_BIT
@@ -312,8 +295,7 @@ raindrop:
             initialLayout: VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
             finalLayout: VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
 
-          - attachment: # normals
-            name: normals attachment
+          - name: normals attachment
             flags: ~
             format: "vec3 format"
             sampleCount: VK_SAMPLE_COUNT_1_BIT
@@ -324,8 +306,7 @@ raindrop:
             initialLayout: VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
             finalLayout: VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
 
-          - attachment: # positions
-            name: positions attachment
+          - name: positions attachment
             flags: ~
             format: "vec3 format"
             sampleCount: VK_SAMPLE_COUNT_1_BIT
@@ -337,25 +318,20 @@ raindrop:
             finalLayout: VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
         
         subpasses:
-          - subpass:
-            name: subpass
+          - name: subpass
             flags: ~
             pipelineBindPoint: VK_PIPELINE_BIND_POINT_GRAPHICS
             preserveAttachments: ~
             inputAttachments: ~
             resolveAttachments: ~
             colorAttachments:
-              - attachment:
-                base: albedo attachment
+              - base: albedo attachment
                 layout: VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-              - attachment:
-                base: texture id attachment
+              - base: texture id attachment
                 layout: VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-              - attachment:
-                base: normals attachment
+              - base: normals attachment
                 layout: VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-              - attachment:
-                base: positions attachment
+              - base: positions attachment
                 layout: VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
             
             depthAttachment:
@@ -363,8 +339,7 @@ raindrop:
               layout: VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
           
         dependencies:
-          - dependency:
-            flags: ~
+          - flags: ~
             srcSubpass: ~
             dstSubpass: subpass
             srcStageMask: [VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT]
@@ -372,9 +347,26 @@ raindrop:
             srcAccessMask: ~
             dstAccessMask: [VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT]
 
+    - vertexLayouts:
+      - name: "empty layout"
+        bindings: ~
+      
+      - name: "simple layout"
+        bindings: 
+          - inputRate: VK_VERTEX_INPUT_RATE_VERTEX
+            attributes:
+              - name: "position"
+                format: VK_FORMAT_R32G32B32_SFLOAT
+                type: Position
+              - name: "UV"
+                format: VK_FORMAT_R32G32_SFLOAT
+                type: Uv
+              - name: "normal"
+                format: VK_FORMAT_R32G32B32_SFLOAT
+                type: Normal
+
     - framebuffers:
-      - framebuffer:
-        name: gbuffer
+      - name: gbuffer
         flags: ~
         renderPass: render pass
         attachments: [
@@ -389,58 +381,57 @@ raindrop:
         layers: 1
 
     - pipelineLayouts:
-      - layout:
-        name: "default pipeline layout"
+      - name: "default pipeline layout"
         pushConstants:
           - pushConstant:
             size: 128
             offset: 0
             stages: [VK_SHADER_STAGE_VERTEX_BIT, VK_SHADER_STAGE_FRAGMENT_BIT]
-      - layout:
-        name: "empty pipeline layout"
+      - name: "empty pipeline layout"
     
     - graphicsPipelines:
-      - defaultPipeline:
-        name: "default graphics pipeline"
-        flags: []
+      - name: "default graphics pipeline"
+        flags: ~
 
         stages:
           - name: "main"
             stage: VK_SHADER_STAGE_VERTEX_BIT
-            flags: []
+            flags: ~
             shader: ${resourcesDir}/shaders/shader.vert.glsl.spv
           - name: "main"
             stage: VK_SHADER_STAGE_FRAGMENT_BIT
-            flags: []
+            flags: ~
             shader: ${resourcesDir}/shaders/shader.frag.glsl.spv
         
         inputStateCreateInfo:
-          vertexAttributeDescriptions:
-            - binding: 0
-              inputRate: VK_VERTEX_INPUT_RATE_VERTEX
-              stride: 12
-          vertexBindingDescriptions:
-            - binding: 0
-              format: VK_FORMAT_R32G32B32_SFLOAT
-              location: 0
-              offset: 0
-            - binding: 0
-              format: VK_FORMAT_R32G32B32_SFLOAT
-              location: 1
-              offset: 12
+          layout: "empty layout"
+          # vertexAttributeDescriptions: []
+          #   # - binding: 0
+          #   #   inputRate: VK_VERTEX_INPUT_RATE_VERTEX
+          #   #   stride: 12
+          # vertexBindingDescriptions: []
+          #   # - binding: 0
+          #   #   format: VK_FORMAT_R32G32B32_SFLOAT
+          #   #   location: 0
+          #   #   offset: 0
+          #   # - binding: 0
+          #   #   format: VK_FORMAT_R32G32B32_SFLOAT
+          #   #   location: 1
+            #   offset: 12
         
         inputAssemblyStateCreateInfo:
           primitiveRestartEnable: false
           topology: VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST
         
         viewportStateCreateInfo:
-          viewports:
+          viewports: 
             - x: 0
               y: 0
               width: 1080
               height: 720
               minDepth: 0
               maxDepth: 1
+          
           scissors:
             - offsetY: 0
               offsetX: 0
@@ -463,12 +454,12 @@ raindrop:
           rasterizationSamples: VK_SAMPLE_COUNT_1_BIT
           sampleShadingEnable: false
           minSampleShading: 1
-          sampleMask: "0"
+          sampleMask: ~
           alphaToCoverageEnable: false
           alphaToOneEnable: false
           
         colorBlendStateCreateInfo:
-          flags: []
+          flags: ~
           logicOpEnable: false
           logicOp: VK_LOGIC_OP_COPY
           blendConstants:
@@ -478,44 +469,17 @@ raindrop:
             A: 0
           
           attachments:
-            - blendEnable: false
+            - blendEnable: true
               colorBlendOp: VK_BLEND_OP_ADD
-              srcColorBlendFactor: VK_BLEND_FACTOR_ONE
-              dstColorBlendFactor: VK_BLEND_FACTOR_ZERO
+              srcColorBlendFactor: VK_BLEND_FACTOR_SRC_ALPHA
+              dstColorBlendFactor: VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA
               alphaBlendOp: VK_BLEND_OP_ADD
               srcAlphaBlendFactor : VK_BLEND_FACTOR_ONE
               dstAlphaBlendFactor: VK_BLEND_FACTOR_ZERO
               colorWriteMask: [VK_COLOR_COMPONENT_R_BIT, VK_COLOR_COMPONENT_G_BIT, VK_COLOR_COMPONENT_B_BIT, VK_COLOR_COMPONENT_A_BIT]
 
-            - blendEnable: false
-              colorBlendOp: VK_BLEND_OP_ADD
-              srcColorBlendFactor: VK_BLEND_FACTOR_ONE
-              dstColorBlendFactor: VK_BLEND_FACTOR_ZERO
-              alphaBlendOp: VK_BLEND_OP_ADD
-              srcAlphaBlendFactor : VK_BLEND_FACTOR_ONE
-              dstAlphaBlendFactor: VK_BLEND_FACTOR_ZERO
-              colorWriteMask: [VK_COLOR_COMPONENT_R_BIT, VK_COLOR_COMPONENT_G_BIT, VK_COLOR_COMPONENT_B_BIT, VK_COLOR_COMPONENT_A_BIT]
-
-            - blendEnable: false
-              colorBlendOp: VK_BLEND_OP_ADD
-              srcColorBlendFactor: VK_BLEND_FACTOR_ONE
-              dstColorBlendFactor: VK_BLEND_FACTOR_ZERO
-              alphaBlendOp: VK_BLEND_OP_ADD
-              srcAlphaBlendFactor : VK_BLEND_FACTOR_ONE
-              dstAlphaBlendFactor: VK_BLEND_FACTOR_ZERO
-              colorWriteMask: [VK_COLOR_COMPONENT_R_BIT, VK_COLOR_COMPONENT_G_BIT, VK_COLOR_COMPONENT_B_BIT, VK_COLOR_COMPONENT_A_BIT]
-
-            - blendEnable: false
-              colorBlendOp: VK_BLEND_OP_ADD
-              srcColorBlendFactor: VK_BLEND_FACTOR_ONE
-              dstColorBlendFactor: VK_BLEND_FACTOR_ZERO
-              alphaBlendOp: VK_BLEND_OP_ADD
-              srcAlphaBlendFactor : VK_BLEND_FACTOR_ONE
-              dstAlphaBlendFactor: VK_BLEND_FACTOR_ZERO
-              colorWriteMask: [VK_COLOR_COMPONENT_R_BIT, VK_COLOR_COMPONENT_G_BIT, VK_COLOR_COMPONENT_B_BIT, VK_COLOR_COMPONENT_A_BIT]
-          
         depthStencilStateCreateInfo:
-          flags: []
+          flags: ~
           depthTestEnable: true
           depthWriteEnable: true
           depthCompareOp: VK_COMPARE_OP_LESS
@@ -548,5 +512,5 @@ raindrop:
         tesselationStateCreateInfo:
           patchControlPoints: 0
         
-        renderPass: "render pass"
+        renderPass: "swapchain render pass"
         layout: "default pipeline layout"

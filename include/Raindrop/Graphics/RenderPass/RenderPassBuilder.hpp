@@ -11,7 +11,7 @@ namespace Raindrop::Graphics::RenderPass{
 				std::vector<VkAttachmentReference> inputAttachments;
 				std::vector<VkAttachmentReference> resolveAttachments;
 				std::vector<VkAttachmentReference> colorAttachments;
-				VkAttachmentReference depthAttachment;
+				std::optional<VkAttachmentReference> depthAttachment;
 			};
 
 			RenderPassBuilder(Context& context);
@@ -123,6 +123,11 @@ namespace Raindrop::Graphics::RenderPass{
 			 * @param id the subpass to update
 			 */
 			void updateSubpass(const std::size_t& id);
+
+			/**
+			 * @brief Update all subpasses bases of their data
+			 */
+			void updateSubpasses();
 
 			/**
 			 * @brief Gives the dependencies as a read-only array

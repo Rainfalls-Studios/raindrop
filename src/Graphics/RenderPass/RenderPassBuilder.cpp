@@ -3,7 +3,10 @@
 #include <Raindrop/Core/Engine.hpp>
 
 namespace Raindrop::Graphics::RenderPass{
-	RenderPassBuilder::RenderPassBuilder(Context& context) : _context{context}{}
+	RenderPassBuilder::RenderPassBuilder(Context& context) : _context{context}{
+		_flags = 0;
+		_name = "";
+	}
 	RenderPassBuilder::~RenderPassBuilder(){}
 
 	void RenderPassBuilder::loadFromNode(const YAML::Node& node){
@@ -63,13 +66,13 @@ namespace Raindrop::Graphics::RenderPass{
 		std::string name = node["name"].as<std::string>();
 		YAML::decodeVkAttachmentDescriptionFlags(node["flags"], description.flags);
 		description.format = _context.graphics().formats().registry().get(node["format"].as<std::string>());
-		description.samples = node["sampleCount"].as<VkSampleCountFlagBits>();
-		description.loadOp = node["loadOp"].as<VkAttachmentLoadOp>();
-		description.storeOp = node["storeOp"].as<VkAttachmentStoreOp>();
-		description.stencilLoadOp = node["stencilLoadOp"].as<VkAttachmentLoadOp>();
-		description.stencilStoreOp = node["stencilLoadOp"].as<VkAttachmentStoreOp>();
-		description.initialLayout = node["initialLayout"].as<VkImageLayout>();
-		description.finalLayout = node["finalLayout"].as<VkImageLayout>();
+		description.samples = node["sampleCount"].as<VkSampleCountFlagBits>(VK_SAMPLE_COUNT_1_BIT);
+		description.loadOp = node["loadOp"].as<VkAttachmentLoadOp>(VK_ATTACHMENT_LOAD_OP_DONT_CARE);
+		description.storeOp = node["storeOp"].as<VkAttachmentStoreOp>(VK_ATTACHMENT_STORE_OP_STORE);
+		description.stencilLoadOp = node["stencilLoadOp"].as<VkAttachmentLoadOp>(VK_ATTACHMENT_LOAD_OP_DONT_CARE);
+		description.stencilStoreOp = node["stencilLoadOp"].as<VkAttachmentStoreOp>(VK_ATTACHMENT_STORE_OP_DONT_CARE);
+		description.initialLayout = node["initialLayout"].as<VkImageLayout>(VK_IMAGE_LAYOUT_UNDEFINED);
+		description.finalLayout = node["finalLayout"].as<VkImageLayout>(VK_IMAGE_LAYOUT_UNDEFINED);
 
 		_attachmentToId[name] = _attachmentDescriptions.size();
 		_attachmentDescriptions.push_back(description);
@@ -243,6 +246,7 @@ namespace Raindrop::Graphics::RenderPass{
 
 	void RenderPassBuilder::setSubpassCount(const std::size_t& count){
 		_subpasses.resize(count);
+		_subpassDatas.resize(count);
 	}
 
 	RenderPassBuilder::SubpassData& RenderPassBuilder::subpassData(const std::size_t& id){
@@ -264,7 +268,11 @@ namespace Raindrop::Graphics::RenderPass{
 			}
 		}
 		
-		subpass.pDepthStencilAttachment = &data.depthAttachment;
+		if (data.depthAttachment.has_value()){
+			subpass.pDepthStencilAttachment = &data.depthAttachment.value();
+		} else {
+			subpass.pDepthStencilAttachment = nullptr;
+		}
 
 		subpass.inputAttachmentCount = static_cast<uint32_t>(data.inputAttachments.size());
 		subpass.pInputAttachments = data.inputAttachments.data();
@@ -278,6 +286,13 @@ namespace Raindrop::Graphics::RenderPass{
 		// It is the same size as the color attachments
 		subpass.pResolveAttachments = data.resolveAttachments.data();
 	}
+
+	void RenderPassBuilder::updateSubpasses(){
+		for (std::size_t i=0; i<_subpasses.size(); i++){
+			updateSubpass(i);
+		}
+	}
+
 
 	void RenderPassBuilder::setAttachmentCount(const std::size_t& count){
 		_attachmentDescriptions.resize(count);

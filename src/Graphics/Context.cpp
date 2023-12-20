@@ -17,6 +17,8 @@ namespace Raindrop::Graphics{
 		_image = std::make_unique<Image::Context>(*this);
 		_framebuffer = std::make_unique<Framebuffer::Context>(*this);
 		_formats = std::make_unique<Formats::Context>(*this);
+		_buffers = std::make_unique<Buffers::Context>(*this);
+		_swapchain = std::make_unique<Swapchain>(*this);
 		_loader = std::make_unique<Loader>(*this);
 		_logger->info("Graphics context loaded without any critical error");
 	}
@@ -24,6 +26,8 @@ namespace Raindrop::Graphics{
 	Context::~Context(){
 		_logger->info("Terminating Graphics context...");
 		_loader.reset();
+		_swapchain.reset();
+		_buffers.reset();
 		_formats.reset();
 		_framebuffer.reset();
 		_image.reset();
@@ -77,5 +81,13 @@ namespace Raindrop::Graphics{
 
 	Formats::Context& Context::formats(){
 		return *_formats;
+	}
+
+	Swapchain& Context::swapchain(){
+		return *_swapchain;
+	}
+
+	Buffers::Context& Context::buffers(){
+		return *_buffers;
 	}
 }

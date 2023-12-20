@@ -10,18 +10,14 @@ add_definitions("-DBOOST_ALLOW_DEPRECATED_HEADERS")
 add_definitions("-DBOOST_BIND_GLOBAL_PLACEHOLDERS")
 
 find_package(Boost REQUIRED COMPONENTS Filesystem)
-find_package(glm REQUIRED)
-find_package(spdlog REQUIRED)
 find_package(Vulkan REQUIRED COMPONENTS shaderc_combined)
-find_package(SDL2 REQUIRED)
-find_package(yaml-cpp REQUIRED)
-find_package(muparser REQUIRED)
 
 file(GLOB_RECURSE SOURCES src/*.cpp)
 add_library(Raindrop STATIC ${SOURCES})
 
+add_subdirectory(libs)
+
 target_include_directories(Raindrop PRIVATE
-	"${CMAKE_SOURCE_DIR}/include"
 	${BOOST_INCLUDE_DIRS}
 	${GLM_INCLUDE_DIRS}
 	${SPDLOG_INCLUDE_DIRS}
@@ -31,6 +27,10 @@ target_include_directories(Raindrop PRIVATE
 	${muparser_INCLUDE_DIRS}
 )
 
+target_include_directories(Raindrop PUBLIC
+	"${CMAKE_CURRENT_SOURCE_DIR}/include"
+)
+
 target_link_libraries(Raindrop PRIVATE
 	Boost::filesystem
 	spdlog::spdlog
@@ -38,8 +38,8 @@ target_link_libraries(Raindrop PRIVATE
 	Vulkan::Vulkan
 	shaderc_combined
 	SDL2::SDL2
-	yaml-cpp
-	muparser
+	yaml-cpp::yaml-cpp
+	muparser::muparser
 )
 
 add_subdirectory(tests)

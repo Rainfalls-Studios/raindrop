@@ -1,7 +1,7 @@
 #ifndef __RAINDROP_GRAPHICS_INTERNAL_SWAPCHAIN_SUPPORT_HPP__
 #define __RAINDROP_GRAPHICS_INTERNAL_SWAPCHAIN_SUPPORT_HPP__
 
-#include <Raindrop/Graphics/Internal/common.hpp>
+#include <Raindrop/Graphics/common.hpp>
 
 namespace Raindrop::Graphics::Internal{
 	struct SwapchainSupport{

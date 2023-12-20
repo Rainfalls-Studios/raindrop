@@ -32,6 +32,7 @@ namespace Raindrop::Graphics{
 			NODE("pipelineLayouts", _context.shaders().loader().loadPipelineLayouts),
 			NODE("graphicsPipelines", _context.shaders().loader().loadGraphicsPipelines),
 			NODE("framebuffers", _context.framebuffer().loader().loadFramebuffers),
+			NODE("vertexLayouts", _context.buffers().loader().loadVertexLayouts),
 			NODE("import", loadNode)
 		};
 		

@@ -12,7 +12,6 @@
 #include <Raindrop/Graphics/Internal/QueueHandler.hpp>
 #include <Raindrop/Graphics/Internal/QueueFamily.hpp>
 #include <Raindrop/Graphics/Internal/Queue.hpp>
-#include <Raindrop/Graphics/Internal/Swapchain.hpp>
 #include <Raindrop/Graphics/Internal/CommandPools.hpp>
 #include <Raindrop/Graphics/Internal/Queues.hpp>
 
@@ -34,7 +33,6 @@ namespace Raindrop::Graphics::Internal{
 			QueueHandler& queueHandler();
 			Queues& queues();
 			CommandPools& commandPools();
-			Swapchain& swapchain();
 
 		private:
 			Graphics::Context& _graphics;
@@ -47,7 +45,6 @@ namespace Raindrop::Graphics::Internal{
 			std::unique_ptr<QueueHandler> _queueHandler;
 			std::unique_ptr<Queues> _queues;
 			std::unique_ptr<CommandPools> _commandPools;
-			std::unique_ptr<Swapchain> _swapchain;
 
 		
 	};

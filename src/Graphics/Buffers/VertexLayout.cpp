@@ -12,7 +12,7 @@ namespace Raindrop::Graphics::Buffers{
 		_nameToAttributeID{other._nameToAttributeID}
 	{}
 
-	std::size_t VertexLayout::addAttribute(const std::string &name, std::size_t binding, VkFormat format){
+	std::size_t VertexLayout::addAttribute(const std::string &name, std::size_t binding, VkFormat format, VertexAttributeType type){
 		if (name.empty()){
 			throw std::runtime_error("Cannot have an unnamed vertex attribute");
 		}
@@ -27,6 +27,7 @@ namespace Raindrop::Graphics::Buffers{
 		}
 
 		VkVertexInputAttributeDescription attribute;
+
 		attribute.binding = static_cast<uint32_t>(binding);
 		attribute.location = static_cast<uint32_t>(attributeCountAtBinding(binding));
 		attribute.format = format;
@@ -37,6 +38,11 @@ namespace Raindrop::Graphics::Buffers{
 
 		std::size_t id = _attributes.size();
 		_attributes.push_back(attribute);
+
+		AttributesData data;
+		data.type = type;
+
+		_attributeData.push_back(data);
 
 		_nameToAttributeID[name] = id;
 		return id;
@@ -176,5 +182,16 @@ namespace Raindrop::Graphics::Buffers{
 			size += static_cast<std::size_t>(binding.stride);
 		}
 		return size;
+	}
+
+	VertexAttributeType VertexLayout::attributeType(const std::size_t id) const{
+		if (id > _attributeData.size()){
+			throw std::out_of_range("Out of range");
+		}
+		return _attributeData[id].type;
+	}
+
+	VertexAttributeType VertexLayout::attributeType(const std::string& name) const{
+		return attributeType(attributeId(name)); 
 	}
 }

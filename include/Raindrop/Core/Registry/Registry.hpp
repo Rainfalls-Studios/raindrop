@@ -20,16 +20,20 @@ namespace Raindrop::Core::Registry{
 
 				if constexpr (std::is_same<T, std::string>::value){
 					return value;
-				}
-				
-				if constexpr (std::is_integral<T>::value || std::is_floating_point<T>::value){
+				} else if constexpr (std::is_integral<T>::value || std::is_floating_point<T>::value){
 					return static_cast<T>(calculateExpresion(value));
+				} else if constexpr (std::is_pointer<T>::value){
+					void* result;
+					std::istringstream iss(value);
+					iss >> result;
+					return reinterpret_cast<T>(result);
+				} else {
+					T result;
+					std::istringstream iss(value);
+					iss >> result;
+					return result;
 				}
 
-				T result;
-				std::istringstream iss(value);
-    			iss >> result;
-				return result;
 			}
 
 			template<typename T>
@@ -40,7 +44,12 @@ namespace Raindrop::Core::Registry{
 			template<typename T>
 			void set(const std::string& path, const T& value){
 				std::stringstream iss;
-				iss << value;
+
+				if constexpr (std::is_pointer<T>::value){
+					iss << reinterpret_cast<const void*>(value);
+				} else {
+					iss << value;
+				}
 				_set(path, iss.str());
 			}
 

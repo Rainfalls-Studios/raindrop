@@ -13,7 +13,9 @@
 #include <Raindrop/Graphics/RenderPass/Context.hpp>
 #include <Raindrop/Graphics/Framebuffer/Context.hpp>
 #include <Raindrop/Graphics/Formats/Context.hpp>
+#include <Raindrop/Graphics/Buffers/Context.hpp>
 #include <Raindrop/Graphics/Loader.hpp>
+#include <Raindrop/Graphics/Swapchain.hpp>
 
 namespace Raindrop::Graphics{
 	class Context{
@@ -36,6 +38,8 @@ namespace Raindrop::Graphics{
 			RenderPass::Context& renderPass();
 			Framebuffer::Context& framebuffer();
 			Formats::Context& formats();
+			Buffers::Context& buffers();
+			Swapchain& swapchain();
 			Loader& loader();
 		
 		private:
@@ -51,6 +55,8 @@ namespace Raindrop::Graphics{
 			std::unique_ptr<RenderPass::Context> _renderPass;
 			std::unique_ptr<Framebuffer::Context> _framebuffer;
 			std::unique_ptr<Formats::Context> _formats;
+			std::unique_ptr<Buffers::Context> _buffers;
+			std::unique_ptr<Swapchain> _swapchain;
 			std::unique_ptr<Loader> _loader;
 
 		// GlobalDescriptorPool descriptorPool;

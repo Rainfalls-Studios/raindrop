@@ -32,25 +32,25 @@ namespace Raindrop::Graphics{
 		VkCommandBuffer commandBuffer = beginFrame();
 
 		if (commandBuffer != nullptr){
-			auto& swapchain = _context->internal().swapchain();
+			auto& swapchain = _context->swapchain();
 			_context->core().registry().set("Renderer.commandBuffer", commandBuffer);
 
-			_context->core().eventManager().trigger("Renderer.PreSwapchainRenderPass");;
+			_context->core().eventManager().trigger("Renderer.PreSwapchainRenderPass");
 
 			swapchain.beginRenderPass(commandBuffer);
-			_context->core().eventManager().trigger("Renderer.SwapchainRenderPass");;
+			_context->core().eventManager().trigger("Renderer.SwapchainRenderPass");
 			swapchain.endRenderPass(commandBuffer);
 
-			_context->core().eventManager().trigger("Renderer.PostSwapchainRenderPass");;
+			_context->core().eventManager().trigger("Renderer.PostSwapchainRenderPass");
 
 			endFrame();
 		}
 
-		_currentFrameID = (_currentFrameID + 1) % _context->internal().swapchain().frameCount();
+		_currentFrameID = (_currentFrameID + 1) % _context->swapchain().frameCount();
 	}
 
 	void Engine::allocateCommandBuffers(){
-		auto& swapchain = _context->internal().swapchain();
+		auto& swapchain = _context->swapchain();
 		_framesCommandBuffers.resize(swapchain.frameCount());
 
 		_framesCommandPool = &_context->internal().commandPools().pool({VK_QUEUE_GRAPHICS_BIT, true}, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
@@ -67,7 +67,7 @@ namespace Raindrop::Graphics{
 	
 	VkCommandBuffer Engine::beginFrame(){
 		auto& window = _context->internal().window();
-		auto& swapchain = _context->internal().swapchain();
+		auto& swapchain = _context->swapchain();
 
 		VkResult result = swapchain.acquireNextImage();
 		if (result == VK_ERROR_OUT_OF_DATE_KHR) {
@@ -93,7 +93,7 @@ namespace Raindrop::Graphics{
 
 	void Engine::endFrame(){
 		auto& window = _context->internal().window();
-		auto& swapchain = _context->internal().swapchain();
+		auto& swapchain = _context->swapchain();
 
 		VkCommandBuffer commandBuffer = _framesCommandBuffers[_currentFrameID];
 
@@ -123,4 +123,9 @@ namespace Raindrop::Graphics{
 	Context& Engine::context(){
 		return *_context;
 	}
+
+	VkCommandBuffer Engine::currentFramebuffer() const{
+		return _framesCommandBuffers[_currentFrameID];
+	}
+
 }

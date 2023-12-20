@@ -7,11 +7,18 @@ namespace Raindrop::Graphics::Buffers{
 		_logger(spdlog::stdout_logger_mt("Raindrop::Graphics::Buffers")){
 		
 		_logger->info("Loading Graphics Buffers context...");
-		_defaultLayout = std::make_unique<VertexLayout>(*this);
-		_defaultLayout->addAttribute("position", 0, VK_FORMAT_R32G32B32_SFLOAT);
-		_defaultLayout->addAttribute("normal", 0, VK_FORMAT_R32G32B32_SFLOAT);
-		_defaultLayout->addAttribute("UV", 0, VK_FORMAT_R32G32_SFLOAT);
-		_defaultLayout->addAttribute("color", 0, VK_FORMAT_R32G32B32_SFLOAT);
+
+		_layoutRegistry = std::make_unique<VertexLayoutRegistry>(*this);
+		_loader = std::make_unique<Loader>(*this);
+
+		auto& defaultLayout = _layoutRegistry->get("default");
+		
+		defaultLayout = std::make_unique<VertexLayout>(*this);
+		defaultLayout->addAttribute("position", 0, VK_FORMAT_R32G32B32_SFLOAT, Position);
+		defaultLayout->addAttribute("normal", 0, VK_FORMAT_R32G32B32_SFLOAT, Normal);
+		defaultLayout->addAttribute("UV", 0, VK_FORMAT_R32G32_SFLOAT, Uv);
+		defaultLayout->addAttribute("color", 0, VK_FORMAT_R32G32B32_SFLOAT, Color);
+
 		_logger->info("Graphics Buffers context loaded without any critical error");
 	}
 	
@@ -23,7 +30,11 @@ namespace Raindrop::Graphics::Buffers{
 		return *_logger;
 	}
 
-	VertexLayout& Context::defaultLayout(){
-		return *_defaultLayout;
+	VertexLayoutRegistry& Context::vertexdLayoutRegistry(){
+		return *_layoutRegistry;
+	}
+
+	Loader& Context::loader(){
+		return *_loader;
 	}
 }

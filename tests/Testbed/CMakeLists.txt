@@ -10,5 +10,3 @@ target_include_directories(RaindropTestbed PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 set(RESOURCE_DIR "\"${CMAKE_CURRENT_SOURCE_DIR}\"")
 
 configure_file(config.hpp.in config.hpp)
-
-add_subdirectory(shaders)
