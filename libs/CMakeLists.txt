@@ -1,0 +1,6 @@
+add_subdirectory(assimp)
+add_subdirectory(glm)
+add_subdirectory(muparser)
+add_subdirectory(SDL)
+add_subdirectory(spdlog)
+add_subdirectory(yaml-cpp)

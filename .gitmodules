@@ -1,7 +1,19 @@
-[submodule "libs/imgui"]
-	path = libs/imgui
-	url = https://github.com/ocornut/imgui.git
-    branch = docking
-[submodule "libs/ImGuizmo"]
-	path = libs/ImGuizmo
-	url = https://github.com/CedricGuillemet/ImGuizmo.git
+[submodule "libs/assimp"]
+	path = libs/assimp
+	url = https://github.com/assimp/assimp.git
+[submodule "libs/glm"]
+	path = libs/glm
+	url = https://github.com/g-truc/glm.git
+[submodule "libs/spdlog"]
+	path = libs/spdlog
+	url = https://github.com/gabime/spdlog.git
+[submodule "libs/yaml-cpp"]
+	path = libs/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp.git
+[submodule "libs/muparser"]
+	path = libs/muparser
+	url = https://github.com/beltoforion/muparser.git
+[submodule "libs/SDL"]
+	path = libs/SDL
+	url = https://github.com/libsdl-org/SDL.git
+	branch = release-2.24.x
