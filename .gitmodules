@@ -17,3 +17,6 @@
 	path = libs/SDL
 	url = https://github.com/libsdl-org/SDL.git
 	branch = release-2.24.x
+[submodule "libs/SPIRV-Crosss"]
+	path = libs/SPIRV-Crosss
+	url = https://github.com/KhronosGroup/SPIRV-Cross.git

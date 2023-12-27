@@ -10,7 +10,7 @@ namespace Raindrop::Graphics{
 	void Loader::loadFile(const std::filesystem::path& path){
 		_context.logger().info("Loading \'{}\" file ...", path.string());
 
-		YAML::Node root = YAML::LoadFile(path);
+		YAML::Node root = YAML::LoadFile(path.string());
 
 		try{
 			loadNode(root["raindrop"]["graphics"]);

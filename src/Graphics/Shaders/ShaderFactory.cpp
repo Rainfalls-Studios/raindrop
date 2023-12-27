@@ -38,7 +38,7 @@ namespace Raindrop::Graphics::Shaders{
 			throw std::runtime_error("Only the compiled .spv shaders are supported");
 		}
 
-		VkShaderStageFlagBits stage = findStage(path.filename());
+		VkShaderStageFlagBits stage = findStage(path.filename().string());
 		std::vector<char> content = readFile(path);
 
 		std::shared_ptr<Shader> shader = std::make_unique<Shader>(_context, content, stage);

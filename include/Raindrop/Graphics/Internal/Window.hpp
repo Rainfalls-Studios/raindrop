@@ -1,7 +1,7 @@
 #ifndef __RAINDROP_GRAPHICS_INTERNAL_WINDOW_HPP__
 #define __RAINDROP_GRAPHICS_INTERNAL_WINDOW_HPP__
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <Raindrop/Graphics/Internal/common.hpp>
 
 namespace Raindrop::Graphics::Internal{

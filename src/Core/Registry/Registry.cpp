@@ -22,7 +22,7 @@ namespace Raindrop::Core::Registry{
 	}
 
 	std::string Registry::pathToNode(const std::filesystem::path& path){
-		std::string str = path;	
+		std::string str = path.string();
 		std::replace(str.begin(), str.end(), '/', '.');
 		std::replace(str.begin(), str.end(), '\\', '.');
 		return str;
@@ -40,19 +40,6 @@ namespace Raindrop::Core::Registry{
 
 		std::string nodePath = pathToNode(path);
 		auto& tree = _propertyTree.add_child(nodePath, boost::property_tree::ptree());
-
-		if (extention == ".json"){
-			boost::property_tree::read_json(path, tree);
-		} else if (extention == ".xml"){
-			boost::property_tree::read_xml(path, tree);
-		} else if (extention == ".ini"){
-			boost::property_tree::read_ini(path, tree);
-		} else if (extention == ".info"){
-			boost::property_tree::read_info(path, tree);
-		} else {
-			_context.logger().error("Cannot load {}, the file extensions {} is not supported", path.string(), extention.string());
-			throw std::runtime_error("invalid file extention");
-		}
 	}
 
 	std::string Registry::format(const std::string& base){

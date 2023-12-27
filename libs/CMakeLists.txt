@@ -1,6 +1,13 @@
+set(YAML_BUILD_SHARED_LIBS OFF)
+set(SPDLOG_BUILD_SHARED OFF)
+set(SDL_SHARED OFF)
+set(SDL_STATIC ON)
+set(BUILD_STATIC_LIBS ON)
+
 add_subdirectory(assimp)
 add_subdirectory(glm)
 add_subdirectory(muparser)
 add_subdirectory(SDL)
 add_subdirectory(spdlog)
 add_subdirectory(yaml-cpp)
+add_subdirectory(SPIRV-Crosss)

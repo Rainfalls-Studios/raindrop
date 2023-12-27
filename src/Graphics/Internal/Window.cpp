@@ -2,7 +2,7 @@
 #include <Raindrop/Graphics/Internal/Context.hpp>
 #include <Raindrop/Core/Engine.hpp>
 
-#include <SDL2/SDL_vulkan.h>
+#include <SDL_vulkan.h>
 
 namespace Raindrop::Graphics::Internal{
 	static constexpr uint32_t DEFAULT_WINDOW_WIDTH = 1080;
