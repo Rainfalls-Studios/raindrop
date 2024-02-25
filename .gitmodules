@@ -20,3 +20,6 @@
 [submodule "libs/SPIRV-Crosss"]
 	path = libs/SPIRV-Crosss
 	url = https://github.com/KhronosGroup/SPIRV-Cross.git
+[submodule "libs/Tasks"]
+	path = libs/Tasks
+	url = https://github.com/Aalexdev/Tasks.git
