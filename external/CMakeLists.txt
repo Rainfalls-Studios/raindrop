@@ -1,0 +1,5 @@
+add_subdirectory(glm)
+add_subdirectory(SDL)
+add_subdirectory(spdlog)
+add_subdirectory(Tasks)
+add_subdirectory(yaml-cpp)

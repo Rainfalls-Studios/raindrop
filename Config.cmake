@@ -1,0 +1,5 @@
+option(RAINDROP_BUILD_TESTS "Enable the building of tests." ON)
+option(RAINDROP_BUILD_EXAMPLES "Enbale the building of examples." ON)
+option(RAINDROP_BUILD_SHARED "Compile the final project as a shared library." ON)
+option(RAINDROP_BUILD_STATIC "Compile the final project as a static library." ON)
+option(RAINDROP_BUILD_PCH "Compile the project's precompiled header." ON)
