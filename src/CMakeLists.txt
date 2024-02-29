@@ -19,6 +19,14 @@ function(add_library_target TARGET_TYPE)
 	)
 
 	message(STATUS "Building Raindrop ${TARGET_TYPE} library")
+
+	if (DEFINED PRECOMPILED_HEADERS)
+		target_precompile_headers(
+			${TARGET}
+			PRIVATE
+			${PRECOMPILED_HEADERS}
+		)
+	endif()
 endfunction()
 
 if (RAINDROP_BUILD_SHARED)

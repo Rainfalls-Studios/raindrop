@@ -1,0 +1,8 @@
+#ifndef __RAINDROP_PCH_PCH__
+#define __RAINDROP_PCH_PCH__
+
+#include <cstdint>
+#include <unordered_map>
+#include <string>
+
+#endif
