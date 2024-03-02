@@ -24,6 +24,7 @@ function(add_library_target TARGET_TYPE)
 		${TARGET}
 		PRIVATE 
 		spdlog::spdlog
+		glm::glm
 	)
 
 	if (DEFINED PRECOMPILED_HEADERS)
