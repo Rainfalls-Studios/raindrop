@@ -2,11 +2,19 @@
 #include <Raindrop/Core/Asset/Loader.hpp>
 #include <cassert>
 
+#include <spdlog/spdlog.h>
+
 namespace Raindrop::Core::Asset{
-	Manager::Manager(){}
-	Manager::~Manager(){}
+	Manager::Manager(){
+		spdlog::info("Creating asset manager...");
+	}
+	Manager::~Manager(){
+		spdlog::info("Destructing asset manager...");
+	}
 
 	std::weak_ptr<Asset> Manager::get(const std::string& type, const Path& path){
+		spdlog::info("Requirering asset : (%s) : %ls", type, path.c_str());
+
 		auto it = _pathToAsset.find(type);
 
 		if (it != _pathToAsset.end()){
@@ -23,6 +31,7 @@ namespace Raindrop::Core::Asset{
 	}
 
 	void Manager::registerLoader(const std::string& type, const std::shared_ptr<Loader>& loader){
+		spdlog::trace("Registering asset loader (%s)", type);
 		assert(findLoader(type) == nullptr && "The asset type is already linked with a loader");
 		_typeToLoader.emplace(type, loader);
 	}

@@ -1,6 +1,8 @@
 file(GLOB_RECURSE SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 
 function(add_library_target TARGET_TYPE)
+	message(STATUS "Building Raindrop ${TARGET_TYPE} library")
+
 	set(TARGET Raindrop-${TARGET_TYPE})
 	add_library(${TARGET} ${TARGET_TYPE} ${SOURCE})
 	add_library(Raindrop::${TARGET_TYPE} ALIAS Raindrop-${TARGET_TYPE})
@@ -17,8 +19,12 @@ function(add_library_target TARGET_TYPE)
 		${TARGET} PUBLIC
 		"${PROJECT_SOURCE_DIR}/include"
 	)
-
-	message(STATUS "Building Raindrop ${TARGET_TYPE} library")
+	
+	target_link_libraries(
+		${TARGET}
+		PRIVATE 
+		spdlog::spdlog
+	)
 
 	if (DEFINED PRECOMPILED_HEADERS)
 		target_precompile_headers(

@@ -3,6 +3,9 @@ project(Raindrop VERSION 0.1.0)
 
 include(Config.cmake)
 
+# Required by spdlog for shared library
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 add_subdirectory(external)
 add_subdirectory(utils)
 add_subdirectory(include)
