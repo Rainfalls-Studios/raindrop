@@ -7,8 +7,8 @@ namespace Raindrop::Core::Memory{
 	template<typename T>
 	class GuardedPtr{
 		public:
-			GuardedPtr() : _count{nullptr}, _ref{nullptr}{}
-			GuardedPtr(const GuardedPtr& other) : _count{other._count}, _ref{ref}{
+			GuardedPtr() : _count{nullptr}, _refPointer{nullptr}{}
+			GuardedPtr(const GuardedPtr& other) : _count{other._count}, _refPointer{other._refPointer}{
 				increment();
 			}
 
@@ -18,53 +18,76 @@ namespace Raindrop::Core::Memory{
 
 			GuardedPtr& operator=(const GuardedPtr& other){
 				_count = other._count;
-				_ref = other._ref;
+				_refPointer = other._refPointer;
 				increment();
+				return *this;
 			}
 
 			void reset(){
 				if (decrement() == 0){
-					delete _count;
-					_count = nullptr;
+					if (assetAlive()){
+						*_refPointer = nullptr;
+						*_count = 0;
 
-					delete _ref;
-					_ref = nullptr;
+						delete _count;
+						delete _refPointer;
+					}
+					_count = nullptr;
+					_refPointer = nullptr;
+				}
+			}
+
+			void release(){
+				if (_count != nullptr){
+					_count = 0;
+					
+					delete *_refPointer;
+					*_refPointer = nullptr;
 				}
 			}
 
 			T* get() const noexcept{
-				return _ref;
+				return *_refPointer;
 			}
 
 			T& operator*() const noexcept{
-				return *_ref;
+				return *get();
 			}
 
 			T* operator->() const noexcept{
-				return _ref;
+				return get();
 			}
 
 			T& operator[](const std::size_t& index) const noexcept{
-				return _ref[index];
+				return get()[index];
 			}
 			
 			std::size_t useCount() const noexcept{
 				return _count != nullptr ? *_count : 0;
 			}
 
-			bool unique() const noexcept(){
+			bool unique() const noexcept{
 				return useCount() == 1;
 			}
 
-			operator bool() const noexcept(){
-				return _ref != nullptr;
+			operator bool() const noexcept{
+				return assetAlive() ? *_refPointer != nullptr : false;
+			}
+
+			template<typename... Args>
+			static GuardedPtr<T> make(Args&&... args){
+				T** memoryPointer = new T*(nullptr);
+				*memoryPointer = new T(args...);
+
+				GuardedPtr<T> ptr;
+				ptr._count = new GuardedPtr<T>::CountType(1);
+				ptr._refPointer = memoryPointer;
+
+				return ptr;
 			}
 
 		private:
 			using CountType = std::size_t;
-
-			template<typename... Args>
-			friend Memory::makeGuarded<T>(Args&&... args);
 
 			std::size_t increment() noexcept{
 				return _count != nullptr ? (*_count)++ : 1;
@@ -74,21 +97,17 @@ namespace Raindrop::Core::Memory{
 				return _count != nullptr ? (*_count)-- : 1;
 			}
 
+			bool assetAlive() const noexcept{
+				return *_refPointer != nullptr;
+			}
 
 			std::size_t* _count;
-			T* _ref;
-			
+			T** _refPointer;	
 	};
 
 	template<typename T, typename... Args>
 	GuardedPtr<T> makeGuarded(Args&&... args){
-		T* memory = new T(args...);
-
-		GuardedPtr<T> ptr;
-		ptr._count = new CountType(1);
-		ptr._ref = memory;
-
-		return ptr;
+		return GuardedPtr<T>::make(args...);
 	}
 }
 

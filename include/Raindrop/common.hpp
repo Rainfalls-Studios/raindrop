@@ -4,6 +4,9 @@
 #include "pch.pch"
 
 namespace Raindrop{
+	struct Context;
+	class Raindrop;
+
 	struct Version{
 		std::size_t variant;
 		std::size_t major;

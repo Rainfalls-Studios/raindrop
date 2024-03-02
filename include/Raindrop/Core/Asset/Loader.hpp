@@ -6,8 +6,9 @@
 namespace Raindrop::Core::Asset{
 	class Loader{
 		public:
-			Loader();
-			~Loader();
+			virtual ~Loader() = default;
+
+			virtual std::shared_ptr<Asset> load(const Path& path) = 0;
 	};
 }
 
