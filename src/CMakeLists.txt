@@ -1,5 +1,7 @@
 file(GLOB_RECURSE SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 
+find_package(Vulkan REQUIRED)
+
 function(add_library_target TARGET_TYPE)
 	message(STATUS "Building Raindrop ${TARGET_TYPE} library")
 
@@ -23,9 +25,16 @@ function(add_library_target TARGET_TYPE)
 	target_link_libraries(
 		${TARGET}
 		PRIVATE 
+		Vulkan::Vulkan
 		spdlog::spdlog
+		Tasks::Shared
+		SDL3::SDL3
+		
+		PUBLIC
 		glm::glm
 	)
+
+	
 
 	if (DEFINED PRECOMPILED_HEADERS)
 		target_precompile_headers(

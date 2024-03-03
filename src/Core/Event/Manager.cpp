@@ -14,18 +14,18 @@ namespace Raindrop::Core::Event{
 	}
 
 	void Manager::subscribe(const std::string& name, Callback callback){
-		spdlog::trace("New subscriber to \"%s\" event", name);
+		spdlog::trace("New subscriber to \"{}\" event", name);
 		_nameToCallbacksMap[name].push_back(callback);
 	}
 
 	void Manager::trigger(const std::string& name){
-		spdlog::trace("\"%s\" event triggered", name);
+		spdlog::trace("\"{}\" event triggered", name);
 		auto& subscribers = _nameToCallbacksMap[name];
 		for (auto &callback : subscribers){
 			try{
 				callback();
 			} catch (const std::exception &e){
-				spdlog::warn("Exception encountered while triggering event \"%s\"", name);
+				spdlog::warn("Exception encountered while triggering event \"{}\"", name);
 			}
 		}
 	}

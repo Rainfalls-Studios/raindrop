@@ -1,6 +1,6 @@
 file(GLOB_RECURSE SOURCES *.cpp)
 
-add_executable(Raindrop-Tesbed ${SOURCES})
+add_executable(Raindrop-Testbed ${SOURCES})
 
 if (RAINDROP_BUILD_SHARED)
 	set(RAINDROP_LIB Raindrop-STATIC)
@@ -9,12 +9,12 @@ else()
 endif()
 
 target_link_libraries(
-	Raindrop-Tesbed
+	Raindrop-Testbed
 	${RAINDROP_LIB}
 )
 
 set_target_properties(
-	Raindrop-Tesbed
+	Raindrop-Testbed
 	PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY
 	"${PROJECT_BINARY_DIR}/bin"

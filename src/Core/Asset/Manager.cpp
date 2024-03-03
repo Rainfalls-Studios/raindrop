@@ -13,7 +13,7 @@ namespace Raindrop::Core::Asset{
 	}
 
 	std::weak_ptr<Asset> Manager::get(const std::string& type, const Path& path){
-		spdlog::info("Requirering asset : (%s) : %ls", type, path.c_str());
+		spdlog::info("Requirering asset : ({}) : {}", type, path.c_str());
 
 		auto it = _pathToAsset.find(type);
 
@@ -31,7 +31,7 @@ namespace Raindrop::Core::Asset{
 	}
 
 	void Manager::registerLoader(const std::string& type, const std::shared_ptr<Loader>& loader){
-		spdlog::trace("Registering asset loader (%s)", type);
+		spdlog::trace("Registering asset loader ({})", type);
 		assert(findLoader(type) == nullptr && "The asset type is already linked with a loader");
 		_typeToLoader.emplace(type, loader);
 	}
