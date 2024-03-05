@@ -7,6 +7,7 @@ namespace Raindrop::Renderer{
 		window{*this},
 		instance(*this),
 		device(*this),
-		queues(*this)
+		queues(*this),
+		swapchain(*this)
 	{}
 }
