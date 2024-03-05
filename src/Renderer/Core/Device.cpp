@@ -134,40 +134,6 @@ namespace Raindrop::Renderer::Core{
 		return _context.physicalDevice.isLayerSupported(layerName);
 	}
 
-	uint32_t Device::getGraphicsFamily(){
-		const auto& properties = _context.physicalDevice.queueFamilyProperties();
-		
-		for (uint32_t i=0; i<properties.size(); i++){
-			if (properties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT){
-				return i;
-			}
-		}
-		throw std::runtime_error("failed to find a graphics family");
-	}
-
-	uint32_t Device::getTransfertFamily(){
-		const auto& properties = _context.physicalDevice.queueFamilyProperties();
-		
-		for (uint32_t i=0; i<properties.size(); i++){
-			if (properties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT){
-				return i;
-			}
-		}
-		throw std::runtime_error("failed to find a graphics family");
-	}
-
-	uint32_t Device::getPresentFamily(){
-		// auto& physicalDevice = _context.physicalDevice;
-		// const auto& properties = physicalDevice.queueFamilyProperties();
-		
-		// for (uint32_t i=0; i<properties.size(); i++){
-		// 	VkBool32 supported;
-		// 	vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice.get(), i, _context.window().surface(), &supported);
-		// 	return i;
-		// }
-		// throw std::runtime_error("failed to find a present family");
-	}
-
 	uint32_t Device::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties){
 
 		auto& physicalDevice = _context.physicalDevice;

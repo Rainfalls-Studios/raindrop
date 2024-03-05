@@ -21,7 +21,6 @@ namespace Raindrop::Renderer::Core{
 
 			VkDevice get() const;
 
-			std::vector<VkQueueFamilyProperties> getQueueFamilyProperties();
 			uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
 			void waitIdle();
@@ -41,10 +40,6 @@ namespace Raindrop::Renderer::Core{
 
 			bool isExtensionSupported(const char* extensionName);
 			bool isLayerSupported(const char* layerName);
-
-			uint32_t getGraphicsFamily();
-			uint32_t getTransfertFamily();
-			uint32_t getPresentFamily();
 
 	};
 }

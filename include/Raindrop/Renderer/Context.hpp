@@ -6,6 +6,7 @@
 #include "Core/Device.hpp"
 #include "Core/PhysicalDevice.hpp"
 #include "Core/Window.hpp"
+#include "Queues/Manager.hpp"
 
 namespace Raindrop::Renderer{
 	struct Context{
@@ -19,7 +20,7 @@ namespace Raindrop::Renderer{
 		Core::Instance instance;
 		Core::PhysicalDevice physicalDevice;
 		Core::Device device;
-
+		Queues::Manager queues;
 	};
 }
 

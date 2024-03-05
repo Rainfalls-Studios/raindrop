@@ -10,30 +10,30 @@ namespace Raindrop::Renderer::Core{
 
 	Window::Window(Context& context) : _context{context}{
 		spdlog::info("Constructing window ...");
-		spdlog::info("Initializing SDL2 API...");
+		spdlog::info("Initializing SDL3 API...");
 		if (SDL_Init(SDL_INIT_VIDEO) != 0){
-			spdlog::error("Failed to initialize SDL2 API : {}", SDL_GetError());
-			throw std::runtime_error("Failed initialize SDL2 API");
+			spdlog::error("Failed to initialize SDL3 API : {}", SDL_GetError());
+			throw std::runtime_error("Failed initialize SDL3 API");
 		}
-		spdlog::info("SDL2 API initialized successfully");
+		spdlog::info("SDL3 API initialized successfully");
 
-		spdlog::info("Initializing SDL2 Window...");
+		spdlog::info("Initializing SDL3 Window...");
 		_window = SDL_CreateWindow("Raindrop::Graphics window", DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE);
 		if (!_window){
-			spdlog::error("Failed to initialize SDL2 Window : {}", SDL_GetError());
-			throw std::runtime_error("Failed to create SDL2 Window");
+			spdlog::error("Failed to initialize SDL3 Window : {}", SDL_GetError());
+			throw std::runtime_error("Failed to create SDL3 Window");
 		}
-		spdlog::info("SDL2 Window initialized successfully");
+		spdlog::info("SDL3 Window initialized successfully");
 	}
 
 	Window::~Window(){
 		spdlog::info("Destructing window ...");
 		if (_window){
-			spdlog::info("Termintating SDL2 Window...");
+			spdlog::info("Termintating SDL3 Window...");
 			SDL_DestroyWindow(_window);
 		}
 
-		spdlog::info("Terminating SDL2 API...");
+		spdlog::info("Terminating SDL3 API...");
 		SDL_Quit();
 	}
 
@@ -41,7 +41,7 @@ namespace Raindrop::Renderer::Core{
 		uint32_t extensionCount = 0;
 		const auto& exts = SDL_Vulkan_GetInstanceExtensions(&extensionCount);
 		if (exts == nullptr){
-			throw std::runtime_error("Failed to querry SDL2 vulkan instance extensions");
+			throw std::runtime_error("Failed to querry SDL3 vulkan instance extensions");
 		}
 
 		std::vector<const char*> extensions(&exts[0], &exts[extensionCount]);
@@ -50,19 +50,19 @@ namespace Raindrop::Renderer::Core{
 	}
 
 	void Window::createSurface(){
-		spdlog::debug("Creating SDL2 Vulkan surface");
+		spdlog::debug("Creating SDL3 Vulkan surface");
 		if (SDL_Vulkan_CreateSurface(_window, _context.instance.get(), _context.allocationCallbacks, &_surface) == SDL_FALSE){
-			spdlog::error("Failed to create SDL2 Vulkan surface : {}", SDL_GetError());
-			throw std::runtime_error("Failed to create SDL2 Vulkan surface");
+			spdlog::error("Failed to create SDL3 Vulkan surface : {}", SDL_GetError());
+			throw std::runtime_error("Failed to create SDL3 Vulkan surface");
 		}
-		spdlog::debug("SDL2 Vulkan surface created without any critical error");
+		spdlog::debug("SDL3 Vulkan surface created without any critical error");
 	}
 
 	void Window::destroySurface(){
 		if (_surface){
-			spdlog::debug("Destroying SDL2 Vulkan surface");
+			spdlog::debug("Destroying SDL3 Vulkan surface");
 			vkDestroySurfaceKHR(_context.instance.get(), _surface, _context.allocationCallbacks);
-			spdlog::debug("SDL2 Vulkan surface destroyed without any critical error");
+			spdlog::debug("SDL3 Vulkan surface destroyed without any critical error");
 		}
 	}
 
