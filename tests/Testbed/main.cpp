@@ -3,6 +3,8 @@
 
 void testbed(){
 	Raindrop::Raindrop engine;
+
+	engine.run();
 }
 
 int main(){

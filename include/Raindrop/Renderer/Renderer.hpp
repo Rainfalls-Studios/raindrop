@@ -9,6 +9,9 @@ namespace Raindrop::Renderer{
 			Renderer(::Raindrop::Context& context);
 			~Renderer();
 
+			void render();
+			void events();
+
 		private:
 			Context* _context;
 	};

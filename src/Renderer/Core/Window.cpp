@@ -1,5 +1,6 @@
 #include <Raindrop/Renderer/Core/Window.hpp>
 #include <Raindrop/Renderer/Context.hpp>
+#include <Raindrop/Context.hpp>
 
 #include <SDL3/SDL_vulkan.h>
 #include <spdlog/spdlog.h>
@@ -102,12 +103,16 @@ namespace Raindrop::Renderer::Core{
 		return _window != nullptr;
 	}
 
+	VkSurfaceKHR Window::surface(){
+		return _surface;
+	}
+
 	void Window::events(){
 		SDL_Event e;
 
 		while (SDL_PollEvent(&e)){
 			switch (e.type){
-				case SDL_EVENT_QUIT: break;
+				case SDL_EVENT_QUIT: quitEvent(); break;
 
 				case SDL_EVENT_TERMINATING: break;
 				case SDL_EVENT_LOW_MEMORY: break;
@@ -220,10 +225,7 @@ namespace Raindrop::Renderer::Core{
 		}
 	}
 
-	// void quitEvent();
-
-
-	VkSurfaceKHR Window::surface(){
-		return _surface;
+	void Window::quitEvent(){
+		_context.core.eventManager.trigger("window.quit");
 	}
 }

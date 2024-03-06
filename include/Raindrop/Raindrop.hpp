@@ -9,8 +9,13 @@ namespace Raindrop{
 			Raindrop();
 			~Raindrop();
 
+			void run();
+
 		private:
 			Context* _context;
+
+			void render();
+			void events();
 	};
 }
 

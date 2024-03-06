@@ -12,4 +12,12 @@ namespace Raindrop::Renderer{
 		spdlog::info("Destructing renderer ...");
 		delete _context;
 	}
+
+	void Renderer::render(){
+
+	}
+
+	void Renderer::events(){
+		_context->window.events();
+	}
 }

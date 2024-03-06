@@ -14,6 +14,8 @@ namespace Raindrop{
 		Core::Asset::Manager assetManager;
 		Core::Event::Manager eventManager;
 		Renderer::Renderer renderer;
+
+		bool running;
 	};
 }
 
