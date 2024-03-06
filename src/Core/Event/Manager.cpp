@@ -19,7 +19,6 @@ namespace Raindrop::Core::Event{
 	}
 
 	void Manager::trigger(const std::string& name){
-		spdlog::trace("\"{}\" event triggered", name);
 		auto& subscribers = _nameToCallbacksMap[name];
 		for (auto &callback : subscribers){
 			try{

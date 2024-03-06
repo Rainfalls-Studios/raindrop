@@ -14,7 +14,7 @@ namespace Raindrop::Renderer{
 	}
 
 	void Renderer::render(){
-
+		
 	}
 
 	void Renderer::events(){
