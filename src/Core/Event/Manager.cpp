@@ -13,21 +13,21 @@ namespace Raindrop::Core::Event{
 		spdlog::info("Destructing event manager ...");
 	}
 
-	void Manager::subscribe(const std::string& name, Callback callback){
-		spdlog::trace("New subscriber to \"{}\" event", name);
-		_nameToCallbacksMap[name].push_back(callback);
-	}
+	// void Manager::subscribe(const std::string& name, Callback callback){
+	// 	spdlog::trace("New subscriber to \"{}\" event", name);
+	// 	_nameToCallbacksMap[name].push_back(callback);
+	// }
 
-	void Manager::trigger(const std::string& name){
-		auto& subscribers = _nameToCallbacksMap[name];
-		for (auto &callback : subscribers){
-			try{
-				callback();
-			} catch (const std::exception &e){
-				spdlog::warn("Exception encountered while triggering event \"{}\"", name);
-			}
-		}
-	}
+	// void Manager::trigger(const std::string& name){
+	// 	auto& subscribers = _nameToCallbacksMap[name];
+	// 	for (auto &callback : subscribers){
+	// 		try{
+	// 			callback();
+	// 		} catch (const std::exception &e){
+	// 			spdlog::warn("Exception encountered while triggering event \"{}\"", name);
+	// 		}
+	// 	}
+	// }
 	
 	KeyEvents& Manager::keyEvents(){
 		return _keyEvents;
@@ -43,5 +43,9 @@ namespace Raindrop::Core::Event{
 
 	const MouseEvents& Manager::mouseEvents() const{
 		return _mouseEvents;
+	}
+
+	void Manager::triggerException(const std::string& event){
+		spdlog::warn("Exception encountered while triggering event \"{}\"", event);
 	}
 }

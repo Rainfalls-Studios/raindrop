@@ -5,6 +5,22 @@
 #include <SDL3/SDL_vulkan.h>
 #include <spdlog/spdlog.h>
 
+#define EVENT_INFO true
+#define EVENT_DISPLAY true
+#define EVENT_WINDOW true
+#define EVENT_KEY true
+#define EVENT_MOUSE true
+#define EVENT_JOYSTICK false
+#define EVENT_GAMEPAD false
+#define EVENT_FINGER false
+#define EVENT_CLIPBOARD false
+#define EVENT_DROP false
+#define EVENT_AUDIO false
+#define EVENT_SENSOR false
+#define EVENT_PEN false
+#define EVENT_CAMERA false
+#define EVENT_RENDER false
+
 namespace Raindrop::Renderer::Core{
 	static constexpr uint32_t DEFAULT_WINDOW_WIDTH = 1080;
 	static constexpr uint32_t DEFAULT_WINDOW_HEIGHT = 720;
@@ -112,116 +128,147 @@ namespace Raindrop::Renderer::Core{
 
 		while (SDL_PollEvent(&e)){
 			switch (e.type){
-				case SDL_EVENT_QUIT: quitEvent(e); break;
 
-				case SDL_EVENT_TERMINATING: terminatingEvent(e); break;
-				case SDL_EVENT_LOW_MEMORY: lowMemoryEvent(e); break;
+				#if EVENT_INFO
+					case SDL_EVENT_QUIT: quitEvent(e); break;
 
-				case SDL_EVENT_WILL_ENTER_BACKGROUND: willEnterBackgroundEvent(e); break;
-				case SDL_EVENT_DID_ENTER_BACKGROUND: didEnterBackgroundEvent(e); break;
-				case SDL_EVENT_WILL_ENTER_FOREGROUND: willEnterForgroundEvent(e); break;
-				case SDL_EVENT_DID_ENTER_FOREGROUND: didEnterForgourndEvent(e); break;
+					case SDL_EVENT_TERMINATING: terminatingEvent(e); break;
+					case SDL_EVENT_LOW_MEMORY: lowMemoryEvent(e); break;
 
-				case SDL_EVENT_LOCALE_CHANGED: localeChangedEvent(e); break;
-				case SDL_EVENT_SYSTEM_THEME_CHANGED: systemThemChangedEvent(e); break;
+					case SDL_EVENT_WILL_ENTER_BACKGROUND: willEnterBackgroundEvent(e); break;
+					case SDL_EVENT_DID_ENTER_BACKGROUND: didEnterBackgroundEvent(e); break;
+					case SDL_EVENT_WILL_ENTER_FOREGROUND: willEnterForgroundEvent(e); break;
+					case SDL_EVENT_DID_ENTER_FOREGROUND: didEnterForgourndEvent(e); break;
+
+					case SDL_EVENT_LOCALE_CHANGED: localeChangedEvent(e); break;
+					case SDL_EVENT_SYSTEM_THEME_CHANGED: systemThemChangedEvent(e); break;
+				#endif
 				
-				case SDL_EVENT_DISPLAY_ORIENTATION: displayOrientationEvent(e); break;
-				case SDL_EVENT_DISPLAY_ADDED: displayAddedEvent(e); break;
-				case SDL_EVENT_DISPLAY_REMOVED: displayRemovedEvent(e); break;
-				case SDL_EVENT_DISPLAY_MOVED: displayMovedEvent(e); break;
-				case SDL_EVENT_DISPLAY_CONTENT_SCALE_CHANGED: displayContentScaleChangedEvent(e); break;
-				case SDL_EVENT_DISPLAY_HDR_STATE_CHANGED: displayHDRStateChnagedEvent(e); break;
+				#if EVENT_DISPLAY
+					case SDL_EVENT_DISPLAY_ORIENTATION: displayOrientationEvent(e); break;
+					case SDL_EVENT_DISPLAY_ADDED: displayAddedEvent(e); break;
+					case SDL_EVENT_DISPLAY_REMOVED: displayRemovedEvent(e); break;
+					case SDL_EVENT_DISPLAY_MOVED: displayMovedEvent(e); break;
+					case SDL_EVENT_DISPLAY_CONTENT_SCALE_CHANGED: displayContentScaleChangedEvent(e); break;
+					case SDL_EVENT_DISPLAY_HDR_STATE_CHANGED: displayHDRStateChnagedEvent(e); break;
+				#endif
 
-				case SDL_EVENT_WINDOW_SHOWN: windowShownEvent(e); break;
-				case SDL_EVENT_WINDOW_HIDDEN: windowHiddenEvent(e); break;
-				case SDL_EVENT_WINDOW_EXPOSED: windowExposedEvent(e); break;
-				case SDL_EVENT_WINDOW_MOVED: windowMovedEvent(e); break;
-				case SDL_EVENT_WINDOW_RESIZED: windowResizedEvent(e); break;
-				case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED: windowPixelSizeChangedEvent(e); break;
-				case SDL_EVENT_WINDOW_MINIMIZED: windowMinimizedEvent(e); break;
-				case SDL_EVENT_WINDOW_MAXIMIZED: windowMaximizedEvent(e); break;
-				case SDL_EVENT_WINDOW_RESTORED: windowRestoredEvent(e); break;
-				case SDL_EVENT_WINDOW_MOUSE_ENTER: windowMouseEnterEvent(e); break;
-				case SDL_EVENT_WINDOW_MOUSE_LEAVE: windowMouseLeaveEvent(e); break;
-				case SDL_EVENT_WINDOW_FOCUS_GAINED: windowFocusGainedEvent(e); break;
-				case SDL_EVENT_WINDOW_FOCUS_LOST: windowFocusLostEvent(e); break;
-				case SDL_EVENT_WINDOW_CLOSE_REQUESTED: windowCloseRequestedEvent(e); break;
-				case SDL_EVENT_WINDOW_TAKE_FOCUS: windowTakeFocusEvent(e); break;
-				case SDL_EVENT_WINDOW_HIT_TEST: windowHitTestEvent(e); break;
-				case SDL_EVENT_WINDOW_ICCPROF_CHANGED: windowICCPROFChangedEvent(e); break;
-				case SDL_EVENT_WINDOW_DISPLAY_CHANGED: windowDisplayChangedEvent(e); break;
-				case SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED: windowDisplayScaleChangedEvent(e); break;
-				case SDL_EVENT_WINDOW_OCCLUDED: windowOccludedEvent(e); break;
-				case SDL_EVENT_WINDOW_ENTER_FULLSCREEN: windowEnterFullsreenEvent(e); break;
-				case SDL_EVENT_WINDOW_LEAVE_FULLSCREEN: windowLeaveFullscreenEvent(e); break;
-				case SDL_EVENT_WINDOW_DESTROYED: windowDestroyedEvent(e); break;
-				case SDL_EVENT_WINDOW_PEN_ENTER: windowPenEnterEvent(e); break;
-				case SDL_EVENT_WINDOW_PEN_LEAVE: windowPenLeaveEvent(e); break;
+				#if EVENT_WINDOW
+					case SDL_EVENT_WINDOW_SHOWN: windowShownEvent(e); break;
+					case SDL_EVENT_WINDOW_HIDDEN: windowHiddenEvent(e); break;
+					case SDL_EVENT_WINDOW_EXPOSED: windowExposedEvent(e); break;
+					case SDL_EVENT_WINDOW_MOVED: windowMovedEvent(e); break;
+					case SDL_EVENT_WINDOW_RESIZED: windowResizedEvent(e); break;
+					case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED: windowPixelSizeChangedEvent(e); break;
+					case SDL_EVENT_WINDOW_MINIMIZED: windowMinimizedEvent(e); break;
+					case SDL_EVENT_WINDOW_MAXIMIZED: windowMaximizedEvent(e); break;
+					case SDL_EVENT_WINDOW_RESTORED: windowRestoredEvent(e); break;
+					case SDL_EVENT_WINDOW_MOUSE_ENTER: windowMouseEnterEvent(e); break;
+					case SDL_EVENT_WINDOW_MOUSE_LEAVE: windowMouseLeaveEvent(e); break;
+					case SDL_EVENT_WINDOW_FOCUS_GAINED: windowFocusGainedEvent(e); break;
+					case SDL_EVENT_WINDOW_FOCUS_LOST: windowFocusLostEvent(e); break;
+					case SDL_EVENT_WINDOW_CLOSE_REQUESTED: windowCloseRequestedEvent(e); break;
+					case SDL_EVENT_WINDOW_TAKE_FOCUS: windowTakeFocusEvent(e); break;
+					case SDL_EVENT_WINDOW_HIT_TEST: windowHitTestEvent(e); break;
+					case SDL_EVENT_WINDOW_ICCPROF_CHANGED: windowICCPROFChangedEvent(e); break;
+					case SDL_EVENT_WINDOW_DISPLAY_CHANGED: windowDisplayChangedEvent(e); break;
+					case SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED: windowDisplayScaleChangedEvent(e); break;
+					case SDL_EVENT_WINDOW_OCCLUDED: windowOccludedEvent(e); break;
+					case SDL_EVENT_WINDOW_ENTER_FULLSCREEN: windowEnterFullsreenEvent(e); break;
+					case SDL_EVENT_WINDOW_LEAVE_FULLSCREEN: windowLeaveFullscreenEvent(e); break;
+					case SDL_EVENT_WINDOW_DESTROYED: windowDestroyedEvent(e); break;
+					case SDL_EVENT_WINDOW_PEN_ENTER: windowPenEnterEvent(e); break;
+					case SDL_EVENT_WINDOW_PEN_LEAVE: windowPenLeaveEvent(e); break;
+				#endif
 
-				case SDL_EVENT_KEY_DOWN: keyDownEvent(e); break;
-				case SDL_EVENT_KEY_UP: keyUpEvent(e); break;
-				case SDL_EVENT_TEXT_EDITING: textEditingEvent(e); break;
-				case SDL_EVENT_TEXT_INPUT: textInputEvent(e); break;
-				case SDL_EVENT_KEYMAP_CHANGED: keymapChangedEvent(e); break;
+				#if EVENT_KEY
+					case SDL_EVENT_KEY_DOWN: keyDownEvent(e); break;
+					case SDL_EVENT_KEY_UP: keyUpEvent(e); break;
+					case SDL_EVENT_TEXT_EDITING: textEditingEvent(e); break;
+					case SDL_EVENT_TEXT_INPUT: textInputEvent(e); break;
+					case SDL_EVENT_KEYMAP_CHANGED: keymapChangedEvent(e); break;
+				#endif
+				
+				#if EVENT_MOUSE
+					case SDL_EVENT_MOUSE_MOTION: mouseMotionEvent(e); break;
+					case SDL_EVENT_MOUSE_BUTTON_DOWN: mouseButtonDownEvent(e); break;
+					case SDL_EVENT_MOUSE_BUTTON_UP: mouseButtonUpEvent(e); break;
+					case SDL_EVENT_MOUSE_WHEEL: mouseWheelEvent(e); break;
+				#endif
 
-				case SDL_EVENT_MOUSE_MOTION: mouseMotionEvent(e); break;
-				case SDL_EVENT_MOUSE_BUTTON_DOWN: mouseButtonDownEvent(e); break;
-				case SDL_EVENT_MOUSE_BUTTON_UP: mouseButtonUpEvent(e); break;
-				case SDL_EVENT_MOUSE_WHEEL: mouseWheelEvent(e); break;
+				#if EVENT_JOYSTICK
+					case SDL_EVENT_JOYSTICK_AXIS_MOTION: joystickAxisMotionEvent(e); break;
+					case SDL_EVENT_JOYSTICK_HAT_MOTION: joystickHatMotionEvent(e); break;
+					case SDL_EVENT_JOYSTICK_BUTTON_DOWN: joystickButtonDownEvent(e); break;
+					case SDL_EVENT_JOYSTICK_BUTTON_UP: joystickButtonUpEvent(e); break;
+					case SDL_EVENT_JOYSTICK_ADDED: joystickAddedEvent(e); break;
+					case SDL_EVENT_JOYSTICK_REMOVED: joystickRemovedEvent(e); break;
+					case SDL_EVENT_JOYSTICK_BATTERY_UPDATED: joystickBatteryUpdatedEvent(e); break;
+					case SDL_EVENT_JOYSTICK_UPDATE_COMPLETE: joystickUpdateCompletedEvent(e); break;
+				#endif
 
-				case SDL_EVENT_JOYSTICK_AXIS_MOTION: joystickAxisMotionEvent(e); break;
-				case SDL_EVENT_JOYSTICK_HAT_MOTION: joystickHatMotionEvent(e); break;
-				case SDL_EVENT_JOYSTICK_BUTTON_DOWN: joystickButtonDownEvent(e); break;
-				case SDL_EVENT_JOYSTICK_BUTTON_UP: joystickButtonUpEvent(e); break;
-				case SDL_EVENT_JOYSTICK_ADDED: joystickAddedEvent(e); break;
-				case SDL_EVENT_JOYSTICK_REMOVED: joystickRemovedEvent(e); break;
-				case SDL_EVENT_JOYSTICK_BATTERY_UPDATED: joystickBatteryUpdatedEvent(e); break;
-				case SDL_EVENT_JOYSTICK_UPDATE_COMPLETE: joystickUpdateCompletedEvent(e); break;
-
-				case SDL_EVENT_GAMEPAD_AXIS_MOTION: gamepadAxisMotionEvent(e); break;
-				case SDL_EVENT_GAMEPAD_BUTTON_DOWN: gamepadButtonDownEvent(e); break;
-				case SDL_EVENT_GAMEPAD_BUTTON_UP: gamepadButtonUpEvent(e); break;
-				case SDL_EVENT_GAMEPAD_ADDED: gamepadAddedEvent(e); break;
-				case SDL_EVENT_GAMEPAD_REMOVED: gamepadRemovedEvent(e); break;
-				case SDL_EVENT_GAMEPAD_REMAPPED: gamepadRemappedEvent(e); break;
-				case SDL_EVENT_GAMEPAD_TOUCHPAD_DOWN: gamepadTouchpadDownEvent(e); break;
-				case SDL_EVENT_GAMEPAD_TOUCHPAD_MOTION: gamepadTouchpadMotionEvent(e); break;
-				case SDL_EVENT_GAMEPAD_TOUCHPAD_UP: gamepadTouchpadUpEvent(e); break;
-				case SDL_EVENT_GAMEPAD_SENSOR_UPDATE: gamepadSensorUpdateEvent(e); break;
-				case SDL_EVENT_GAMEPAD_UPDATE_COMPLETE: gamepadUpdateCompleteEvent(e); break;
-				case SDL_EVENT_GAMEPAD_STEAM_HANDLE_UPDATED: gamepadSteamHandleUpdatedEvent(e); break;
-
-				case SDL_EVENT_FINGER_DOWN: fingerDownEvent(e); break;
-				case SDL_EVENT_FINGER_UP: fingerUpEvent(e); break;
-				case SDL_EVENT_FINGER_MOTION: fingerMotionEvent(e); break;
+				#if EVENT_GAMEPAD
+					case SDL_EVENT_GAMEPAD_AXIS_MOTION: gamepadAxisMotionEvent(e); break;
+					case SDL_EVENT_GAMEPAD_BUTTON_DOWN: gamepadButtonDownEvent(e); break;
+					case SDL_EVENT_GAMEPAD_BUTTON_UP: gamepadButtonUpEvent(e); break;
+					case SDL_EVENT_GAMEPAD_ADDED: gamepadAddedEvent(e); break;
+					case SDL_EVENT_GAMEPAD_REMOVED: gamepadRemovedEvent(e); break;
+					case SDL_EVENT_GAMEPAD_REMAPPED: gamepadRemappedEvent(e); break;
+					case SDL_EVENT_GAMEPAD_TOUCHPAD_DOWN: gamepadTouchpadDownEvent(e); break;
+					case SDL_EVENT_GAMEPAD_TOUCHPAD_MOTION: gamepadTouchpadMotionEvent(e); break;
+					case SDL_EVENT_GAMEPAD_TOUCHPAD_UP: gamepadTouchpadUpEvent(e); break;
+					case SDL_EVENT_GAMEPAD_SENSOR_UPDATE: gamepadSensorUpdateEvent(e); break;
+					case SDL_EVENT_GAMEPAD_UPDATE_COMPLETE: gamepadUpdateCompleteEvent(e); break;
+					case SDL_EVENT_GAMEPAD_STEAM_HANDLE_UPDATED: gamepadSteamHandleUpdatedEvent(e); break;
+				#endif
+				
+				#if EVENT_FINGER
+					case SDL_EVENT_FINGER_DOWN: fingerDownEvent(e); break;
+					case SDL_EVENT_FINGER_UP: fingerUpEvent(e); break;
+					case SDL_EVENT_FINGER_MOTION: fingerMotionEvent(e); break;
+				#endif
 			
-				case SDL_EVENT_CLIPBOARD_UPDATE: clipboardUpdateEvent(e); break;
+				#if EVENT_CLIPBOARD
+					case SDL_EVENT_CLIPBOARD_UPDATE: clipboardUpdateEvent(e); break;
+				#endif
 
-				case SDL_EVENT_DROP_FILE: dropFileEvent(e); break;
-				case SDL_EVENT_DROP_TEXT: dropTextEvent(e); break;
-				case SDL_EVENT_DROP_BEGIN: dropBeginEvent(e); break;
-				case SDL_EVENT_DROP_COMPLETE: dropCompleteEvent(e); break;
-				case SDL_EVENT_DROP_POSITION: dropPositionEvent(e); break;
+				#if EVENT_TEXT
+					case SDL_EVENT_DROP_FILE: dropFileEvent(e); break;
+					case SDL_EVENT_DROP_TEXT: dropTextEvent(e); break;
+					case SDL_EVENT_DROP_BEGIN: dropBeginEvent(e); break;
+					case SDL_EVENT_DROP_COMPLETE: dropCompleteEvent(e); break;
+					case SDL_EVENT_DROP_POSITION: dropPositionEvent(e); break;
+				#endif
 
-				case SDL_EVENT_AUDIO_DEVICE_ADDED: audioDeviceAddedEvent(e); break;
-				case SDL_EVENT_AUDIO_DEVICE_REMOVED: audioDeviceRemovedEvent(e); break;
-				case SDL_EVENT_AUDIO_DEVICE_FORMAT_CHANGED: audioDeviceFormatChangedEvent(e); break;
+				#if EVENT_AUDIO
+					case SDL_EVENT_AUDIO_DEVICE_ADDED: audioDeviceAddedEvent(e); break;
+					case SDL_EVENT_AUDIO_DEVICE_REMOVED: audioDeviceRemovedEvent(e); break;
+					case SDL_EVENT_AUDIO_DEVICE_FORMAT_CHANGED: audioDeviceFormatChangedEvent(e); break;
+				#endif
 
-				case SDL_EVENT_SENSOR_UPDATE: sensorUpdateEvent(e); break;
+				#if EVENR_SENSOR
+					case SDL_EVENT_SENSOR_UPDATE: sensorUpdateEvent(e); break;
+				#endif
 
-				case SDL_EVENT_PEN_DOWN: penDownEvent(e); break;
-				case SDL_EVENT_PEN_UP: penUpEvent(e); break;
-				case SDL_EVENT_PEN_MOTION: penMotionEvent(e); break;
-				case SDL_EVENT_PEN_BUTTON_DOWN: penButtonDownEvent(e); break;
-				case SDL_EVENT_PEN_BUTTON_UP: penButtonUpEvent(e); break;
+				#if EVENT_PEN
+					case SDL_EVENT_PEN_DOWN: penDownEvent(e); break;
+					case SDL_EVENT_PEN_UP: penUpEvent(e); break;
+					case SDL_EVENT_PEN_MOTION: penMotionEvent(e); break;
+					case SDL_EVENT_PEN_BUTTON_DOWN: penButtonDownEvent(e); break;
+					case SDL_EVENT_PEN_BUTTON_UP: penButtonUpEvent(e); break;
+				#endif
 
-				case SDL_EVENT_CAMERA_DEVICE_ADDED: cameraDeviceAddedEvent(e); break;
-				case SDL_EVENT_CAMERA_DEVICE_REMOVED: cameraDeviceRemovedEvent(e); break;
-				case SDL_EVENT_CAMERA_DEVICE_APPROVED: cameraDeviceApprovedEvent(e); break;
-				case SDL_EVENT_CAMERA_DEVICE_DENIED: cameraDeviceDeniedEvent(e); break;
+				#if EVENT_CAMERA
+					case SDL_EVENT_CAMERA_DEVICE_ADDED: cameraDeviceAddedEvent(e); break;
+					case SDL_EVENT_CAMERA_DEVICE_REMOVED: cameraDeviceRemovedEvent(e); break;
+					case SDL_EVENT_CAMERA_DEVICE_APPROVED: cameraDeviceApprovedEvent(e); break;
+					case SDL_EVENT_CAMERA_DEVICE_DENIED: cameraDeviceDeniedEvent(e); break;
+				#endif
 				
-				case SDL_EVENT_RENDER_TARGETS_RESET: renderTargetsResetEvent(e); break;
-				case SDL_EVENT_RENDER_DEVICE_RESET: renderDeviceResetEvent(e); break;
+				#if EVENT_RENDER
+					case SDL_EVENT_RENDER_TARGETS_RESET: renderTargetsResetEvent(e); break;
+					case SDL_EVENT_RENDER_DEVICE_RESET: renderDeviceResetEvent(e); break;
+				#endif
 			}
 		}
 	}
@@ -263,7 +310,7 @@ namespace Raindrop::Renderer::Core{
 	}
 
 	void Window::displayOrientationEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("display.orientation");
+		_context.core.eventManager.trigger("display.orientation", e.display.data1);
 	}
 
 	void Window::displayAddedEvent(SDL_Event& e){
@@ -303,11 +350,11 @@ namespace Raindrop::Renderer::Core{
 	}
 
 	void Window::windowResizedEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("window.resized");
+		_context.core.eventManager.trigger("window.resized", glm::ivec2(e.window.data1, e.window.data2));
 	}
 
 	void Window::windowPixelSizeChangedEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("window.pixel_size.changed");
+		_context.core.eventManager.trigger("window.pixel_size.changed", glm::ivec2(e.window.data1, e.window.data2));
 	}
 
 	void Window::windowMinimizedEvent(SDL_Event& e){
@@ -355,7 +402,7 @@ namespace Raindrop::Renderer::Core{
 	}
 
 	void Window::windowDisplayChangedEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("window.display.changed");
+		_context.core.eventManager.trigger("window.display.changed", e.window.data1);
 	}
 
 	void Window::windowDisplayScaleChangedEvent(SDL_Event& e){
@@ -387,19 +434,21 @@ namespace Raindrop::Renderer::Core{
 	}
 
 	void Window::keyDownEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("key.down");
+		const auto& keysym = e.key.keysym;
+		_context.core.eventManager.trigger("key.down", keysym.scancode, keysym.sym, keysym.mod);
 	}
 
 	void Window::keyUpEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("key.up");
+		const auto& keysym = e.key.keysym;
+		_context.core.eventManager.trigger("key.up", keysym.scancode, keysym.sym, keysym.mod);
 	}
 
 	void Window::textEditingEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("text.editing");
+		_context.core.eventManager.trigger("text.editing", e.edit.text, e.edit.start, e.edit.length);
 	}
 
 	void Window::textInputEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("text.input");
+		_context.core.eventManager.trigger("text.input", e.text.text);
 	}
 
 	void Window::keymapChangedEvent(SDL_Event& e){
@@ -407,35 +456,35 @@ namespace Raindrop::Renderer::Core{
 	}
 
 	void Window::mouseMotionEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("mouse.motion");
+		_context.core.eventManager.trigger("mouse.motion", glm::vec2(e.motion.x, e.motion.y), glm::vec2(e.motion.xrel, e.motion.yrel));
 	}
 
 	void Window::mouseButtonDownEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("mouse.button.down");
+		_context.core.eventManager.trigger("mouse.button.down", e.button.button, e.button.clicks, glm::vec2(e.button.x, e.button.y));
 	}
 
 	void Window::mouseButtonUpEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("mouse.button.up");
+		_context.core.eventManager.trigger("mouse.button.up", e.button.button, e.button.clicks, glm::vec2(e.button.x, e.button.y));
 	}
 
 	void Window::mouseWheelEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("mouse.wheel");
+		_context.core.eventManager.trigger("mouse.wheel", glm::vec2(e.wheel.x, e.wheel.y), glm::vec2(e.wheel.mouse_x, e.wheel.mouse_y));
 	}
 
 	void Window::joystickAxisMotionEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("joystick.axis.motion");
+		_context.core.eventManager.trigger("joystick.axis.motion", e.jaxis.axis, e.jaxis.value);
 	}
 
 	void Window::joystickHatMotionEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("joystick.hat.motion");
+		_context.core.eventManager.trigger("joystick.hat.motion", e.jhat.hat, e.jhat.value);
 	}
 
 	void Window::joystickButtonDownEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("joystick.button.down");
+		_context.core.eventManager.trigger("joystick.button.down", e.jbutton.button);
 	}
 
 	void Window::joystickButtonUpEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("joystick.button.up");
+		_context.core.eventManager.trigger("joystick.button.up", e.jbutton.button);
 	}
 
 	void Window::joystickAddedEvent(SDL_Event& e){
@@ -447,7 +496,7 @@ namespace Raindrop::Renderer::Core{
 	}
 
 	void Window::joystickBatteryUpdatedEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("joystick.battery.updated");
+		_context.core.eventManager.trigger("joystick.battery.updated", e.jbattery.level);
 	}
 
 	void Window::joystickUpdateCompletedEvent(SDL_Event& e){
@@ -455,15 +504,15 @@ namespace Raindrop::Renderer::Core{
 	}
 
 	void Window::gamepadAxisMotionEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("gamepad.axis.motion");
+		_context.core.eventManager.trigger("gamepad.axis.motion", e.gaxis.axis, e.gaxis.value);
 	}
 
 	void Window::gamepadButtonDownEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("gamepad.button.down");
+		_context.core.eventManager.trigger("gamepad.button.down", e.gbutton.button);
 	}
 
 	void Window::gamepadButtonUpEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("gamepad.button.up");
+		_context.core.eventManager.trigger("gamepad.button.up", e.gbutton.button);
 	}
 
 	void Window::gamepadAddedEvent(SDL_Event& e){
@@ -479,19 +528,19 @@ namespace Raindrop::Renderer::Core{
 	}
 
 	void Window::gamepadTouchpadDownEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("gamepad.touchpad.down");
+		_context.core.eventManager.trigger("gamepad.touchpad.down", glm::vec2(e.gtouchpad.x, e.gtouchpad.y), e.gtouchpad.pressure);
 	}
 	
 	void Window::gamepadTouchpadMotionEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("gamepad.touchpad.motion");
+		_context.core.eventManager.trigger("gamepad.touchpad.motion", glm::vec2(e.gtouchpad.x, e.gtouchpad.y), e.gtouchpad.pressure);
 	}
 
 	void Window::gamepadTouchpadUpEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("gamepad.touchpad.up");
+		_context.core.eventManager.trigger("gamepad.touchpad.up", glm::vec2(e.gtouchpad.x, e.gtouchpad.y), e.gtouchpad.pressure);
 	}
 
 	void Window::gamepadSensorUpdateEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("gamepad.sensor.update");
+		_context.core.eventManager.trigger("gamepad.sensor.update", e.gsensor.sensor_timestamp, glm::vec3(e.gsensor.data[0], e.gsensor.data[1], e.gsensor.data[2]));
 	}
 
 	void Window::gamepadUpdateCompleteEvent(SDL_Event& e){
@@ -503,15 +552,15 @@ namespace Raindrop::Renderer::Core{
 	}
 
 	void Window::fingerDownEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("finger.down");
+		_context.core.eventManager.trigger("finger.down", e.tfinger.fingerID, glm::vec2(e.tfinger.x, e.tfinger.y));
 	}
 
 	void Window::fingerUpEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("finger.up");
+		_context.core.eventManager.trigger("finger.up", e.tfinger.fingerID, glm::vec2(e.tfinger.x, e.tfinger.y));
 	}
 
 	void Window::fingerMotionEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("finger.motion");
+		_context.core.eventManager.trigger("finger.motion", e.tfinger.fingerID, glm::vec2(e.tfinger.x, e.tfinger.y), glm::vec2(e.tfinger.dx, e.tfinger.dy));
 	}
 
 	void Window::clipboardUpdateEvent(SDL_Event& e){
