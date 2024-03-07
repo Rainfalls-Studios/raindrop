@@ -143,6 +143,8 @@ namespace Raindrop::Renderer::Core{
 			void renderTargetsResetEvent(SDL_Event& e);
 			void renderDeviceResetEvent(SDL_Event& e);
 
+			void registerEvents();
+
 	};
 }
 

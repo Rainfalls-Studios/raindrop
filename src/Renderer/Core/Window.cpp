@@ -40,7 +40,152 @@ namespace Raindrop::Renderer::Core{
 			spdlog::error("Failed to initialize SDL3 Window : {}", SDL_GetError());
 			throw std::runtime_error("Failed to create SDL3 Window");
 		}
+
+		registerEvents();
+
 		spdlog::info("SDL3 Window initialized successfully");
+	}
+
+	void Window::registerEvents(){
+		auto& event = _context.core.eventManager;
+
+		#if EVENT_INFO
+			event.registerEvent<>("quit");
+			event.registerEvent<>("terminating");
+			event.registerEvent<>("memory.low");
+			event.registerEvent<>("will_enter_background");
+			event.registerEvent<>("did_enter_background");
+			event.registerEvent<>("will_enter_forground");
+			event.registerEvent<>("did_enter_forground");
+			event.registerEvent<>("locale.changed");
+			event.registerEvent<>("system_theme.changed");
+		#endif
+
+		#if EVENT_DISPLAY
+			event.registerEvent<uint>("display.orientation");
+			event.registerEvent<>("display.added");
+			event.registerEvent<>("display.removed");
+			event.registerEvent<>("display.moved");
+			event.registerEvent<>("display.content_scale.changed");
+			event.registerEvent<>("display.HDR_state.changed");
+		#endif
+
+		#if EVENT_WINDOW
+			event.registerEvent<>("window.shown");
+			event.registerEvent<>("window.hidden");
+			event.registerEvent<>("window.exposed");
+			event.registerEvent<>("window.moved");
+			event.registerEvent<glm::ivec2>("window.resized");
+			event.registerEvent<glm::ivec2>("window.pixel_size.changed");
+			event.registerEvent<>("window.minimized");
+			event.registerEvent<>("window.maximized");
+			event.registerEvent<>("window.restored");
+			event.registerEvent<>("window.mouse.enter");
+			event.registerEvent<>("window.mouse.leave");
+			event.registerEvent<>("window.focus.gained");
+			event.registerEvent<>("window.focus.lost");
+			event.registerEvent<>("window.close.requested");
+			event.registerEvent<>("window.focus.take");
+			event.registerEvent<>("window.hit_test");
+			event.registerEvent<>("window.ICCPROF.changed");
+			event.registerEvent<>("window.display.changed");
+			event.registerEvent<>("window.display.scale.changed");
+			event.registerEvent<>("window.occluded");
+			event.registerEvent<>("window.fullscreen.leave");
+			event.registerEvent<>("window.fullscreen.enter");
+			event.registerEvent<>("window.destroyed");
+			event.registerEvent<>("window.pen.enter");
+			event.registerEvent<>("window.pen.leave");
+		#endif
+
+		#if EVENT_KEY
+			event.registerEvent<SDL_Scancode, SDL_Keysym, uint16_t>("key.down");
+			event.registerEvent<SDL_Scancode, SDL_Keysym, uint16_t>("key.up");
+			event.registerEvent<const char*, uint, uint>("text.editing");
+			event.registerEvent<const char*>("text.input");
+			event.registerEvent<const char*>("keymap.changed");
+		#endif
+		
+		#if EVENT_MOUSE
+			event.registerEvent<glm::vec2, glm::vec2>("mouse.motion");
+			event.registerEvent<uint8_t, uint8_t, glm::vec2>("mouse.button.down");
+			event.registerEvent<uint8_t, uint8_t, glm::vec2>("mouse.button.up");
+			event.registerEvent<glm::vec2, glm::vec2>("mouse.wheel");
+		#endif
+
+		#if EVENT_JOYSTICK
+			event.registerEvent<uint8_t, int16_t>("joystick.axis.motion");
+			event.registerEvent<uint8_t, int16_t>("joystick.hat.motion");
+			event.registerEvent<uint8_t>("joystick.button.down");
+			event.registerEvent<uint8_t>("joystick.button.up");
+			event.registerEvent<>("joystick.added");
+			event.registerEvent<>("joystick.removed");
+			event.registerEvent<SDL_JoystickPowerLevel>("joystick.battery.updated");
+			event.registerEvent<>("joystick.update.complete");
+		#endif
+
+		#if EVENT_GAMEPAD
+			event.registerEvent<uint8_t, int16_t>("gamepad.axis.motion");
+			event.registerEvent<uint8_t>("gamepad.button.down");
+			event.registerEvent<uint8_t>("gamepad.button.up");
+			event.registerEvent<>("gamepad.added");
+			event.registerEvent<>("gamepad.removed");
+			event.registerEvent<>("gamepad.remapped");
+			event.registerEvent<glm::vec2, float>("gamepad.touchpad.down");
+			event.registerEvent<glm::vec2, float>("gamepad.touchpad.motion");
+			event.registerEvent<glm::vec2, float>("gamepad.touchpad.up");
+			event.registerEvent<uint64_t, glm::vec3>("gamepad.sensor.update");
+			event.registerEvent<>("gamepad.update.complete");
+			event.registerEvent<>("gamepad.steam_handle_updated");
+		#endif
+
+		#if EVENT_FINGER
+			event.registerEvent<SDL_FingerID, glm::vec2>("finger.down");
+			event.registerEvent<SDL_FingerID, glm::vec2>("finger.up");
+			event.registerEvent<SDL_FingerID, glm::vec2, glm::vec2>("finger.motion");
+		#endif
+
+		#if EVENT_CLIPBOARD
+			event.registerEvent<>("clipboard.update");
+		#endif
+
+		#if EVENT_DROP
+			event.registerEvent<>("drop.file");
+			event.registerEvent<>("drop.text");
+			event.registerEvent<>("drop.begin");
+			event.registerEvent<>("drop.complete");
+			event.registerEvent<>("drop.position");
+		#endif
+
+		#if EVENT_AUDIO
+			event.registerEvent<>("audio_device.added");
+			event.registerEvent<>("audio_device.removed");
+			event.registerEvent<>("audio_device.fromta_changed");
+		#endif
+
+		#if EVENT_SENSOR
+			event.registerEvent<>("sensor.update");
+		#endif
+
+		#if EVENT_PEN
+			event.registerEvent<>("pen.down");
+			event.registerEvent<>("pen.up");
+			event.registerEvent<>("pen.motion");
+			event.registerEvent<>("pen.button.down");
+			event.registerEvent<>("pen.button.up");
+		#endif
+
+		#if EVENT_CAMERA
+			event.registerEvent<>("camera_device.added");
+			event.registerEvent<>("camera_device.removed");
+			event.registerEvent<>("camera_device.approved");
+			event.registerEvent<>("camera_device.denied");
+		#endif
+
+		#if EVENT_RENDER
+			event.registerEvent<>("render_target.reset");
+			event.registerEvent<>("render_device.reset");
+		#endif
 	}
 
 	Window::~Window(){
@@ -274,7 +419,7 @@ namespace Raindrop::Renderer::Core{
 	}
 
 	void Window::quitEvent(SDL_Event &e){
-		_context.core.eventManager.trigger("window.quit");
+		_context.core.eventManager.trigger("quit");
 	}
 	
 	void Window::terminatingEvent(SDL_Event& e){
@@ -576,7 +721,7 @@ namespace Raindrop::Renderer::Core{
 	}
 
 	void Window::dropBeginEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("drop.beign");
+		_context.core.eventManager.trigger("drop.begin");
 	}
 
 	void Window::dropCompleteEvent(SDL_Event& e){
@@ -621,7 +766,6 @@ namespace Raindrop::Renderer::Core{
 
 	void Window::penButtonUpEvent(SDL_Event& e){
 		_context.core.eventManager.trigger("pen.button.up");
-
 	}
 
 	void Window::cameraDeviceAddedEvent(SDL_Event& e){
