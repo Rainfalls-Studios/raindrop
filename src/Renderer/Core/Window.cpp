@@ -46,6 +46,14 @@ namespace Raindrop::Renderer::Core{
 		spdlog::info("SDL3 Window initialized successfully");
 	}
 
+	bool Window::resized() const{
+		return _resized;
+	}
+
+	void Window::resetResizedFlags(){
+		_resized = false;
+	}
+
 	void Window::registerEvents(){
 		auto& event = _context.core.eventManager;
 
@@ -495,6 +503,7 @@ namespace Raindrop::Renderer::Core{
 	}
 
 	void Window::windowResizedEvent(SDL_Event& e){
+		_resized = true;
 		_context.core.eventManager.trigger("window.resized", glm::ivec2(e.window.data1, e.window.data2));
 	}
 

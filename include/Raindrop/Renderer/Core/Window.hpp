@@ -26,11 +26,16 @@ namespace Raindrop::Renderer::Core{
 
 			VkSurfaceKHR surface();
 			std::vector<const char*> vulkanExtensions();
+
+			bool resized() const;
+			void resetResizedFlags();
 		
 		private:
 			Context& _context;
 			SDL_Window* _window;
 			VkSurfaceKHR _surface;
+
+			bool _resized;
 
 			void quitEvent(SDL_Event& e);
 

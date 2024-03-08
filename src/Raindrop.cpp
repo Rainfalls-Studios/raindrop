@@ -22,20 +22,6 @@ namespace Raindrop{
 			}
 		);
 
-		_context->eventManager.subscribe(
-			"window.resized",
-			[](glm::ivec2 size) -> void {
-				spdlog::info("window : {}, height : {}", size.x, size.y);
-			}
-		);
-
-		_context->eventManager.subscribe(
-			"mouse.motion",
-			[](glm::vec2 p, glm::vec2 d) -> void {
-				spdlog::info("[{}, {}]", p.x, p.y);
-			}
-		);
-
 		while (_context->running){
 			render();
 			events();

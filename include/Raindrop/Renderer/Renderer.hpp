@@ -14,6 +14,20 @@ namespace Raindrop::Renderer{
 
 		private:
 			Context* _context;
+
+			VkCommandBuffer beginFrame();
+			void endFrame();
+
+			void createRenderCommandPool();
+			void allocateFrameCommandBuffers();
+
+			void freeFrameCommandBuffers();
+			void destroyRenderCommandPool();
+
+			VkCommandPool _renderCommandPool;
+			std::vector<VkCommandBuffer> _frameCommandBuffers;
+			std::size_t _currentFrameID;
+
 	};
 }
 
