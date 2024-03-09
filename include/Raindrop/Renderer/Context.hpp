@@ -8,6 +8,7 @@
 #include "Core/Window.hpp"
 #include "Queues/Manager.hpp"
 #include "Core/Swapchain.hpp"
+#include "Scene/Scene.hpp"
 
 namespace Raindrop::Renderer{
 	struct Context{
@@ -23,6 +24,7 @@ namespace Raindrop::Renderer{
 		Core::Device device;
 		Queues::Manager queues;
 		Core::Swapchain swapchain;
+		Scene::Scene scene;
 	};
 }
 
