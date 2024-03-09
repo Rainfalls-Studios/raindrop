@@ -12,12 +12,20 @@ namespace Raindrop::Renderer::Scene{
 		
 		private:
 			struct Attachment{
+				Context& context;
+
 				VkImageView imageView;	
 				VkImage image;
+				VkDeviceMemory memory;
+
+				void create(const VkImageCreateInfo& imageInfo, VkImageViewCreateInfo imageViewInfo);
+
+				Attachment(Context& context);
+				~Attachment();
 			};
 
-			Attachment _depthAttachment;
-			Attachment _colorAttachment;
+			std::unique_ptr<Attachment> _depthAttachment;
+			std::unique_ptr<Attachment> _colorAttachment;
 
 			Context& _context;
 
@@ -28,8 +36,13 @@ namespace Raindrop::Renderer::Scene{
 			void destroyAttachments();
 			void createDepthAttachment();
 			void createColorAttachment();
-			VkImageCreateInfo depthAttachmentInfo(); 
-			VkImageCreateInfo colorAttachmentInfo(); 
+
+			VkImageCreateInfo depthImageInfo(); 
+			VkImageViewCreateInfo depthImageViewInfo();
+
+			VkImageCreateInfo colorImageInfo(); 
+			VkImageViewCreateInfo colorImageViewInfo(); 
+
 
 
 			void createFramebuffer();

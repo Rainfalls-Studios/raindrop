@@ -1,18 +1,77 @@
 #include <Raindrop/Renderer/Scene/Framebuffer.hpp>
 #include <Raindrop/Renderer/Context.hpp>
 
+#include <spdlog/spdlog.h>
+
 namespace Raindrop::Renderer::Scene{
+	Framebuffer::Attachment::Attachment(Context& context) : 
+		context{context},
+		imageView{VK_NULL_HANDLE},
+		image{VK_NULL_HANDLE},
+		memory{VK_NULL_HANDLE}{}
+
+	Framebuffer::Attachment::~Attachment(){
+		const auto& device = context.renderer.device.get();
+		const auto& allocationCallbacks = context.renderer.allocationCallbacks;
+
+		if (imageView != VK_NULL_HANDLE){
+			vkDestroyImageView(device, imageView, allocationCallbacks);
+			imageView = VK_NULL_HANDLE;
+		}
+
+		if (memory != VK_NULL_HANDLE){
+			vkFreeMemory(device, memory, allocationCallbacks);
+			memory = VK_NULL_HANDLE;
+		}
+
+		if (image != VK_NULL_HANDLE){
+			vkDestroyImage(device, image, allocationCallbacks);
+			image = VK_NULL_HANDLE;
+		}
+	}
+
+	void Framebuffer::Attachment::create(const VkImageCreateInfo& imageInfo, VkImageViewCreateInfo imageViewInfo){
+		auto& device = context.renderer.device;
+		auto& allocationCallbacks = context.renderer.allocationCallbacks;
+
+		if (vkCreateImage(device.get(), &imageInfo, allocationCallbacks, &image) != VK_SUCCESS){
+			throw std::runtime_error("Failed to create attachment");
+		}
+
+		VkMemoryRequirements requirements;
+		vkGetImageMemoryRequirements(device.get(), image, &requirements);
+
+		VkMemoryAllocateInfo allocationInfo{};
+		allocationInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+		allocationInfo.memoryTypeIndex = device.findMemoryType(requirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		allocationInfo.allocationSize = requirements.size;
+
+		if (vkAllocateMemory(device.get(), &allocationInfo, allocationCallbacks, &memory) != VK_SUCCESS){
+			spdlog::error("Failed to allocate vulkan image memory");
+			throw std::runtime_error("Failed to allocate image memory");
+		}
+
+		if (vkBindImageMemory(device.get(), image, memory, 0) != VK_SUCCESS){
+			spdlog::error("Failed to bind vulkan image memory");
+			throw std::runtime_error("Failed to bind image memory");
+		}
+
+		imageViewInfo.image = image;
+
+		if (vkCreateImageView(device.get(), &imageViewInfo, allocationCallbacks, &imageView) != VK_SUCCESS){
+			throw std::runtime_error("Failed to create image view");
+		}
+	}
+
 	Framebuffer::Framebuffer(Context& context) : Framebuffer(context, {1080, 720}){}
 
 	Framebuffer::Framebuffer(Context& context, glm::uvec2 size) : 
 		_context{context},
 		_framebuffer{VK_NULL_HANDLE},
-		_size{size}
-	{
+		_size{size}{
 
 		createAttachments();
 		createFramebuffer();
-
 	}
 
 	Framebuffer::~Framebuffer(){
@@ -28,16 +87,27 @@ namespace Raindrop::Renderer::Scene{
 	}
 
 	void Framebuffer::createFramebuffer(){
+		assert(_depthAttachment && _colorAttachment && "Cannot create the framebuffer without proper attachments");
+		const auto& device = _context.renderer.device.get();
+		const auto& allocationCallbacks = _context.renderer.allocationCallbacks;
+
 		VkFramebufferCreateInfo info{};
 		info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 
 		info.width = static_cast<uint32_t>(_size.x);
 		info.height = static_cast<uint32_t>(_size.y);
+		info.layers = 1;
 
-		// info.attachmentCount = 2;
-		// info.pAttachments
+		VkImageView attachments[] = {_depthAttachment->imageView, _colorAttachment->imageView};
+
+		info.attachmentCount = sizeof(attachments) / sizeof(attachments[0]);
+		info.pAttachments = attachments;
 
 		info.renderPass = _context.renderPass.get();
+		
+		if (vkCreateFramebuffer(device, &info, allocationCallbacks, &_framebuffer) != VK_SUCCESS){
+			throw std::runtime_error("Failed to create frame buffer");
+		}
 	}
 
 	void Framebuffer::createAttachments(){
@@ -46,21 +116,11 @@ namespace Raindrop::Renderer::Scene{
 	}
 
 	void Framebuffer::destroyAttachments(){
-		const auto& device = _context.renderer.device.get();
-		const auto& allocationCallbacks = _context.renderer.allocationCallbacks;
-
-		if (_depthAttachment.image != VK_NULL_HANDLE){
-			vkDestroyImage(device, _depthAttachment.image, allocationCallbacks);
-			_depthAttachment.image = VK_NULL_HANDLE;
-		}
-
-		if (_colorAttachment.image != VK_NULL_HANDLE){
-			vkDestroyImage(device, _colorAttachment.image, allocationCallbacks);
-			_colorAttachment.image = VK_NULL_HANDLE;
-		}
+		_depthAttachment.reset();
+		_colorAttachment.reset();
 	}
 
-	VkImageCreateInfo Framebuffer::depthAttachmentInfo(){
+	VkImageCreateInfo Framebuffer::depthImageInfo(){
 		VkImageCreateInfo info{};
 		info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 		info.imageType = VK_IMAGE_TYPE_2D;
@@ -83,7 +143,29 @@ namespace Raindrop::Renderer::Scene{
 		return info;
 	}
 
-	VkImageCreateInfo Framebuffer::colorAttachmentInfo(){
+	VkImageViewCreateInfo Framebuffer::depthImageViewInfo(){
+		VkImageViewCreateInfo info{};
+
+		info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+		// info.image : Set afterward
+		info.components = {
+			.r = VK_COMPONENT_SWIZZLE_R,
+			.g = VK_COMPONENT_SWIZZLE_G,
+			.b = VK_COMPONENT_SWIZZLE_B,
+			.a = VK_COMPONENT_SWIZZLE_A
+		};
+		info.format = VK_FORMAT_D32_SFLOAT;
+		info.viewType = VK_IMAGE_VIEW_TYPE_2D;
+		info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+		info.subresourceRange.baseArrayLayer = 0;
+		info.subresourceRange.baseMipLevel = 0;
+		info.subresourceRange.layerCount = 1;
+		info.subresourceRange.levelCount = 1;
+
+		return info;
+	}
+
+	VkImageCreateInfo Framebuffer::colorImageInfo(){
 		VkImageCreateInfo info{};
 		info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 		info.imageType = VK_IMAGE_TYPE_2D;
@@ -106,23 +188,35 @@ namespace Raindrop::Renderer::Scene{
 		return info;
 	}
 
-	void Framebuffer::createDepthAttachment(){
-		const auto& device = _context.renderer.device.get();
-		const auto& allocationCallbacks = _context.renderer.allocationCallbacks;
+	VkImageViewCreateInfo Framebuffer::colorImageViewInfo(){
+		VkImageViewCreateInfo info{};
 
-		VkImageCreateInfo info = depthAttachmentInfo();
-		if (vkCreateImage(device, &info, allocationCallbacks, &_depthAttachment.image) != VK_SUCCESS){
-			throw std::runtime_error("Failed to create depth attachment");
-		}
+		info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+		// info.image : Set afterward
+		info.components = {
+			.r = VK_COMPONENT_SWIZZLE_R,
+			.g = VK_COMPONENT_SWIZZLE_G,
+			.b = VK_COMPONENT_SWIZZLE_B,
+			.a = VK_COMPONENT_SWIZZLE_A
+		};
+		info.format = VK_FORMAT_R8G8B8A8_SRGB;
+		info.viewType = VK_IMAGE_VIEW_TYPE_2D;
+		info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		info.subresourceRange.baseArrayLayer = 0;
+		info.subresourceRange.baseMipLevel = 0;
+		info.subresourceRange.layerCount = 1;
+		info.subresourceRange.levelCount = 1;
+
+		return info;
+	}
+
+	void Framebuffer::createDepthAttachment(){
+		_depthAttachment = std::make_unique<Attachment>(_context);
+		_depthAttachment->create(depthImageInfo(), depthImageViewInfo());
 	}
 
 	void Framebuffer::createColorAttachment(){
-		const auto& device = _context.renderer.device.get();
-		const auto& allocationCallbacks = _context.renderer.allocationCallbacks;
-
-		VkImageCreateInfo info = colorAttachmentInfo();
-		if (vkCreateImage(device, &info, allocationCallbacks, &_colorAttachment.image) != VK_SUCCESS){
-			throw std::runtime_error("Failed to create depth attachment");
-		}
+		_colorAttachment = std::make_unique<Attachment>(_context);
+		_colorAttachment->create(colorImageInfo(), colorImageViewInfo());
 	}
 }
