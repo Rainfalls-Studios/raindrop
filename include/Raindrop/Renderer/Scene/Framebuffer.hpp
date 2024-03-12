@@ -43,8 +43,6 @@ namespace Raindrop::Renderer::Scene{
 			VkImageCreateInfo colorImageInfo(); 
 			VkImageViewCreateInfo colorImageViewInfo(); 
 
-
-
 			void createFramebuffer();
 
 
