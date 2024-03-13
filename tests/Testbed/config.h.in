@@ -1,0 +1,6 @@
+#ifndef __TESTBED_CONFIG_H_IN__
+#define __TESTBED_CONFIG_H_IN__
+
+#define PATH "${CMAKE_CURRENT_SOURCE_DIR}"
+
+#endif

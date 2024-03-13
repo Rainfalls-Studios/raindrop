@@ -2,6 +2,10 @@
 #include <Raindrop/Renderer/Context.hpp>
 #include <spdlog/spdlog.h>
 
+// TEST
+#include <Raindrop/Renderer/Pipelines/Triangle.hpp>
+static std::unique_ptr<Raindrop::Renderer::Pipelines::Triangle> shader;
+
 namespace Raindrop::Renderer{
 	Renderer::Renderer(::Raindrop::Context& context) : 
 			_context{nullptr},
@@ -12,11 +16,15 @@ namespace Raindrop::Renderer{
 
 		createRenderCommandPool();
 		allocateFrameCommandBuffers();
+
+		shader = std::make_unique<Pipelines::Triangle>(*_context);
 	}
 
 	Renderer::~Renderer(){
 		spdlog::info("Destructing renderer ...");
 		_context->device.waitIdle();
+
+		shader = nullptr;
 
 		freeFrameCommandBuffers();
 		destroyRenderCommandPool();
@@ -31,6 +39,8 @@ namespace Raindrop::Renderer{
 		if (commandBuffer != nullptr){
 
 			swapchain.beginRenderPass(commandBuffer);
+			shader->bind(commandBuffer);
+			vkCmdDraw(commandBuffer, 3, 1, 0, 0);
 			swapchain.endRenderPass(commandBuffer);
 
 			endFrame();
