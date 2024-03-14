@@ -5,6 +5,7 @@ namespace Raindrop::Renderer::Scene{
 		renderer{renderer},
 		renderPass(*this),
 		framebuffer(*this),
-		sampler(*this)
+		sampler(*this),
+		set(*this)
 	{}
 }

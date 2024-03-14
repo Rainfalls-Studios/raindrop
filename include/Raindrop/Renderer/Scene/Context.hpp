@@ -5,6 +5,7 @@
 #include "RenderPass.hpp"
 #include "Framebuffer.hpp"
 #include "Sampler.hpp"
+#include "DescriptorSet.hpp"
 
 namespace Raindrop::Renderer::Scene{
 	struct Context{
@@ -16,6 +17,7 @@ namespace Raindrop::Renderer::Scene{
 		RenderPass renderPass;
 		Framebuffer framebuffer;
 		Sampler sampler;
+		DescriptorSet set;
 	};
 }
 
