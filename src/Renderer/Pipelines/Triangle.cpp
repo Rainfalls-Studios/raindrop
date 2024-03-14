@@ -107,10 +107,10 @@ namespace Raindrop::Renderer::Pipelines{
 			info.stages.push_back(vert);
 		}
 
-		info.viewportInfo.scissorCount = 1;
-		info.viewportInfo.pScissors = nullptr;
 		info.viewportInfo.viewportCount = 1;
 		info.viewportInfo.pViewports = nullptr;
+		info.viewportInfo.scissorCount = 1;
+		info.viewportInfo.pScissors = nullptr;
 
 		info.update();
 
@@ -164,5 +164,23 @@ namespace Raindrop::Renderer::Pipelines{
 
 	void Triangle::bind(VkCommandBuffer commandBuffer){
 		_pipeline->bind(commandBuffer);
+
+		const auto& size = _context.window.getSize();
+
+		VkViewport viewport;
+		viewport.x = 0;
+		viewport.y = 0;
+		viewport.width = size.x;
+		viewport.height = size.y;
+		viewport.minDepth = 0.f;
+		viewport.maxDepth = 1.f;
+
+		vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+
+		VkRect2D scissor;
+		scissor.extent = {size.x, size.y};
+		scissor.offset = {0, 0};
+
+		vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 	}
 }

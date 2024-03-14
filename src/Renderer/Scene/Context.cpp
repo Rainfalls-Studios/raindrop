@@ -4,6 +4,7 @@ namespace Raindrop::Renderer::Scene{
 	Context::Context(Renderer& renderer) :
 		renderer{renderer},
 		renderPass(*this),
-		framebuffer(*this)
+		framebuffer(*this),
+		sampler(*this)
 	{}
 }
