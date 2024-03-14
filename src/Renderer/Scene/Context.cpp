@@ -4,8 +4,11 @@ namespace Raindrop::Renderer::Scene{
 	Context::Context(Renderer& renderer) :
 		renderer{renderer},
 		renderPass(*this),
+		set(*this),
 		framebuffer(*this),
 		sampler(*this),
-		set(*this)
-	{}
+		fullscreenQuad(*this)
+	{
+		set.update();
+	}
 }

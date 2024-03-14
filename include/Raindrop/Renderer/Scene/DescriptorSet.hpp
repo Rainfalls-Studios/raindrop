@@ -13,6 +13,8 @@ namespace Raindrop::Renderer::Scene{
 			VkDescriptorSetLayout layout() const;
 			VkDescriptorPool pool() const;
 
+			void update();
+
 		private:
 			Context& _context;
 			VkDescriptorSet _set;

@@ -6,6 +6,7 @@
 #include "Framebuffer.hpp"
 #include "Sampler.hpp"
 #include "DescriptorSet.hpp"
+#include "FullscreenQuad.hpp"
 
 namespace Raindrop::Renderer::Scene{
 	struct Context{
@@ -15,9 +16,10 @@ namespace Raindrop::Renderer::Scene{
 		Renderer& renderer;
 
 		RenderPass renderPass;
+		DescriptorSet set;
 		Framebuffer framebuffer;
 		Sampler sampler;
-		DescriptorSet set;
+		FullscreenQuad fullscreenQuad;
 	};
 }
 

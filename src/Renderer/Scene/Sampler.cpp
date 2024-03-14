@@ -61,4 +61,8 @@ namespace Raindrop::Renderer::Scene{
 			_sampler = VK_NULL_HANDLE;
 		}
 	}
+
+	VkSampler Sampler::get() const{
+		return _sampler;
+	}
 }

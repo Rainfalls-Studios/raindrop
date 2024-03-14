@@ -6,11 +6,6 @@
 namespace Raindrop::Renderer::Scene{
 	class Framebuffer{
 		public:
-			Framebuffer(Context& context);
-			Framebuffer(Context& context, glm::uvec2 size);
-			~Framebuffer();
-		
-		private:
 			struct Attachment{
 				Context& context;
 
@@ -23,6 +18,20 @@ namespace Raindrop::Renderer::Scene{
 				Attachment(Context& context);
 				~Attachment();
 			};
+
+			Framebuffer(Context& context);
+			Framebuffer(Context& context, glm::uvec2 size);
+			~Framebuffer();
+
+			const Attachment& depth() const;
+			const Attachment& color() const;
+
+			VkFramebuffer framebuffer() const;
+			glm::uvec2 size() const;
+
+			void resize(const glm::uvec2 size);
+		
+		private:
 
 			std::unique_ptr<Attachment> _depthAttachment;
 			std::unique_ptr<Attachment> _colorAttachment;
@@ -44,6 +53,8 @@ namespace Raindrop::Renderer::Scene{
 			VkImageViewCreateInfo colorImageViewInfo(); 
 
 			void createFramebuffer();
+
+			void reset();
 
 
 	};

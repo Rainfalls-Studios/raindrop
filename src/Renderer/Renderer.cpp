@@ -37,10 +37,16 @@ namespace Raindrop::Renderer{
 		
 		VkCommandBuffer commandBuffer = beginFrame();
 		if (commandBuffer != nullptr){
+			
+
+			_context->scene.beginRenderPass(commandBuffer);
+			_context->scene.endRenderPass(commandBuffer);
 
 			swapchain.beginRenderPass(commandBuffer);
 			shader->bind(commandBuffer);
 			vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+
+			_context->scene.swapchainRender(commandBuffer);
 			swapchain.endRenderPass(commandBuffer);
 
 			endFrame();
@@ -101,6 +107,7 @@ namespace Raindrop::Renderer{
 			auto size = window.getSize();
 			swapchain.setExtent(VkExtent2D{size.x, size.y});
 			swapchain.rebuildSwapchain();
+			_context->scene.resize(size);
 			return nullptr;
 		}
 
@@ -134,6 +141,7 @@ namespace Raindrop::Renderer{
 			window.resetResizedFlags();
 			swapchain.setExtent(VkExtent2D{size.x, size.y});
 			swapchain.rebuildSwapchain();
+			_context->scene.resize(size);
 		} else if (result != VK_SUCCESS){
 			throw std::runtime_error("failed to submit the command buffer");
 		}

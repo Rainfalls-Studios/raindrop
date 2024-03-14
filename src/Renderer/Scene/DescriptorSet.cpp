@@ -127,4 +127,24 @@ namespace Raindrop::Renderer::Scene{
 	VkDescriptorPool DescriptorSet::pool() const{
 		return _pool;
 	}
+
+	void DescriptorSet::update(){
+		auto& device = _context.renderer.device;
+		auto& allocationCallbacks = _context.renderer.allocationCallbacks;
+
+		VkDescriptorImageInfo imageInfo{};
+		imageInfo.sampler = _context.sampler.get();
+		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		imageInfo.imageView = _context.framebuffer.color().imageView;
+
+		VkWriteDescriptorSet write{};
+		write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		write.descriptorCount = 1;
+		write.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		write.pImageInfo = &imageInfo;
+		write.dstSet = _set;
+		write.dstBinding = 0;
+
+		vkUpdateDescriptorSets(device.get(), 1, &write, 0, nullptr);
+	}
 }

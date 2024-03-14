@@ -9,6 +9,8 @@ namespace Raindrop::Renderer::Scene{
 			Sampler(Context& context);
 			~Sampler();
 
+			VkSampler get() const;
+
 		private:
 			Context& _context;
 			VkSampler _sampler;

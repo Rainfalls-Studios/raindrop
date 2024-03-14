@@ -75,6 +75,10 @@ namespace Raindrop::Renderer::Scene{
 	}
 
 	Framebuffer::~Framebuffer(){
+		reset();
+	}
+
+	void Framebuffer::reset(){
 		const auto& device = _context.renderer.device.get();
 		const auto& allocationCallbacks = _context.renderer.allocationCallbacks;
 
@@ -84,6 +88,22 @@ namespace Raindrop::Renderer::Scene{
 		}
 
 		destroyAttachments();
+	}
+
+
+	void Framebuffer::resize(const glm::uvec2 size){
+		#if !NDEBUG
+			auto& limits = _context.renderer.physicalDevice.limits();
+			assert(size.x <= limits.maxFramebufferWidth);
+			assert(size.y <= limits.maxFramebufferHeight);
+		#endif
+
+		_size = size;
+		reset();
+		createAttachments();
+		createFramebuffer();
+
+		_context.set.update();
 	}
 
 	void Framebuffer::createFramebuffer(){
@@ -218,5 +238,21 @@ namespace Raindrop::Renderer::Scene{
 	void Framebuffer::createColorAttachment(){
 		_colorAttachment = std::make_unique<Attachment>(_context);
 		_colorAttachment->create(colorImageInfo(), colorImageViewInfo());
+	}
+
+	const Framebuffer::Attachment& Framebuffer::depth() const{
+		return *_depthAttachment;
+	}
+	
+	const Framebuffer::Attachment& Framebuffer::color() const{
+		return *_colorAttachment;
+	}
+
+	VkFramebuffer Framebuffer::framebuffer() const{
+		return _framebuffer;
+	}
+	
+	glm::uvec2 Framebuffer::size() const{
+		return _size;
 	}
 }
