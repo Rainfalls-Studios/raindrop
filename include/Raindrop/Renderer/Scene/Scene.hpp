@@ -18,6 +18,8 @@ namespace Raindrop::Renderer::Scene{
 			void beginRenderPass(VkCommandBuffer commandBuffer);
 			void endRenderPass(VkCommandBuffer commandBuffer);
 
+			VkRenderPass renderPass() const;
+
 		private:
 			::Raindrop::Renderer::Context& _renderer;
 			Context _context;

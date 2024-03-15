@@ -94,7 +94,7 @@ namespace Raindrop::Renderer::Scene{
 		{
 			VkPipelineColorBlendAttachmentState attachment = {};
 			attachment.blendEnable = VK_FALSE;
-			attachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT;
+			attachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 			
 			info.colorAttachments.push_back(attachment);
 		}

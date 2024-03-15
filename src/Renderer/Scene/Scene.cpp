@@ -105,4 +105,9 @@ namespace Raindrop::Renderer::Scene{
 	void Scene::endRenderPass(VkCommandBuffer commandBuffer){
 		vkCmdEndRenderPass(commandBuffer);
 	}
+
+	VkRenderPass Scene::renderPass() const{
+		return _context.renderPass.get();
+	}
+
 }

@@ -72,13 +72,13 @@ namespace Raindrop::Renderer::Pipelines{
 		GraphicsPipelineConfigInfo info;
 		GraphicsPipelineConfigInfo::defaultInfo(info);
 
-		info.renderPass = _context.swapchain.renderPass();
+		info.renderPass = _context.scene.renderPass();
 		info.pipelineLayout = _layout;
 		
 		{
 			VkPipelineColorBlendAttachmentState attachment = {};
 			attachment.blendEnable = VK_FALSE;
-			attachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT;
+			attachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 			
 			info.colorAttachments.push_back(attachment);
 		}

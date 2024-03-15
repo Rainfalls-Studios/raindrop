@@ -40,12 +40,11 @@ namespace Raindrop::Renderer{
 			
 
 			_context->scene.beginRenderPass(commandBuffer);
+			shader->bind(commandBuffer);
+			vkCmdDraw(commandBuffer, 3, 1, 0, 0);
 			_context->scene.endRenderPass(commandBuffer);
 
 			swapchain.beginRenderPass(commandBuffer);
-			shader->bind(commandBuffer);
-			vkCmdDraw(commandBuffer, 3, 1, 0, 0);
-
 			_context->scene.swapchainRender(commandBuffer);
 			swapchain.endRenderPass(commandBuffer);
 

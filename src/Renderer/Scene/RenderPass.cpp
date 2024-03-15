@@ -28,7 +28,7 @@ namespace Raindrop::Renderer::Scene{
 		descriptions[0].flags = 0;
 		descriptions[0].format = VK_FORMAT_D32_SFLOAT;
 		descriptions[0].samples = VK_SAMPLE_COUNT_1_BIT;
-		descriptions[0].loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		descriptions[0].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 		descriptions[0].storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 		descriptions[0].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 		descriptions[0].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
