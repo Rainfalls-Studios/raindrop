@@ -4,6 +4,7 @@ layout (location = 0) out vec4 out_color;
 
 layout (push_constant) uniform matrix{
 	mat4 viewTransform;
+	mat4 localTransform;
 } Matrix;
 
 struct Vertex{
@@ -19,5 +20,5 @@ Vertex vertices[3] = {
 
 void main(){
 	out_color = vertices[gl_VertexIndex].color;
-	gl_Position = Matrix.viewTransform * vec4(vertices[gl_VertexIndex].position, 0., 1.);
+	gl_Position = Matrix.viewTransform * Matrix.localTransform * vec4(vertices[gl_VertexIndex].position, 0., 1.);
 }

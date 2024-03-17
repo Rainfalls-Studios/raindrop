@@ -21,6 +21,19 @@ namespace Raindrop{
 				_context->running = false;
 			}
 		);
+
+		for (std::size_t i=0; i<100; i++){
+			auto entity = _context->scene.create();
+			auto& transform = _context->scene.emplace<Components::Transformation>(entity);
+
+			transform.translation = {
+				(rand() % 10'000) / 1000.f,
+				(rand() % 10'000) / 1000.f,
+				(rand() % 10'000) / 1000.f
+			};
+
+			transform.updateMatrix();
+		}
 		
 		while (_context->running){
 			render();

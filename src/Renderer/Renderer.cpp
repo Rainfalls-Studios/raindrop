@@ -7,6 +7,8 @@
 #include <Raindrop/Renderer/Pipelines/Triangle.hpp>
 static std::unique_ptr<Raindrop::Renderer::Pipelines::Triangle> shader;
 
+#include <Raindrop/Renderer/Texture/Texture.hpp>
+
 namespace Raindrop::Renderer{
 	Renderer::Renderer(::Raindrop::Context& context) : 
 			_context{nullptr},
@@ -19,6 +21,8 @@ namespace Raindrop::Renderer{
 		allocateFrameCommandBuffers();
 
 		shader = std::make_unique<Pipelines::Triangle>(*_context);
+
+		auto texture = Texture::Texture(*_context, std::filesystem::current_path() / "images/texture.jpg");
 	}
 
 	Renderer::~Renderer(){
@@ -43,16 +47,29 @@ namespace Raindrop::Renderer{
 			_context->scene.beginRenderPass(commandBuffer);
 			shader->bind(commandBuffer);
 
-			vkCmdPushConstants(
-				commandBuffer,
-				shader->layout(),
-				VK_SHADER_STAGE_VERTEX_BIT,
-				0,
-				sizeof(glm::mat4),
-				&_context->core.camera.viewTransform()
-			);
+			auto view = _context->core.scene.view<Components::Transformation>();
+			
+			for (const auto& entity : view){
+				const auto& transform = _context->core.scene.get<Components::Transformation>(entity);
 
-			vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+				glm::mat4 pushConstant[2] = {
+					_context->core.camera.viewTransform(),
+					transform.matrix
+				};
+
+				vkCmdPushConstants(
+					commandBuffer,
+					shader->layout(),
+					VK_SHADER_STAGE_VERTEX_BIT,
+					0,
+					sizeof(glm::mat4) * 2,
+					pushConstant
+				);
+
+				vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+
+			}
+
 			_context->scene.endRenderPass(commandBuffer);
 
 			swapchain.beginRenderPass(commandBuffer);

@@ -8,6 +8,7 @@ namespace Raindrop::Renderer{
 		instance(*this),
 		device(*this),
 		queues(*this),
+		commandPools(*this),
 		swapchain(*this),
 		scene(*this)
 	{}

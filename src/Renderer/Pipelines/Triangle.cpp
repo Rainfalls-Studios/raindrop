@@ -50,7 +50,7 @@ namespace Raindrop::Renderer::Pipelines{
 
 		VkPushConstantRange range;
 		range.offset = 0;
-		range.size = sizeof(glm::mat4);
+		range.size = sizeof(glm::mat4) * 2;
 		range.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
 		info.pushConstantRangeCount = 1;

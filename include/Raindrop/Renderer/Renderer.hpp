@@ -27,7 +27,6 @@ namespace Raindrop::Renderer{
 			VkCommandPool _renderCommandPool;
 			std::vector<VkCommandBuffer> _frameCommandBuffers;
 			std::size_t _currentFrameID;
-
 	};
 }
 
