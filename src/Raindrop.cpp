@@ -81,7 +81,5 @@ namespace Raindrop{
 		if (keys[KEY_LCTRL]){
 			camera.translate(-up * factor);
 		}
-
-		std::cout << translation.x << " : " << translation.y << " : " << translation.z << std::endl;
 	}
 }

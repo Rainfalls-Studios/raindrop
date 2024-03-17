@@ -2,9 +2,7 @@
 #define __RAINDROP_CAMERA_HPP__
 
 #include "common.hpp"
-
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/quaternion.hpp>
+#include "Components/Transformation.hpp"
 
 namespace Raindrop{
 	class Camera{
@@ -31,15 +29,11 @@ namespace Raindrop{
 			const glm::vec3& scale() const;
 			const glm::quat& rotation() const;
 
-
 		private:
 			glm::mat4 _projection;
-			glm::mat4 _transform;
 			glm::mat4 _viewTranform;
 
-			glm::vec3 _translation;
-			glm::vec3 _scale;
-			glm::quat _rotation;
+			Components::Transformation _transform;
 
 			float _aspectRatio;
 			float _fov;
