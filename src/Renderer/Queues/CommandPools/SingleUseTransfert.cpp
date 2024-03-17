@@ -2,7 +2,9 @@
 #include <Raindrop/Renderer/Context.hpp>
 
 namespace Raindrop::Renderer::Queues{
-	SingleUseTransfer::SingleUseTransfer(Context& context) : CommandPool(context){}
+	SingleUseTransfer::SingleUseTransfer(Context& context) : CommandPool(context){
+		CommandPool::create();
+	}
 
 	VkCommandPoolCreateInfo SingleUseTransfer::createInfo() const{
 		return VkCommandPoolCreateInfo{

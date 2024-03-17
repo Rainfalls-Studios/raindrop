@@ -2,5 +2,6 @@
 
 namespace Raindrop::Renderer::Queues{
 	CommandPools::CommandPools(Context& context) : 
-		singleUseTransfert(context){}
+		singleUseTransfert(context),
+		graphics(context){}
 }

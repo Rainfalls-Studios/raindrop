@@ -7,17 +7,7 @@ namespace Raindrop::Renderer::Queues{
 	CommandPool::CommandPool(Context& context) : 
 		_context{context},
 		_pool{VK_NULL_HANDLE}
-	{
-		auto& device = _context.device;
-		auto& allocationCallbacks = _context.allocationCallbacks;
-
-		VkCommandPoolCreateInfo info = createInfo();
-
-		if (vkCreateCommandPool(device.get(), &info, allocationCallbacks, &_pool) != VK_SUCCESS){
-			spdlog::error("Failed to create command pool");
-			throw std::runtime_error("Failed to create command pool");
-		}
-	}
+	{}
 
 	CommandPool::~CommandPool(){
 		auto& device = _context.device;
@@ -26,6 +16,18 @@ namespace Raindrop::Renderer::Queues{
 		if (_pool != VK_NULL_HANDLE){
 			vkDestroyCommandPool(device.get(), _pool, allocationCallbacks);
 			_pool = VK_NULL_HANDLE;
+		}
+	}
+
+	void CommandPool::create(){
+		auto& device = _context.device;
+		auto& allocationCallbacks = _context.allocationCallbacks;
+
+		VkCommandPoolCreateInfo info = createInfo();
+
+		if (vkCreateCommandPool(device.get(), &info, allocationCallbacks, &_pool) != VK_SUCCESS){
+			spdlog::error("Failed to create command pool");
+			throw std::runtime_error("Failed to create command pool");
 		}
 	}
 

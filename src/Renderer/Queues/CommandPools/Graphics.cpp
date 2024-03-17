@@ -2,7 +2,9 @@
 #include <Raindrop/Renderer/Context.hpp>
 
 namespace Raindrop::Renderer::Queues{
-	Graphics::Graphics(Context& context) : CommandPool(context){}
+	Graphics::Graphics(Context& context) : CommandPool(context){
+		CommandPool::create();
+	}
 
 	VkCommandPoolCreateInfo Graphics::createInfo() const{
 		return VkCommandPoolCreateInfo{

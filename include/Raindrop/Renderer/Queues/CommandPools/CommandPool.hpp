@@ -17,6 +17,8 @@ namespace Raindrop::Renderer::Queues{
 		protected:
 			Context& _context;
 			virtual VkCommandPoolCreateInfo createInfo() const = 0;
+
+			void create();
 	};
 }
 
