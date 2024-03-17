@@ -1,6 +1,7 @@
 #include <Raindrop/Renderer/Renderer.hpp>
 #include <Raindrop/Renderer/Context.hpp>
 #include <spdlog/spdlog.h>
+#include <Raindrop/Context.hpp>
 
 // TEST
 #include <Raindrop/Renderer/Pipelines/Triangle.hpp>
@@ -41,6 +42,16 @@ namespace Raindrop::Renderer{
 
 			_context->scene.beginRenderPass(commandBuffer);
 			shader->bind(commandBuffer);
+
+			vkCmdPushConstants(
+				commandBuffer,
+				shader->layout(),
+				VK_SHADER_STAGE_VERTEX_BIT,
+				0,
+				sizeof(glm::mat4),
+				&_context->core.camera.viewTransform()
+			);
+
 			vkCmdDraw(commandBuffer, 3, 1, 0, 0);
 			_context->scene.endRenderPass(commandBuffer);
 
@@ -107,6 +118,7 @@ namespace Raindrop::Renderer{
 			swapchain.setExtent(VkExtent2D{size.x, size.y});
 			swapchain.rebuildSwapchain();
 			_context->scene.resize(size);
+			_context->core.camera.setAspectRatio(static_cast<float>(size.x) / static_cast<float>(size.y));
 			return nullptr;
 		}
 
@@ -141,6 +153,7 @@ namespace Raindrop::Renderer{
 			swapchain.setExtent(VkExtent2D{size.x, size.y});
 			swapchain.rebuildSwapchain();
 			_context->scene.resize(size);
+			_context->core.camera.setAspectRatio(static_cast<float>(size.x) / static_cast<float>(size.y));
 		} else if (result != VK_SUCCESS){
 			throw std::runtime_error("failed to submit the command buffer");
 		}

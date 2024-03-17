@@ -16,6 +16,8 @@ namespace Raindrop{
 
 			void render();
 			void events();
+
+			void updateCameraPosition();
 	};
 }
 

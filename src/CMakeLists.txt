@@ -29,12 +29,11 @@ function(add_library_target TARGET_TYPE)
 		spdlog::spdlog
 		Tasks::Shared
 		SDL3::SDL3
+		EnTT::EnTT
 		
 		PUBLIC
 		glm::glm
 	)
-
-	
 
 	if (DEFINED PRECOMPILED_HEADERS)
 		target_precompile_headers(

@@ -5,6 +5,8 @@
 #include "Core/Asset/Manager.hpp"
 #include "Core/Event/Manager.hpp"
 #include "Renderer/Renderer.hpp"
+#include "Core/Scene/Scene.hpp"
+#include "Camera.hpp"
 
 namespace Raindrop{
 	struct Context{
@@ -13,7 +15,10 @@ namespace Raindrop{
 
 		Core::Asset::Manager assetManager;
 		Core::Event::Manager eventManager;
+		Core::Scene::Scene scene;
+		Camera camera;
 		Renderer::Renderer renderer;
+		
 
 		bool running;
 	};

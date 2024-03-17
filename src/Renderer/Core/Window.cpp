@@ -112,13 +112,56 @@ namespace Raindrop::Renderer::Core{
 			event.registerEvent<const char*, uint, uint>("text.editing");
 			event.registerEvent<const char*>("text.input");
 			event.registerEvent<const char*>("keymap.changed");
+
+			using Key = ::Raindrop::Core::Event::Key;
+			using KeyState = ::Raindrop::Core::Event::KeyState;
+			
+			event.subscribe(
+				"key.down",
+				[&event](SDL_Scancode scancode, SDL_Keysym keysym, uint16_t modifier){
+					event.keyEvents().state(static_cast<Key>(scancode)) = KeyState::KEY_PRESSED;
+				}
+			);
+
+			event.subscribe(
+				"key.up",
+				[&event](SDL_Scancode scancode, SDL_Keysym keysym, uint16_t modifier){
+					event.keyEvents().state(static_cast<Key>(scancode)) = KeyState::KEY_RELEASED;
+				}
+			);
+
 		#endif
 		
 		#if EVENT_MOUSE
 			event.registerEvent<glm::vec2, glm::vec2>("mouse.motion");
 			event.registerEvent<uint8_t, uint8_t, glm::vec2>("mouse.button.down");
-			event.registerEvent<uint8_t, uint8_t, glm::vec2>("mouse.button.up");
+			event.registerEvent<uint8_t, glm::vec2>("mouse.button.up");
 			event.registerEvent<glm::vec2, glm::vec2>("mouse.wheel");
+
+			event.subscribe(
+				"mouse.motion",
+				[&event](glm::vec2 position, glm::vec2 relativePosition){
+					event.mouseEvents().pos() = position;
+					event.mouseEvents().relPos() = relativePosition;
+				}
+			);
+
+			using Button = ::Raindrop::Core::Event::MouseButton;
+			using ButtonState = ::Raindrop::Core::Event::ButtonState;
+
+			event.subscribe(
+				"mouse.button.down",
+				[&event](uint8_t button, uint8_t clicks, glm::vec2 position){
+					event.mouseEvents().state(static_cast<Button>(button)) = ButtonState::BUTTON_DOWN;
+				}
+			);
+
+			event.subscribe(
+				"mouse.button.up",
+				[&event](uint8_t button, glm::vec2 position){
+					event.mouseEvents().state(static_cast<Button>(button)) = ButtonState::BUTTON_UP;
+				}
+			);
 		#endif
 
 		#if EVENT_JOYSTICK
@@ -618,7 +661,7 @@ namespace Raindrop::Renderer::Core{
 	}
 
 	void Window::mouseButtonUpEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("mouse.button.up", e.button.button, e.button.clicks, glm::vec2(e.button.x, e.button.y));
+		_context.core.eventManager.trigger("mouse.button.up", e.button.button, glm::vec2(e.button.x, e.button.y));
 	}
 
 	void Window::mouseWheelEvent(SDL_Event& e){

@@ -47,7 +47,14 @@ namespace Raindrop::Renderer::Pipelines{
 
 		info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 		info.setLayoutCount = 0;
-		info.pushConstantRangeCount = 0;
+
+		VkPushConstantRange range;
+		range.offset = 0;
+		range.size = sizeof(glm::mat4);
+		range.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
+		info.pushConstantRangeCount = 1;
+		info.pPushConstantRanges = &range;
 
 		auto& device = _context.device;
 		auto& allocationCallbacks = _context.allocationCallbacks;
@@ -182,5 +189,9 @@ namespace Raindrop::Renderer::Pipelines{
 		scissor.offset = {0, 0};
 
 		vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+	}
+
+	VkPipelineLayout Triangle::layout() const{
+		return _layout;
 	}
 }

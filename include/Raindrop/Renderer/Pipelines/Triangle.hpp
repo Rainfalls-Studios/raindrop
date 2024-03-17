@@ -10,6 +10,7 @@ namespace Raindrop::Renderer::Pipelines{
 			~Triangle();
 
 			void bind(VkCommandBuffer commandBuffer);
+			VkPipelineLayout layout() const;
 
 		private:
 			Context& _context;
