@@ -19,6 +19,8 @@ namespace Raindrop::Renderer::Queues{
 			std::size_t transfertFamily() const;
 
 		private:
+			static constexpr std::size_t INVALID_FAMILY_INDEX = std::size_t(~0);
+
 			Context& _context;
 
 			std::size_t _graphicsFamily;

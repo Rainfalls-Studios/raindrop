@@ -7,7 +7,10 @@ namespace Raindrop{
 		_viewTranform(1.f),
 		_aspectRatio{1.f},
 		_fov{80.f}
-	{}
+	{
+		updateProjection();
+		updateTransform();
+	}
 
 	Camera::~Camera(){}
 

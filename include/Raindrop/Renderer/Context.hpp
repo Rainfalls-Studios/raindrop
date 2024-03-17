@@ -10,6 +10,7 @@
 #include "Queues/Manager.hpp"
 #include "Core/Swapchain.hpp"
 #include "Scene/Scene.hpp"
+#include "Queues/CommandPools.hpp"
 
 namespace Raindrop::Renderer{
 	struct Context{
@@ -24,6 +25,7 @@ namespace Raindrop::Renderer{
 		Core::PhysicalDevice physicalDevice;
 		Core::Device device;
 		Queues::Manager queues;
+		Queues::CommandPools commandPools;
 		Core::Swapchain swapchain;
 		Scene::Scene scene;
 	};

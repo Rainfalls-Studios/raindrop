@@ -3,7 +3,16 @@
 #include <spdlog/spdlog.h>
 
 namespace Raindrop::Renderer::Queues{
-	Manager::Manager(Context& context) : _context{context}{
+	Manager::Manager(Context& context) :
+			_context{context},
+			_graphicsFamily{INVALID_FAMILY_INDEX},
+			_presentFamily{INVALID_FAMILY_INDEX},
+			_transfertFamily{INVALID_FAMILY_INDEX},
+			_graphicsQueue{VK_NULL_HANDLE},
+			_presentQueue{VK_NULL_HANDLE},
+			_transfertQueue{VK_NULL_HANDLE}
+		{
+
 		spdlog::info("Constructing vulkan queue manager ...");
 		auto queueFamilies = context.physicalDevice.queueFamilyProperties();
 

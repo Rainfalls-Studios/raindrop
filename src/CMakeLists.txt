@@ -20,6 +20,7 @@ function(add_library_target TARGET_TYPE)
 	target_include_directories(
 		${TARGET} PUBLIC
 		"${PROJECT_SOURCE_DIR}/include"
+		"${PROJECT_SOURCE_DIR}/external/"
 	)
 	
 	target_link_libraries(
