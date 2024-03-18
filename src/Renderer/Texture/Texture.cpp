@@ -2,6 +2,7 @@
 #include <Raindrop/Renderer/Context.hpp>
 
 #include <spdlog/spdlog.h>
+#include <future>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
@@ -229,8 +230,8 @@ namespace Raindrop::Renderer::Texture{
 				.layerCount = 1
 			};
 
-			barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT; // TODO
-			barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT; // TODO
+			barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+			barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
 			vkCmdPipelineBarrier(
 				commandBuffer,
@@ -243,10 +244,38 @@ namespace Raindrop::Renderer::Texture{
 			);
 		}
 
+		VkFence fence = VK_NULL_HANDLE;
 		{
-			vkFreeMemory(device.get(), stagingBufferMemory, allocationCallbacks);
-			vkDestroyBuffer(device.get(), stagingBuffer, allocationCallbacks);
+			VkFenceCreateInfo info{};
+			info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+
+			if (vkCreateFence(device.get(), &info, allocationCallbacks, &fence) != VK_SUCCESS){
+				spdlog::error("Failed to create submit fence");
+				throw std::runtime_error("Failed to create submit fence");
+			}
 		}
+
+		{
+			vkEndCommandBuffer(commandBuffer);
+			VkSubmitInfo info{};
+			info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+			info.waitSemaphoreCount = 0;
+			info.signalSemaphoreCount = 0;
+			info.commandBufferCount = 1;
+			info.pCommandBuffers = &commandBuffer;
+
+			if (vkQueueSubmit(_context.queues.transfertQueue(), 1, &info, fence) != VK_SUCCESS){
+				spdlog::error("Failed to submit command buffer");
+				throw std::runtime_error("Failed to submit command buffer");
+			}
+		}
+
+		vkWaitForFences(device.get(), 1, &fence, VK_TRUE, UINT64_MAX);
+		vkDestroyFence(device.get(), fence, allocationCallbacks);
+
+		vkFreeMemory(device.get(), stagingBufferMemory, allocationCallbacks);
+		vkDestroyBuffer(device.get(), stagingBuffer, allocationCallbacks);
+		vkFreeCommandBuffers(device.get(), _context.commandPools.singleUseTransfert.get(), 1, &commandBuffer);
 	}
 
 	Texture::~Texture(){

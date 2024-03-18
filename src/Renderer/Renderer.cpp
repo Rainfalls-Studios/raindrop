@@ -7,7 +7,7 @@
 #include <Raindrop/Renderer/Pipelines/Triangle.hpp>
 static std::unique_ptr<Raindrop::Renderer::Pipelines::Triangle> shader;
 
-#include <Raindrop/Renderer/Texture/Texture.hpp>
+#include <Raindrop/Renderer/Texture/Loader.hpp>
 
 namespace Raindrop::Renderer{
 	Renderer::Renderer(::Raindrop::Context& context) : 
@@ -22,12 +22,18 @@ namespace Raindrop::Renderer{
 
 		shader = std::make_unique<Pipelines::Triangle>(*_context);
 
-		auto texture = Texture::Texture(*_context, std::filesystem::current_path() / "images/texture.jpg");
+		_context->core.assetManager.registerLoader<Texture::Loader>("Texture", *_context);
+
+		_context->core.assetManager.get("Texture", std::filesystem::current_path() / "images/texture.jpg");
+
+		// auto texture = Texture::Texture(*_context, std::filesystem::current_path() / "images/texture.jpg");
 	}
 
 	Renderer::~Renderer(){
 		spdlog::info("Destructing renderer ...");
 		_context->device.waitIdle();
+
+		_context->core.assetManager.unregisterType("Texture");
 
 		shader = nullptr;
 

@@ -7,8 +7,6 @@ namespace Raindrop::Core::Asset{
 	class Manager;
 	class Asset;
 	class Loader;
-	
-	using Path = std::filesystem::path;
 }
 
 #endif
