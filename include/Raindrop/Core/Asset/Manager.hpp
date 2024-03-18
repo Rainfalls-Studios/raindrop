@@ -3,12 +3,11 @@
 
 #include "common.hpp"
 #include "Asset.hpp"
-#include "../Memory/GuardedPointer.hpp"
 
 namespace Raindrop::Core::Asset{
 	class Manager{
 		public:
-			Manager();
+			Manager(Context &context);
 			~Manager();
 
 			std::weak_ptr<Asset> get(const std::string& type, const Path& path);
@@ -23,16 +22,31 @@ namespace Raindrop::Core::Asset{
 			template<typename T, typename... Args>
 			void registerLoader(const std::string& type, Args&&... args){
 				static_assert(std::is_base_of_v<Loader, T>);
+				
+				std::shared_ptr<T> loader;
+				try{
+					loader = std::make_shared<T>(args...);
+				} catch (const std::exception& e){
+					throw std::runtime_error("Failed to create loader");
+				}
 
-				std::shared_ptr<T> loader = std::make_shared<T>(args...);
 				registerLoader(type, std::dynamic_pointer_cast<Loader>(loader));
 			}
 
 			std::shared_ptr<Loader> findLoader(const std::string& type) const noexcept;
 
+			void unregisterType(const std::string& type);
+
 		private:
-			std::unordered_map<Path, std::shared_ptr<Asset>> _pathToAsset;
-			std::unordered_map<std::string, std::shared_ptr<Loader>> _typeToLoader;
+			Context& _context;
+			
+			struct TypeData{
+				std::shared_ptr<Loader> _loader;
+				std::unordered_map<Path, std::shared_ptr<Asset>> _pathToAssets;
+			};
+
+			std::unordered_map<std::string, std::unique_ptr<TypeData>> _typeToLoader;
+			TypeData* getTypeData(const std::string& type) const noexcept;
 	};
 }
 

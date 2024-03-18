@@ -6,6 +6,8 @@
 namespace Raindrop{
 	struct Context;
 	class Raindrop;
+	
+	using Path = std::filesystem::path;
 
 	struct Version{
 		std::size_t variant;

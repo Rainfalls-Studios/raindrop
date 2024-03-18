@@ -3,7 +3,7 @@
 namespace Raindrop{
 	Context::Context() : 
 		running{false},
-		assetManager(),
+		assetManager(*this),
 		eventManager(),
 		renderer(*this)
 	{}
