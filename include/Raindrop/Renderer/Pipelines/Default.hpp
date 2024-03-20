@@ -1,13 +1,13 @@
-#ifndef __RAINDROP_RENDERER_PIPELINES_TRIANGLE_HPP__
-#define __RAINDROP_RENDERER_PIPELINES_TRIANGLE_HPP__
+#ifndef __RAINDROP_RENDERER_PIPELINES_DEFAULT_HPP__
+#define __RAINDROP_RENDERER_PIPELINES_DEFAULT_HPP__
 
 #include "common.hpp"
 
 namespace Raindrop::Renderer::Pipelines{
-	class Triangle{
+	class Default{
 		public:
-			Triangle(Context& context);
-			~Triangle();
+			Default(Context& context);
+			~Default();
 
 			void bind(VkCommandBuffer commandBuffer);
 			VkPipelineLayout layout() const;

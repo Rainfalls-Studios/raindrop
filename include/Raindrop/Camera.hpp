@@ -29,6 +29,10 @@ namespace Raindrop{
 			const glm::vec3& scale() const;
 			const glm::quat& rotation() const;
 
+			void updateTransform();
+			void updateProjection();
+			void updateViewTransform();
+			
 		private:
 			glm::mat4 _projection;
 			glm::mat4 _viewTranform;
@@ -38,9 +42,6 @@ namespace Raindrop{
 			float _aspectRatio;
 			float _fov;
 
-			void updateTransform();
-			void updateProjection();
-			void updateViewTransform();
 	};
 }
 

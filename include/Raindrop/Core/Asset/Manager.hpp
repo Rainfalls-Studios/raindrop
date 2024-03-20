@@ -14,7 +14,7 @@ namespace Raindrop::Core::Asset{
 
 			template<typename T>
 			std::weak_ptr<T> get(const std::string& type, const Path& path){
-				return std::dynamic_pointer_cast<T>(get(type, path));
+				return std::dynamic_pointer_cast<T>(get(type, path).lock());
 			}
 			
 			void registerLoader(const std::string& type, const std::shared_ptr<Loader>& loader);

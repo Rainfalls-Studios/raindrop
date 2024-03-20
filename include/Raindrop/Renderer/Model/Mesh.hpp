@@ -6,9 +6,31 @@
 namespace Raindrop::Renderer::Model{
 	class Mesh{
 		public:
+			Mesh(Context& context);
+			~Mesh();
+
+			VkBuffer& vertexBuffer();
+			VkDeviceMemory& vertexMemory();
+
+			VkBuffer& indexBuffer();
+			VkDeviceMemory& indexMemory();
+
+			void allocateVertexBuffer(const VkDeviceSize& size, const std::size_t& count);
+			void allocateIndexBuffer(const VkDeviceSize& size, const std::size_t& count);
+
+			void render(VkCommandBuffer commandBuffer);
 
 		private:
-			
+			Context& _context;
+
+			VkBuffer _vertexBuffer;
+			VkDeviceMemory _vertexMemory;
+
+			VkBuffer _indexBuffer;
+			VkDeviceMemory _indexMemory;
+
+			std::size_t _vertexCount;
+			std::size_t _indexCount;
 	};
 }
 

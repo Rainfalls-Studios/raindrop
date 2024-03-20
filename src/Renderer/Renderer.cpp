@@ -4,10 +4,14 @@
 #include <Raindrop/Context.hpp>
 
 // TEST
-#include <Raindrop/Renderer/Pipelines/Triangle.hpp>
-static std::unique_ptr<Raindrop::Renderer::Pipelines::Triangle> shader;
+#include <Raindrop/Renderer/Pipelines/Default.hpp>
+static std::unique_ptr<Raindrop::Renderer::Pipelines::Default> shader;
 
 #include <Raindrop/Renderer/Texture/Loader.hpp>
+#include <Raindrop/Renderer/Model/Loader.hpp>
+#include <Raindrop/Renderer/Model/Model.hpp>
+
+static std::weak_ptr<Raindrop::Renderer::Model::Model> model;
 
 namespace Raindrop::Renderer{
 	Renderer::Renderer(::Raindrop::Context& context) : 
@@ -20,22 +24,23 @@ namespace Raindrop::Renderer{
 		createRenderCommandPool();
 		allocateFrameCommandBuffers();
 
-		shader = std::make_unique<Pipelines::Triangle>(*_context);
+		shader = std::make_unique<Pipelines::Default>(*_context);
 
 		_context->core.assetManager.registerLoader<Texture::Loader>("Texture", *_context);
+		_context->core.assetManager.registerLoader<Model::Loader>("Model", *_context);
 
-		_context->core.assetManager.get("Texture", std::filesystem::current_path() / "images/texture.jpg");
-
-		// auto texture = Texture::Texture(*_context, std::filesystem::current_path() / "images/texture.jpg");
+		model = _context->core.assetManager.get<Model::Model>("Model", std::filesystem::current_path() / "models/cube.obj");
 	}
 
 	Renderer::~Renderer(){
 		spdlog::info("Destructing renderer ...");
 		_context->device.waitIdle();
 
+		_context->core.assetManager.unregisterType("Model");
 		_context->core.assetManager.unregisterType("Texture");
 
 		shader = nullptr;
+		model.reset();
 
 		freeFrameCommandBuffers();
 		destroyRenderCommandPool();
@@ -45,36 +50,34 @@ namespace Raindrop::Renderer{
 
 	void Renderer::render(){
 		auto& swapchain = _context->swapchain;
+
+		
 		
 		VkCommandBuffer commandBuffer = beginFrame();
 		if (commandBuffer != nullptr){
-			
+
+			// auto model = _context->core.assetManager.get<Model::Model>("Model", std::filesystem::current_path() / "models/teapot.obj");
 
 			_context->scene.beginRenderPass(commandBuffer);
 			shader->bind(commandBuffer);
 
 			auto view = _context->core.scene.view<Components::Transformation>();
 			
-			for (const auto& entity : view){
-				const auto& transform = _context->core.scene.get<Components::Transformation>(entity);
+			glm::mat4 pushConstant[2] = {
+				_context->core.camera.viewTransform(),
+				glm::mat4(1)
+			};
 
-				glm::mat4 pushConstant[2] = {
-					_context->core.camera.viewTransform(),
-					transform.matrix
-				};
+			vkCmdPushConstants(
+				commandBuffer,
+				shader->layout(),
+				VK_SHADER_STAGE_VERTEX_BIT,
+				0,
+				sizeof(glm::mat4) * 2,
+				pushConstant
+			);
 
-				vkCmdPushConstants(
-					commandBuffer,
-					shader->layout(),
-					VK_SHADER_STAGE_VERTEX_BIT,
-					0,
-					sizeof(glm::mat4) * 2,
-					pushConstant
-				);
-
-				vkCmdDraw(commandBuffer, 3, 1, 0, 0);
-
-			}
+			model.lock()->render(commandBuffer);
 
 			_context->scene.endRenderPass(commandBuffer);
 

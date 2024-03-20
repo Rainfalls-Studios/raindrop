@@ -25,7 +25,7 @@ namespace Raindrop::Core::Asset{
 		auto& pathToAsset = typeData->_pathToAssets;
 
 		{
-			auto it = pathToAsset.find(type);
+			auto it = pathToAsset.find(path);
 			if (it != pathToAsset.end()){
 				spdlog::trace("Found asset \"{}\" (type : \"{}\")", path.string(), type);
 				return it->second;
@@ -37,7 +37,7 @@ namespace Raindrop::Core::Asset{
 
 		spdlog::info("Loading asset \"{}\"... (type : \"{}\")", path.string(), type);
 		std::shared_ptr<Asset> asset = loader->load(path);
-		pathToAsset.emplace(path, asset);
+		pathToAsset[path] = asset;
 
 		return asset;
 	}

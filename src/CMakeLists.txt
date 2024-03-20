@@ -31,6 +31,7 @@ function(add_library_target TARGET_TYPE)
 		Tasks::Shared
 		SDL3::SDL3
 		EnTT::EnTT
+		assimp
 		
 		PUBLIC
 		glm::glm

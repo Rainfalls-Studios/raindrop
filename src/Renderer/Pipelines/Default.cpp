@@ -1,6 +1,7 @@
-#include <Raindrop/Renderer/Pipelines/Triangle.hpp>
+#include <Raindrop/Renderer/Pipelines/Default.hpp>
 #include <Raindrop/Renderer/Pipelines/GraphicsPipeline.hpp>
 #include <Raindrop/Renderer/Context.hpp>
+#include <Raindrop/Renderer/Model/Vertex.hpp>
 
 #include <spdlog/spdlog.h>
 #include <fstream>
@@ -24,7 +25,7 @@ namespace Raindrop::Renderer::Pipelines{
 		return buffer;
 	}
 
-	Triangle::Triangle(Context& context) :
+	Default::Default(Context& context) :
 			_context{context},
 			_layout{VK_NULL_HANDLE},
 			_pipeline{nullptr},
@@ -36,13 +37,13 @@ namespace Raindrop::Renderer::Pipelines{
 		createPipeline();
 	}
 
-	Triangle::~Triangle(){
+	Default::~Default(){
 		_pipeline = nullptr;
 		destroyShaderModules();
 		destroyPipelineLayout();
 	}
 
-	void Triangle::createPipelineLayout(){
+	void Default::createPipelineLayout(){
 		VkPipelineLayoutCreateInfo info = {};
 
 		info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -65,7 +66,7 @@ namespace Raindrop::Renderer::Pipelines{
 		}
 	}
 
-	void Triangle::destroyPipelineLayout(){
+	void Default::destroyPipelineLayout(){
 		auto& device = _context.device;
 		auto& allocationCallbacks = _context.allocationCallbacks;
 
@@ -75,7 +76,7 @@ namespace Raindrop::Renderer::Pipelines{
 		}
 	}
 
-	void Triangle::createPipeline(){
+	void Default::createPipeline(){
 		GraphicsPipelineConfigInfo info;
 		GraphicsPipelineConfigInfo::defaultInfo(info);
 
@@ -114,6 +115,47 @@ namespace Raindrop::Renderer::Pipelines{
 			info.stages.push_back(vert);
 		}
 
+		using Vertex = Model::Vertex;
+		
+
+		info.vertices = {
+			VkVertexInputAttributeDescription{
+				.location = 0,
+				.binding = 0,
+				.format = VK_FORMAT_R32G32B32_SFLOAT,
+				.offset = offsetof(Vertex, position)
+			},
+
+			VkVertexInputAttributeDescription{
+				.location = 1,
+				.binding = 0,
+				.format = VK_FORMAT_R32G32B32_SFLOAT,
+				.offset = offsetof(Vertex, normal)
+			},
+
+			VkVertexInputAttributeDescription{
+				.location = 2,
+				.binding = 0,
+				.format = VK_FORMAT_R32G32B32_SFLOAT,
+				.offset = offsetof(Vertex, color)
+			},
+
+			VkVertexInputAttributeDescription{
+				.location = 3,
+				.binding = 0,
+				.format = VK_FORMAT_R32G32_SFLOAT,
+				.offset = offsetof(Vertex, UV)
+			}
+		};
+
+		info.bindings = {
+			VkVertexInputBindingDescription{
+				.binding = 0,
+				.stride = sizeof(Vertex),
+				.inputRate = VK_VERTEX_INPUT_RATE_VERTEX
+			}
+		};
+
 		info.viewportInfo.viewportCount = 1;
 		info.viewportInfo.pViewports = nullptr;
 		info.viewportInfo.scissorCount = 1;
@@ -124,12 +166,12 @@ namespace Raindrop::Renderer::Pipelines{
 		_pipeline = std::make_unique<GraphicsPipeline>(_context, info);
 	}
 	
-	void Triangle::createShaderModules(){
+	void Default::createShaderModules(){
 		createFragmentModule();
 		createVertexModule();
 	}
 
-	void Triangle::destroyShaderModules(){
+	void Default::destroyShaderModules(){
 		auto& device = _context.device;
 		auto& allocationCallbacks = _context.allocationCallbacks;
 
@@ -144,17 +186,17 @@ namespace Raindrop::Renderer::Pipelines{
 		}
 	}
 
-	void Triangle::createFragmentModule(){
-		auto code = readFile(std::filesystem::current_path() / "shaders/triangle/shader.glsl.frag.spv");
+	void Default::createFragmentModule(){
+		auto code = readFile(std::filesystem::current_path() / "shaders/Default/shader.glsl.frag.spv");
 		createShaderModule(code, _fragmentModule);
 	}
 
-	void Triangle::createVertexModule(){
-		auto code = readFile(std::filesystem::current_path() / "shaders/triangle/shader.glsl.vert.spv");
+	void Default::createVertexModule(){
+		auto code = readFile(std::filesystem::current_path() / "shaders/Default/shader.glsl.vert.spv");
 		createShaderModule(code, _vertexModule);
 	}
 
-	void Triangle::createShaderModule(const std::vector<char>& code, VkShaderModule& shaderModule){
+	void Default::createShaderModule(const std::vector<char>& code, VkShaderModule& shaderModule){
 		auto& device = _context.device;
 		auto& allocationCallbacks = _context.allocationCallbacks;
 
@@ -169,7 +211,7 @@ namespace Raindrop::Renderer::Pipelines{
 		}
 	}
 
-	void Triangle::bind(VkCommandBuffer commandBuffer){
+	void Default::bind(VkCommandBuffer commandBuffer){
 		_pipeline->bind(commandBuffer);
 
 		const auto& size = _context.window.getSize();
@@ -191,7 +233,7 @@ namespace Raindrop::Renderer::Pipelines{
 		vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 	}
 
-	VkPipelineLayout Triangle::layout() const{
+	VkPipelineLayout Default::layout() const{
 		return _layout;
 	}
 }

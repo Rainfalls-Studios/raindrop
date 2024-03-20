@@ -134,7 +134,7 @@ namespace Raindrop::Renderer::Texture{
 			info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 
 			if (vkAllocateCommandBuffers(device.get(), &info, &commandBuffer) != VK_SUCCESS){
-				spdlog::error("Failed to allocate command buffer :");
+				spdlog::error("Failed to allocate command buffer");
 				throw std::runtime_error("Failed to allocate command buffer");
 			}
 		}

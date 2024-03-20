@@ -6,6 +6,9 @@ include(Config.cmake)
 # Required by spdlog for shared library
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+set(BUILD_ASSIMP_TOOLS  ON)
+set(ASSIMP_BUILD_STATIC_LIB ON)
+
 add_subdirectory(external)
 add_subdirectory(utils)
 add_subdirectory(include)
