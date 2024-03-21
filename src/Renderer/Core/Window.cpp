@@ -107,8 +107,8 @@ namespace Raindrop::Renderer::Core{
 		#endif
 
 		#if EVENT_KEY
-			event.registerEvent<SDL_Scancode, SDL_Keysym, uint16_t>("key.down");
-			event.registerEvent<SDL_Scancode, SDL_Keysym, uint16_t>("key.up");
+			event.registerEvent<SDL_Scancode, SDL_Keycode, uint16_t>("key.down");
+			event.registerEvent<SDL_Scancode, SDL_Keycode, uint16_t>("key.up");
 			event.registerEvent<const char*, uint, uint>("text.editing");
 			event.registerEvent<const char*>("text.input");
 			event.registerEvent<const char*>("keymap.changed");
@@ -118,14 +118,14 @@ namespace Raindrop::Renderer::Core{
 			
 			event.subscribe(
 				"key.down",
-				[&event](SDL_Scancode scancode, SDL_Keysym keysym, uint16_t modifier){
+				[&event](SDL_Scancode scancode, SDL_Keycode keysym, uint16_t modifier){
 					event.keyEvents().state(static_cast<Key>(scancode)) = KeyState::KEY_PRESSED;
 				}
 			);
 
 			event.subscribe(
 				"key.up",
-				[&event](SDL_Scancode scancode, SDL_Keysym keysym, uint16_t modifier){
+				[&event](SDL_Scancode scancode, SDL_Keycode keysym, uint16_t modifier){
 					event.keyEvents().state(static_cast<Key>(scancode)) = KeyState::KEY_RELEASED;
 				}
 			);

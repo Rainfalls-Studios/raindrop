@@ -39,7 +39,8 @@ namespace Raindrop{
 	}
 
 	void Camera::rotate(const glm::quat& rotation){
-		_transform.rotation += rotation;
+		_transform.rotation *= rotation;
+		_transform.rotation = glm::normalize(_transform.rotation);
 		updateTransform();
 	}
 

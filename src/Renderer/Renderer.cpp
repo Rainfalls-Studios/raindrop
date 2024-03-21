@@ -29,7 +29,7 @@ namespace Raindrop::Renderer{
 		_context->core.assetManager.registerLoader<Texture::Loader>("Texture", *_context);
 		_context->core.assetManager.registerLoader<Model::Loader>("Model", *_context);
 
-		model = _context->core.assetManager.get<Model::Model>("Model", std::filesystem::current_path() / "models/cube.obj");
+		model = _context->core.assetManager.get<Model::Model>("Model", std::filesystem::current_path() / "models/bunny.obj");
 	}
 
 	Renderer::~Renderer(){

@@ -15,7 +15,7 @@ namespace Raindrop::Renderer::Model{
 		spdlog::info("Loading model \"{}\" ...", path.string());
 
 		Assimp::Importer importer;
-		const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
+		const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenNormals);
 
 		if (scene == nullptr || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode){
 			spdlog::error("Failed to load model \"{}\" : {}", path.string(), importer.GetErrorString());
