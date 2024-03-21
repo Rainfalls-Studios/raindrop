@@ -22,7 +22,6 @@ namespace Raindrop{
 		spdlog::info("Constructing Raindrop engine ...");
 		_context = new Context();
 		// _context->camera.setTranslation({0.f, 15.f, 0.f});
-		// _context->camera.updateProjection();
 	}
 
 	void Raindrop::run(){
