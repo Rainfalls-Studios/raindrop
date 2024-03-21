@@ -8,6 +8,266 @@
 #include <stb/stb_image.h>
 
 namespace Raindrop::Renderer::Texture{
+	void createStagingBuffer(Context& context, VkBuffer& buffer, VkDeviceMemory& memory, std::size_t size){
+		auto& device = context.device;
+		auto& allocationCallbacks = context.allocationCallbacks;
+
+		{
+			VkBufferCreateInfo info{};
+			info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+			info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+			info.size = static_cast<VkDeviceSize>(size);
+			info.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+
+			if (vkCreateBuffer(device.get(), &info, allocationCallbacks, &buffer) != VK_SUCCESS){
+				spdlog::error("Failed to create staging buffer !");
+				throw std::runtime_error("Failed to create staging buffer");
+			}
+		}
+
+		{
+			VkMemoryRequirements requirements;
+			vkGetBufferMemoryRequirements(device.get(), buffer, &requirements);
+
+			VkMemoryAllocateInfo info{};
+			info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+			info.allocationSize = requirements.size;
+			info.memoryTypeIndex = device.findMemoryType(requirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+			
+			if (vkAllocateMemory(device.get(), &info, allocationCallbacks, &memory) != VK_SUCCESS){
+				spdlog::error("Failed to allocate staging buffer memory !");
+				throw std::runtime_error("Failed to allocate staging buffer memory");
+			}
+
+			if (vkBindBufferMemory(device.get(), buffer, memory, 0) != VK_SUCCESS){
+				spdlog::error("Failed to bind staging buffer memory !");
+				throw std::runtime_error("Failed to bind staging buffer memory");
+			}
+		}
+	}
+
+	void writeBuffer(Context& context, VkDeviceMemory& memory, const void* data, const std::size_t size){
+		auto& device = context.device;
+		auto& allocationCallbacks = context.allocationCallbacks;
+
+		void* map;
+
+		if (vkMapMemory(device.get(), memory, 0, size, 0, &map) != VK_SUCCESS){
+			spdlog::error("Failed to map staging buffer memory !");
+			throw std::runtime_error("Failed to map staging buffer memory");
+		}
+
+		memcpy(map, data, static_cast<size_t>(size));
+		vkUnmapMemory(device.get(), memory);
+	}
+
+	void createImage(Context& context, VkImage& image, VkDeviceMemory& memory, std::size_t width, std::size_t height){
+		auto& device = context.device;
+		auto& allocationCallbacks = context.allocationCallbacks;
+
+		{
+			VkImageCreateInfo info{};
+			info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+			info.imageType = VK_IMAGE_TYPE_2D;
+
+			info.extent.width = static_cast<uint32_t>(width);
+			info.extent.height = static_cast<uint32_t>(height);
+			info.extent.depth = 1;
+
+			info.mipLevels = 1;
+			info.arrayLayers = 1;
+
+			info.samples = VK_SAMPLE_COUNT_1_BIT;
+			info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+			info.tiling = VK_IMAGE_TILING_OPTIMAL;
+			info.format = VK_FORMAT_R8G8B8A8_SRGB;
+			info.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+			info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+			if (vkCreateImage(device.get(), &info, nullptr, &image) != VK_SUCCESS) {
+				spdlog::error("Failed to create image !");
+				throw std::runtime_error("Failed to create image");
+			}
+		}
+
+		{
+			VkMemoryRequirements memRequirements;
+			vkGetImageMemoryRequirements(device.get(), image, &memRequirements);
+
+			VkMemoryAllocateInfo allocInfo{};
+			allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+			allocInfo.allocationSize = memRequirements.size;
+			allocInfo.memoryTypeIndex = device.findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+			if (vkAllocateMemory(device.get(), &allocInfo, nullptr, &memory) != VK_SUCCESS) {
+				spdlog::error("Failed to allocate image memory !");
+				throw std::runtime_error("Failed to allocate image memory");
+			}
+
+			if (vkBindImageMemory(device.get(), image, memory, 0) != VK_SUCCESS){
+				spdlog::error("Failed to bind image memory !");
+				throw std::runtime_error("Failed to bind image memory");
+			}
+		}
+	}
+
+	void createCommandBuffer(Context& context, VkCommandBuffer& commandBuffer){
+		auto& device = context.device;
+		auto& allocationCallbacks = context.allocationCallbacks;
+
+		{
+			VkCommandBufferAllocateInfo info{};
+			info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+			info.commandBufferCount = 1;
+			info.commandPool = context.commandPools.singleUseTransfert.get();
+			info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+
+			if (vkAllocateCommandBuffers(device.get(), &info, &commandBuffer) != VK_SUCCESS){
+				spdlog::error("Failed to allocate command buffer");
+				throw std::runtime_error("Failed to allocate command buffer");
+			}
+		}
+
+		{
+			VkCommandBufferBeginInfo info{};
+			info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+			info.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+			if (vkBeginCommandBuffer(commandBuffer, &info) != VK_SUCCESS){
+				spdlog::error("Failed to begin command buffer");
+				throw std::runtime_error("Failed to begin command buffer");
+			}
+		}
+	}
+
+	void transfertToTransfert(const VkCommandBuffer& commandBuffer, const VkImage& image){
+		VkImageMemoryBarrier barrier{};
+		barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+		barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+
+		barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+		barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+		barrier.image = image;
+
+
+		barrier.subresourceRange = {
+			.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+			.baseMipLevel = 0,
+			.levelCount = 1,
+			.baseArrayLayer = 0,
+			.layerCount = 1
+		};
+
+		barrier.srcAccessMask = 0;
+		barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+
+		vkCmdPipelineBarrier(
+			commandBuffer,
+			VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+			VK_PIPELINE_STAGE_TRANSFER_BIT,
+			0,
+			0, nullptr,
+			0, nullptr,
+			1, &barrier
+		);
+	}
+
+	void copyToImage(const VkCommandBuffer& commandBuffer, const VkImage& image, const VkBuffer& buffer, std::size_t width, std::size_t height){
+		VkBufferImageCopy region{};
+		region.bufferOffset = 0;
+		region.bufferRowLength = 0;
+		region.bufferImageHeight = 0;
+
+		region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		region.imageSubresource.mipLevel = 0;
+		region.imageSubresource.baseArrayLayer = 0;
+		region.imageSubresource.layerCount = 1;
+
+		region.imageOffset = {0, 0, 0};
+		region.imageExtent = {
+			static_cast<uint32_t>(width),
+			static_cast<uint32_t>(height),
+			1
+		};
+
+		vkCmdCopyBufferToImage(
+			commandBuffer,
+			buffer,
+			image,
+			VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+			1,
+			&region
+		);
+	}
+
+	void transfertToReadOnly(const VkCommandBuffer& commandBuffer, const VkImage& image){
+		VkImageMemoryBarrier barrier{};
+		barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+		barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+		barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+		barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+		barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+		barrier.image = image;
+
+
+		barrier.subresourceRange = {
+			.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+			.baseMipLevel = 0,
+			.levelCount = 1,
+			.baseArrayLayer = 0,
+			.layerCount = 1
+		};
+
+		barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+		barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+		vkCmdPipelineBarrier(
+			commandBuffer,
+			VK_PIPELINE_STAGE_TRANSFER_BIT,
+			VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+			0,
+			0, nullptr,
+			0, nullptr,
+			1, &barrier
+		);
+	}
+
+	void submitAndWait(Context& context, const VkCommandBuffer& commandBuffer){
+		auto& device = context.device;
+		auto& allocationCallbacks = context.allocationCallbacks;
+
+		VkFence fence = VK_NULL_HANDLE;
+		{
+			VkFenceCreateInfo info{};
+			info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+
+			if (vkCreateFence(device.get(), &info, allocationCallbacks, &fence) != VK_SUCCESS){
+				spdlog::error("Failed to create submit fence");
+				throw std::runtime_error("Failed to create submit fence");
+			}
+		}
+
+		{
+			vkEndCommandBuffer(commandBuffer);
+			VkSubmitInfo info{};
+			info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+			info.waitSemaphoreCount = 0;
+			info.signalSemaphoreCount = 0;
+			info.commandBufferCount = 1;
+			info.pCommandBuffers = &commandBuffer;
+
+			if (vkQueueSubmit(context.queues.transfertQueue(), 1, &info, fence) != VK_SUCCESS){
+				spdlog::error("Failed to submit command buffer");
+				throw std::runtime_error("Failed to submit command buffer");
+			}
+		}
+
+		vkWaitForFences(device.get(), 1, &fence, VK_TRUE, UINT64_MAX);
+		vkDestroyFence(device.get(), fence, allocationCallbacks);
+	}
+
 	Texture::Texture(Context& context, const std::filesystem::path& path) :
 			_context{context},
 			_image{VK_NULL_HANDLE},
@@ -32,246 +292,21 @@ namespace Raindrop::Renderer::Texture{
 		VkBuffer stagingBuffer = VK_NULL_HANDLE;
 		VkDeviceMemory stagingBufferMemory = VK_NULL_HANDLE;
 
-		{
-			VkBufferCreateInfo info{};
-			info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-			info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-			info.size = imageSize;
-			info.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
-
-			if (vkCreateBuffer(device.get(), &info, allocationCallbacks, &stagingBuffer) != VK_SUCCESS){
-				spdlog::error("Failed to create staging buffer !");
-				throw std::runtime_error("Failed to create staging buffer");
-			}
-		}
-
-		{
-			VkMemoryRequirements requirements;
-			vkGetBufferMemoryRequirements(device.get(), stagingBuffer, &requirements);
-
-			VkMemoryAllocateInfo info{};
-			info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-			info.allocationSize = requirements.size;
-			info.memoryTypeIndex = device.findMemoryType(requirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-			
-			if (vkAllocateMemory(device.get(), &info, allocationCallbacks, &stagingBufferMemory) != VK_SUCCESS){
-				spdlog::error("Failed to allocate staging buffer memory !");
-				throw std::runtime_error("Failed to allocate staging buffer memory");
-			}
-
-			if (vkBindBufferMemory(device.get(), stagingBuffer, stagingBufferMemory, 0) != VK_SUCCESS){
-				spdlog::error("Failed to bind staging buffer memory !");
-				throw std::runtime_error("Failed to bind staging buffer memory");
-			}
-		}
-
-		{
-			void* data;
-
-			if (vkMapMemory(device.get(), stagingBufferMemory, 0, imageSize, 0, &data) != VK_SUCCESS){
-				spdlog::error("Failed to map staging buffer memory !");
-				throw std::runtime_error("Failed to map staging buffer memory");
-			}
-
-			memcpy(data, pixels, static_cast<size_t>(imageSize));
-			vkUnmapMemory(device.get(), stagingBufferMemory);
-		}
-
+		createStagingBuffer(_context, stagingBuffer, stagingBufferMemory, imageSize);
+		writeBuffer(_context, stagingBufferMemory, pixels, imageSize);
 		stbi_image_free(pixels);
 
-		{
-			VkImageCreateInfo info{};
-			info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-			info.imageType = VK_IMAGE_TYPE_2D;
-
-			info.extent.width = static_cast<uint32_t>(texWidth);
-			info.extent.height = static_cast<uint32_t>(texHeight);
-			info.extent.depth = 1;
-
-			info.mipLevels = 1;
-			info.arrayLayers = 1;
-
-			info.samples = VK_SAMPLE_COUNT_1_BIT;
-			info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-			info.tiling = VK_IMAGE_TILING_OPTIMAL;
-			info.format = VK_FORMAT_R8G8B8A8_SRGB;
-			info.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-			info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-			if (vkCreateImage(device.get(), &info, nullptr, &_image) != VK_SUCCESS) {
-				spdlog::error("Failed to create image !");
-				throw std::runtime_error("Failed to create image");
-			}
-		}
-
-		{
-			VkMemoryRequirements memRequirements;
-			vkGetImageMemoryRequirements(device.get(), _image, &memRequirements);
-
-			VkMemoryAllocateInfo allocInfo{};
-			allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-			allocInfo.allocationSize = memRequirements.size;
-			allocInfo.memoryTypeIndex = device.findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-
-			if (vkAllocateMemory(device.get(), &allocInfo, nullptr, &_memory) != VK_SUCCESS) {
-				spdlog::error("Failed to allocate image memory !");
-				throw std::runtime_error("Failed to allocate image memory");
-			}
-
-			if (vkBindImageMemory(device.get(), _image, _memory, 0) != VK_SUCCESS){
-				spdlog::error("Failed to bind image memory !");
-				throw std::runtime_error("Failed to bind image memory");
-			}
-		}
+		createImage(context, _image, _memory, texWidth, texHeight);
 
 		VkCommandBuffer commandBuffer = VK_NULL_HANDLE;
 		
-		{
-			VkCommandBufferAllocateInfo info{};
-			info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-			info.commandBufferCount = 1;
-			info.commandPool = _context.commandPools.singleUseTransfert.get();
-			info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+		createCommandBuffer(_context, commandBuffer);
 
-			if (vkAllocateCommandBuffers(device.get(), &info, &commandBuffer) != VK_SUCCESS){
-				spdlog::error("Failed to allocate command buffer");
-				throw std::runtime_error("Failed to allocate command buffer");
-			}
-		}
+		transfertToTransfert(commandBuffer, _image);
+		copyToImage(commandBuffer, _image, stagingBuffer, texWidth, texHeight);
+		transfertToReadOnly(commandBuffer, _image);
 
-		{
-			VkCommandBufferBeginInfo info{};
-			info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-			info.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-
-			if (vkBeginCommandBuffer(commandBuffer, &info) != VK_SUCCESS){
-				spdlog::error("Failed to begin command buffer");
-				throw std::runtime_error("Failed to begin command buffer");
-			}
-		}
-
-		{
-			VkImageMemoryBarrier barrier{};
-			barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-			barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-			barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-
-			barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-			barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-			barrier.image = _image;
-
-
-			barrier.subresourceRange = {
-				.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-				.baseMipLevel = 0,
-				.levelCount = 1,
-				.baseArrayLayer = 0,
-				.layerCount = 1
-			};
-
-			barrier.srcAccessMask = 0;
-			barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-
-			vkCmdPipelineBarrier(
-				commandBuffer,
-				VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-				VK_PIPELINE_STAGE_TRANSFER_BIT,
-				0,
-				0, nullptr,
-				0, nullptr,
-				1, &barrier
-			);
-		}
-
-		{
-			VkBufferImageCopy region{};
-			region.bufferOffset = 0;
-			region.bufferRowLength = 0;
-			region.bufferImageHeight = 0;
-
-			region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-			region.imageSubresource.mipLevel = 0;
-			region.imageSubresource.baseArrayLayer = 0;
-			region.imageSubresource.layerCount = 1;
-
-			region.imageOffset = {0, 0, 0};
-			region.imageExtent = {
-				static_cast<uint32_t>(texWidth),
-				static_cast<uint32_t>(texHeight),
-				1
-			};
-
-			vkCmdCopyBufferToImage(
-				commandBuffer,
-				stagingBuffer,
-				_image,
-				VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-				1,
-				&region
-			);
-		}
-
-		{
-			VkImageMemoryBarrier barrier{};
-			barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-			barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-			barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-
-			barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-			barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-			barrier.image = _image;
-
-
-			barrier.subresourceRange = {
-				.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-				.baseMipLevel = 0,
-				.levelCount = 1,
-				.baseArrayLayer = 0,
-				.layerCount = 1
-			};
-
-			barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-			barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-
-			vkCmdPipelineBarrier(
-				commandBuffer,
-				VK_PIPELINE_STAGE_TRANSFER_BIT,
-				VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-				0,
-				0, nullptr,
-				0, nullptr,
-				1, &barrier
-			);
-		}
-
-		VkFence fence = VK_NULL_HANDLE;
-		{
-			VkFenceCreateInfo info{};
-			info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-
-			if (vkCreateFence(device.get(), &info, allocationCallbacks, &fence) != VK_SUCCESS){
-				spdlog::error("Failed to create submit fence");
-				throw std::runtime_error("Failed to create submit fence");
-			}
-		}
-
-		{
-			vkEndCommandBuffer(commandBuffer);
-			VkSubmitInfo info{};
-			info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-			info.waitSemaphoreCount = 0;
-			info.signalSemaphoreCount = 0;
-			info.commandBufferCount = 1;
-			info.pCommandBuffers = &commandBuffer;
-
-			if (vkQueueSubmit(_context.queues.transfertQueue(), 1, &info, fence) != VK_SUCCESS){
-				spdlog::error("Failed to submit command buffer");
-				throw std::runtime_error("Failed to submit command buffer");
-			}
-		}
-
-		vkWaitForFences(device.get(), 1, &fence, VK_TRUE, UINT64_MAX);
-		vkDestroyFence(device.get(), fence, allocationCallbacks);
+		submitAndWait(_context, commandBuffer);
 
 		vkFreeMemory(device.get(), stagingBufferMemory, allocationCallbacks);
 		vkDestroyBuffer(device.get(), stagingBuffer, allocationCallbacks);
