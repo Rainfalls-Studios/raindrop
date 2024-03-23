@@ -400,15 +400,15 @@ namespace Raindrop::Renderer::Texture{
 	}
 
 
-	VkImage Texture::image(){
+	VkImage Texture::image() const{
 		return _image;
 	}
 
-	VkImageView Texture::imageView(){
+	VkImageView Texture::imageView() const{
 		return _view;
 	}
 
-	VkDeviceMemory Texture::memory(){
+	VkDeviceMemory Texture::memory() const{
 		return _memory;
 	}
 
@@ -445,7 +445,16 @@ namespace Raindrop::Renderer::Texture{
 		}
 	}
 
-	VkSampler Texture::sampler(){
+	VkSampler Texture::sampler() const{
 		return _sampler;
 	}
+
+	VkDescriptorImageInfo Texture::info() const{
+		return VkDescriptorImageInfo{
+			.sampler = _sampler,
+			.imageView = _view,
+			.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+		};
+	}
+
 }

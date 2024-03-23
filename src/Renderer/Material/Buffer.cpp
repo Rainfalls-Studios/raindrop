@@ -1,0 +1,96 @@
+#include <Raindrop/Renderer/Material/Buffer.hpp>
+#include <Raindrop/Renderer/Material/Context.hpp>
+#include <Raindrop/Renderer/Material/Material.hpp>
+#include <spdlog/spdlog.h>
+
+namespace Raindrop::Renderer::Material{
+	Buffer::Buffer(Context& context) : 
+			_context{context},
+			_buffer{VK_NULL_HANDLE},
+			_memory{VK_NULL_HANDLE}
+	{
+		allocate(_context.instanceCount);
+	}
+
+	Buffer::~Buffer(){
+		auto& device = _context.renderer.device;
+		auto& allocationCallbacks = _context.renderer.allocationCallbacks;
+
+		if (_buffer != VK_NULL_HANDLE){
+			vkDestroyBuffer(device.get(), _buffer, allocationCallbacks);
+			_buffer = VK_NULL_HANDLE;
+		}
+
+		if (_memory != VK_NULL_HANDLE){
+			vkFreeMemory(device.get(), _memory, allocationCallbacks);
+			_memory = VK_NULL_HANDLE;
+		}
+	}
+
+	void Buffer::allocate(const std::size_t instanceCount){
+		auto& device = _context.renderer.device;
+		auto& allocationCallbacks = _context.renderer.allocationCallbacks;
+
+		{
+			std::size_t size = instanceCount * sizeof(Material::properties);
+
+			VkBufferCreateInfo info{};
+			info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+			info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+			info.size = size;
+			info.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+			
+
+			if (vkCreateBuffer(device.get(), &info, allocationCallbacks, &_buffer) != VK_SUCCESS){
+				spdlog::error("Failed to create material uniform buffer ! (size : {})", size);
+				throw std::runtime_error("Failed to create material uniform buffer !");
+			}
+		}
+
+		{
+			VkMemoryRequirements requirements;
+			vkGetBufferMemoryRequirements(device.get(), _buffer, &requirements);
+
+			VkMemoryAllocateInfo info{};
+			info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+			info.allocationSize = requirements.size;
+			info.memoryTypeIndex = device.findMemoryType(requirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+			
+			if (vkAllocateMemory(device.get(), &info, allocationCallbacks, &_memory) != VK_SUCCESS){
+				spdlog::error("Failed to allocate material uniform buffer memory !");
+				throw std::runtime_error("Failed to allocate material uniform buffer memory");
+			}
+
+			if (vkBindBufferMemory(device.get(), _buffer, _memory, 0) != VK_SUCCESS){
+				spdlog::error("Failed to bind material uniform buffer memory !");
+				throw std::runtime_error("Failed to bind material uniform buffer memory");
+			}
+		}
+	}
+
+	VkBuffer Buffer::get() const{
+		return _buffer;
+	}
+
+	VkDeviceMemory Buffer::memory() const{
+		return _memory;
+	}
+
+	void Buffer::write(const std::size_t& index, const Material::Properties& data){
+		auto& device = _context.renderer.device;
+		auto& allocationCallbacks = _context.renderer.allocationCallbacks;
+
+		std::size_t offset = index * sizeof(Material::Properties);
+		std::size_t size = sizeof(Material::Properties);
+
+		void* ptr;
+		if (vkMapMemory(device.get(), _memory, offset, size, 0, &ptr) != VK_SUCCESS){
+			spdlog::error("Failed to map material memory (size : {} | offset : {})", size, offset);
+			throw std::runtime_error("Failed to map material memory");
+		}
+
+		memcpy(ptr, &data, size);
+
+		vkUnmapMemory(device.get(), _memory);
+	}
+}

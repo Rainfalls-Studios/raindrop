@@ -1,5 +1,5 @@
 #include <Raindrop/Renderer/Material/SetLayout.hpp>
-#include <Raindrop/Renderer/Context.hpp>
+#include <Raindrop/Renderer/Material/Context.hpp>
 
 #include <spdlog/spdlog.h>
 
@@ -12,8 +12,8 @@ namespace Raindrop::Renderer::Material{
 	}
 
 	SetLayout::~SetLayout(){
-		auto& device = _context.device;
-		auto& allocationCallbacks = _context.allocationCallbacks;
+		auto& device = _context.renderer.device;
+		auto& allocationCallbacks = _context.renderer.allocationCallbacks;
 		
 		if (_setLayout != VK_NULL_HANDLE){
 			vkDestroyDescriptorSetLayout(device.get(), _setLayout, allocationCallbacks);
@@ -26,12 +26,18 @@ namespace Raindrop::Renderer::Material{
 	}
 
 	void SetLayout::createSetLayout(){
-		auto& device = _context.device;
-		auto& allocationCallbacks = _context.allocationCallbacks;
+		auto& device = _context.renderer.device;
+		auto& allocationCallbacks = _context.renderer.allocationCallbacks;
 
 		VkDescriptorSetLayoutBinding bindings[] = {
-			VkDescriptorSetLayoutBinding{
+			{
 				.binding = 0,
+				.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+				.descriptorCount = 1,
+				.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT
+			},
+			{
+				.binding = 1,
 				.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
 				.descriptorCount = 1,
 				.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT

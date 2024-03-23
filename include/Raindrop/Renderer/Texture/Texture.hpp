@@ -19,10 +19,12 @@ namespace Raindrop::Renderer::Texture{
 
 			virtual ~Texture();
 
-			VkImage image();
-			VkImageView imageView();
-			VkDeviceMemory memory();
-			VkSampler sampler();
+			VkImage image() const;
+			VkImageView imageView() const;
+			VkDeviceMemory memory() const;
+			VkSampler sampler() const;
+
+			VkDescriptorImageInfo info() const;
 
 		private:
 			Context& _context;

@@ -2,6 +2,7 @@
 #include <Raindrop/Renderer/Pipelines/GraphicsPipeline.hpp>
 #include <Raindrop/Renderer/Context.hpp>
 #include <Raindrop/Renderer/Model/Vertex.hpp>
+#include <Raindrop/Renderer/Material/SetLayout.hpp>
 
 #include <spdlog/spdlog.h>
 #include <fstream>
@@ -57,7 +58,7 @@ namespace Raindrop::Renderer::Pipelines{
 		info.pushConstantRangeCount = 1;
 		info.pPushConstantRanges = &range;
 
-		VkDescriptorSetLayout layout = _context.materialSetlayout.get();
+		VkDescriptorSetLayout layout = _context.materials.layout().get();
 		info.setLayoutCount = 1;
 		info.pSetLayouts = &layout;
 

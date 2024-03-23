@@ -2,6 +2,7 @@
 #define __RAINDROP_RENDERER_MODEL_MESH_HPP__
 
 #include "common.hpp"
+#include "../Material/common.hpp"
 
 namespace Raindrop::Renderer::Model{
 	class Mesh{
@@ -20,7 +21,7 @@ namespace Raindrop::Renderer::Model{
 
 			void render(VkCommandBuffer commandBuffer);
 
-			VkDescriptorSet& descriptorSet();
+			Material::MaterialID& materialID();
 
 		private:
 			Context& _context;
@@ -34,8 +35,7 @@ namespace Raindrop::Renderer::Model{
 			std::size_t _vertexCount;
 			std::size_t _indexCount;
 
-			// handled by the model
-			VkDescriptorSet _descriptorSet;
+			Material::MaterialID _material;
 	};
 }
 

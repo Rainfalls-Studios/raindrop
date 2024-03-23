@@ -89,7 +89,7 @@ namespace Raindrop::Renderer{
 
 			if (!model.expired()){
 				for (auto& mesh : *model.lock()){
-					VkDescriptorSet set = mesh->descriptorSet();
+					VkDescriptorSet set = _context->materials.getDescriptorSet(mesh->materialID());
 
 					vkCmdBindDescriptorSets(
 						commandBuffer,

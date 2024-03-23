@@ -317,8 +317,7 @@ namespace Raindrop::Renderer::Model{
 	}
 
 	Model::Model(Context& context, const Path& path) :
-			_context{context},
-			_pool{VK_NULL_HANDLE}
+			_context{context}
 		{
 		auto& device = _context.device;
 		auto& allocationCallbacks = _context.allocationCallbacks;
@@ -342,53 +341,24 @@ namespace Raindrop::Renderer::Model{
 
 		spdlog::info("Loading model \"{}\" ({} meshes | {} materials) ...", path.string(), scene->mNumMeshes, scene->mNumMaterials);
 
-		createPool(static_cast<std::size_t>(scene->mNumMaterials));
-		allocateDescriptorSets(static_cast<std::size_t>(scene->mNumMaterials));
-
 		if (scene->HasMaterials()){
 
 			auto& assets = _context.core.assetManager;
-			_materials.resize(static_cast<std::size_t>(scene->mNumMaterials));
-			std::vector<VkWriteDescriptorSet> writes(_materials.size());
-			std::vector<VkDescriptorImageInfo> imageInfos(_materials.size());
 
-			for (std::size_t i=0; i<_materials.size(); i++){
+			for (std::size_t i=0; i<scene->mNumMaterials; i++){
 				const auto& data = scene->mMaterials[i];
-				auto& material = _materials[i];
 
-				// data->Get(AI_MATKEY_COLOR_AMBIENT, material.ambientColor);
-				// data->Get(AI_MATKEY_COLOR_DIFFUSE, material.diffuseColor);
-				// data->Get(AI_MATKEY_COLOR_SPECULAR, material.specularColor);
-				// data->Get(AI_MATKEY_SHININESS, material.shininess);
+				Material::Material material(_context);
+
+				data->Get(AI_MATKEY_COLOR_DIFFUSE, material.properties.diffuseColor);
+				data->Get(AI_MATKEY_COLOR_SPECULAR, material.properties.specularColor);
+				data->Get(AI_MATKEY_SHININESS, material.properties.shininess);
 
 				aiString path;
 				if (data->GetTexture(aiTextureType_DIFFUSE, 0, &path) == AI_SUCCESS){
-					material.diffuseTexture = assets.get<Texture::Texture>("Texture", directory / path.C_Str());
-				} else {
-					material.diffuseTexture = _context.white;
+					material.textures.diffuse = assets.get<Texture::Texture>("Texture", directory / path.C_Str());
 				}
-				
-				VkDescriptorImageInfo& imageInfo = imageInfos[i];
-				imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-				imageInfo.imageView = material.diffuseTexture.lock()->imageView();
-				imageInfo.sampler = material.diffuseTexture.lock()->sampler();
-
-				auto& write = writes[i];
-				write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-				write.dstSet = _descriptorSets[i];
-				write.dstBinding = 0;
-				write.pImageInfo = &imageInfo;
-				write.descriptorCount = 1;
-				write.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 			}
-
-			vkUpdateDescriptorSets(
-				device.get(),
-				static_cast<uint32_t>(writes.size()),
-				writes.data(),
-				0,
-				nullptr
-			);
 		}
 
 		_meshes.resize(static_cast<std::size_t>(scene->mNumMeshes));
@@ -403,71 +373,17 @@ namespace Raindrop::Renderer::Model{
 
 			std::unique_ptr<Mesh> mesh = std::make_unique<Mesh>(_context);
 			loadMesh(*mesh, meshData, _context);
-			mesh->descriptorSet() = _descriptorSets[meshData->mMaterialIndex];
 			_meshes[i] = std::move(mesh);
 		}
 	}
 
 	Model::~Model(){
 		_meshes.clear();
-		destroyPool();
 	}
 
 	void Model::render(VkCommandBuffer commandBuffer){
 		for (auto& mesh : _meshes){
 			mesh->render(commandBuffer);
-		}
-	}
-
-	void Model::createPool(const std::size_t& meshCount){
-		auto& device = _context.device;
-		auto& allocationCallbacks = _context.allocationCallbacks;
-
-		VkDescriptorPoolCreateInfo info{};
-		VkDescriptorPoolSize size = {
-			.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-			.descriptorCount = static_cast<uint32_t>(meshCount)
-		};
-
-		info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-		info.maxSets = static_cast<uint32_t>(meshCount);
-		info.poolSizeCount = 1;
-		info.pPoolSizes = &size;
-
-		if (vkCreateDescriptorPool(device.get(), &info, allocationCallbacks, &_pool) != VK_SUCCESS){
-			spdlog::error("Failed to create descriptor pool");
-			throw std::runtime_error("Failed to create descriptor pool");
-		}
-	}
-
-	void Model::allocateDescriptorSets(const std::size_t& materialCount){
-		auto& device = _context.device;
-		auto& allocationCallbacks = _context.allocationCallbacks;
-
-		_descriptorSets.resize(materialCount);
-
-		std::vector<VkDescriptorSetLayout> layouts(materialCount);
-		std::fill(layouts.begin(), layouts.end(), _context.materialSetlayout.get());
-
-		VkDescriptorSetAllocateInfo info{};
-		info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-		info.descriptorSetCount = static_cast<uint32_t>(materialCount);
-		info.pSetLayouts = layouts.data();
-		info.descriptorPool = _pool;
-
-		if (vkAllocateDescriptorSets(device.get(), &info, _descriptorSets.data()) != VK_SUCCESS){
-			spdlog::error("Failed to allocate descriptor sets");
-			throw std::runtime_error("Failed to allocate descriptor sets");
-		}
-	}
-
-	void Model::destroyPool(){
-		auto& device = _context.device;
-		auto& allocationCallbacks = _context.allocationCallbacks;
-
-		if (_pool != VK_NULL_HANDLE){
-			vkDestroyDescriptorPool(device.get(), _pool, allocationCallbacks);
-			_pool = VK_NULL_HANDLE;
 		}
 	}
 

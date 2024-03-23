@@ -12,7 +12,8 @@
 #include "Scene/Scene.hpp"
 #include "Queues/CommandPools.hpp"
 #include "Texture/Texture.hpp"
-#include "Material/SetLayout.hpp"
+#include "Material/Materials.hpp"
+#include "WhiteTexture.hpp"
 
 namespace Raindrop::Renderer{
 	struct Context{
@@ -30,8 +31,8 @@ namespace Raindrop::Renderer{
 		Queues::CommandPools commandPools;
 		Core::Swapchain swapchain;
 		Scene::Scene scene;
-		std::shared_ptr<Texture::Texture> white;
-		Material::SetLayout materialSetlayout;
+		WhiteTexture white;
+		Material::Materials materials;
 	};
 }
 

@@ -9,7 +9,8 @@ namespace Raindrop::Renderer::Model{
 		_vertexBuffer{VK_NULL_HANDLE},
 		_vertexMemory{VK_NULL_HANDLE},
 		_indexBuffer{VK_NULL_HANDLE},
-		_indexMemory{VK_NULL_HANDLE}
+		_indexMemory{VK_NULL_HANDLE},
+		_material{Material::PLACEHOLDER_MATERIAL}
 	{
 
 	}
@@ -147,7 +148,7 @@ namespace Raindrop::Renderer::Model{
 		}
 	}
 
-	VkDescriptorSet& Mesh::descriptorSet(){
-		return _descriptorSet;
+	Material::MaterialID& Mesh::materialID(){
+		return _material;
 	}
 }
