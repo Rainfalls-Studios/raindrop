@@ -10,6 +10,20 @@ namespace Raindrop::Renderer{
 		queues(*this),
 		commandPools(*this),
 		swapchain(*this),
-		scene(*this)
-	{}
+		scene(*this),
+		white(nullptr),
+		materialSetlayout(*this)
+	{
+		{
+			static constexpr uint32_t color = 0xFFFFFFFF;
+
+			Texture::Texture::ConstructData data;
+			data.width = 1;
+			data.height = 1;
+			data.channels = 4;
+			data.data = &color;
+
+			white = std::make_shared<Texture::Texture>(*this, data);
+		}
+	}
 }

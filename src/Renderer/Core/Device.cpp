@@ -103,6 +103,7 @@ namespace Raindrop::Renderer::Core{
 			info.pQueuePriorities = priority.data();
 		}
 
+		info.pEnabledFeatures = &features;
 		info.pQueueCreateInfos = queueCreateInfos.data();
 		info.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
 

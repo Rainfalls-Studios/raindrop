@@ -3,6 +3,8 @@
 
 #include "common.hpp"
 #include <Raindrop/Core/Asset/Asset.hpp>
+#include <Raindrop/Renderer/Texture/Texture.hpp>
+#include <Raindrop/Renderer/Material/Material.hpp>
 
 namespace Raindrop::Renderer::Model{
 	class Model : public ::Raindrop::Core::Asset::Asset{
@@ -12,10 +14,20 @@ namespace Raindrop::Renderer::Model{
 
 			void render(VkCommandBuffer commandBuffer);
 
+			std::vector<std::unique_ptr<Mesh>>::iterator begin();
+			std::vector<std::unique_ptr<Mesh>>::iterator end();
+
 		private:
 			Context& _context;
 			std::vector<std::unique_ptr<Mesh>> _meshes;
-			
+			std::vector<VkDescriptorSet> _descriptorSets;
+			VkDescriptorPool _pool;
+
+			std::vector<Material::Material> _materials;
+
+			void createPool(const std::size_t& meshCount);
+			void allocateDescriptorSets(const std::size_t& meshCount);
+			void destroyPool();
 	};
 }
 

@@ -13,10 +13,11 @@ namespace Raindrop::Renderer::Model{
 			virtual ~Loader() override;
 
 			virtual std::shared_ptr<Asset> load(const Path& path) override;
+			virtual void registerAsset(const Path& path, const std::shared_ptr<Asset>& asset) override;
 		
 		private:
 			Context& _context;
-			std::list<std::shared_ptr<Model>> _textures;
+			std::list<std::shared_ptr<Model>> _models;
 	};
 }
 

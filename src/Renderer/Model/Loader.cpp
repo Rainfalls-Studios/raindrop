@@ -23,8 +23,13 @@ namespace Raindrop::Renderer::Model{
 			spdlog::error("Failed to load model from \"{}\" :: reason : \"{}\"", path.string(), e.what());
 			throw std::runtime_error("Failed to load model");
 		}
-		_textures.push_back(model);
+		_models.push_back(model);
 
 		return std::static_pointer_cast<Asset>(model);
+	}
+
+	void Loader::registerAsset(const Path& path, const std::shared_ptr<Asset>& asset){
+		std::shared_ptr<Model> model = std::static_pointer_cast<Model>(asset);
+		_models.push_back(model);
 	}
 }

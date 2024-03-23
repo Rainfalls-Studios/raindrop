@@ -20,6 +20,8 @@ namespace Raindrop::Renderer::Model{
 
 			void render(VkCommandBuffer commandBuffer);
 
+			VkDescriptorSet& descriptorSet();
+
 		private:
 			Context& _context;
 
@@ -31,6 +33,9 @@ namespace Raindrop::Renderer::Model{
 
 			std::size_t _vertexCount;
 			std::size_t _indexCount;
+
+			// handled by the model
+			VkDescriptorSet _descriptorSet;
 	};
 }
 

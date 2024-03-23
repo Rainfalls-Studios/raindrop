@@ -2,6 +2,7 @@
 #include <Raindrop/Renderer/Model/Mesh.hpp>
 #include <Raindrop/Renderer/Model/Vertex.hpp>
 #include <Raindrop/Renderer/Context.hpp>
+#include <Raindrop/Context.hpp>
 
 #include <spdlog/spdlog.h>
 
@@ -304,7 +305,24 @@ namespace Raindrop::Renderer::Model{
 		vertices.clear();
 	}
 
-	Model::Model(Context& context, const Path& path) : _context{context}{
+	std::string primitiveTypesToStr(unsigned int types){
+		std::string output;
+
+		if (types & aiPrimitiveType_LINE) output += " line";
+		if (types & aiPrimitiveType_POINT) output += " point";
+		if (types & aiPrimitiveType_POLYGON) output += " polygon";
+		if (types & aiPrimitiveType_TRIANGLE) output += " triangle";
+
+		return output;
+	}
+
+	Model::Model(Context& context, const Path& path) :
+			_context{context},
+			_pool{VK_NULL_HANDLE}
+		{
+		auto& device = _context.device;
+		auto& allocationCallbacks = _context.allocationCallbacks;
+
 		spdlog::info("Loading model \"{}\" ...", path.string());
 
 		Assimp::Importer importer;
@@ -319,11 +337,59 @@ namespace Raindrop::Renderer::Model{
 
 		if (!scene->HasMeshes()){
 			spdlog::error("The model \"{}\" does not contain meshs", path.string());
-			throw std::runtime_error("The model has not meshes");
+			throw std::runtime_error("The model has no meshes");
 		}
 
+		spdlog::info("Loading model \"{}\" ({} meshes | {} materials) ...", path.string(), scene->mNumMeshes, scene->mNumMaterials);
 
-		spdlog::info("Loading model \"{}\" ({} meshes | {} textures) ...", path.string(), scene->mNumMeshes, scene->mNumTextures);
+		createPool(static_cast<std::size_t>(scene->mNumMaterials));
+		allocateDescriptorSets(static_cast<std::size_t>(scene->mNumMaterials));
+
+		if (scene->HasMaterials()){
+
+			auto& assets = _context.core.assetManager;
+			_materials.resize(static_cast<std::size_t>(scene->mNumMaterials));
+			std::vector<VkWriteDescriptorSet> writes(_materials.size());
+			std::vector<VkDescriptorImageInfo> imageInfos(_materials.size());
+
+			for (std::size_t i=0; i<_materials.size(); i++){
+				const auto& data = scene->mMaterials[i];
+				auto& material = _materials[i];
+
+				// data->Get(AI_MATKEY_COLOR_AMBIENT, material.ambientColor);
+				// data->Get(AI_MATKEY_COLOR_DIFFUSE, material.diffuseColor);
+				// data->Get(AI_MATKEY_COLOR_SPECULAR, material.specularColor);
+				// data->Get(AI_MATKEY_SHININESS, material.shininess);
+
+				aiString path;
+				if (data->GetTexture(aiTextureType_DIFFUSE, 0, &path) == AI_SUCCESS){
+					material.diffuseTexture = assets.get<Texture::Texture>("Texture", directory / path.C_Str());
+				} else {
+					material.diffuseTexture = _context.white;
+				}
+				
+				VkDescriptorImageInfo& imageInfo = imageInfos[i];
+				imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+				imageInfo.imageView = material.diffuseTexture.lock()->imageView();
+				imageInfo.sampler = material.diffuseTexture.lock()->sampler();
+
+				auto& write = writes[i];
+				write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+				write.dstSet = _descriptorSets[i];
+				write.dstBinding = 0;
+				write.pImageInfo = &imageInfo;
+				write.descriptorCount = 1;
+				write.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			}
+
+			vkUpdateDescriptorSets(
+				device.get(),
+				static_cast<uint32_t>(writes.size()),
+				writes.data(),
+				0,
+				nullptr
+			);
+		}
 
 		_meshes.resize(static_cast<std::size_t>(scene->mNumMeshes));
 		
@@ -331,23 +397,85 @@ namespace Raindrop::Renderer::Model{
 			const auto& meshData = scene->mMeshes[i];
 
 			if (meshData->mPrimitiveTypes != aiPrimitiveType_TRIANGLE){
-				spdlog::error("Cannot load mesh \"{}\" containing another primitive type than triangle", path.string());
+				spdlog::error("Cannot load mesh \"{}\" containing another primitive type than triangle ({})", meshData->mName.C_Str(), primitiveTypesToStr(meshData->mPrimitiveTypes));
 				throw std::runtime_error("Invalid primitive type");
 			}
 
 			std::unique_ptr<Mesh> mesh = std::make_unique<Mesh>(_context);
 			loadMesh(*mesh, meshData, _context);
+			mesh->descriptorSet() = _descriptorSets[meshData->mMaterialIndex];
 			_meshes[i] = std::move(mesh);
 		}
 	}
 
 	Model::~Model(){
 		_meshes.clear();
+		destroyPool();
 	}
 
 	void Model::render(VkCommandBuffer commandBuffer){
 		for (auto& mesh : _meshes){
 			mesh->render(commandBuffer);
 		}
+	}
+
+	void Model::createPool(const std::size_t& meshCount){
+		auto& device = _context.device;
+		auto& allocationCallbacks = _context.allocationCallbacks;
+
+		VkDescriptorPoolCreateInfo info{};
+		VkDescriptorPoolSize size = {
+			.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+			.descriptorCount = static_cast<uint32_t>(meshCount)
+		};
+
+		info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+		info.maxSets = static_cast<uint32_t>(meshCount);
+		info.poolSizeCount = 1;
+		info.pPoolSizes = &size;
+
+		if (vkCreateDescriptorPool(device.get(), &info, allocationCallbacks, &_pool) != VK_SUCCESS){
+			spdlog::error("Failed to create descriptor pool");
+			throw std::runtime_error("Failed to create descriptor pool");
+		}
+	}
+
+	void Model::allocateDescriptorSets(const std::size_t& materialCount){
+		auto& device = _context.device;
+		auto& allocationCallbacks = _context.allocationCallbacks;
+
+		_descriptorSets.resize(materialCount);
+
+		std::vector<VkDescriptorSetLayout> layouts(materialCount);
+		std::fill(layouts.begin(), layouts.end(), _context.materialSetlayout.get());
+
+		VkDescriptorSetAllocateInfo info{};
+		info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+		info.descriptorSetCount = static_cast<uint32_t>(materialCount);
+		info.pSetLayouts = layouts.data();
+		info.descriptorPool = _pool;
+
+		if (vkAllocateDescriptorSets(device.get(), &info, _descriptorSets.data()) != VK_SUCCESS){
+			spdlog::error("Failed to allocate descriptor sets");
+			throw std::runtime_error("Failed to allocate descriptor sets");
+		}
+	}
+
+	void Model::destroyPool(){
+		auto& device = _context.device;
+		auto& allocationCallbacks = _context.allocationCallbacks;
+
+		if (_pool != VK_NULL_HANDLE){
+			vkDestroyDescriptorPool(device.get(), _pool, allocationCallbacks);
+			_pool = VK_NULL_HANDLE;
+		}
+	}
+
+	std::vector<std::unique_ptr<Mesh>>::iterator Model::begin(){
+		return _meshes.begin();
+	}
+
+	std::vector<std::unique_ptr<Mesh>>::iterator Model::end(){
+		return _meshes.end();
 	}
 }

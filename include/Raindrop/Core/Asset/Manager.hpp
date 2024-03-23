@@ -16,6 +16,15 @@ namespace Raindrop::Core::Asset{
 			std::weak_ptr<T> get(const std::string& type, const Path& path){
 				return std::dynamic_pointer_cast<T>(get(type, path).lock());
 			}
+
+			std::weak_ptr<Asset> find(const std::string& type, const Path& path);
+
+			template<typename T>
+			std::weak_ptr<T> find(const std::string& type, const Path& path){
+				return std::dynamic_pointer_cast<T>(find(type, path).lock());
+			}
+
+			void registerAsset(const std::string& type, const Path& path, const std::shared_ptr<Asset>& asset);
 			
 			void registerLoader(const std::string& type, const std::shared_ptr<Loader>& loader);
 

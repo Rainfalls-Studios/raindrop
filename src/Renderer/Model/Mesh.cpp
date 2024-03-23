@@ -145,7 +145,9 @@ namespace Raindrop::Renderer::Model{
 		} else {
 			vkCmdDraw(commandBuffer, _vertexCount, 1, 0, 0);
 		}
+	}
 
-		// vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+	VkDescriptorSet& Mesh::descriptorSet(){
+		return _descriptorSet;
 	}
 }

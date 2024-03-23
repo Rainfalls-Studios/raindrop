@@ -27,4 +27,9 @@ namespace Raindrop::Renderer::Texture{
 
 		return std::static_pointer_cast<Asset>(texture);
 	}
+
+	void Loader::registerAsset(const Path& path, const std::shared_ptr<Asset>& asset){
+		std::shared_ptr<Texture> texture = std::static_pointer_cast<Texture>(asset);
+		_textures.push_back(texture);
+	}
 }

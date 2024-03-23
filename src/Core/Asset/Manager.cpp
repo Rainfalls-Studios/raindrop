@@ -13,8 +13,43 @@ namespace Raindrop::Core::Asset{
 		spdlog::info("Destructing asset manager...");
 	}
 
+	void Manager::registerAsset(const std::string& type, const Path& path, const std::shared_ptr<Asset>& asset){
+		spdlog::trace("Registring asset \"{}\" (type : \"{}\") ...", path.string(), type);
+
+		TypeData* typeData = getTypeData(type);
+		if (typeData == nullptr){
+			spdlog::warn("Failed to find a loader corresponding to \"{}\" asset type for asset \"{}\"", type, path.string());
+			throw std::runtime_error("Failed to find corresponding loader");
+		}
+
+		typeData->_loader->registerAsset(path, asset);
+		typeData->_pathToAssets[path] = asset;
+	}
+
+	std::weak_ptr<Asset> Manager::find(const std::string& type, const Path& path){
+		spdlog::trace("Looking for asset \"{}\" (type : \"{}\") ...", path.string(), type);
+
+		TypeData* typeData = getTypeData(type);
+		if (typeData == nullptr){
+			spdlog::warn("Failed to find a loader corresponding to \"{}\" asset type for asset \"{}\"", type, path.string());
+			throw std::runtime_error("Failed to find corresponding loader");
+		}
+
+		auto& pathToAsset = typeData->_pathToAssets;
+
+		{
+			auto it = pathToAsset.find(path);
+			if (it != pathToAsset.end()){
+				return it->second;
+			}
+		}
+
+		spdlog::trace("Asset \"{}\" (type : \"{}\") has not been found", path.string(), type);
+		return {};
+	}
+
 	std::weak_ptr<Asset> Manager::get(const std::string& type, const Path& path){
-		spdlog::info("Requirering asset \"{}\"... (type : \"{}\")", path.string(), type);
+		spdlog::trace("Requirering asset \"{}\" (type : \"{}\") ... ", path.string(), type);
 
 		TypeData* typeData = getTypeData(type);
 		if (typeData == nullptr){
@@ -35,7 +70,7 @@ namespace Raindrop::Core::Asset{
 		auto loader = typeData->_loader;
 		assert(loader != nullptr && "The asset type is not linked to any asset loader");
 
-		spdlog::info("Loading asset \"{}\"... (type : \"{}\")", path.string(), type);
+		spdlog::trace("Loading asset \"{}\"... (type : \"{}\")", path.string(), type);
 		std::shared_ptr<Asset> asset = loader->load(path);
 		pathToAsset[path] = asset;
 

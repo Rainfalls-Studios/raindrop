@@ -268,6 +268,47 @@ namespace Raindrop::Renderer::Texture{
 		vkDestroyFence(device.get(), fence, allocationCallbacks);
 	}
 
+	void Texture::loadFromConstructData(const ConstructData& data){
+		auto& device = _context.device;
+		auto& allocationCallbacks = _context.allocationCallbacks;
+
+		VkBuffer stagingBuffer = VK_NULL_HANDLE;
+		VkDeviceMemory stagingBufferMemory = VK_NULL_HANDLE;
+
+		VkDeviceSize imageSize = data.width * data.height * data.channels;
+
+		createStagingBuffer(_context, stagingBuffer, stagingBufferMemory, imageSize);
+		writeBuffer(_context, stagingBufferMemory, data.data, imageSize);
+
+		createImage(_context, _image, _memory, data.width, data.height);
+		createImageView();
+		createSampler();
+
+		VkCommandBuffer commandBuffer = VK_NULL_HANDLE;
+		
+		createCommandBuffer(_context, commandBuffer);
+
+		transfertToTransfert(commandBuffer, _image);
+		copyToImage(commandBuffer, _image, stagingBuffer, data.width, data.height);
+		transfertToReadOnly(commandBuffer, _image);
+
+		submitAndWait(_context, commandBuffer);
+
+		vkFreeMemory(device.get(), stagingBufferMemory, allocationCallbacks);
+		vkDestroyBuffer(device.get(), stagingBuffer, allocationCallbacks);
+		vkFreeCommandBuffers(device.get(), _context.commandPools.singleUseTransfert.get(), 1, &commandBuffer);
+	}
+
+	Texture::Texture(Context& context, const ConstructData& data) : 
+			_context{context},
+			_image{VK_NULL_HANDLE},
+			_view{VK_NULL_HANDLE},
+			_sampler{VK_NULL_HANDLE},
+			_memory{VK_NULL_HANDLE}
+		{
+		loadFromConstructData(data);
+	}
+
 	Texture::Texture(Context& context, const std::filesystem::path& path) :
 			_context{context},
 			_image{VK_NULL_HANDLE},
@@ -289,28 +330,15 @@ namespace Raindrop::Renderer::Texture{
 			throw std::runtime_error("failed to load texture image!");
 		}
 
-		VkBuffer stagingBuffer = VK_NULL_HANDLE;
-		VkDeviceMemory stagingBufferMemory = VK_NULL_HANDLE;
+		ConstructData data;
+		data.width = texWidth;
+		data.height = texHeight;
+		data.channels = 4;
+		data.data = pixels;
 
-		createStagingBuffer(_context, stagingBuffer, stagingBufferMemory, imageSize);
-		writeBuffer(_context, stagingBufferMemory, pixels, imageSize);
+		loadFromConstructData(data);
+
 		stbi_image_free(pixels);
-
-		createImage(context, _image, _memory, texWidth, texHeight);
-
-		VkCommandBuffer commandBuffer = VK_NULL_HANDLE;
-		
-		createCommandBuffer(_context, commandBuffer);
-
-		transfertToTransfert(commandBuffer, _image);
-		copyToImage(commandBuffer, _image, stagingBuffer, texWidth, texHeight);
-		transfertToReadOnly(commandBuffer, _image);
-
-		submitAndWait(_context, commandBuffer);
-
-		vkFreeMemory(device.get(), stagingBufferMemory, allocationCallbacks);
-		vkDestroyBuffer(device.get(), stagingBuffer, allocationCallbacks);
-		vkFreeCommandBuffers(device.get(), _context.commandPools.singleUseTransfert.get(), 1, &commandBuffer);
 	}
 
 	Texture::~Texture(){
@@ -332,7 +360,45 @@ namespace Raindrop::Renderer::Texture{
 			vkFreeMemory(device.get(), _memory, allocationCallbacks);
 			_memory = VK_NULL_HANDLE;
 		}
+
+		if (_sampler != VK_NULL_HANDLE){
+			vkDestroySampler(device.get(), _sampler, allocationCallbacks);
+			_sampler = VK_NULL_HANDLE;
+		}
 	}
+
+	void Texture::createImageView(){
+		auto& device = _context.device;
+		auto& allocationCallbacks = _context.allocationCallbacks;
+
+		VkImageViewCreateInfo info{};
+
+		info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+		info.image = _image;
+		info.components = {
+			.r = VK_COMPONENT_SWIZZLE_R,
+			.g = VK_COMPONENT_SWIZZLE_G,
+			.b = VK_COMPONENT_SWIZZLE_B,
+			.a = VK_COMPONENT_SWIZZLE_A
+		};
+
+		info.format = VK_FORMAT_R8G8B8A8_SRGB;
+		info.viewType = VK_IMAGE_VIEW_TYPE_2D;
+
+		info.subresourceRange = VkImageSubresourceRange{
+			.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+			.baseMipLevel = 0,
+			.levelCount = 1,
+			.baseArrayLayer = 0,
+			.layerCount = 1
+		};
+
+		if (vkCreateImageView(device.get(), &info, allocationCallbacks, &_view) != VK_SUCCESS){
+			spdlog::error("Failed to submit command buffer");
+			throw std::runtime_error("Failed to submit command buffer");
+		}
+	}
+
 
 	VkImage Texture::image(){
 		return _image;
@@ -344,5 +410,42 @@ namespace Raindrop::Renderer::Texture{
 
 	VkDeviceMemory Texture::memory(){
 		return _memory;
+	}
+
+	void Texture::createSampler(){
+		VkSamplerCreateInfo info{};
+		info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+		info.unnormalizedCoordinates = VK_FALSE;
+
+		info.magFilter = VK_FILTER_NEAREST;
+		info.minFilter = VK_FILTER_NEAREST;
+
+		info.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+		info.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+		info.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+		info.borderColor = VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK;
+
+		info.anisotropyEnable = VK_TRUE;
+		info.maxAnisotropy = _context.physicalDevice.limits().maxSamplerAnisotropy;
+
+		info.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+		info.mipLodBias = 0.0f;
+		info.minLod = 0.0f;
+		info.maxLod = 0.0f;
+
+		info.compareEnable = VK_FALSE;
+		info.compareOp = VK_COMPARE_OP_ALWAYS;
+
+		auto& device = _context.device;
+		auto& allocationCallbacks = _context.allocationCallbacks;
+
+		if (vkCreateSampler(device.get(), &info, allocationCallbacks, &_sampler) != VK_SUCCESS){
+			spdlog::error("Failed to create sampler");
+			throw std::runtime_error("Failed to create sampler");
+		}
+	}
+
+	VkSampler Texture::sampler(){
+		return _sampler;
 	}
 }

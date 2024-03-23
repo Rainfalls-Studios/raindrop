@@ -52,10 +52,14 @@ namespace Raindrop::Renderer::Pipelines{
 		VkPushConstantRange range;
 		range.offset = 0;
 		range.size = sizeof(glm::mat4) * 2;
-		range.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+		range.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 
 		info.pushConstantRangeCount = 1;
 		info.pPushConstantRanges = &range;
+
+		VkDescriptorSetLayout layout = _context.materialSetlayout.get();
+		info.setLayoutCount = 1;
+		info.pSetLayouts = &layout;
 
 		auto& device = _context.device;
 		auto& allocationCallbacks = _context.allocationCallbacks;

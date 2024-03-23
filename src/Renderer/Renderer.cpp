@@ -10,6 +10,7 @@ static std::unique_ptr<Raindrop::Renderer::Pipelines::Default> shader;
 #include <Raindrop/Renderer/Texture/Loader.hpp>
 #include <Raindrop/Renderer/Model/Loader.hpp>
 #include <Raindrop/Renderer/Model/Model.hpp>
+#include <Raindrop/Renderer/Model/Mesh.hpp>
 
 static std::weak_ptr<Raindrop::Renderer::Model::Model> model;
 
@@ -29,7 +30,7 @@ namespace Raindrop::Renderer{
 		_context->core.assetManager.registerLoader<Texture::Loader>("Texture", *_context);
 		_context->core.assetManager.registerLoader<Model::Loader>("Model", *_context);
 
-		model = _context->core.assetManager.get<Model::Model>("Model", std::filesystem::current_path() / "models/bunny.obj");
+		model = _context->core.assetManager.get<Model::Model>("Model", std::filesystem::current_path() / "models/cube.obj");
 	}
 
 	Renderer::~Renderer(){
@@ -49,9 +50,8 @@ namespace Raindrop::Renderer{
 	}
 
 	void Renderer::render(){
-		auto& swapchain = _context->swapchain;
-
-		
+		static auto start = std::chrono::high_resolution_clock::now();
+		auto& swapchain = _context->swapchain;		
 		
 		VkCommandBuffer commandBuffer = beginFrame();
 		if (commandBuffer != nullptr){
@@ -62,22 +62,49 @@ namespace Raindrop::Renderer{
 			shader->bind(commandBuffer);
 
 			auto view = _context->core.scene.view<Components::Transformation>();
-			
-			glm::mat4 pushConstant[2] = {
-				_context->core.camera.viewTransform(),
-				glm::mat4(1)
-			};
 
-			vkCmdPushConstants(
-				commandBuffer,
-				shader->layout(),
-				VK_SHADER_STAGE_VERTEX_BIT,
-				0,
-				sizeof(glm::mat4) * 2,
-				pushConstant
-			);
+			{
+   				auto duration = std::chrono::high_resolution_clock::now() - start;
+				float fd = std::chrono::duration<float>(duration).count();
 
-			model.lock()->render(commandBuffer);
+				glm::mat4 transform = glm::mat4(1.f);
+				transform = glm::rotate(transform, fd, glm::vec3(1.f, 0.f, 0.f));
+				transform = glm::rotate(transform, fd / 3.f, glm::vec3(0.f, 1.f, 0.f));
+				transform = glm::rotate(transform, fd / 1.5f, glm::vec3(0.f, 0.f, 1.f));
+
+				glm::mat4 pushConstant[2] = {
+					_context->core.camera.viewTransform(),
+					transform
+				};
+
+				vkCmdPushConstants(
+					commandBuffer,
+					shader->layout(),
+					VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+					0,
+					sizeof(glm::mat4) * 2,
+					pushConstant
+				);
+			}
+
+			if (!model.expired()){
+				for (auto& mesh : *model.lock()){
+					VkDescriptorSet set = mesh->descriptorSet();
+
+					vkCmdBindDescriptorSets(
+						commandBuffer,
+						VK_PIPELINE_BIND_POINT_GRAPHICS,
+						shader->layout(),
+						0,
+						1,
+						&set,
+						0,
+						nullptr
+					);
+
+					mesh->render(commandBuffer);
+				}
+			}
 
 			_context->scene.endRenderPass(commandBuffer);
 
