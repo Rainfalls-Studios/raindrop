@@ -20,6 +20,7 @@ namespace Raindrop::Renderer::Model{
 		private:
 			Context& _context;
 			std::vector<std::unique_ptr<Mesh>> _meshes;
+			std::vector<Material::MaterialID> _materials;
 	};
 }
 

@@ -344,6 +344,7 @@ namespace Raindrop::Renderer::Model{
 		if (scene->HasMaterials()){
 
 			auto& assets = _context.core.assetManager;
+			_materials.resize(static_cast<std::size_t>(scene->mNumMaterials));
 
 			for (std::size_t i=0; i<scene->mNumMaterials; i++){
 				const auto& data = scene->mMaterials[i];
@@ -358,6 +359,8 @@ namespace Raindrop::Renderer::Model{
 				if (data->GetTexture(aiTextureType_DIFFUSE, 0, &path) == AI_SUCCESS){
 					material.textures.diffuse = assets.get<Texture::Texture>("Texture", directory / path.C_Str());
 				}
+
+				_materials[i] = _context.materials.registerMaterial(material);
 			}
 		}
 
@@ -372,7 +375,9 @@ namespace Raindrop::Renderer::Model{
 			}
 
 			std::unique_ptr<Mesh> mesh = std::make_unique<Mesh>(_context);
+			
 			loadMesh(*mesh, meshData, _context);
+			mesh->materialID() = _materials[meshData->mMaterialIndex];
 			_meshes[i] = std::move(mesh);
 		}
 	}
