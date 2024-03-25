@@ -15,11 +15,19 @@ namespace Raindrop::Renderer::Material{
 
 			void write(const std::size_t& index, const Material::Properties& data);
 
+			std::size_t alignedInstanceSize() const;
+
+			VkDescriptorBufferInfo info(const std::size_t& index);
+
 		private:
 			Context& _context;
 
 			VkBuffer _buffer;
 			VkDeviceMemory _memory;
+
+			std::size_t _instanceCount;
+			std::size_t _instanceSize;
+			std::size_t _alignedInstanceSize;
 
 			void allocate(const std::size_t instanceCount);
 	};

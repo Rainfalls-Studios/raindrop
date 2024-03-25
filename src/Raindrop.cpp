@@ -21,7 +21,6 @@ namespace Raindrop{
 	Raindrop::Raindrop(){
 		spdlog::info("Constructing Raindrop engine ...");
 		_context = new Context();
-		// _context->camera.setTranslation({0.f, 15.f, 0.f});
 	}
 
 	void Raindrop::run(){
@@ -108,7 +107,7 @@ namespace Raindrop{
 		glm::vec3 up = glm::rotate(rotation, glm::vec3(0.f, 1.f, 0.f));
 		glm::vec3 left = glm::rotate(rotation, glm::vec3(1.f, 0.f, 0.f));
 
-		float factor = 0.0005f;
+		float factor = 1.f;//0.0005f;
 
 		if (keys[KEY_W]){
 			camera.translate(forward * factor);

@@ -272,6 +272,27 @@ namespace Raindrop::Renderer::Model{
 			);
 		}
 
+		VkBufferMemoryBarrier bufferMemoryBarrier{};
+		bufferMemoryBarrier.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
+		bufferMemoryBarrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+		bufferMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+		bufferMemoryBarrier.buffer = stagingBuffer;
+		bufferMemoryBarrier.offset = 0;
+		bufferMemoryBarrier.size = VK_WHOLE_SIZE;
+
+		vkCmdPipelineBarrier(
+			commandBuffer,
+			VK_PIPELINE_STAGE_TRANSFER_BIT,
+			VK_PIPELINE_STAGE_TRANSFER_BIT,
+			0,
+			0,
+			nullptr, 
+			1, 
+			&bufferMemoryBarrier,
+			0,
+			nullptr
+		);
+
 		copyData(
 			commandBuffer,
 			stagingBuffer,
@@ -325,7 +346,7 @@ namespace Raindrop::Renderer::Model{
 		spdlog::info("Loading model \"{}\" ...", path.string());
 
 		Assimp::Importer importer;
-		const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenNormals);
+		const aiScene *scene = importer.ReadFile(path.string().c_str(), aiProcess_Triangulate | aiProcess_GenNormals);
 
 		if (scene == nullptr || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode){
 			spdlog::error("Failed to load model \"{}\" : {}", path.string(), importer.GetErrorString());

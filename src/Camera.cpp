@@ -20,7 +20,7 @@ namespace Raindrop{
 	}
 
 	void Camera::updateProjection(){
-		_projection = glm::perspective(_fov, _aspectRatio, 0.1f, 500.f);
+		_projection = glm::perspective(_fov, _aspectRatio, 0.1f, 15000.f);
 		updateViewTransform();
 	}
 

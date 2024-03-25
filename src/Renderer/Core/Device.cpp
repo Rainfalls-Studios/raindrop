@@ -36,6 +36,8 @@ namespace Raindrop::Renderer::Core{
 		for (auto &device : physicalDevices){
 			if (isPhysicalDeviceSuitable(device)){
 				_context.physicalDevice = device;
+
+				spdlog::info("Found physical device : {}", _context.physicalDevice.name());
 				return;
 			}
 		}

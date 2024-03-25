@@ -27,5 +27,5 @@ void main(){
     const float diffuseFactor = max(dot(normal, -sunDirection), 0.0) + 0.1;
 
 	out_color = (vec4(1.) * diffuseFactor) * texture(diffuseTexture, in_UV);
-	// out_color = vec4(1.);1
+	// out_color = vec4(1.);
 }

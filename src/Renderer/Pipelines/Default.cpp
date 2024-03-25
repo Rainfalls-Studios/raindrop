@@ -192,12 +192,12 @@ namespace Raindrop::Renderer::Pipelines{
 	}
 
 	void Default::createFragmentModule(){
-		auto code = readFile(std::filesystem::current_path() / "shaders/Default/shader.glsl.frag.spv");
+		auto code = readFile((std::filesystem::current_path() / "shaders/Default/shader.glsl.frag.spv").string());
 		createShaderModule(code, _fragmentModule);
 	}
 
 	void Default::createVertexModule(){
-		auto code = readFile(std::filesystem::current_path() / "shaders/Default/shader.glsl.vert.spv");
+		auto code = readFile((std::filesystem::current_path() / "shaders/Default/shader.glsl.vert.spv").string());
 		createShaderModule(code, _vertexModule);
 	}
 

@@ -3,11 +3,16 @@ project(Raindrop VERSION 0.1.0)
 
 include(Config.cmake)
 
+set(CMAKE_BUILD_TYPE Debug)
+
 # Required by spdlog for shared library
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+set(BUILD_SHARED_LIBS OFF)
+set(BUILD_STATIC_LIBS ON)
 set(BUILD_ASSIMP_TOOLS  ON)
-set(ASSIMP_BUILD_STATIC_LIB ON)
+set(SPDLOG_BUILD_STATIC ON)
+set(SDL_STATIC ON)
 
 add_subdirectory(external)
 add_subdirectory(utils)

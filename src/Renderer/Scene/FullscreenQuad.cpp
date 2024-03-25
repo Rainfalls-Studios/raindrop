@@ -154,12 +154,12 @@ namespace Raindrop::Renderer::Scene{
 	}
 
 	void FullscreenQuad::createFragmentModule(){
-		auto code = readFile(std::filesystem::current_path() / "shaders/scene/fullscreenQuad/shader.glsl.frag.spv");
+		auto code = readFile((std::filesystem::current_path() / "shaders/scene/fullscreenQuad/shader.glsl.frag.spv").string());
 		createShaderModule(code, _fragmentModule);
 	}
 
 	void FullscreenQuad::createVertexModule(){
-		auto code = readFile(std::filesystem::current_path() / "shaders/scene/fullscreenQuad/shader.glsl.vert.spv");
+		auto code = readFile((std::filesystem::current_path() / "shaders/scene/fullscreenQuad/shader.glsl.vert.spv").string());
 		createShaderModule(code, _vertexModule);
 	}
 

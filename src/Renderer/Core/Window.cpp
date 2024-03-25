@@ -70,7 +70,7 @@ namespace Raindrop::Renderer::Core{
 		#endif
 
 		#if EVENT_DISPLAY
-			event.registerEvent<uint>("display.orientation");
+			event.registerEvent<unsigned int>("display.orientation");
 			event.registerEvent<>("display.added");
 			event.registerEvent<>("display.removed");
 			event.registerEvent<>("display.moved");
@@ -109,7 +109,7 @@ namespace Raindrop::Renderer::Core{
 		#if EVENT_KEY
 			event.registerEvent<SDL_Scancode, SDL_Keycode, uint16_t>("key.down");
 			event.registerEvent<SDL_Scancode, SDL_Keycode, uint16_t>("key.up");
-			event.registerEvent<const char*, uint, uint>("text.editing");
+			event.registerEvent<const char*, unsigned int, unsigned int>("text.editing");
 			event.registerEvent<const char*>("text.input");
 			event.registerEvent<const char*>("keymap.changed");
 

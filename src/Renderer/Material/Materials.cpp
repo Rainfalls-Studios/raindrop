@@ -70,11 +70,7 @@ namespace Raindrop::Renderer::Material{
 		};
 
 		VkDescriptorBufferInfo bufferInfo[] = {
-			{
-				.buffer = _context->buffer.get(),
-				.offset = static_cast<VkDeviceSize>(ID * sizeof(Material::Properties)),
-				.range = static_cast<VkDeviceSize>(sizeof(Material::Properties))
-			}
+			_context->buffer.info(ID)
 		};
 
 		VkWriteDescriptorSet writes[] = {

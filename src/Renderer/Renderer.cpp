@@ -30,7 +30,12 @@ namespace Raindrop::Renderer{
 		_context->core.assetManager.registerLoader<Texture::Loader>("Texture", *_context);
 		_context->core.assetManager.registerLoader<Model::Loader>("Model", *_context);
 
-		model = _context->core.assetManager.get<Model::Model>("Model", std::filesystem::current_path() / "models/cube.obj");
+		model = _context->core.assetManager.get<Model::Model>("Model", std::filesystem::current_path() / "models/Sponza/sponza.obj");
+
+		{
+			auto size = _context->window.getSize();
+			_context->core.camera.setAspectRatio(static_cast<float>(size.x) / static_cast<float>(size.y));
+		}
 	}
 
 	Renderer::~Renderer(){
@@ -68,9 +73,9 @@ namespace Raindrop::Renderer{
 				float fd = std::chrono::duration<float>(duration).count();
 
 				glm::mat4 transform = glm::mat4(1.f);
-				transform = glm::rotate(transform, fd, glm::vec3(1.f, 0.f, 0.f));
-				transform = glm::rotate(transform, fd / 3.f, glm::vec3(0.f, 1.f, 0.f));
-				transform = glm::rotate(transform, fd / 1.5f, glm::vec3(0.f, 0.f, 1.f));
+				// transform = glm::rotate(transform, fd, glm::vec3(1.f, 0.f, 0.f));
+				// transform = glm::rotate(transform, fd / 3.f, glm::vec3(0.f, 1.f, 0.f));
+				// transform = glm::rotate(transform, fd / 1.5f, glm::vec3(0.f, 0.f, 1.f));
 
 				glm::mat4 pushConstant[2] = {
 					_context->core.camera.viewTransform(),

@@ -7,7 +7,7 @@
 namespace Raindrop::Renderer::Core{
 	class PhysicalDevice{
 		public:
-			PhysicalDevice(VkPhysicalDevice device = VK_NULL_HANDLE);
+			PhysicalDevice(Context& context, VkPhysicalDevice device = VK_NULL_HANDLE);
 
 			PhysicalDevice& operator=(VkPhysicalDevice device);
 
@@ -37,6 +37,7 @@ namespace Raindrop::Renderer::Core{
 			VkPhysicalDevice get() const;
 
 		private:
+			Context& _context;
 			VkPhysicalDevice _device;
 
 			VkPhysicalDeviceFeatures _features;

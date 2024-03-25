@@ -1,8 +1,11 @@
 #include <Raindrop/Renderer/Core/PhysicalDevice.hpp>
+#include <Raindrop/Renderer/Context.hpp>
 #include <cstring>
 
+#include <spdlog/spdlog.h>
+
 namespace Raindrop::Renderer::Core{
-	PhysicalDevice::PhysicalDevice(VkPhysicalDevice device) : _device{device}{
+	PhysicalDevice::PhysicalDevice(Context& context, VkPhysicalDevice device) : _context{context}, _device{device}{
 		reset();
 	}
 
@@ -174,6 +177,11 @@ namespace Raindrop::Renderer::Core{
 	}
 
 	void PhysicalDevice::getToolProperties(){
+		if (_context.instance.API_VERSION != VK_VERSION_1_3){
+			spdlog::warn("vkGetPhysicalDeviceToolProperties is only available in Vulkan 1.3.0");
+			return;
+		}
+		
 		uint32_t count;
 		vkGetPhysicalDeviceToolProperties(_device, &count, nullptr);
 

@@ -28,11 +28,20 @@ namespace Raindrop::Renderer::Material{
 	}
 
 	void Buffer::allocate(const std::size_t instanceCount){
+		_instanceSize = sizeof(Material::Properties);
+		_instanceCount = instanceCount;
+
+		{
+			const std::size_t alignement = _context.renderer.physicalDevice.limits().minUniformBufferOffsetAlignment;
+			const std::size_t rest = _instanceSize % alignement;
+			_alignedInstanceSize = rest != 0 ? _instanceSize + (alignement - rest) : _instanceSize;
+		}
+
 		auto& device = _context.renderer.device;
 		auto& allocationCallbacks = _context.renderer.allocationCallbacks;
 
 		{
-			std::size_t size = instanceCount * sizeof(Material::properties);
+			std::size_t size = _alignedInstanceSize * _instanceCount;
 
 			VkBufferCreateInfo info{};
 			info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -92,5 +101,17 @@ namespace Raindrop::Renderer::Material{
 		memcpy(ptr, &data, size);
 
 		vkUnmapMemory(device.get(), _memory);
+	}
+
+	std::size_t Buffer::alignedInstanceSize() const{
+		return _alignedInstanceSize;
+	}
+
+	VkDescriptorBufferInfo Buffer::info(const std::size_t& index){
+		return VkDescriptorBufferInfo{
+			.buffer = _buffer,
+			.offset = _alignedInstanceSize * index,
+			.range = _instanceSize
+		};
 	}
 }

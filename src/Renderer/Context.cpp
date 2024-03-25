@@ -6,6 +6,7 @@ namespace Raindrop::Renderer{
 		allocationCallbacks{nullptr},
 		window{*this},
 		instance(*this),
+		physicalDevice(*this),
 		device(*this),
 		queues(*this),
 		commandPools(*this),

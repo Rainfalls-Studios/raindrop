@@ -27,9 +27,9 @@ function(add_library_target TARGET_TYPE)
 		${TARGET}
 		PRIVATE 
 		Vulkan::Vulkan
-		spdlog::spdlog
+		spdlog::spdlog_header_only
 		Tasks::Shared
-		SDL3::SDL3
+		SDL3::SDL3-static
 		EnTT::EnTT
 		assimp
 		
