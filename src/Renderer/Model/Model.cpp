@@ -372,6 +372,7 @@ namespace Raindrop::Renderer::Model{
 
 				Material::Material material(_context);
 
+				data->Get(AI_MATKEY_COLOR_AMBIENT, material.properties.ambientColor);
 				data->Get(AI_MATKEY_COLOR_DIFFUSE, material.properties.diffuseColor);
 				data->Get(AI_MATKEY_COLOR_SPECULAR, material.properties.specularColor);
 				data->Get(AI_MATKEY_SHININESS, material.properties.shininess);

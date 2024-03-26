@@ -14,8 +14,9 @@ namespace Raindrop::Renderer::Material{
 		Material& operator=(const Material& other);
 
 		struct Properties{
-			glm::vec3 diffuseColor;
-			glm::vec3 specularColor;
+			glm::vec4 ambientColor;
+			glm::vec4 diffuseColor;
+			glm::vec4 specularColor;
 			float shininess;
 
 			bool operator==(const Properties& other) const;

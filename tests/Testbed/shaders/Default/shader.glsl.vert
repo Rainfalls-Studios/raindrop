@@ -15,19 +15,13 @@ layout (push_constant) uniform matrix{
 	mat4 localTransform;
 } Matrix;
 
-vec3 positions[] = {
-	vec3(0., 0., 0.),
-	vec3(1., 0., 0.),
-	vec3(0., 1., 0.),
-};
-
 void main(){
+	vec4 position = Matrix.viewProjection * Matrix.localTransform * vec4(in_position, 1.);
+
+	out_normal = mat3(Matrix.localTransform) * in_normal;
+	out_position = vec3(position);
 	out_color = in_color;
-	out_normal = in_normal;
-	out_position = in_position;
 	out_UV = in_UV;
 
-	// vec3 position = positions[gl_VertexIndex];
-
-	gl_Position = Matrix.viewProjection * Matrix.localTransform * vec4(in_position, 1.);
+	gl_Position = position;
 }

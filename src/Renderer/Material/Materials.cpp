@@ -9,8 +9,8 @@ namespace Raindrop::Renderer::Material{
 
 		Material placeholder(context);
 		placeholder.properties = {
-			.diffuseColor = glm::vec3(0.f),
-			.specularColor = glm::vec3(0.f),
+			.diffuseColor = glm::vec4(0.f),
+			.specularColor = glm::vec4(0.f),
 			.shininess = 0.f,
 		};
 
@@ -77,18 +77,18 @@ namespace Raindrop::Renderer::Material{
 			{
 				.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
 				.dstSet = set,
-				.dstBinding = 1,
-				.descriptorCount = 1,
-				.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-				.pImageInfo = imageInfos
-			},
-			{
-				.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-				.dstSet = set,
 				.dstBinding = 0,
 				.descriptorCount = 1,
 				.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
 				.pBufferInfo = bufferInfo
+			},
+			{
+				.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+				.dstSet = set,
+				.dstBinding = 1,
+				.descriptorCount = 1,
+				.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+				.pImageInfo = imageInfos
 			}
 		};
 

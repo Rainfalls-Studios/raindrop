@@ -5,8 +5,8 @@ namespace Raindrop::Renderer::Material{
 	
 	Material::Material(Context& context) : 
 		properties{
-			.diffuseColor = glm::vec3(1.f),
-			.specularColor = glm::vec3(0.f),
+			.diffuseColor = glm::vec4(1.f),
+			.specularColor = glm::vec4(0.f),
 			.shininess = 0.f	
 		},
 		textures{context}

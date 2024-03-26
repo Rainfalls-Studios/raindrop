@@ -37,6 +37,8 @@ namespace Raindrop::Renderer::Material{
 			_alignedInstanceSize = rest != 0 ? _instanceSize + (alignement - rest) : _instanceSize;
 		}
 
+		spdlog::info("allocating material uniform buffer ... (count : {} | instance size : {} | instance aligned size {})", instanceCount, _instanceSize, _alignedInstanceSize);
+
 		auto& device = _context.renderer.device;
 		auto& allocationCallbacks = _context.renderer.allocationCallbacks;
 
@@ -89,7 +91,7 @@ namespace Raindrop::Renderer::Material{
 		auto& device = _context.renderer.device;
 		auto& allocationCallbacks = _context.renderer.allocationCallbacks;
 
-		std::size_t offset = index * sizeof(Material::Properties);
+		std::size_t offset = index * _alignedInstanceSize;// sizeof(Material::Properties);
 		std::size_t size = sizeof(Material::Properties);
 
 		void* ptr;

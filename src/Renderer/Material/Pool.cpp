@@ -30,7 +30,7 @@ namespace Raindrop::Renderer::Material{
 		VkDescriptorPoolSize sizes[] = {
 			{
 				.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-				.descriptorCount = static_cast<uint32_t>(instanceCount)
+				.descriptorCount = static_cast<uint32_t>(instanceCount) * 2
 			},
 			{
 				.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
