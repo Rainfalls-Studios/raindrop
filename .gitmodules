@@ -11,9 +11,6 @@
 	path = external/SDL
 	url = https://github.com/libsdl-org/SDL.git
 	branch = release-2.24.x
-[submodule "external/Tasks"]
-	path = external/Tasks
-	url = https://github.com/Aalexdev/Tasks.git
 [submodule "external/entt"]
 	path = external/entt
 	url = https://github.com/skypjack/entt.git
