@@ -5,6 +5,7 @@
 
 namespace Raindrop::Components{
 	struct Transformation;
+	struct Model;
 }
 
 #endif

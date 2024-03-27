@@ -104,5 +104,4 @@ namespace Raindrop::Renderer::Material{
 	SetLayout& Materials::layout() const{
 		return _context->layout;
 	}
-
 }
