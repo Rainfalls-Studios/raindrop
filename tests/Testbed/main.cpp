@@ -1,11 +1,24 @@
 #include <iostream>
 #include <Raindrop/Raindrop.hpp>
+#include <Raindrop/Components/Transformation.hpp>
+#include <Raindrop/Components/Model.hpp>
+
 #include "config.h"
 
 void testbed(){
-	std::filesystem::current_path(PATH);
-	Raindrop::Raindrop engine;
+	namespace RD = Raindrop;
+	namespace fs = std::filesystem;
 
+	using fs::current_path;
+
+	current_path(PATH);
+	RD::Raindrop engine;
+
+	auto entity = RD::Entity::create(engine.scene());
+
+	
+	entity.emplace<RD::Components::Model>().model = engine.assetManager().get<RD::Renderer::Model::Model>("Model", current_path() / "models/Sponza/Sponza.gltf");
+	entity.emplace<RD::Components::Transformation>();
 	
 
 	engine.run();

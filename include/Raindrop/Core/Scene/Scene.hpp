@@ -2,8 +2,6 @@
 #define __RAINDROP_CORE_SCENE_SCENE_HPP__
 
 #include "common.hpp"
-#include "Entity.hpp"
-
 #include <entt/entt.hpp>
 
 namespace Raindrop::Core::Scene{
@@ -21,28 +19,26 @@ namespace Raindrop::Core::Scene{
 				registry::clear<Components...>();
 			}
 
-			Entity create(){
-				return Entity(*this, static_cast<EntityLUID>(registry::create()));
+			EntityLUID create(){
+				return static_cast<EntityLUID>(registry::create());
 			}
 
-			void destroy(const Entity& entity){
-				registry::destroy(static_cast<entt::entity>(entity.LUID()));
+			void destroy(const EntityLUID& entity){
+				registry::destroy(static_cast<entt::entity>(entity));
 			}
-
 
 			using registry::emplace;
 
 			template<typename Component, typename... Args>
-			Component& emplace(const Entity& entity, Args&&... args){
-				return registry::emplace<Component>(static_cast<entt::entity>(entity.LUID()), args...);
+			Component& emplace(const EntityLUID& entity, Args&&... args){
+				return registry::emplace<Component>(static_cast<entt::entity>(entity), args...);
 			}
-			
 
 			using registry::get;
 
 			template<typename Component>
-			Component& get(const Entity& entity){
-				return registry::get<Component>(static_cast<entt::entity>(entity.LUID()));
+			Component& get(const EntityLUID& entity){
+				return registry::get<Component>(static_cast<entt::entity>(entity));
 			}
 		
 		private:

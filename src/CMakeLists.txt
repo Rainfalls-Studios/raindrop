@@ -29,10 +29,10 @@ function(add_library_target TARGET_TYPE)
 		Vulkan::Vulkan
 		spdlog::spdlog_header_only
 		SDL3::SDL3-static
-		EnTT::EnTT
 		assimp
 		
 		PUBLIC
+		EnTT::EnTT
 		glm::glm
 	)
 

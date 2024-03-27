@@ -60,9 +60,7 @@ namespace Raindrop::Renderer{
 		
 		VkCommandBuffer commandBuffer = beginFrame();
 		if (commandBuffer != nullptr){
-
-			// auto model = _context->core.assetManager.get<Model::Model>("Model", std::filesystem::current_path() / "models/teapot.obj");
-
+			
 			_context->scene.beginRenderPass(commandBuffer);
 			shader->bind(commandBuffer);
 

@@ -133,4 +133,16 @@ namespace Raindrop{
 			camera.translate(-up * factor);
 		}
 	}
+
+	Scene& Raindrop::scene(){
+		return _context->scene;
+	}
+
+	AssetManager& Raindrop::assetManager(){
+		return _context->assetManager;
+	}
+
+	EventManager& Raindrop::eventManager(){
+		return _context->eventManager;
+	}
 }
