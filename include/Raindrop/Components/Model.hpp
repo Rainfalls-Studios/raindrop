@@ -9,8 +9,6 @@ namespace Raindrop::Components{
 		Model();
 
 		std::weak_ptr<Renderer::Model::Model> model;
-
-		
 	};
 }
 

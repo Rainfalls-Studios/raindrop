@@ -1,9 +1,9 @@
-#ifndef __RAINDROP_RENDERER_SCENE_DESCRIPTOR_SET_HPP__
-#define __RAINDROP_RENDERER_SCENE_DESCRIPTOR_SET_HPP__
+#ifndef __RAINDROP_RENDERER_BASE_FRAMEBUFFER_DESCRIPTOR_SET_HPP__
+#define __RAINDROP_RENDERER_BASE_FRAMEBUFFER_DESCRIPTOR_SET_HPP__
 
 #include "common.hpp"
 
-namespace Raindrop::Renderer::Scene{
+namespace Raindrop::Renderer::BaseFramebuffer{
 	class DescriptorSet{
 		public:
 			DescriptorSet(Context& context);

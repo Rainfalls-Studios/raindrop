@@ -1,10 +1,10 @@
-#ifndef __RAINDROP_RENDERER_SCENE_FULLSCREEN_QUAD_HPP__
-#define __RAINDROP_RENDERER_SCENE_FULLSCREEN_QUAD_HPP__
+#ifndef __RAINDROP_RENDERER_BASE_FRAMEBUFFER_FULLSCREEN_QUAD_HPP__
+#define __RAINDROP_RENDERER_BASE_FRAMEBUFFER_FULLSCREEN_QUAD_HPP__
 
 #include "common.hpp"
 #include "../Pipelines/common.hpp"
 
-namespace Raindrop::Renderer::Scene{
+namespace Raindrop::Renderer::BaseFramebuffer{
 	class FullscreenQuad{
 		public:
 			FullscreenQuad(Context& context);

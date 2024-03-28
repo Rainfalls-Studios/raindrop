@@ -1,7 +1,7 @@
-#include <Raindrop/Renderer/Scene/RenderPass.hpp>
+#include <Raindrop/Renderer/BaseFramebuffer/RenderPass.hpp>
 #include <Raindrop/Renderer/Context.hpp>
 
-namespace Raindrop::Renderer::Scene{
+namespace Raindrop::Renderer::BaseFramebuffer{
 	RenderPass::RenderPass(Context& context) :
 		_context{context},
 		_renderPass{VK_NULL_HANDLE}{

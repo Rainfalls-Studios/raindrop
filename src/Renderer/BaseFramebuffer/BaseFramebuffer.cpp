@@ -1,10 +1,10 @@
-#include <Raindrop/Renderer/Scene/Scene.hpp>
+#include <Raindrop/Renderer/BaseFramebuffer/BaseFramebuffer.hpp>
 #include <Raindrop/Renderer/Context.hpp>
 
 #include <spdlog/spdlog.h>
 
-namespace Raindrop::Renderer::Scene{
-	Scene::Scene(::Raindrop::Renderer::Context& renderer) : 
+namespace Raindrop::Renderer::BaseFramebuffer{
+	BaseFramebuffer::BaseFramebuffer(::Raindrop::Renderer::Context& renderer) : 
 		_renderer{renderer},
 		_context{renderer}
 	{
@@ -13,18 +13,18 @@ namespace Raindrop::Renderer::Scene{
 		}
 	}
 		
-	Scene::~Scene(){}
+	BaseFramebuffer::~BaseFramebuffer(){}
 
-	void Scene::resize(const glm::uvec2& size){
-		spdlog::info("resizing scene framebuffer ...");
+	void BaseFramebuffer::resize(const glm::uvec2& size){
+		spdlog::info("resizing baseframebuffer framebuffer ...");
 		_context.framebuffer.resize(size);
 	}
 
-	void Scene::swapchainRender(VkCommandBuffer commandBuffer){
+	void BaseFramebuffer::swapchainRender(VkCommandBuffer commandBuffer){
 		_context.fullscreenQuad.render(commandBuffer);
 	}
 
-	void Scene::beginRenderPass(VkCommandBuffer commandBuffer){
+	void BaseFramebuffer::beginRenderPass(VkCommandBuffer commandBuffer){
 		
 		{
 			VkImageMemoryBarrier barriers[2] = {};
@@ -102,11 +102,11 @@ namespace Raindrop::Renderer::Scene{
 		vkCmdBeginRenderPass(commandBuffer, &info, VK_SUBPASS_CONTENTS_INLINE);
 	}
 
-	void Scene::endRenderPass(VkCommandBuffer commandBuffer){
+	void BaseFramebuffer::endRenderPass(VkCommandBuffer commandBuffer){
 		vkCmdEndRenderPass(commandBuffer);
 	}
 
-	VkRenderPass Scene::renderPass() const{
+	VkRenderPass BaseFramebuffer::renderPass() const{
 		return _context.renderPass.get();
 	}
 

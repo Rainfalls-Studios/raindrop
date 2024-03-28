@@ -346,29 +346,29 @@ namespace Raindrop::Renderer::Model{
 		spdlog::info("Loading model \"{}\" ...", path.string());
 
 		Assimp::Importer importer;
-		const aiScene *scene = importer.ReadFile(path.string().c_str(), aiProcess_Triangulate | aiProcess_GenNormals);
+		const aiScene *baseframebuffer = importer.ReadFile(path.string().c_str(), aiProcess_Triangulate | aiProcess_GenNormals);
 
-		if (scene == nullptr || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode){
+		if (baseframebuffer == nullptr || baseframebuffer->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !baseframebuffer->mRootNode){
 			spdlog::error("Failed to load model \"{}\" : {}", path.string(), importer.GetErrorString());
 			throw std::runtime_error("Failed to load model");
 		}
 
 		auto directory = path.parent_path();
 
-		if (!scene->HasMeshes()){
+		if (!baseframebuffer->HasMeshes()){
 			spdlog::error("The model \"{}\" does not contain meshs", path.string());
 			throw std::runtime_error("The model has no meshes");
 		}
 
-		spdlog::info("Loading model \"{}\" ({} meshes | {} materials) ...", path.string(), scene->mNumMeshes, scene->mNumMaterials);
+		spdlog::info("Loading model \"{}\" ({} meshes | {} materials) ...", path.string(), baseframebuffer->mNumMeshes, baseframebuffer->mNumMaterials);
 
-		if (scene->HasMaterials()){
+		if (baseframebuffer->HasMaterials()){
 
 			auto& assets = _context.core.assetManager;
-			_materials.resize(static_cast<std::size_t>(scene->mNumMaterials));
+			_materials.resize(static_cast<std::size_t>(baseframebuffer->mNumMaterials));
 
-			for (std::size_t i=0; i<scene->mNumMaterials; i++){
-				const auto& data = scene->mMaterials[i];
+			for (std::size_t i=0; i<baseframebuffer->mNumMaterials; i++){
+				const auto& data = baseframebuffer->mMaterials[i];
 
 				Material::Material material(_context);
 
@@ -386,10 +386,10 @@ namespace Raindrop::Renderer::Model{
 			}
 		}
 
-		_meshes.resize(static_cast<std::size_t>(scene->mNumMeshes));
+		_meshes.resize(static_cast<std::size_t>(baseframebuffer->mNumMeshes));
 		
-		for (std::size_t i=0; i<scene->mNumMeshes; i++){
-			const auto& meshData = scene->mMeshes[i];
+		for (std::size_t i=0; i<baseframebuffer->mNumMeshes; i++){
+			const auto& meshData = baseframebuffer->mMeshes[i];
 
 			if (meshData->mPrimitiveTypes != aiPrimitiveType_TRIANGLE){
 				spdlog::error("Cannot load mesh \"{}\" containing another primitive type than triangle ({})", meshData->mName.C_Str(), primitiveTypesToStr(meshData->mPrimitiveTypes));

@@ -1,6 +1,6 @@
-#include <Raindrop/Renderer/Scene/Context.hpp>
+#include <Raindrop/Renderer/BaseFramebuffer/Context.hpp>
 
-namespace Raindrop::Renderer::Scene{
+namespace Raindrop::Renderer::BaseFramebuffer{
 	Context::Context(Renderer& renderer) :
 		renderer{renderer},
 		renderPass(*this),

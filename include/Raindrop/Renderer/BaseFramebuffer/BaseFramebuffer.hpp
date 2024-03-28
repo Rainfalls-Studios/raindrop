@@ -1,14 +1,14 @@
-#ifndef __RAINDROP_RENDERER_SCENE_SCENE_HPP__
-#define __RAINDROP_RENDERER_SCENE_SCENE_HPP__
+#ifndef __RAINDROP_RENDERER_BASE_FRAMEBUFFER_BASE_FRAMEBUFFER_HPP__
+#define __RAINDROP_RENDERER_BASE_FRAMEBUFFER_BASE_FRAMEBUFFER_HPP__
 
 #include "common.hpp"
 #include "Context.hpp"
 
-namespace Raindrop::Renderer::Scene{
-	class Scene{
+namespace Raindrop::Renderer::BaseFramebuffer{
+	class BaseFramebuffer{
 		public:
-			Scene(::Raindrop::Renderer::Context& renderer);
-			~Scene();
+			BaseFramebuffer(::Raindrop::Renderer::Context& renderer);
+			~BaseFramebuffer();
 			
 			void resize(const glm::uvec2& size);
 

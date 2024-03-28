@@ -1,11 +1,11 @@
-#include <Raindrop/Renderer/Scene/FullscreenQuad.hpp>
+#include <Raindrop/Renderer/BaseFramebuffer/FullscreenQuad.hpp>
 #include <Raindrop/Renderer/Context.hpp>
 #include <Raindrop/Renderer/Pipelines/GraphicsPipeline.hpp>
 
 #include <spdlog/spdlog.h>
 #include <fstream>
 
-namespace Raindrop::Renderer::Scene{
+namespace Raindrop::Renderer::BaseFramebuffer{
 	std::vector<char> readFile(const std::string& filepath) {
 		std::ifstream file{filepath, std::ios::ate | std::ios::binary};
 
@@ -31,7 +31,7 @@ namespace Raindrop::Renderer::Scene{
 		_fragmentModule{VK_NULL_HANDLE},
 		_vertexModule{VK_NULL_HANDLE}
 	{
-		spdlog::info("Creating fullscreen quad scene pipeline");
+		spdlog::info("Creating fullscreen quad baseframebuffer pipeline");
 
 		createPipelineLayout();
 		createShaderModules();
@@ -39,7 +39,7 @@ namespace Raindrop::Renderer::Scene{
 	}
 	
 	FullscreenQuad::~FullscreenQuad(){
-		spdlog::info("Destroying fullscreen quad scene pipeline");
+		spdlog::info("Destroying fullscreen quad baseframebuffer pipeline");
 
 		_pipeline = nullptr;
 		destroyShaderModules();
@@ -69,7 +69,7 @@ namespace Raindrop::Renderer::Scene{
 		auto& allocationCallbacks = _context.renderer.allocationCallbacks;
 
 		if (vkCreatePipelineLayout(device.get(), &info, allocationCallbacks, &_layout) != VK_SUCCESS){
-			spdlog::error("Failed to create scene fullscreen quad pipeline layout");
+			spdlog::error("Failed to create baseframebuffer fullscreen quad pipeline layout");
 			throw std::runtime_error("Failed to create pipeline layout");
 		}
 	}

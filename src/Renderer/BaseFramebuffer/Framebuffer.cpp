@@ -1,9 +1,9 @@
-#include <Raindrop/Renderer/Scene/Framebuffer.hpp>
+#include <Raindrop/Renderer/BaseFramebuffer/Framebuffer.hpp>
 #include <Raindrop/Renderer/Context.hpp>
 
 #include <spdlog/spdlog.h>
 
-namespace Raindrop::Renderer::Scene{
+namespace Raindrop::Renderer::BaseFramebuffer{
 	Framebuffer::Attachment::Attachment(Context& context) : 
 		context{context},
 		imageView{VK_NULL_HANDLE},

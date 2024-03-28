@@ -13,6 +13,6 @@ namespace Raindrop::Renderer{
 		swapchain(*this),
 		white(*this),
 		materials(*this),
-		scene(*this)
+		baseFramebuffer(*this)
 	{}
 }

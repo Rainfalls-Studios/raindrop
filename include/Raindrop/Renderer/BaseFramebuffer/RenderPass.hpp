@@ -1,9 +1,9 @@
-#ifndef __RAINDROP_RENDERER_SCENE_RENDER_PASS_HPP__
-#define __RAINDROP_RENDERER_SCENE_RENDER_PASS_HPP__
+#ifndef __RAINDROP_RENDERER_BASE_FRAMEBUFFER_RENDER_PASS_HPP__
+#define __RAINDROP_RENDERER_BASE_FRAMEBUFFER_RENDER_PASS_HPP__
 
 #include "common.hpp"
 
-namespace Raindrop::Renderer::Scene{
+namespace Raindrop::Renderer::BaseFramebuffer{
 	class RenderPass{
 		public:
 			RenderPass(Context& context);

@@ -85,7 +85,7 @@ namespace Raindrop::Renderer::Pipelines{
 		GraphicsPipelineConfigInfo info;
 		GraphicsPipelineConfigInfo::defaultInfo(info);
 
-		info.renderPass = _context.scene.renderPass();
+		info.renderPass = _context.baseFramebuffer.renderPass();
 		info.pipelineLayout = _layout;
 		
 		{

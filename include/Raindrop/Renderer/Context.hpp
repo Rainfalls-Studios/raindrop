@@ -9,7 +9,7 @@
 #include "Core/Window.hpp"
 #include "Queues/Manager.hpp"
 #include "Core/Swapchain.hpp"
-#include "Scene/Scene.hpp"
+#include "BaseFramebuffer/BaseFramebuffer.hpp"
 #include "Queues/CommandPools.hpp"
 #include "Texture/Texture.hpp"
 #include "Material/Materials.hpp"
@@ -30,7 +30,7 @@ namespace Raindrop::Renderer{
 		Queues::Manager queues;
 		Queues::CommandPools commandPools;
 		Core::Swapchain swapchain;
-		Scene::Scene scene;
+		BaseFramebuffer::BaseFramebuffer baseFramebuffer;
 		WhiteTexture white;
 		Material::Materials materials;
 	};

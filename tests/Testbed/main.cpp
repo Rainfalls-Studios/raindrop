@@ -16,10 +16,8 @@ void testbed(){
 
 	auto entity = RD::Entity::create(engine.scene());
 
-	
 	entity.emplace<RD::Components::Model>().model = engine.assetManager().get<RD::Renderer::Model::Model>("Model", current_path() / "models/Sponza/Sponza.gltf");
 	entity.emplace<RD::Components::Transformation>();
-	
 
 	engine.run();
 }

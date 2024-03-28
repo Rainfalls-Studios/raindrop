@@ -56,19 +56,19 @@ namespace Raindrop::Renderer{
 		static auto start = std::chrono::high_resolution_clock::now();
 		auto& swapchain = _context->swapchain;	
 
-		auto& scene = _context->core.scene;	
+		auto& baseframebuffer = _context->core.scene;	
 		
 		VkCommandBuffer commandBuffer = beginFrame();
 		if (commandBuffer != nullptr){
 			
-			_context->scene.beginRenderPass(commandBuffer);
+			_context->baseFramebuffer.beginRenderPass(commandBuffer);
 			shader->bind(commandBuffer);
 
-			auto view = scene.view<Components::Transformation, Components::Model>();
+			auto view = baseframebuffer.view<Components::Transformation, Components::Model>();
 
 			for (const auto& entity : view){
-				auto& transformComponent = scene.get<Components::Transformation>(entity);
-				auto& modelComponent = scene.get<Components::Model>(entity);
+				auto& transformComponent = baseframebuffer.get<Components::Transformation>(entity);
+				auto& modelComponent = baseframebuffer.get<Components::Model>(entity);
 				
 				{
 					glm::mat4 pushConstant[2] = {
@@ -108,10 +108,10 @@ namespace Raindrop::Renderer{
 				}
 			}
 
-			_context->scene.endRenderPass(commandBuffer);
+			_context->baseFramebuffer.endRenderPass(commandBuffer);
 
 			swapchain.beginRenderPass(commandBuffer);
-			_context->scene.swapchainRender(commandBuffer);
+			_context->baseFramebuffer.swapchainRender(commandBuffer);
 			swapchain.endRenderPass(commandBuffer);
 
 			endFrame();
@@ -172,7 +172,7 @@ namespace Raindrop::Renderer{
 			auto size = window.getSize();
 			swapchain.setExtent(VkExtent2D{size.x, size.y});
 			swapchain.rebuildSwapchain();
-			_context->scene.resize(size);
+			_context->baseFramebuffer.resize(size);
 			_context->core.camera.setAspectRatio(static_cast<float>(size.x) / static_cast<float>(size.y));
 			return nullptr;
 		}
@@ -207,7 +207,7 @@ namespace Raindrop::Renderer{
 			window.resetResizedFlags();
 			swapchain.setExtent(VkExtent2D{size.x, size.y});
 			swapchain.rebuildSwapchain();
-			_context->scene.resize(size);
+			_context->baseFramebuffer.resize(size);
 			_context->core.camera.setAspectRatio(static_cast<float>(size.x) / static_cast<float>(size.y));
 		} else if (result != VK_SUCCESS){
 			throw std::runtime_error("failed to submit the command buffer");

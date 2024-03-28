@@ -1,16 +1,16 @@
-#include <Raindrop/Renderer/Scene/DescriptorSet.hpp>
+#include <Raindrop/Renderer/BaseFramebuffer/DescriptorSet.hpp>
 #include <Raindrop/Renderer/Context.hpp>
 
 #include <spdlog/spdlog.h>
 
-namespace Raindrop::Renderer::Scene{
+namespace Raindrop::Renderer::BaseFramebuffer{
 	DescriptorSet::DescriptorSet(Context& context) : 
 		_context{context},
 		_set{VK_NULL_HANDLE},
 		_layout{VK_NULL_HANDLE},
 		_pool{VK_NULL_HANDLE}
 	{
-		spdlog::info("Creating scene descriptor set ...");
+		spdlog::info("Creating baseframebuffer descriptor set ...");
 
 		createLayout();
 		createPool();
@@ -18,7 +18,7 @@ namespace Raindrop::Renderer::Scene{
 	}
 
 	DescriptorSet::~DescriptorSet(){
-		spdlog::info("Destroying scene descriptor set ...");
+		spdlog::info("Destroying baseframebuffer descriptor set ...");
 
 		destroySet();
 		destroyPool();
@@ -36,7 +36,7 @@ namespace Raindrop::Renderer::Scene{
 		auto& allocationCallbacks = _context.renderer.allocationCallbacks;
 		
 		if (vkAllocateDescriptorSets(device.get(), &info, &_set) != VK_SUCCESS){
-			spdlog::error("Failed to allocate scene descriptor set");
+			spdlog::error("Failed to allocate baseframebuffer descriptor set");
 			throw std::runtime_error("Failed to allocate descriptor set");
 		}
 	}
@@ -68,7 +68,7 @@ namespace Raindrop::Renderer::Scene{
 		auto& allocationCallbacks = _context.renderer.allocationCallbacks;
 
 		if (vkCreateDescriptorPool(device.get(), &info, allocationCallbacks, &_pool) != VK_SUCCESS){
-			spdlog::error("Failed to create scene descriptor pool");
+			spdlog::error("Failed to create baseframebuffer descriptor pool");
 			throw std::runtime_error("Failed to create descriptor pool");
 		}
 	}
@@ -101,7 +101,7 @@ namespace Raindrop::Renderer::Scene{
 		auto& allocationCallbacks = _context.renderer.allocationCallbacks;
 
 		if (vkCreateDescriptorSetLayout(device.get(), &info, allocationCallbacks, &_layout) != VK_SUCCESS){
-			spdlog::error("Failed to create scene descriptor set layout");
+			spdlog::error("Failed to create baseframebuffer descriptor set layout");
 			throw std::runtime_error("Failed to create descriptor set layout");
 		}
 	}

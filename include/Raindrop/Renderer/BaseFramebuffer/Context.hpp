@@ -1,5 +1,5 @@
-#ifndef __RAINDROP_RENDERER_SCENE_CONTEXT_HPP__
-#define __RAINDROP_RENDERER_SCENE_CONTEXT_HPP__
+#ifndef __RAINDROP_RENDERER_BASE_FRAMEBUFFER_CONTEXT_HPP__
+#define __RAINDROP_RENDERER_BASE_FRAMEBUFFER_CONTEXT_HPP__
 
 #include "common.hpp"
 #include "RenderPass.hpp"
@@ -8,7 +8,7 @@
 #include "DescriptorSet.hpp"
 #include "FullscreenQuad.hpp"
 
-namespace Raindrop::Renderer::Scene{
+namespace Raindrop::Renderer::BaseFramebuffer{
 	struct Context{
 		using Renderer = ::Raindrop::Renderer::Context;
 		Context(Renderer& renderer);

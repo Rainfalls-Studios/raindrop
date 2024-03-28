@@ -1,10 +1,10 @@
-#include <Raindrop/Renderer/Scene/Sampler.hpp>
-#include <Raindrop/Renderer/Scene/Context.hpp>
+#include <Raindrop/Renderer/BaseFramebuffer/Sampler.hpp>
+#include <Raindrop/Renderer/BaseFramebuffer/Context.hpp>
 #include <Raindrop/Renderer/Context.hpp>
 
 #include <spdlog/spdlog.h>
 
-namespace Raindrop::Renderer::Scene{
+namespace Raindrop::Renderer::BaseFramebuffer{
 	
 	Sampler::Sampler(Context& context) : 
 		_context{context},
