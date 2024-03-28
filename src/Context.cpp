@@ -5,7 +5,7 @@ namespace Raindrop{
 		running{false},
 		assetManager(*this),
 		eventManager(),
-		scene(*this),
+		scenes(*this),
 		renderer(*this)
 	{}
 }

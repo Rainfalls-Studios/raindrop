@@ -38,7 +38,7 @@ namespace Raindrop::Renderer{
 	}
 
 	Renderer::~Renderer(){
-		spdlog::info("Destructing renderer ...");
+		spdlog::info("Destroying renderer ...");
 		_context->device.waitIdle();
 
 		_context->core.assetManager.unregisterType("Model");
@@ -56,7 +56,7 @@ namespace Raindrop::Renderer{
 		static auto start = std::chrono::high_resolution_clock::now();
 		auto& swapchain = _context->swapchain;	
 
-		auto& baseframebuffer = _context->core.scene;	
+		// auto& baseframebuffer = _context->core.scene;
 		
 		VkCommandBuffer commandBuffer = beginFrame();
 		if (commandBuffer != nullptr){
@@ -64,49 +64,49 @@ namespace Raindrop::Renderer{
 			_context->baseFramebuffer.beginRenderPass(commandBuffer);
 			shader->bind(commandBuffer);
 
-			auto view = baseframebuffer.view<Components::Transformation, Components::Model>();
+			// auto view = baseframebuffer.view<Components::Transformation, Components::Model>();
 
-			for (const auto& entity : view){
-				auto& transformComponent = baseframebuffer.get<Components::Transformation>(entity);
-				auto& modelComponent = baseframebuffer.get<Components::Model>(entity);
+			// for (const auto& entity : view){
+			// 	auto& transformComponent = baseframebuffer.get<Components::Transformation>(entity);
+			// 	auto& modelComponent = baseframebuffer.get<Components::Model>(entity);
 				
-				{
-					glm::mat4 pushConstant[2] = {
-						_context->core.camera.viewTransform(),
-						transformComponent.matrix
-					};
+			// 	{
+			// 		glm::mat4 pushConstant[2] = {
+			// 			_context->core.camera.viewTransform(),
+			// 			transformComponent.matrix
+			// 		};
 
-					vkCmdPushConstants(
-						commandBuffer,
-						shader->layout(),
-						VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
-						0,
-						sizeof(glm::mat4) * 2,
-						pushConstant
-					);
-				}
+			// 		vkCmdPushConstants(
+			// 			commandBuffer,
+			// 			shader->layout(),
+			// 			VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+			// 			0,
+			// 			sizeof(glm::mat4) * 2,
+			// 			pushConstant
+			// 		);
+			// 	}
 
-				auto& model = modelComponent.model;
+			// 	auto& model = modelComponent.model;
 
-				if (!model.expired()){
-					for (auto& mesh : *model.lock()){
-						VkDescriptorSet set = _context->materials.getDescriptorSet(mesh->materialID());
+			// 	if (!model.expired()){
+			// 		for (auto& mesh : *model.lock()){
+			// 			VkDescriptorSet set = _context->materials.getDescriptorSet(mesh->materialID());
 
-						vkCmdBindDescriptorSets(
-							commandBuffer,
-							VK_PIPELINE_BIND_POINT_GRAPHICS,
-							shader->layout(),
-							0,
-							1,
-							&set,
-							0,
-							nullptr
-						);
+			// 			vkCmdBindDescriptorSets(
+			// 				commandBuffer,
+			// 				VK_PIPELINE_BIND_POINT_GRAPHICS,
+			// 				shader->layout(),
+			// 				0,
+			// 				1,
+			// 				&set,
+			// 				0,
+			// 				nullptr
+			// 			);
 
-						mesh->render(commandBuffer);
-					}
-				}
-			}
+			// 			mesh->render(commandBuffer);
+			// 		}
+			// 	}
+			// }
 
 			_context->baseFramebuffer.endRenderPass(commandBuffer);
 

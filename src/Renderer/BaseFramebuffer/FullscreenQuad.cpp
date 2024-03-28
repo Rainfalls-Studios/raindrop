@@ -31,7 +31,7 @@ namespace Raindrop::Renderer::BaseFramebuffer{
 		_fragmentModule{VK_NULL_HANDLE},
 		_vertexModule{VK_NULL_HANDLE}
 	{
-		spdlog::info("Creating fullscreen quad baseframebuffer pipeline");
+		spdlog::info("Constructing fullscreen quad baseframebuffer pipeline");
 
 		createPipelineLayout();
 		createShaderModules();

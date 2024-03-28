@@ -31,7 +31,7 @@ namespace Raindrop::Renderer::Core{
 	}
 
 	Swapchain::~Swapchain(){
-		spdlog::info("Destructing vulkan swapchain...");
+		spdlog::info("Destroying vulkan swapchain...");
 		auto device = _context.device.get();
 		auto allocationCallbacks = _context.allocationCallbacks;
 

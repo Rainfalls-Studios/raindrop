@@ -10,7 +10,7 @@ namespace Raindrop::Renderer::BaseFramebuffer{
 		_layout{VK_NULL_HANDLE},
 		_pool{VK_NULL_HANDLE}
 	{
-		spdlog::info("Creating baseframebuffer descriptor set ...");
+		spdlog::info("Constructing baseframebuffer descriptor set ...");
 
 		createLayout();
 		createPool();

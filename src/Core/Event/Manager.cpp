@@ -10,7 +10,7 @@ namespace Raindrop::Core::Event{
 	}
 	
 	Manager::~Manager(){
-		spdlog::info("Destructing event manager ...");
+		spdlog::info("Destroying event manager ...");
 	}
 	
 	KeyEvents& Manager::keyEvents(){

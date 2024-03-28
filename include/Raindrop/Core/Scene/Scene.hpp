@@ -11,39 +11,24 @@ namespace Raindrop::Core::Scene{
 		public:
 			using registry = entt::registry;
 
-			Scene(Context& context);
-			~Scene();
+			Scene() = default;
+			virtual ~Scene() = default;
 
-			template<typename... Components>
-			void clear(){
-				registry::clear<Components...>();
-			}
+			using registry::clear;
 
-			EntityLUID create(){
-				return static_cast<EntityLUID>(registry::create());
-			}
-
-			void destroy(const EntityLUID& entity){
-				registry::destroy(static_cast<entt::entity>(entity));
-			}
-
-			using registry::emplace;
+			EntityLUID create();
+			void destroy(const EntityLUID& entity);
 
 			template<typename Component, typename... Args>
-			Component& emplace(const EntityLUID& entity, Args&&... args){
-				return registry::emplace<Component>(static_cast<entt::entity>(entity), args...);
-			}
-
-			using registry::get;
+			Component& emplace(const EntityLUID& entity, Args&&... args);
+			using registry::emplace;
 
 			template<typename Component>
-			Component& get(const EntityLUID& entity){
-				return registry::get<Component>(static_cast<entt::entity>(entity));
-			}
-		
-		private:
-			Context& _context;
+			Component& get(const EntityLUID& entity);
+			using registry::get;
 	};
 }
+
+#include "Scene.inl"
 
 #endif

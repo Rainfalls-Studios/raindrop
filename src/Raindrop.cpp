@@ -81,7 +81,7 @@ namespace Raindrop{
 	}
 
 	Raindrop::~Raindrop(){
-		spdlog::info("Destructing Raindrop engine ...");
+		spdlog::info("Destroying Raindrop engine ...");
 		delete _context;
 	}
 
@@ -134,8 +134,17 @@ namespace Raindrop{
 		}
 	}
 
-	Scene& Raindrop::scene(){
-		return _context->scene;
+	
+	Scene& Raindrop::getScene(const SceneID& ID){
+		return _context->scenes.get(ID);
+	}
+
+	SceneID Raindrop::registerScene(const std::shared_ptr<Scene>& scene){
+		return _context->scenes.registerScene(scene);
+	}
+
+	void Raindrop::unregisterScene(const SceneID& ID){
+		return _context->scenes.unregisterScene(ID);
 	}
 
 	AssetManager& Raindrop::assetManager(){

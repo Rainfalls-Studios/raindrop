@@ -9,7 +9,13 @@
 
 namespace Raindrop{
 	using Scene = Core::Scene::Scene;
+	using SceneID = Core::Scene::SceneID;
+
 	using Entity = Core::Scene::Entity;
+	using EntityGUID = Core::Scene::EntityGUID;
+	using EntityID = EntityGUID;
+	using EntityLUID = Core::Scene::EntityLUID;
+
 	using AssetManager = Core::Asset::Manager;
 	using EventManager = Core::Event::Manager;
 	
@@ -18,7 +24,10 @@ namespace Raindrop{
 			Raindrop();
 			~Raindrop();
 
-			Scene& scene();
+			Scene& getScene(const SceneID& ID);
+			SceneID registerScene(const std::shared_ptr<Scene>& scene);
+			void unregisterScene(const SceneID& ID);
+
 			AssetManager& assetManager();
 			EventManager& eventManager();
 

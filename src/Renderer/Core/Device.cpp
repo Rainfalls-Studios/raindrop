@@ -12,7 +12,7 @@ namespace Raindrop::Renderer::Core{
 	}
 
 	Device::~Device(){
-		spdlog::info("Destructing vulkan device ...");
+		spdlog::info("Destroying vulkan device ...");
 
 		vkDestroyDevice(_device, _context.allocationCallbacks);
 	}

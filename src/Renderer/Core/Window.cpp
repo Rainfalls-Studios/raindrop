@@ -240,7 +240,7 @@ namespace Raindrop::Renderer::Core{
 	}
 
 	Window::~Window(){
-		spdlog::info("Destructing window ...");
+		spdlog::info("Destroying window ...");
 		if (_window){
 			spdlog::info("Termintating SDL3 Window...");
 			SDL_DestroyWindow(_window);
@@ -263,7 +263,7 @@ namespace Raindrop::Renderer::Core{
 	}
 
 	void Window::createSurface(){
-		spdlog::debug("Creating SDL3 Vulkan surface");
+		spdlog::debug("Constructing SDL3 Vulkan surface");
 		if (SDL_Vulkan_CreateSurface(_window, _context.instance.get(), _context.allocationCallbacks, &_surface) == SDL_FALSE){
 			spdlog::error("Failed to create SDL3 Vulkan surface : {}", SDL_GetError());
 			throw std::runtime_error("Failed to create SDL3 Vulkan surface");

@@ -4,6 +4,7 @@
 #include "../common.hpp"
 
 namespace Raindrop::Core::Scene{
+	class Scenes;
 	class Scene;
 	class Entity;
 	

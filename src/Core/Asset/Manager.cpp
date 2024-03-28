@@ -6,11 +6,11 @@
 
 namespace Raindrop::Core::Asset{
 	Manager::Manager(Context& context) : _context{context}{
-		spdlog::info("Creating asset manager...");
+		spdlog::info("Constructing asset manager...");
 	}
 	
 	Manager::~Manager(){
-		spdlog::info("Destructing asset manager...");
+		spdlog::info("Destroying asset manager...");
 	}
 
 	void Manager::registerAsset(const std::string& type, const Path& path, const std::shared_ptr<Asset>& asset){

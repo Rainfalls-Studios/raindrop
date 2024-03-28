@@ -110,7 +110,7 @@ namespace Raindrop::Renderer::Pipelines{
 			_pipeline{VK_NULL_HANDLE}{
 		info.assertValidity();
 
-		spdlog::info("Creating graphics pipeline...");
+		spdlog::info("Constructing graphics pipeline...");
 		VkGraphicsPipelineCreateInfo createInfo{};
 
 		createInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;

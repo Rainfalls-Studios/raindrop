@@ -23,7 +23,7 @@ namespace Raindrop::Renderer::Queues{
 	}
 
 	Manager::~Manager(){
-		spdlog::info("Destructing vulkan queue manager ...");
+		spdlog::info("Destroying vulkan queue manager ...");
 	}
 
 	void Manager::findGraphicsFamily(std::vector<VkQueueFamilyProperties>& families){

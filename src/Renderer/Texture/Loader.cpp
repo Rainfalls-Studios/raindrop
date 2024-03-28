@@ -10,7 +10,7 @@ namespace Raindrop::Renderer::Texture{
 	}
 
 	Loader::~Loader(){
-		spdlog::info("Destructing texture asset loader ...");
+		spdlog::info("Destroying texture asset loader ...");
 	}
 
 	std::shared_ptr<::Raindrop::Core::Asset::Asset> Loader::load(const Path& path){

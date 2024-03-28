@@ -10,7 +10,7 @@ namespace Raindrop::Renderer::BaseFramebuffer{
 		_context{context},
 		_sampler{VK_NULL_HANDLE}
 	{
-		spdlog::info("Creating sampler ...");
+		spdlog::info("Constructing sampler ...");
 		createSampler();
 	}
 
