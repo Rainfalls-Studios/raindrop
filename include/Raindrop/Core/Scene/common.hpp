@@ -8,7 +8,8 @@ namespace Raindrop::Core::Scene{
 	class Scene;
 	class Entity;
 	
-	using SceneID = std::uint32_t;
+	// I suppose that 65.5 thousand scenes should be enough
+	using SceneID = std::uint16_t;
 	using EntityLUID = std::uint32_t;
 
 	static constexpr EntityLUID INVALID_ENTITY_LUID = (EntityLUID)(~0);
@@ -16,7 +17,7 @@ namespace Raindrop::Core::Scene{
 
 	union EntityGUID{
 		using GUID_t = std::uint64_t;
-		static_assert(sizeof(GUID_t) == sizeof(SceneID) + sizeof(EntityLUID), "The entity global unique indentifier has to be the same size has the entity local unique identifier plus the sceen identifier");
+		static_assert(sizeof(GUID_t) >= sizeof(SceneID) + sizeof(EntityLUID), "The entity global unique indentifier has to be the same size has the entity local unique identifier plus the sceen identifier");
 		
 		static constexpr GUID_t INVALID_GUID = (GUID_t)(~0);
 

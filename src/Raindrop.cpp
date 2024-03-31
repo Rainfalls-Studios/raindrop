@@ -139,8 +139,8 @@ namespace Raindrop{
 		return _context->scenes.get(ID);
 	}
 
-	SceneID Raindrop::registerScene(const std::shared_ptr<Scene>& scene){
-		return _context->scenes.registerScene(scene);
+	SceneID Raindrop::registerScene(std::unique_ptr<Scene> scene){
+		return _context->scenes.registerScene(std::move(scene));
 	}
 
 	void Raindrop::unregisterScene(const SceneID& ID){

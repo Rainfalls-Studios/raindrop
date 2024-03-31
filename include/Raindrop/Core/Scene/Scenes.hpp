@@ -9,7 +9,14 @@ namespace Raindrop::Core::Scene{
 			Scenes(Context& context);
 			~Scenes();
 
-			SceneID registerScene(const std::shared_ptr<Scene>& scene);
+			template<typename T, typename... Args>
+			SceneID createScene(Args&&... args){
+				static_assert(std::is_base_of_v<Scene, T>, "Cannot create a scene from a class that is not derived from Raindrop::Scene (Raindrop::Core::Scene::Scene)");
+				std::unique_ptr<T> scene = std::make_unique<T>(args...);
+				return registerScene(std::move(scene));
+			}
+
+			SceneID registerScene(std::unique_ptr<Scene> scene);
 			void unregisterScene(const SceneID& ID);
 
 			Scene& get(const SceneID& ID);
@@ -17,7 +24,7 @@ namespace Raindrop::Core::Scene{
 		private:
 			Context& _context;
 
-			std::vector<std::shared_ptr<Scene>> _scenes;
+			std::vector<std::unique_ptr<Scene>> _scenes;
 			std::queue<SceneID> _freeIDs;
 	};
 }

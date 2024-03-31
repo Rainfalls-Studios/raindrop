@@ -25,7 +25,7 @@ namespace Raindrop{
 			~Raindrop();
 
 			Scene& getScene(const SceneID& ID);
-			SceneID registerScene(const std::shared_ptr<Scene>& scene);
+			SceneID registerScene(std::unique_ptr<Scene> scene);
 			void unregisterScene(const SceneID& ID);
 
 			AssetManager& assetManager();
