@@ -2,12 +2,12 @@
 #define __RAINDROP_GRAPHICS_TEXTURE_LOADER_HPP__
 
 #include "common.hpp"
-#include <Raindrop/Core/Asset/Loader.hpp>
+#include <Raindrop/Core/Assets/Loader.hpp>
 
 namespace Raindrop::Graphics::Textures{
-	class Loader : public ::Raindrop::Core::Asset::Loader{
+	class Loader : public ::Raindrop::Core::Assets::Loader{
 		public:
-			using Asset = ::Raindrop::Core::Asset::Asset;
+			using Asset = ::Raindrop::Core::Assets::Asset;
 
 			Loader(Context &context);
 			virtual ~Loader() override;

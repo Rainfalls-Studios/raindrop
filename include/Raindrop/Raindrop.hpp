@@ -2,22 +2,22 @@
 #define __RAINDROP_RAINDROP_HPP__
 
 #include "common.hpp"
-#include "Core/Scene/Scene.hpp"
-#include "Core/Scene/Entity.hpp"
-#include "Core/Asset/Manager.hpp"
+#include "Core/Scenes/Scene.hpp"
+#include "Core/Scenes/Entity.hpp"
+#include "Core/Assets/Manager.hpp"
 #include "Core/Event/Manager.hpp"
 #include "Graphics/Renderer.hpp"
 
 namespace Raindrop{
-	using Scene = Core::Scene::Scene;
-	using SceneID = Core::Scene::SceneID;
+	using Scene = Core::Scenes::Scene;
+	using SceneID = Core::Scenes::SceneID;
 
-	using Entity = Core::Scene::Entity;
-	using EntityGUID = Core::Scene::EntityGUID;
+	using Entity = Core::Scenes::Entity;
+	using EntityGUID = Core::Scenes::EntityGUID;
 	using EntityID = EntityGUID;
-	using EntityLUID = Core::Scene::EntityLUID;
+	using EntityLUID = Core::Scenes::EntityLUID;
 
-	using AssetManager = Core::Asset::Manager;
+	using AssetManager = Core::Assets::Manager;
 	using EventManager = Core::Event::Manager;
 
 	// Due to name conflicts with the Renderer namespace and the class itself, this does not work

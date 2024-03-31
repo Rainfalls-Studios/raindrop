@@ -1,10 +1,10 @@
-#include <Raindrop/Core/Asset/Manager.hpp>
-#include <Raindrop/Core/Asset/Loader.hpp>
+#include <Raindrop/Core/Assets/Manager.hpp>
+#include <Raindrop/Core/Assets/Loader.hpp>
 #include <cassert>
 
 #include <spdlog/spdlog.h>
 
-namespace Raindrop::Core::Asset{
+namespace Raindrop::Core::Assets{
 	Manager::Manager(Context& context) : _context{context}{
 		spdlog::info("Constructing asset Manager...");
 	}

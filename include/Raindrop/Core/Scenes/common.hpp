@@ -1,9 +1,9 @@
-#ifndef __RAINDROP_CORE_SCENE_COMMON_HPP__
-#define __RAINDROP_CORE_SCENE_COMMON_HPP__
+#ifndef __RAINDROP_CORE_SCENES_COMMON_HPP__
+#define __RAINDROP_CORE_SCENES_COMMON_HPP__
 
 #include "../common.hpp"
 
-namespace Raindrop::Core::Scene{
+namespace Raindrop::Core::Scenes{
 	class Scenes;
 	class Scene;
 	class Entity;

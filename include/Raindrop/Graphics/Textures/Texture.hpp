@@ -2,10 +2,10 @@
 #define __RAINDROP_GRAPHICS_TEXTURE_TEXTURE_HPP__
 
 #include "common.hpp"
-#include <Raindrop/Core/Asset/Asset.hpp>
+#include <Raindrop/Core/Assets/Asset.hpp>
 
 namespace Raindrop::Graphics::Textures{
-	class Texture : public ::Raindrop::Core::Asset::Asset{
+	class Texture : public ::Raindrop::Core::Assets::Asset{
 		public:
 			struct ConstructData{
 				std::size_t width;

@@ -1,7 +1,7 @@
-#include <Raindrop/Core/Scene/Scene.hpp>
-#include <Raindrop/Core/Scene/Entity.hpp>
+#include <Raindrop/Core/Scenes/Scene.hpp>
+#include <Raindrop/Core/Scenes/Entity.hpp>
 
-namespace Raindrop::Core::Scene{
+namespace Raindrop::Core::Scenes{
 	EntityLUID Scene::create(){
 		return static_cast<EntityLUID>(registry::create());
 	}

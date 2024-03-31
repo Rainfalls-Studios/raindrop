@@ -13,7 +13,7 @@ namespace Raindrop::Graphics::Textures{
 		spdlog::info("Destroying texture asset loader ...");
 	}
 
-	std::shared_ptr<::Raindrop::Core::Asset::Asset> Loader::load(const Path& path){
+	std::shared_ptr<::Raindrop::Core::Assets::Asset> Loader::load(const Path& path){
 		spdlog::info("Loading texture from \"{}\"", path.string());
 
 		std::shared_ptr<Texture> texture;

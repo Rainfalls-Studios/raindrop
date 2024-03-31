@@ -1,10 +1,10 @@
-#ifndef __RAINDROP_CORE_ASSET_MANAGER_HPP__
-#define __RAINDROP_CORE_ASSET_MANAGER_HPP__
+#ifndef __RAINDROP_CORE_ASSETS_MANAGER_HPP__
+#define __RAINDROP_CORE_ASSETS_MANAGER_HPP__
 
 #include "common.hpp"
 #include "Asset.hpp"
 
-namespace Raindrop::Core::Asset{
+namespace Raindrop::Core::Assets{
 	class Manager{
 		public:
 			Manager(Context &context);

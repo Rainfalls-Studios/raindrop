@@ -1,10 +1,10 @@
-#include <Raindrop/Core/Scene/Scenes.hpp>
-#include <Raindrop/Core/Scene/Scene.hpp>
+#include <Raindrop/Core/Scenes/Scenes.hpp>
+#include <Raindrop/Core/Scenes/Scene.hpp>
 #include <Raindrop/Context.hpp>
 
 #include <spdlog/spdlog.h>
 
-namespace Raindrop::Core::Scene{
+namespace Raindrop::Core::Scenes{
 	Scenes::Scenes(Context& context) : _context{context}{
 		spdlog::info("Constructing scene manager ...");
 	}

@@ -13,7 +13,7 @@ namespace Raindrop::Graphics::Models{
 		spdlog::info("Destroying model asset loader ...");
 	}
 
-	std::shared_ptr<::Raindrop::Core::Asset::Asset> Loader::load(const Path& path){
+	std::shared_ptr<::Raindrop::Core::Assets::Asset> Loader::load(const Path& path){
 		spdlog::info("Loading model from \"{}\"", path.string());
 
 		std::shared_ptr<Model> model;

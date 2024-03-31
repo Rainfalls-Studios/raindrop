@@ -1,10 +1,10 @@
-#ifndef __RAINDROP_CORE_SCENE_ENTIY_HPP__
-#define __RAINDROP_CORE_SCENE_ENTIY_HPP__
+#ifndef __RAINDROP_CORE_SCENES_ENTIY_HPP__
+#define __RAINDROP_CORE_SCENES_ENTIY_HPP__
 
 #include "common.hpp"
 #include "Scene.hpp"
 
-namespace Raindrop::Core::Scene{
+namespace Raindrop::Core::Scenes{
 	class Entity{
 		public:
 			Entity(Scene& scene, const EntityLUID& ID);

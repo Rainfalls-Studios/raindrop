@@ -1,10 +1,10 @@
-#ifndef __RAINDROP_CORE_SCENE_SCENE_HPP__
-#define __RAINDROP_CORE_SCENE_SCENE_HPP__
+#ifndef __RAINDROP_CORE_SCENES_SCENE_HPP__
+#define __RAINDROP_CORE_SCENES_SCENE_HPP__
 
 #include "common.hpp"
 #include <entt/entt.hpp>
 
-namespace Raindrop::Core::Scene{
+namespace Raindrop::Core::Scenes{
 	static_assert(sizeof(entt::entity) == sizeof(EntityLUID), "The Entity local unique identifier has to be the same size has the EnTT entity handle");
 
 	class Scene : public entt::registry{

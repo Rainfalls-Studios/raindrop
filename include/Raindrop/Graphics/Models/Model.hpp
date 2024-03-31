@@ -2,12 +2,12 @@
 #define __RAINDROP_GRAPHICS_MODELS_MODEL_HPP__
 
 #include "common.hpp"
-#include <Raindrop/Core/Asset/Asset.hpp>
+#include <Raindrop/Core/Assets/Asset.hpp>
 #include <Raindrop/Graphics/Textures/Texture.hpp>
 #include <Raindrop/Graphics/Materials/Material.hpp>
 
 namespace Raindrop::Graphics::Models{
-	class Model : public ::Raindrop::Core::Asset::Asset{
+	class Model : public ::Raindrop::Core::Assets::Asset{
 		public:
 			Model(Context& context, const Path& path);
 			virtual ~Model() override;

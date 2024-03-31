@@ -1,9 +1,9 @@
-#ifndef __RAINDROP_CORE_ASSET_LOADER_HPP__
-#define __RAINDROP_CORE_ASSET_LOADER_HPP__
+#ifndef __RAINDROP_CORE_ASSETS_LOADER_HPP__
+#define __RAINDROP_CORE_ASSETS_LOADER_HPP__
 
 #include "common.hpp"
 
-namespace Raindrop::Core::Asset{
+namespace Raindrop::Core::Assets{
 	class Loader{
 		public:
 			virtual ~Loader() = default;

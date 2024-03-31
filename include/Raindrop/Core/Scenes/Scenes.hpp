@@ -1,9 +1,9 @@
-#ifndef __RAINDROP_CORE_SCENE_SCENES_HPP__
-#define __RAINDROP_CORE_SCENE_SCENES_HPP__
+#ifndef __RAINDROP_CORE_SCENES_SCENES_HPP__
+#define __RAINDROP_CORE_SCENES_SCENES_HPP__
 
-#include <Raindrop/Core/Scene/common.hpp>
+#include <Raindrop/Core/Scenes/common.hpp>
 
-namespace Raindrop::Core::Scene{
+namespace Raindrop::Core::Scenes{
 	class Scenes{
 		public:
 			Scenes(Context& context);
@@ -11,7 +11,7 @@ namespace Raindrop::Core::Scene{
 
 			template<typename T, typename... Args>
 			SceneID createScene(Args&&... args){
-				static_assert(std::is_base_of_v<Scene, T>, "Cannot create a scene from a class that is not derived from Raindrop::Scene (Raindrop::Core::Scene::Scene)");
+				static_assert(std::is_base_of_v<Scene, T>, "Cannot create a scene from a class that is not derived from Raindrop::Scene (Raindrop::Core::Scenes::Scene)");
 				std::unique_ptr<T> scene = std::make_unique<T>(args...);
 				return registerScene(std::move(scene));
 			}
