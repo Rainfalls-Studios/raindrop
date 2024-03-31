@@ -1,14 +1,10 @@
-#include <Raindrop/Renderer/BaseFramebuffer/Context.hpp>
+#include <Raindrop/Graphics/BaseFramebuffer/Context.hpp>
 
-namespace Raindrop::Renderer::BaseFramebuffer{
+namespace Raindrop::Graphics::BaseFramebuffer{
 	Context::Context(Renderer& renderer) :
 		renderer{renderer},
 		renderPass(*this),
 		set(*this),
-		framebuffer(*this),
 		sampler(*this),
-		fullscreenQuad(*this)
-	{
-		set.update();
-	}
+		fullscreenQuad(*this){}
 }

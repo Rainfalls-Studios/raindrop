@@ -1,9 +1,9 @@
-#include <Raindrop/Renderer/Material/SetLayout.hpp>
-#include <Raindrop/Renderer/Material/Context.hpp>
+#include <Raindrop/Graphics/Materials/SetLayout.hpp>
+#include <Raindrop/Graphics/Materials/Context.hpp>
 
 #include <spdlog/spdlog.h>
 
-namespace Raindrop::Renderer::Material{
+namespace Raindrop::Graphics::Materials{
 	SetLayout::SetLayout(Context& context) : 
 			_context{context},
 			_setLayout{VK_NULL_HANDLE}

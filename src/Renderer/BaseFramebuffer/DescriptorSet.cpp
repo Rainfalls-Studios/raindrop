@@ -1,9 +1,10 @@
-#include <Raindrop/Renderer/BaseFramebuffer/DescriptorSet.hpp>
-#include <Raindrop/Renderer/Context.hpp>
+#include <Raindrop/Graphics/BaseFramebuffer/DescriptorSet.hpp>
+#include <Raindrop/Graphics/BaseFramebuffer/Context.hpp>
+#include <Raindrop/Graphics/Context.hpp>
 
 #include <spdlog/spdlog.h>
 
-namespace Raindrop::Renderer::BaseFramebuffer{
+namespace Raindrop::Graphics::BaseFramebuffer{
 	DescriptorSet::DescriptorSet(Context& context) : 
 		_context{context},
 		_set{VK_NULL_HANDLE},
@@ -128,14 +129,14 @@ namespace Raindrop::Renderer::BaseFramebuffer{
 		return _pool;
 	}
 
-	void DescriptorSet::update(){
+	void DescriptorSet::update(VkImageView image){
 		auto& device = _context.renderer.device;
 		auto& allocationCallbacks = _context.renderer.allocationCallbacks;
 
 		VkDescriptorImageInfo imageInfo{};
 		imageInfo.sampler = _context.sampler.get();
 		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		imageInfo.imageView = _context.framebuffer.color().imageView;
+		imageInfo.imageView = image;
 
 		VkWriteDescriptorSet write{};
 		write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;

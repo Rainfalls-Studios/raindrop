@@ -1,9 +1,9 @@
-#include <Raindrop/Renderer/Material/Registry.hpp>
-#include <Raindrop/Renderer/Material/Context.hpp>
+#include <Raindrop/Graphics/Materials/Registry.hpp>
+#include <Raindrop/Graphics/Materials/Context.hpp>
 
 #include <spdlog/spdlog.h>
 
-namespace Raindrop::Renderer::Material{
+namespace Raindrop::Graphics::Materials{
 
 	Registry::MaterialPair::MaterialPair(Context& context) :
 		material(context), 

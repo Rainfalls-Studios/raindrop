@@ -1,10 +1,10 @@
-#include <Raindrop/Renderer/Texture/Loader.hpp>
-#include <Raindrop/Renderer/Texture/Texture.hpp>
-#include <Raindrop/Renderer/Context.hpp>
+#include <Raindrop/Graphics/Textures/Loader.hpp>
+#include <Raindrop/Graphics/Textures/Texture.hpp>
+#include <Raindrop/Graphics/Context.hpp>
 
 #include <spdlog/spdlog.h>
 
-namespace Raindrop::Renderer::Texture{
+namespace Raindrop::Graphics::Textures{
 	Loader::Loader(Context &context) : _context{context}{
 		spdlog::info("Constructing texture asset loader ...");
 	}

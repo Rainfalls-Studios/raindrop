@@ -1,5 +1,5 @@
-#include <Raindrop/Renderer/Texture/Texture.hpp>
-#include <Raindrop/Renderer/Context.hpp>
+#include <Raindrop/Graphics/Textures/Texture.hpp>
+#include <Raindrop/Graphics/Context.hpp>
 
 #include <spdlog/spdlog.h>
 #include <future>
@@ -7,7 +7,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
-namespace Raindrop::Renderer::Texture{
+namespace Raindrop::Graphics::Textures{
 	void createStagingBuffer(Context& context, VkBuffer& buffer, VkDeviceMemory& memory, std::size_t size){
 		auto& device = context.device;
 		auto& allocationCallbacks = context.allocationCallbacks;

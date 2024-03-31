@@ -1,10 +1,10 @@
-#include <Raindrop/Renderer/BaseFramebuffer/Sampler.hpp>
-#include <Raindrop/Renderer/BaseFramebuffer/Context.hpp>
-#include <Raindrop/Renderer/Context.hpp>
+#include <Raindrop/Graphics/BaseFramebuffer/Sampler.hpp>
+#include <Raindrop/Graphics/BaseFramebuffer/Context.hpp>
+#include <Raindrop/Graphics/Context.hpp>
 
 #include <spdlog/spdlog.h>
 
-namespace Raindrop::Renderer::BaseFramebuffer{
+namespace Raindrop::Graphics::BaseFramebuffer{
 	
 	Sampler::Sampler(Context& context) : 
 		_context{context},

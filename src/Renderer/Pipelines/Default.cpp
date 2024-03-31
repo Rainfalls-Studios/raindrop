@@ -1,13 +1,13 @@
-#include <Raindrop/Renderer/Pipelines/Default.hpp>
-#include <Raindrop/Renderer/Pipelines/GraphicsPipeline.hpp>
-#include <Raindrop/Renderer/Context.hpp>
-#include <Raindrop/Renderer/Model/Vertex.hpp>
-#include <Raindrop/Renderer/Material/SetLayout.hpp>
+#include <Raindrop/Graphics/Pipelines/Default.hpp>
+#include <Raindrop/Graphics/Pipelines/GraphicsPipeline.hpp>
+#include <Raindrop/Graphics/Context.hpp>
+#include <Raindrop/Graphics/Models/Vertex.hpp>
+#include <Raindrop/Graphics/Materials/SetLayout.hpp>
 
 #include <spdlog/spdlog.h>
 #include <fstream>
 
-namespace Raindrop::Renderer::Pipelines{
+namespace Raindrop::Graphics::Pipelines{
 	std::vector<char> readFile(const std::string& filepath) {
 		std::ifstream file{filepath, std::ios::ate | std::ios::binary};
 
@@ -120,8 +120,7 @@ namespace Raindrop::Renderer::Pipelines{
 			info.stages.push_back(vert);
 		}
 
-		using Vertex = Model::Vertex;
-		
+		using Vertex = Models::Vertex;
 
 		info.vertices = {
 			VkVertexInputAttributeDescription{

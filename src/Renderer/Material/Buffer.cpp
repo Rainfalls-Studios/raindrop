@@ -1,9 +1,9 @@
-#include <Raindrop/Renderer/Material/Buffer.hpp>
-#include <Raindrop/Renderer/Material/Context.hpp>
-#include <Raindrop/Renderer/Material/Material.hpp>
+#include <Raindrop/Graphics/Materials/Buffer.hpp>
+#include <Raindrop/Graphics/Materials/Context.hpp>
+#include <Raindrop/Graphics/Materials/Material.hpp>
 #include <spdlog/spdlog.h>
 
-namespace Raindrop::Renderer::Material{
+namespace Raindrop::Graphics::Materials{
 	Buffer::Buffer(Context& context) : 
 			_context{context},
 			_buffer{VK_NULL_HANDLE},

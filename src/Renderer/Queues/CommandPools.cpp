@@ -1,6 +1,6 @@
-#include <Raindrop/Renderer/Queues/CommandPools.hpp>
+#include <Raindrop/Graphics/Queues/CommandPools.hpp>
 
-namespace Raindrop::Renderer::Queues{
+namespace Raindrop::Graphics::Queues{
 	CommandPools::CommandPools(Context& context) : 
 		singleUseTransfert(context),
 		graphics(context){}

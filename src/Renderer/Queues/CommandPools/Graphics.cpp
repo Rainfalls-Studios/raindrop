@@ -1,7 +1,7 @@
-#include <Raindrop/Renderer/Queues/CommandPools/Graphics.hpp>
-#include <Raindrop/Renderer/Context.hpp>
+#include <Raindrop/Graphics/Queues/CommandPools/Graphics.hpp>
+#include <Raindrop/Graphics/Context.hpp>
 
-namespace Raindrop::Renderer::Queues{
+namespace Raindrop::Graphics::Queues{
 	Graphics::Graphics(Context& context) : CommandPool(context){
 		CommandPool::create();
 	}

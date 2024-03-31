@@ -1,10 +1,10 @@
-#include <Raindrop/Renderer/Material/Pool.hpp>
-#include <Raindrop/Renderer/Material/Context.hpp>
+#include <Raindrop/Graphics/Materials/Pool.hpp>
+#include <Raindrop/Graphics/Materials/Context.hpp>
 
 #include <spdlog/spdlog.h>
 
 
-namespace Raindrop::Renderer::Material{
+namespace Raindrop::Graphics::Materials{
 	Pool::Pool(Context& context) : 
 			_context{context},
 			_pool{VK_NULL_HANDLE}

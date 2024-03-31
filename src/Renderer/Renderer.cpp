@@ -1,21 +1,21 @@
-#include <Raindrop/Renderer/Renderer.hpp>
-#include <Raindrop/Renderer/Context.hpp>
+#include <Raindrop/Graphics/Renderer.hpp>
+#include <Raindrop/Graphics/Context.hpp>
 #include <spdlog/spdlog.h>
 #include <Raindrop/Context.hpp>
 
 // TEST
-#include <Raindrop/Renderer/Pipelines/Default.hpp>
-static std::unique_ptr<Raindrop::Renderer::Pipelines::Default> shader;
+#include <Raindrop/Graphics/Pipelines/Default.hpp>
+static std::unique_ptr<Raindrop::Graphics::Pipelines::Default> shader;
 
-#include <Raindrop/Renderer/Texture/Loader.hpp>
-#include <Raindrop/Renderer/Model/Loader.hpp>
-#include <Raindrop/Renderer/Model/Model.hpp>
-#include <Raindrop/Renderer/Model/Mesh.hpp>
+#include <Raindrop/Graphics/Textures/Loader.hpp>
+#include <Raindrop/Graphics/Models/Loader.hpp>
+#include <Raindrop/Graphics/Models/Model.hpp>
+#include <Raindrop/Graphics/Models/Mesh.hpp>
 
 #include<Raindrop/Components/Transformation.hpp>
 #include<Raindrop/Components/Model.hpp>
 
-namespace Raindrop::Renderer{
+namespace Raindrop::Graphics{
 	Renderer::Renderer(::Raindrop::Context& context) : 
 			_context{nullptr},
 			_renderCommandPool{VK_NULL_HANDLE},
@@ -28,8 +28,8 @@ namespace Raindrop::Renderer{
 
 		shader = std::make_unique<Pipelines::Default>(*_context);
 
-		_context->core.assetManager.registerLoader<Texture::Loader>("Texture", *_context);
-		_context->core.assetManager.registerLoader<Model::Loader>("Model", *_context);
+		_context->core.assetManager.registerLoader<Textures::Loader>("Texture", *_context);
+		_context->core.assetManager.registerLoader<Models::Loader>("Model", *_context);
 
 		{
 			auto size = _context->window.getSize();
@@ -212,5 +212,10 @@ namespace Raindrop::Renderer{
 		} else if (result != VK_SUCCESS){
 			throw std::runtime_error("failed to submit the command buffer");
 		}
+	}
+
+	Context& Renderer::context(){
+		assert(_context != nullptr && "The context has not been initialiezed");
+		return *_context;
 	}
 }

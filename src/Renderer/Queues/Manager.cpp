@@ -1,8 +1,8 @@
-#include <Raindrop/Renderer/Queues/Manager.hpp>
-#include <Raindrop/Renderer/Context.hpp>
+#include <Raindrop/Graphics/Queues/Manager.hpp>
+#include <Raindrop/Graphics/Context.hpp>
 #include <spdlog/spdlog.h>
 
-namespace Raindrop::Renderer::Queues{
+namespace Raindrop::Graphics::Queues{
 	Manager::Manager(Context& context) :
 			_context{context},
 			_graphicsFamily{INVALID_FAMILY_INDEX},

@@ -1,6 +1,6 @@
-#include <Raindrop/Renderer/Context.hpp>
+#include <Raindrop/Graphics/Context.hpp>
 
-namespace Raindrop::Renderer{
+namespace Raindrop::Graphics{
 	Context::Context(::Raindrop::Context& core) :
 		core{core},
 		allocationCallbacks{nullptr},
@@ -11,8 +11,9 @@ namespace Raindrop::Renderer{
 		queues(*this),
 		commandPools(*this),
 		swapchain(*this),
+		baseFramebuffer(*this),
 		white(*this),
 		materials(*this),
-		baseFramebuffer(*this)
+		renderSystems(*this)
 	{}
 }

@@ -1,10 +1,10 @@
-#include <Raindrop/Renderer/Core/PhysicalDevice.hpp>
-#include <Raindrop/Renderer/Context.hpp>
+#include <Raindrop/Graphics/Core/PhysicalDevice.hpp>
+#include <Raindrop/Graphics/Context.hpp>
 #include <cstring>
 
 #include <spdlog/spdlog.h>
 
-namespace Raindrop::Renderer::Core{
+namespace Raindrop::Graphics::Core{
 	PhysicalDevice::PhysicalDevice(Context& context, VkPhysicalDevice device) : _context{context}, _device{device}{
 		reset();
 	}

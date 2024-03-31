@@ -1,7 +1,8 @@
-#include <Raindrop/Renderer/BaseFramebuffer/RenderPass.hpp>
-#include <Raindrop/Renderer/Context.hpp>
+#include <Raindrop/Graphics/BaseFramebuffer/RenderPass.hpp>
+#include <Raindrop/Graphics/BaseFramebuffer/Context.hpp>
+#include <Raindrop/Graphics/Context.hpp>
 
-namespace Raindrop::Renderer::BaseFramebuffer{
+namespace Raindrop::Graphics::BaseFramebuffer{
 	RenderPass::RenderPass(Context& context) :
 		_context{context},
 		_renderPass{VK_NULL_HANDLE}{

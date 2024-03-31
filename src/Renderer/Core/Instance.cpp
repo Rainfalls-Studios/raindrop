@@ -1,11 +1,11 @@
-#include <Raindrop/Renderer/Core/Instance.hpp>
-#include <Raindrop/Renderer/Context.hpp>
+#include <Raindrop/Graphics/Core/Instance.hpp>
+#include <Raindrop/Graphics/Context.hpp>
 
 #include <spdlog/spdlog.h>
 #include <set>
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData, void *pUserData){
-	Raindrop::Renderer::Context* context = static_cast<Raindrop::Renderer::Context*>(pUserData);
+	Raindrop::Graphics::Context* context = static_cast<Raindrop::Graphics::Context*>(pUserData);
 	spdlog::level::level_enum level = spdlog::level::info;
 
 	switch (messageSeverity){
@@ -30,7 +30,7 @@ static inline void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUti
 	if (func) func(instance, debugMessenger, pAllocator);
 }
 
-namespace Raindrop::Renderer::Core{
+namespace Raindrop::Graphics::Core{
 	Instance::Instance(Context& context) : _context{context}{
 		spdlog::info("Constructing vulkan Instance...");
 		_requiredExtensions.insert(_requiredExtensions.end(), &REQUIRED_EXTENSIONS[0], &REQUIRED_EXTENSIONS[REQUIRED_EXTENSIONS_COUNT]);

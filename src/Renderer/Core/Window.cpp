@@ -1,5 +1,5 @@
-#include <Raindrop/Renderer/Core/Window.hpp>
-#include <Raindrop/Renderer/Context.hpp>
+#include <Raindrop/Graphics/Core/Window.hpp>
+#include <Raindrop/Graphics/Context.hpp>
 #include <Raindrop/Context.hpp>
 
 #include <SDL3/SDL_vulkan.h>
@@ -21,7 +21,7 @@
 #define EVENT_CAMERA false
 #define EVENT_RENDER false
 
-namespace Raindrop::Renderer::Core{
+namespace Raindrop::Graphics::Core{
 	static constexpr uint32_t DEFAULT_WINDOW_WIDTH = 1080;
 	static constexpr uint32_t DEFAULT_WINDOW_HEIGHT = 720;
 

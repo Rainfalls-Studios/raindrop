@@ -1,8 +1,8 @@
-#include <Raindrop/Renderer/Core/Swapchain.hpp>
-#include <Raindrop/Renderer/Context.hpp>
+#include <Raindrop/Graphics/Core/Swapchain.hpp>
+#include <Raindrop/Graphics/Context.hpp>
 #include <spdlog/spdlog.h>
 
-namespace Raindrop::Renderer::Core{
+namespace Raindrop::Graphics::Core{
 	Swapchain::Swapchain(Context& context) :
 			_context{context},
 			_swapchainSupport{},

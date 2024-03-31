@@ -1,7 +1,7 @@
-#include <Raindrop/Renderer/Queues/CommandPools/SingleUseTransfert.hpp>
-#include <Raindrop/Renderer/Context.hpp>
+#include <Raindrop/Graphics/Queues/CommandPools/SingleUseTransfert.hpp>
+#include <Raindrop/Graphics/Context.hpp>
 
-namespace Raindrop::Renderer::Queues{
+namespace Raindrop::Graphics::Queues{
 	SingleUseTransfer::SingleUseTransfer(Context& context) : CommandPool(context){
 		CommandPool::create();
 	}

@@ -1,7 +1,7 @@
-#include <Raindrop/Renderer/Material/Material.hpp>
-#include <Raindrop/Renderer/Context.hpp>
+#include <Raindrop/Graphics/Materials/Material.hpp>
+#include <Raindrop/Graphics/Context.hpp>
 
-namespace Raindrop::Renderer::Material{
+namespace Raindrop::Graphics::Materials{
 	
 	Material::Material(Context& context) : 
 		properties{

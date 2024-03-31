@@ -1,8 +1,8 @@
-#include <Raindrop/Renderer/Pipelines/GraphicsPipeline.hpp>
-#include <Raindrop/Renderer/Context.hpp>
+#include <Raindrop/Graphics/Pipelines/GraphicsPipeline.hpp>
+#include <Raindrop/Graphics/Context.hpp>
 #include <spdlog/spdlog.h>
 
-namespace Raindrop::Renderer::Pipelines{
+namespace Raindrop::Graphics::Pipelines{
 	GraphicsPipelineConfigInfo::GraphicsPipelineConfigInfo() : 
 		vertexInfo{.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO},
 		viewportInfo{.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO},

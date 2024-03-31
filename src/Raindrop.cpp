@@ -154,4 +154,8 @@ namespace Raindrop{
 	EventManager& Raindrop::eventManager(){
 		return _context->eventManager;
 	}
+
+	Graphics::Renderer& Raindrop::renderer(){
+		return _context->renderer;
+	}
 }

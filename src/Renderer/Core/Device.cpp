@@ -1,9 +1,9 @@
-#include <Raindrop/Renderer/Core/Device.hpp>
-#include <Raindrop/Renderer/Context.hpp>
+#include <Raindrop/Graphics/Core/Device.hpp>
+#include <Raindrop/Graphics/Context.hpp>
 
 #include <spdlog/spdlog.h>
 
-namespace Raindrop::Renderer::Core{
+namespace Raindrop::Graphics::Core{
 	Device::Device(Context& context) : _context{context}{
 		spdlog::info("Constructing vulkan device ...");
 

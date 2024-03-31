@@ -6,6 +6,7 @@
 #include "Core/Scene/Entity.hpp"
 #include "Core/Asset/Manager.hpp"
 #include "Core/Event/Manager.hpp"
+#include "Graphics/Renderer.hpp"
 
 namespace Raindrop{
 	using Scene = Core::Scene::Scene;
@@ -18,6 +19,10 @@ namespace Raindrop{
 
 	using AssetManager = Core::Asset::Manager;
 	using EventManager = Core::Event::Manager;
+
+	// Due to name conflicts with the Renderer namespace and the class itself, this does not work
+	// TODO: fix class/namespace name conflict
+	// using Renderer = Renderer::Renderer;
 	
 	class Raindrop{
 		public:
@@ -30,6 +35,8 @@ namespace Raindrop{
 
 			AssetManager& assetManager();
 			EventManager& eventManager();
+
+			Graphics::Renderer& renderer();
 
 			void run();
 

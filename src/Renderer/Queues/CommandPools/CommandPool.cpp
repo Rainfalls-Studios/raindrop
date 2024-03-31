@@ -1,9 +1,9 @@
-#include <Raindrop/Renderer/Queues/CommandPools/CommandPool.hpp>
-#include <Raindrop/Renderer/Context.hpp>
+#include <Raindrop/Graphics/Queues/CommandPools/CommandPool.hpp>
+#include <Raindrop/Graphics/Context.hpp>
 
 #include <spdlog/spdlog.h>
 
-namespace Raindrop::Renderer::Queues{
+namespace Raindrop::Graphics::Queues{
 	CommandPool::CommandPool(Context& context) : 
 		_context{context},
 		_pool{VK_NULL_HANDLE}

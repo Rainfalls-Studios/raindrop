@@ -1,7 +1,7 @@
-#include <Raindrop/Renderer/Material/Context.hpp>
+#include <Raindrop/Graphics/Materials/Context.hpp>
 
 
-namespace Raindrop::Renderer::Material{
+namespace Raindrop::Graphics::Materials{
 	Context::Context(Renderer& renderer) : 
 		renderer{renderer},
 		instanceCount{POOL_SIZE},

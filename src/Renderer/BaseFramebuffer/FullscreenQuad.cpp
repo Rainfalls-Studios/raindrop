@@ -1,11 +1,12 @@
-#include <Raindrop/Renderer/BaseFramebuffer/FullscreenQuad.hpp>
-#include <Raindrop/Renderer/Context.hpp>
-#include <Raindrop/Renderer/Pipelines/GraphicsPipeline.hpp>
+#include <Raindrop/Graphics/BaseFramebuffer/FullscreenQuad.hpp>
+#include <Raindrop/Graphics/BaseFramebuffer/Context.hpp>
+#include <Raindrop/Graphics/Context.hpp>
+#include <Raindrop/Graphics/Pipelines/GraphicsPipeline.hpp>
 
 #include <spdlog/spdlog.h>
 #include <fstream>
 
-namespace Raindrop::Renderer::BaseFramebuffer{
+namespace Raindrop::Graphics::BaseFramebuffer{
 	std::vector<char> readFile(const std::string& filepath) {
 		std::ifstream file{filepath, std::ios::ate | std::ios::binary};
 
