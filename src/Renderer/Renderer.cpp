@@ -218,4 +218,25 @@ namespace Raindrop::Graphics{
 		assert(_context != nullptr && "The context has not been initialiezed");
 		return *_context;
 	}
+
+	MaterialWrapper Renderer::createMaterial(){
+		auto material = Material(*_context);
+		return registerMaterial(material);
+	}
+	
+	Materials::Manager& Renderer::materials(){
+		return _context->materials;
+	}
+
+	const Materials::Manager& Renderer::materials() const{
+		return _context->materials;
+	}
+	
+	MaterialWrapper Renderer::registerMaterial(const Material& material){
+		return MaterialWrapper(*_context, _context->materials.registerMaterial(material));
+	}
+
+	void Renderer::unregisterMaterial(const MaterialWrapper& wrapper){
+		_context->materials.unregisterMaterial(wrapper.ID());
+	}
 }

@@ -20,9 +20,7 @@ namespace Raindrop{
 	using AssetManager = Core::Assets::Manager;
 	using EventManager = Core::Event::Manager;
 
-	// Due to name conflicts with the Renderer namespace and the class itself, this does not work
-	// TODO: fix class/namespace name conflict
-	// using Renderer = Renderer::Renderer;
+	using Renderer = Graphics::Renderer;
 	
 	class Raindrop{
 		public:
@@ -36,7 +34,7 @@ namespace Raindrop{
 			AssetManager& assetManager();
 			EventManager& eventManager();
 
-			Graphics::Renderer& renderer();
+			Renderer& renderer();
 
 			void run();
 

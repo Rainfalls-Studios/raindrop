@@ -13,7 +13,7 @@ namespace Raindrop::Graphics::Materials{
 	class Materials;
 
 	using MaterialID = std::size_t;
-	static constexpr MaterialID PLACEHOLDER_MATERIAL = 0;
+	static constexpr MaterialID PLACEHOLDER_MATERIAL_ID = 0;
 }
 
 #endif

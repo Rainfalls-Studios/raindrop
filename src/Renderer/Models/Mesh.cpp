@@ -10,7 +10,7 @@ namespace Raindrop::Graphics::Models{
 		_vertexMemory{VK_NULL_HANDLE},
 		_indexBuffer{VK_NULL_HANDLE},
 		_indexMemory{VK_NULL_HANDLE},
-		_material{Materials::PLACEHOLDER_MATERIAL}
+		_material{Materials::PLACEHOLDER_MATERIAL_ID}
 	{
 
 	}

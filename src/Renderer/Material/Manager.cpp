@@ -14,7 +14,7 @@ namespace Raindrop::Graphics::Materials{
 			.shininess = 0.f,
 		};
 
-		assert(registerMaterial(placeholder) == PLACEHOLDER_MATERIAL && "Failed to create the placeholder material");
+		assert(registerMaterial(placeholder) == PLACEHOLDER_MATERIAL_ID && "Failed to create the placeholder material");
 	}
 
 	Manager::~Manager(){
@@ -42,7 +42,7 @@ namespace Raindrop::Graphics::Materials{
 		if (pair){
 			return pair->material;
 		} else {
-			return getMaterial(PLACEHOLDER_MATERIAL);
+			return getMaterial(PLACEHOLDER_MATERIAL_ID);
 		}
 	}
 
@@ -51,7 +51,7 @@ namespace Raindrop::Graphics::Materials{
 		if (pair){
 			return pair->set;
 		} else {
-			return getDescriptorSet(PLACEHOLDER_MATERIAL);
+			return getDescriptorSet(PLACEHOLDER_MATERIAL_ID);
 		}
 	}
 
