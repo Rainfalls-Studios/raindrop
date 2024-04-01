@@ -22,7 +22,7 @@ namespace Raindrop::Core::Assets{
 			void registerLoader(const std::string& type, const std::shared_ptr<Loader>& loader);
 
 			template<typename T, typename... Args>
-			void registerLoader(const std::string& type, Args&&... args){
+			void createLoader(const std::string& type, Args&&... args){
 				static_assert(std::is_base_of_v<Loader, T>);
 				
 				std::shared_ptr<T> loader;

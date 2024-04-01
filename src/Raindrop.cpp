@@ -142,4 +142,21 @@ namespace Raindrop{
 	void Raindrop::quit(){
 		_context->running = false;
 	}
+
+	std::shared_ptr<Asset> Raindrop::getAsset(const std::string& type, const Path& path){
+		return _context->assetManager.get(type, path);
+	}
+
+	void Raindrop::registerAssetLoader(const std::string& type, const std::shared_ptr<AssetLoader>& loader){
+		return _context->assetManager.registerLoader(type, loader);
+	}
+
+	void Raindrop::unregisterAssetLoader(const std::string& type){
+		_context->assetManager.unregisterType(type);
+	}
+
+	std::shared_ptr<AssetLoader> Raindrop::getAssetLoader(const std::string& type){
+		return _context->assetManager.findLoader(type);
+	}
+
 }
