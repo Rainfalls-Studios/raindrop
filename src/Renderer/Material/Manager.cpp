@@ -33,7 +33,7 @@ namespace Raindrop::Graphics::Materials{
 		return ID;
 	}
 
-	void Manager::unregisterMaterial(const MaterialID& ID){
+	void Manager::destroyMaterial(const MaterialID& ID){
 		_context->registry.unregisterMaterial(ID);
 	}
 

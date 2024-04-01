@@ -11,7 +11,7 @@ namespace Raindrop::Graphics::Materials{
 			~Manager();
 
 			MaterialID registerMaterial(const Material& material);
-			void unregisterMaterial(const MaterialID& ID);
+			void destroyMaterial(const MaterialID& ID);
 
 			Material& getMaterial(const MaterialID& ID);
 			VkDescriptorSet getDescriptorSet(const MaterialID& ID);

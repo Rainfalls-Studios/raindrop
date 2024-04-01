@@ -5,7 +5,8 @@
 
 namespace Raindrop::Graphics::Wrappers{
 	class MaterialWrapper;
-	class RenderSystemWrapper;
+	// Cannot prototype template classes
+	// class RenderSystemWrapper;
 }
 
 #endif

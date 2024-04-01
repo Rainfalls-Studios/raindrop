@@ -9,6 +9,7 @@ namespace Raindrop::Graphics::RenderSystems{
 	using SceneID = ::Raindrop::Core::Scenes::SceneID;
 
 	using RenderSystemID = std::uint32_t;
+	static constexpr RenderSystemID INVALID_RENDER_SYSTEM_ID = (RenderSystemID)(~0);
 
 	class RenderSystem;
 	class Registry;

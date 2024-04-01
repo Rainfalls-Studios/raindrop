@@ -11,6 +11,7 @@ static std::unique_ptr<Raindrop::Graphics::Pipelines::Default> shader;
 #include <Raindrop/Graphics/Models/Loader.hpp>
 #include <Raindrop/Graphics/Models/Model.hpp>
 #include <Raindrop/Graphics/Models/Mesh.hpp>
+#include <Raindrop/Graphics/RenderSystems/RenderSystem.hpp>
 
 #include<Raindrop/Components/Transformation.hpp>
 #include<Raindrop/Components/Model.hpp>
@@ -236,7 +237,24 @@ namespace Raindrop::Graphics{
 		return MaterialWrapper(*_context, _context->materials.registerMaterial(material));
 	}
 
-	void Renderer::unregisterMaterial(const MaterialWrapper& wrapper){
-		_context->materials.unregisterMaterial(wrapper.ID());
+	void Renderer::destroyMaterial(const MaterialWrapper& wrapper){
+		_context->materials.destroyMaterial(wrapper.ID());
+	}
+
+	RenderSystemWrapper<> Renderer::registerRenderSystem(std::unique_ptr<RenderSystem> system){
+		auto ID = _context->renderSystems.registerRenderSystem(std::move(system));
+		return RenderSystemWrapper<>(*_context, ID);
+	}
+
+	void Renderer::destroyRenderSystem(const RenderSystemWrapper<>& wrapper){
+		_context->renderSystems.destroyRenderSystem(wrapper.ID());
+	}
+
+	RenderSystems::Registry& Renderer::renderSystems(){
+		return _context->renderSystems;
+	}
+
+	const RenderSystems::Registry& Renderer::renderSystems() const{
+		return _context->renderSystems;
 	}
 }
