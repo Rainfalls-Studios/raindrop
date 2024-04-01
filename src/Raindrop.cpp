@@ -114,20 +114,20 @@ namespace Raindrop{
 		}
 	}
 
-	SceneID Raindrop::createScene(){
-		return _context->scenes.createScene();
+	SceneWrapper Raindrop::createScene(){
+		return SceneWrapper(*_context, _context->scenes.createScene());
 	}
 
-	Scene& Raindrop::getScene(const SceneID& ID){
-		return _context->scenes.get(ID);
+	SceneWrapper Raindrop::registerScene(std::unique_ptr<Scene> scene){
+		return SceneWrapper(*_context, _context->scenes.registerScene(std::move(scene)));
 	}
 
-	SceneID Raindrop::registerScene(std::unique_ptr<Scene> scene){
-		return _context->scenes.registerScene(std::move(scene));
+	void Raindrop::unregisterScene(const SceneWrapper& wrapper){
+		return _context->scenes.unregisterScene(wrapper.ID());
 	}
 
-	void Raindrop::unregisterScene(const SceneID& ID){
-		return _context->scenes.unregisterScene(ID);
+	SceneWrapper Raindrop::getScene(const SceneID& ID){
+		return SceneWrapper(*_context, ID);
 	}
 
 	AssetManager& Raindrop::assetManager(){
@@ -161,5 +161,4 @@ namespace Raindrop{
 	std::shared_ptr<AssetLoader> Raindrop::getAssetLoader(const std::string& type){
 		return _context->assetManager.findLoader(type);
 	}
-
 }

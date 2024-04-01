@@ -8,6 +8,8 @@
 #include "Core/Event/Manager.hpp"
 #include "Graphics/Renderer.hpp"
 
+#include "Wrappers/SceneWrapper.hpp"
+
 // TODO: Add Raindrop.inl
 
 namespace Raindrop{
@@ -22,10 +24,11 @@ namespace Raindrop{
 	using Asset = Core::Assets::Asset;
 	using AssetLoader = Core::Assets::Loader;
 
-
 	using AssetManager = Core::Assets::Manager;
 	using EventManager = Core::Event::Manager;
 	using Renderer = Graphics::Renderer;
+
+	using namespace Wrappers;
 	
 	class Raindrop{
 		public:
@@ -34,11 +37,11 @@ namespace Raindrop{
 
 			// === Scenes ===
 
-			SceneID createScene();
-			SceneID registerScene(std::unique_ptr<Scene> scene);
-			void unregisterScene(const SceneID& ID);
+			SceneWrapper createScene();
+			SceneWrapper registerScene(std::unique_ptr<Scene> scene);
+			void unregisterScene(const SceneWrapper& ID);
 
-			Scene& getScene(const SceneID& ID);
+			SceneWrapper getScene(const SceneID& ID);
 
 			// === Events ===
 
