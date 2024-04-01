@@ -29,8 +29,8 @@ namespace Raindrop::Graphics{
 
 		shader = std::make_unique<Pipelines::Default>(*_context);
 
-		_context->core.assetManager.registerLoader<Textures::Loader>("Texture", *_context);
-		_context->core.assetManager.registerLoader<Models::Loader>("Model", *_context);
+		_context->core.assetManager.createLoader<Textures::Loader>("Texture", *_context);
+		_context->core.assetManager.createLoader<Models::Loader>("Model", *_context);
 
 		{
 			auto size = _context->window.getSize();

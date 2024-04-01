@@ -114,7 +114,10 @@ namespace Raindrop{
 		}
 	}
 
-	
+	SceneID Raindrop::createScene(){
+		return _context->scenes.createScene();
+	}
+
 	Scene& Raindrop::getScene(const SceneID& ID){
 		return _context->scenes.get(ID);
 	}

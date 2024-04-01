@@ -2,6 +2,7 @@
 #define __RAINDROP_CORE_SCENES_SCENE_HPP__
 
 #include "common.hpp"
+#include "Property.hpp"
 #include <entt/entt.hpp>
 
 namespace Raindrop::Core::Scenes{
@@ -12,7 +13,7 @@ namespace Raindrop::Core::Scenes{
 			using registry = entt::registry;
 
 			Scene() = default;
-			virtual ~Scene() = default;
+			~Scene() = default;
 
 			using registry::clear;
 
@@ -26,6 +27,22 @@ namespace Raindrop::Core::Scenes{
 			template<typename Component>
 			Component& get(const EntityLUID& entity);
 			using registry::get;
+
+			void addProperty(const std::type_index& typeID, std::unique_ptr<Property> property);
+			void removeProperty(const std::type_index& typeID);
+			Property* getProperty(const std::type_index& typeID);
+
+			template<typename Property, typename... Args>
+			void addProperty(Args&... args);
+
+			template<typename Property>
+			void removeProperty();
+
+			template<typename Property>
+			Property* getProperty();
+
+		private:
+			std::unordered_map<std::type_index, std::unique_ptr<Property>> _properties;
 	};
 }
 

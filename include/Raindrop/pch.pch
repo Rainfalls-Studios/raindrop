@@ -12,5 +12,6 @@
 
 #include <filesystem>
 #include <functional>
+#include <typeindex>
 
 #endif

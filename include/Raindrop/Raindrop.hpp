@@ -8,9 +8,9 @@
 #include "Core/Event/Manager.hpp"
 #include "Graphics/Renderer.hpp"
 
-namespace Raindrop{
-	
+// TODO: Add Raindrop.inl
 
+namespace Raindrop{
 	using Scene = Core::Scenes::Scene;
 	using SceneID = Core::Scenes::SceneID;
 
@@ -32,11 +32,13 @@ namespace Raindrop{
 			Raindrop();
 			~Raindrop();
 
-			// === Scene ===
+			// === Scenes ===
 
-			Scene& getScene(const SceneID& ID);
+			SceneID createScene();
 			SceneID registerScene(std::unique_ptr<Scene> scene);
 			void unregisterScene(const SceneID& ID);
+
+			Scene& getScene(const SceneID& ID);
 
 			// === Events ===
 
@@ -74,7 +76,7 @@ namespace Raindrop{
 			template<typename T, typename... Args>
 			inline constexpr void createAssetLoader(const std::string& type, Args&&... args){
 				static_assert(std::is_base_of_v<AssetLoader, T> && "The asset loader has to be based of Raindrop::AssetLoader (Raindrop::Core::Assets::Loader)");
-				registerAssetLoader(type, std::make_shared<T>(args...)):
+				registerAssetLoader(type, std::make_shared<T>(args...));
 			}
 
 			void unregisterAssetLoader(const std::string& type);
