@@ -27,16 +27,43 @@ namespace Raindrop{
 			Raindrop();
 			~Raindrop();
 
+			// === Scene ===
+
 			Scene& getScene(const SceneID& ID);
 			SceneID registerScene(std::unique_ptr<Scene> scene);
 			void unregisterScene(const SceneID& ID);
 
-			AssetManager& assetManager();
+			// === Events ===
+
 			EventManager& eventManager();
+
+			template<typename F>
+			inline constexpr void subscribeEvent(const std::string& name, F&& callback){
+				eventManager().subscribe(name, callback);
+			}
+
+			template<typename... Args>
+			inline constexpr void triggerEvent(const std::string& name, Args... args){
+				eventManager().trigger<Args...>(name, args...);
+			}
+
+			template<typename... Args>
+			inline constexpr void registerEvent(const std::string& name){
+				eventManager().registerEvent<Args...>(name);
+			}
+
+			// === Assets ===
+
+			AssetManager& assetManager();
+
+			
 
 			Renderer& renderer();
 
+			// === Runtime ===
+
 			void run();
+			void quit();
 
 		private:
 			Context* _context;

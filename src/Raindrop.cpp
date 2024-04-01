@@ -28,26 +28,6 @@ namespace Raindrop{
 		_context->running = true;
 
 		_context->eventManager.subscribe(
-			"quit",
-			[&]() -> void {
-				_context->running = false;
-			}
-		);
-
-		_context->eventManager.subscribe(
-			"key.down",
-			[&](SDL_Scancode scancode, SDL_Keycode keycode, uint16_t repeat) -> void {
-				if (keycode == SDLK_LCTRL){
-					if (SDL_GetRelativeMouseMode() == SDL_TRUE){
-						SDL_SetRelativeMouseMode(SDL_FALSE);
-					} else {
-						SDL_SetRelativeMouseMode(SDL_TRUE);
-					}
-				}
-			}
-		);
-
-		_context->eventManager.subscribe(
 			"mouse.motion",
 			[&](glm::vec2 position, glm::vec2 relativePosition) -> void {
 				if (SDL_GetRelativeMouseMode() == SDL_TRUE){
@@ -157,5 +137,9 @@ namespace Raindrop{
 
 	Graphics::Renderer& Raindrop::renderer(){
 		return _context->renderer;
+	}
+
+	void Raindrop::quit(){
+		_context->running = false;
 	}
 }

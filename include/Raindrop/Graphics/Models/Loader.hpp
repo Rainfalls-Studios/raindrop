@@ -12,6 +12,7 @@ namespace Raindrop::Graphics::Models{
 			Loader(Context &context);
 			virtual ~Loader() override;
 
+			virtual void collectGarbage() override;
 			virtual std::shared_ptr<Asset> load(const Path& path) override;
 			virtual void registerAsset(const Path& path, const std::shared_ptr<Asset>& asset) override;
 		

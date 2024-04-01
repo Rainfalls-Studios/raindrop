@@ -13,7 +13,7 @@ namespace Raindrop::Graphics::Textures{
 		spdlog::info("Destroying texture asset loader ...");
 	}
 
-	std::shared_ptr<::Raindrop::Core::Assets::Asset> Loader::load(const Path& path){
+	std::shared_ptr<Loader::Asset> Loader::load(const Path& path){
 		spdlog::info("Loading texture from \"{}\"", path.string());
 
 		std::shared_ptr<Texture> texture;
@@ -25,11 +25,25 @@ namespace Raindrop::Graphics::Textures{
 		}
 		_textures.push_back(texture);
 
-		return std::static_pointer_cast<Asset>(texture);
+		return std::static_pointer_cast<Loader::Asset>(texture);
 	}
 
 	void Loader::registerAsset(const Path& path, const std::shared_ptr<Asset>& asset){
-		std::shared_ptr<Texture> texture = std::static_pointer_cast<Texture>(asset);
-		_textures.push_back(texture);
+		_textures.push_back(std::static_pointer_cast<Texture>(asset));
+	}
+
+	void Loader::collectGarbage(){
+		auto it = _textures.begin();
+		std::size_t count = 0;
+		while (it != _textures.end()){
+			if (it->unique()){
+				count++;
+				_textures.erase(it);
+				continue;
+			}
+			it++;
+		}
+
+		spdlog::trace("Cleared {} etxture assets from texture loader garbage collection", count);
 	}
 }

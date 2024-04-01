@@ -5,6 +5,7 @@
 #include <Raindrop/Components/Model.hpp>
 
 #include "config.h"
+#include <SDL3/SDL.h>
 
 void testbed(){
 	namespace RD = Raindrop;
@@ -15,6 +16,26 @@ void testbed(){
 	current_path(PATH);
 	RD::Raindrop engine;
 	auto& renderer = engine.renderer();
+
+	engine.subscribeEvent(
+		"quit",
+		[&engine]() -> void {
+			engine.quit();
+		}
+	);
+
+	engine.subscribeEvent(
+		"key.down",
+		[](SDL_Scancode scancode, SDL_Keycode keycode, uint16_t repeat) -> void {
+			if (keycode == SDLK_LCTRL){
+				if (SDL_GetRelativeMouseMode() == SDL_TRUE){
+					SDL_SetRelativeMouseMode(SDL_FALSE);
+				} else {
+					SDL_SetRelativeMouseMode(SDL_TRUE);
+				}
+			}
+		}
+	);
 
 	// auto entity = RD::Entity::create(engine.scene());
 

@@ -26,29 +26,7 @@ namespace Raindrop::Core::Assets{
 		typeData->_pathToAssets[path] = asset;
 	}
 
-	std::weak_ptr<Asset> Manager::find(const std::string& type, const Path& path){
-		spdlog::trace("Looking for asset \"{}\" (type : \"{}\") ...", path.string(), type);
-
-		TypeData* typeData = getTypeData(type);
-		if (typeData == nullptr){
-			spdlog::warn("Failed to find a loader corresponding to \"{}\" asset type for asset \"{}\"", type, path.string());
-			throw std::runtime_error("Failed to find corresponding loader");
-		}
-
-		auto& pathToAsset = typeData->_pathToAssets;
-
-		{
-			auto it = pathToAsset.find(path);
-			if (it != pathToAsset.end()){
-				return it->second;
-			}
-		}
-
-		spdlog::trace("Asset \"{}\" (type : \"{}\") has not been found", path.string(), type);
-		return {};
-	}
-
-	std::weak_ptr<Asset> Manager::get(const std::string& type, const Path& path){
+	std::shared_ptr<Asset> Manager::get(const std::string& type, const Path& path){
 		spdlog::trace("Requirering asset \"{}\" (type : \"{}\") ... ", path.string(), type);
 
 		TypeData* typeData = getTypeData(type);
@@ -63,14 +41,20 @@ namespace Raindrop::Core::Assets{
 			auto it = pathToAsset.find(path);
 			if (it != pathToAsset.end()){
 				spdlog::trace("Found asset \"{}\" (type : \"{}\")", path.string(), type);
-				return it->second;
+				auto lock = it->second.lock();
+				if (lock != nullptr){
+					return lock;
+				}
+
+				pathToAsset.erase(it);
+				spdlog::trace("Asset \"{}\" (type : \"{}\") is not valid anymore, trying to load it ...", path.string(), type);
 			}
 		}
 
 		auto loader = typeData->_loader;
 		assert(loader != nullptr && "The asset type is not linked to any asset loader");
 
-		spdlog::trace("Loading asset \"{}\"... (type : \"{}\")", path.string(), type);
+		spdlog::trace("Loading asset \"{}\" (type : \"{}\") ...", path.string(), type);
 		std::shared_ptr<Asset> asset = loader->load(path);
 		pathToAsset[path] = asset;
 

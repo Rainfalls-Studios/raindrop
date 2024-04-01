@@ -10,18 +10,11 @@ namespace Raindrop::Core::Assets{
 			Manager(Context &context);
 			~Manager();
 
-			std::weak_ptr<Asset> get(const std::string& type, const Path& path);
+			std::shared_ptr<Asset> get(const std::string& type, const Path& path);
 
 			template<typename T>
-			std::weak_ptr<T> get(const std::string& type, const Path& path){
-				return std::dynamic_pointer_cast<T>(get(type, path).lock());
-			}
-
-			std::weak_ptr<Asset> find(const std::string& type, const Path& path);
-
-			template<typename T>
-			std::weak_ptr<T> find(const std::string& type, const Path& path){
-				return std::dynamic_pointer_cast<T>(find(type, path).lock());
+			std::shared_ptr<T> get(const std::string& type, const Path& path){
+				return std::static_pointer_cast<T>(get(type, path));
 			}
 
 			void registerAsset(const std::string& type, const Path& path, const std::shared_ptr<Asset>& asset);
@@ -51,7 +44,7 @@ namespace Raindrop::Core::Assets{
 			
 			struct TypeData{
 				std::shared_ptr<Loader> _loader;
-				std::unordered_map<Path, std::shared_ptr<Asset>> _pathToAssets;
+				std::unordered_map<Path, std::weak_ptr<Asset>> _pathToAssets;
 			};
 
 			std::unordered_map<std::string, std::unique_ptr<TypeData>> _typeToLoader;

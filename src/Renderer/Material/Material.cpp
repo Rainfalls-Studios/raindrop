@@ -44,7 +44,7 @@ namespace Raindrop::Graphics::Materials{
 	{}
 
 	bool Material::Textures::operator==(const Textures& other) const{
-		return (diffuse.lock() == other.diffuse.lock());
+		return (diffuse == other.diffuse);
 	}
 
 	Material::Textures& Material::Textures::operator=(const Textures& other){
@@ -54,10 +54,10 @@ namespace Raindrop::Graphics::Materials{
 	}
 
 	const Material::Texture& Material::Textures::getDiffuse() const{
-		if (diffuse.expired()){
+		if (diffuse == nullptr){
 			return *context.white.get();
 		} else {
-			return *diffuse.lock();
+			return *diffuse;
 		}
 	}
 }

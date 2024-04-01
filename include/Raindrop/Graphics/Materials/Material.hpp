@@ -3,6 +3,7 @@
 
 #include "common.hpp"
 #include <Raindrop/Graphics/Textures/Texture.hpp>
+#include <Raindrop/Core/Assets/common.hpp>
 
 namespace Raindrop::Graphics::Materials{
 	struct Material{
@@ -30,7 +31,7 @@ namespace Raindrop::Graphics::Materials{
 			Context& context;
 				
 			const Texture& getDiffuse() const;
-			std::weak_ptr<Texture> diffuse;
+			std::shared_ptr<Texture> diffuse = nullptr;
 
 			bool operator==(const Textures& other) const;
 		} textures;

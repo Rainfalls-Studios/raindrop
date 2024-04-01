@@ -19,7 +19,7 @@ namespace Raindrop::Core::Event{
 			void subscribe(const std::string& eventName, std::function<void()> subscriber) {
 				auto it = _nameToEvent.find(eventName);
 				assert(it != _nameToEvent.end() && "Event not registred");
-				assert(it->second.argCount == 0 && "Invalud argument count");
+				assert(it->second.argCount == 0 && "Invalid argument count");
 
 				it->second.subscribers.push_back(
 					[=](const std::vector<void*>& args){
