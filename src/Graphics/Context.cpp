@@ -11,6 +11,7 @@ namespace Raindrop::Graphics{
 		queues(*this),
 		commandPools(*this),
 		swapchain(*this),
+		pipelineLayoutRegistry(*this),
 		baseFramebuffer(*this),
 		white(*this),
 		materials(*this),

@@ -15,6 +15,7 @@
 #include "Materials/Manager.hpp"
 #include "RenderSystems/Registry.hpp"
 #include "WhiteTexture.hpp"
+#include "Pipelines/LayoutRegistry.hpp"
 
 namespace Raindrop::Graphics{
 	struct Context{
@@ -31,6 +32,7 @@ namespace Raindrop::Graphics{
 		Queues::Manager queues;
 		Queues::CommandPools commandPools;
 		Core::Swapchain swapchain;
+		Pipelines::LayoutRegistry pipelineLayoutRegistry;
 		BaseFramebuffer::Framebuffer baseFramebuffer;
 		WhiteTexture white;
 		

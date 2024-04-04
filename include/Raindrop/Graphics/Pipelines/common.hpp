@@ -4,9 +4,16 @@
 #include "../common.hpp"
 
 namespace Raindrop::Graphics::Pipelines{
+	struct GraphicsPipelineConfigInfo;
+	struct PipelineLayoutConfigInfo;
+
 	class GraphicsPipeline;
+	class PipelineLayout;
+	class LayoutRegistry;
 
 	// class ComputePipeline; TODO
+
+	using LayoutID = std::uint32_t;
 }
 
 #endif
