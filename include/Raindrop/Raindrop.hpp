@@ -48,48 +48,33 @@ namespace Raindrop{
 			EventManager& eventManager();
 
 			template<typename F>
-			inline constexpr void subscribeEvent(const std::string& name, F&& callback){
-				eventManager().subscribe(name, callback);
-			}
+			inline constexpr void subscribeEvent(const std::string& name, F&& callback);
 
 			template<typename... Args>
-			inline constexpr void triggerEvent(const std::string& name, Args... args){
-				eventManager().trigger<Args...>(name, args...);
-			}
+			inline constexpr void triggerEvent(const std::string& name, Args... args);
 
 			template<typename... Args>
-			inline constexpr void registerEvent(const std::string& name){
-				eventManager().registerEvent<Args...>(name);
-			}
+			inline constexpr void registerEvent(const std::string& name);
 
 			// === Assets ===
 
 			AssetManager& assetManager();
 
 			std::shared_ptr<Asset> getAsset(const std::string& type, const Path& path);
-
-			template<typename T>
-			inline constexpr std::shared_ptr<T> getAsset(const std::string& type, const Path& path){
-				static_assert(std::is_base_of_v<Asset, T> && "The asset type as to be based of Raindrop::Asset (Raindrop::Core::Assets::Asset)");
-				return std::static_pointer_cast<T>(getAsset(type, path));
-			}
-
 			void registerAssetLoader(const std::string& type, const std::shared_ptr<AssetLoader>& loader);
-
-			template<typename T, typename... Args>
-			inline constexpr void createAssetLoader(const std::string& type, Args&&... args){
-				static_assert(std::is_base_of_v<AssetLoader, T> && "The asset loader has to be based of Raindrop::AssetLoader (Raindrop::Core::Assets::Loader)");
-				registerAssetLoader(type, std::make_shared<T>(args...));
-			}
-
 			void unregisterAssetLoader(const std::string& type);
-
 			std::shared_ptr<AssetLoader> getAssetLoader(const std::string& type);
 
 			template<typename T>
-			inline constexpr std::shared_ptr<T> getAssetLoader(const std::string& type){
-				return std::static_pointer_cast<T>(getAssetLoader(type));
-			}
+			inline constexpr std::shared_ptr<T> getAsset(const std::string& type, const Path& path);
+
+			template<typename T, typename... Args>
+			inline constexpr void createAssetLoader(const std::string& type, Args&&... args);
+
+			template<typename T>
+			inline constexpr std::shared_ptr<T> getAssetLoader(const std::string& type);
+
+			// === Graphics ===
 			
 			Renderer& renderer();
 
@@ -107,5 +92,7 @@ namespace Raindrop{
 			void updateCameraPosition();
 	};
 }
+
+#include "Raindrop.inl"
 
 #endif

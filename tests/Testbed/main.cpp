@@ -45,7 +45,7 @@ void testbed(){
 	engine.run();
 }
 
-int main(){
+int main(int argc, char** argv){
 	std::cout << "==========================================" << std::endl;
 	std::cout << "=                 TESTBED                =" << std::endl;
 	std::cout << "==========================================" << std::endl;

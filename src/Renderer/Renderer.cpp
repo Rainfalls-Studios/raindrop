@@ -3,10 +3,6 @@
 #include <spdlog/spdlog.h>
 #include <Raindrop/Context.hpp>
 
-// TEST
-#include <Raindrop/Graphics/Pipelines/Default.hpp>
-static std::unique_ptr<Raindrop::Graphics::Pipelines::Default> shader;
-
 #include <Raindrop/Graphics/Textures/Loader.hpp>
 #include <Raindrop/Graphics/Models/Loader.hpp>
 #include <Raindrop/Graphics/Models/Model.hpp>
@@ -27,8 +23,6 @@ namespace Raindrop::Graphics{
 		createRenderCommandPool();
 		allocateFrameCommandBuffers();
 
-		shader = std::make_unique<Pipelines::Default>(*_context);
-
 		_context->core.assetManager.createLoader<Textures::Loader>("Texture", *_context);
 		_context->core.assetManager.createLoader<Models::Loader>("Model", *_context);
 
@@ -45,8 +39,6 @@ namespace Raindrop::Graphics{
 		_context->core.assetManager.unregisterType("Model");
 		_context->core.assetManager.unregisterType("Texture");
 
-		shader = nullptr;
-
 		freeFrameCommandBuffers();
 		destroyRenderCommandPool();
 
@@ -56,59 +48,11 @@ namespace Raindrop::Graphics{
 	void Renderer::render(){
 		static auto start = std::chrono::high_resolution_clock::now();
 		auto& swapchain = _context->swapchain;	
-
-		// auto& baseframebuffer = _context->core.scene;
 		
 		VkCommandBuffer commandBuffer = beginFrame();
 		if (commandBuffer != nullptr){
 			
 			_context->baseFramebuffer.beginRenderPass(commandBuffer);
-			shader->bind(commandBuffer);
-
-			// auto view = baseframebuffer.view<Components::Transformation, Components::Model>();
-
-			// for (const auto& entity : view){
-			// 	auto& transformComponent = baseframebuffer.get<Components::Transformation>(entity);
-			// 	auto& modelComponent = baseframebuffer.get<Components::Model>(entity);
-				
-			// 	{
-			// 		glm::mat4 pushConstant[2] = {
-			// 			_context->core.camera.viewTransform(),
-			// 			transformComponent.matrix
-			// 		};
-
-			// 		vkCmdPushConstants(
-			// 			commandBuffer,
-			// 			shader->layout(),
-			// 			VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
-			// 			0,
-			// 			sizeof(glm::mat4) * 2,
-			// 			pushConstant
-			// 		);
-			// 	}
-
-			// 	auto& model = modelComponent.model;
-
-			// 	if (!model.expired()){
-			// 		for (auto& mesh : *model.lock()){
-			// 			VkDescriptorSet set = _context->materials.getDescriptorSet(mesh->materialID());
-
-			// 			vkCmdBindDescriptorSets(
-			// 				commandBuffer,
-			// 				VK_PIPELINE_BIND_POINT_GRAPHICS,
-			// 				shader->layout(),
-			// 				0,
-			// 				1,
-			// 				&set,
-			// 				0,
-			// 				nullptr
-			// 			);
-
-			// 			mesh->render(commandBuffer);
-			// 		}
-			// 	}
-			// }
-
 			_context->baseFramebuffer.endRenderPass(commandBuffer);
 
 			swapchain.beginRenderPass(commandBuffer);
