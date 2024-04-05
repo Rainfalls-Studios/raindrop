@@ -3,34 +3,23 @@
 
 #include "common.hpp"
 #include "../Core/Scenes/common.hpp"
+#include "../Utils/Wrapper.hpp"
 
 namespace Raindrop::Wrappers{
-	class SceneWrapper{
+	class SceneWrapper : public Utils::Wrapper<Context, Core::Scenes::Scene, Core::Scenes::SceneID, Core::Scenes::INVALID_SCENE_ID>{
 		public:
 			using SceneID = Core::Scenes::SceneID;
 			using Scene = Core::Scenes::Scene;
 
-			SceneWrapper();
-			SceneWrapper(Context& context, const SceneID& ID);
-			SceneWrapper(const SceneWrapper& other);
+			using Wrapper::Wrapper;
+			using Wrapper::operator=;
+			using Wrapper::operator->;
+			using Wrapper::ID;
 
-			SceneWrapper& operator=(const SceneWrapper& other);
-			SceneWrapper& operator=(const SceneID& ID);
+			virtual ~SceneWrapper() override = default;
 
-			~SceneWrapper();
-
-			Scene& get();
-			const Scene& get() const;
-
-			SceneID ID() const;
-
-			Scene* operator->();
-			const Scene* operator->() const;
-
-		private:
-			Context* _context;
-			SceneID _ID;
-
+			virtual Scene& get() override;
+			virtual const Scene& get() const override;
 	};
 }
 
