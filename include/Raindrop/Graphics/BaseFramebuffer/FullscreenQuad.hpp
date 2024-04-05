@@ -15,7 +15,7 @@ namespace Raindrop::Graphics::BaseFramebuffer{
 		private:
 			Context& _context;
 
-			VkPipelineLayout _layout;
+			Pipelines::LayoutID _layoutID;
 			std::unique_ptr<Pipelines::GraphicsPipeline> _pipeline;
 
 			VkShaderModule _fragmentModule;
@@ -31,6 +31,8 @@ namespace Raindrop::Graphics::BaseFramebuffer{
 			void createVertexModule();
 
 			void createShaderModule(const std::vector<char>& code, VkShaderModule& shaderModule);
+
+			VkPipelineLayout getLayout();
 
 	};
 }

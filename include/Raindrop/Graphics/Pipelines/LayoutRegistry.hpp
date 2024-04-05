@@ -2,9 +2,10 @@
 #define __RAINDROP_GRAPHICS_PIPELINES_LAYOUT_REGISTRY_HPP__
 
 #include "common.hpp"
+#include "../../Utils/Registry.hpp"
 
 namespace Raindrop::Graphics::Pipelines{
-	class LayoutRegistry{
+	class LayoutRegistry : private Utils::Registry<std::unique_ptr<PipelineLayout>, LayoutID>{
 		public:
 			LayoutRegistry(Context& context);
 			~LayoutRegistry();
@@ -14,11 +15,15 @@ namespace Raindrop::Graphics::Pipelines{
 
 			PipelineLayout* get(const LayoutID& ID);
 
+			using Registry::exists;
+			using Registry::inRange;
+
+			using Registry::reservedSize;
+			using Registry::freeSize;
+			using Registry::usedSize;
+
 		private:
 			Context& _context;
-
-			std::vector<std::unique_ptr<PipelineLayout>> _layouts;
-			std::queue<LayoutID> _freeIDs;
 	};
 }
 

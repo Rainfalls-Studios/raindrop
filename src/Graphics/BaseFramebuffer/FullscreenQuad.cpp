@@ -2,6 +2,8 @@
 #include <Raindrop/Graphics/BaseFramebuffer/Context.hpp>
 #include <Raindrop/Graphics/Context.hpp>
 #include <Raindrop/Graphics/Pipelines/GraphicsPipeline.hpp>
+#include <Raindrop/Graphics/Pipelines/PipelineLayout.hpp>
+#include <Raindrop/Graphics/Pipelines/LayoutRegistry.hpp>
 
 #include <spdlog/spdlog.h>
 #include <fstream>
@@ -27,7 +29,7 @@ namespace Raindrop::Graphics::BaseFramebuffer{
 
 	FullscreenQuad::FullscreenQuad(Context& context) : 
 		_context{context},
-		_layout{VK_NULL_HANDLE},
+		_layoutID{Pipelines::INVALID_LAYOUT_ID},
 		_pipeline{nullptr},
 		_fragmentModule{VK_NULL_HANDLE},
 		_vertexModule{VK_NULL_HANDLE}
@@ -37,6 +39,10 @@ namespace Raindrop::Graphics::BaseFramebuffer{
 		createPipelineLayout();
 		createShaderModules();
 		createPipeline();
+	}
+
+	VkPipelineLayout FullscreenQuad::getLayout(){
+		return _context.renderer.pipelineLayoutRegistry.get(_layoutID)->get();
 	}
 	
 	FullscreenQuad::~FullscreenQuad(){
@@ -51,38 +57,22 @@ namespace Raindrop::Graphics::BaseFramebuffer{
 		_pipeline->bind(commandBuffer);
 
 		VkDescriptorSet set = _context.set.set();
-		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _layout, 0, 1, &set, 0, nullptr);
+		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, getLayout(), 0, 1, &set, 0, nullptr);
 
 		vkCmdDraw(commandBuffer, 6, 1, 0, 0);
 	}
 
 	void FullscreenQuad::createPipelineLayout(){
-		VkPipelineLayoutCreateInfo info = {};
+		Pipelines::PipelineLayoutConfigInfo info{};
+		info.setLayouts.push_back(_context.set.layout());
 
-		info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		info.pushConstantRangeCount = 0;
-
-		VkDescriptorSetLayout layout = _context.set.layout();
-		info.pSetLayouts = &layout; 
-		info.setLayoutCount = 1;
-
-		auto& device = _context.renderer.device;
-		auto& allocationCallbacks = _context.renderer.allocationCallbacks;
-
-		if (vkCreatePipelineLayout(device.get(), &info, allocationCallbacks, &_layout) != VK_SUCCESS){
-			spdlog::error("Failed to create baseframebuffer fullscreen quad pipeline layout");
-			throw std::runtime_error("Failed to create pipeline layout");
-		}
+		_layoutID = _context.renderer.pipelineLayoutRegistry.create(info);
 	}
 
 	void FullscreenQuad::destroyPipelineLayout(){
 		auto& device = _context.renderer.device;
 		auto& allocationCallbacks = _context.renderer.allocationCallbacks;
-
-		if (_layout != VK_NULL_HANDLE){
-			vkDestroyPipelineLayout(device.get(), _layout, allocationCallbacks);
-			_layout = VK_NULL_HANDLE;
-		}
+		_context.renderer.pipelineLayoutRegistry.destroy(_layoutID);
 	}
 
 	void FullscreenQuad::createPipeline(){
@@ -90,7 +80,7 @@ namespace Raindrop::Graphics::BaseFramebuffer{
 		Pipelines::GraphicsPipelineConfigInfo::defaultInfo(info);
 
 		info.renderPass = _context.renderer.swapchain.renderPass();
-		info.pipelineLayout = _layout;
+		info.pipelineLayoutID = _layoutID;
 		
 		{
 			VkPipelineColorBlendAttachmentState attachment = {};

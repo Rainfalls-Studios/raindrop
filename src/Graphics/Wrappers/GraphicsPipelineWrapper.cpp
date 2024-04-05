@@ -1,4 +1,5 @@
 #include <Raindrop/Graphics/Wrappers/GraphicsPipelineWrapper.hpp>
+#include <Raindrop/Graphics/Wrappers/PipelineLayoutWrapper.hpp>
 #include <Raindrop/Graphics/Pipelines/GraphicsPipeline.hpp>
 #include <Raindrop/Graphics/Context.hpp>
 
@@ -50,5 +51,21 @@ namespace Raindrop::Graphics::Wrappers{
 
 	const GraphicsPipelineWrapper::GraphicsPipeline* GraphicsPipelineWrapper::operator->() const{
 		return &get();
+	}
+
+	VkPipeline GraphicsPipelineWrapper::pipeline() const{
+		return get().get();
+	}
+
+	void GraphicsPipelineWrapper::bind(VkCommandBuffer commandBuffer){
+		get().bind(commandBuffer);
+	}
+
+	Pipelines::LayoutID GraphicsPipelineWrapper::layoutID() const{
+		return Pipelines::INVALID_LAYOUT_ID;
+	}
+
+	PipelineLayoutWrapper GraphicsPipelineWrapper::layout() const{
+		return PipelineLayoutWrapper(*_context, layoutID());
 	}
 }

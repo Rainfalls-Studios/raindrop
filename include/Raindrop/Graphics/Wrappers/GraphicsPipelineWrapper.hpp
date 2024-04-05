@@ -27,6 +27,13 @@ namespace Raindrop::Graphics::Wrappers{
 			GraphicsPipeline* operator->();
 			const GraphicsPipeline* operator->() const;
 
+
+			VkPipeline pipeline() const;
+			void bind(VkCommandBuffer commandBuffer);
+
+			Pipelines::LayoutID layoutID() const;
+			PipelineLayoutWrapper layout() const;
+
 		private:
 			Context* _context;
 			GraphicsPipelineID _ID;

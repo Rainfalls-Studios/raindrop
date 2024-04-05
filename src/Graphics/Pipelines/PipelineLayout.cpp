@@ -15,7 +15,7 @@ namespace Raindrop::Graphics::Pipelines{
 	}
 
 	void PipelineLayout::createLayout(const PipelineLayoutConfigInfo& info){
-		spdlog::error("Creating a pipeline layout ...");
+		spdlog::info("Creating a pipeline layout ...");
 		auto& device = _context.device;
 		auto& allocationCallbacks = _context.allocationCallbacks;
 

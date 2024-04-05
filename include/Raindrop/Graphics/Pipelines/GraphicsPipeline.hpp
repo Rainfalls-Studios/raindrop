@@ -19,7 +19,7 @@ namespace Raindrop::Graphics::Pipelines{
 		VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
 		VkPipelineDynamicStateCreateInfo dynamicStateInfo;
 		VkPipelineTessellationStateCreateInfo tessellationInfo;
-		VkPipelineLayout pipelineLayout;
+		LayoutID pipelineLayoutID;
 		VkRenderPass renderPass;
 		uint32_t subpass;
 

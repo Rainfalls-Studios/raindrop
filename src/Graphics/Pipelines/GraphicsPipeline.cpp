@@ -1,4 +1,5 @@
 #include <Raindrop/Graphics/Pipelines/GraphicsPipeline.hpp>
+#include <Raindrop/Graphics/Pipelines/PipelineLayout.hpp>
 #include <Raindrop/Graphics/Context.hpp>
 #include <spdlog/spdlog.h>
 
@@ -13,7 +14,7 @@ namespace Raindrop::Graphics::Pipelines{
 		depthStencilInfo{.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO},
 		dynamicStateInfo{.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO},
 		tessellationInfo{.sType = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO},
-		pipelineLayout{VK_NULL_HANDLE},
+		pipelineLayoutID{INVALID_LAYOUT_ID},
 		renderPass{VK_NULL_HANDLE},
 		subpass{0},
 		flags{0},
@@ -21,7 +22,7 @@ namespace Raindrop::Graphics::Pipelines{
 	{}
 	
 	void GraphicsPipelineConfigInfo::assertValidity() const noexcept{
-		assert(pipelineLayout != VK_NULL_HANDLE && "The pipeline layout has not been set");
+		assert(pipelineLayoutID != INVALID_LAYOUT_ID && "The pipeline layout has not been set");
 		assert(renderPass != VK_NULL_HANDLE && "The render pass has not been set");
 	}
 
@@ -127,7 +128,7 @@ namespace Raindrop::Graphics::Pipelines{
 		createInfo.pColorBlendState = &info.colorBlendInfo;
 		createInfo.pDynamicState = &info.dynamicStateInfo;
 		createInfo.pTessellationState = &info.tessellationInfo;
-		createInfo.layout = info.pipelineLayout;
+		createInfo.layout = _context.pipelineLayoutRegistry.get(info.pipelineLayoutID)->get();
 		createInfo.renderPass = info.renderPass;
 		createInfo.subpass = info.subpass;
 

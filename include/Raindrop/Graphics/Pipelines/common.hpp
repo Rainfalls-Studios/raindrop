@@ -8,6 +8,7 @@ namespace Raindrop::Graphics::Pipelines{
 	struct PipelineLayoutConfigInfo;
 
 	class GraphicsPipeline;
+	class GraphicsPipelineRegistry;
 	class PipelineLayout;
 	class LayoutRegistry;
 

@@ -82,92 +82,92 @@ namespace Raindrop::Graphics::Pipelines{
 	}
 
 	void Default::createPipeline(){
-		GraphicsPipelineConfigInfo info;
-		GraphicsPipelineConfigInfo::defaultInfo(info);
+		// GraphicsPipelineConfigInfo info;
+		// GraphicsPipelineConfigInfo::defaultInfo(info);
 
-		info.renderPass = _context.baseFramebuffer.renderPass();
-		info.pipelineLayout = _layout;
+		// info.renderPass = _context.baseFramebuffer.renderPass();
+		// info.pipelineLayout = _layout;
 		
-		{
-			VkPipelineColorBlendAttachmentState attachment = {};
-			attachment.blendEnable = VK_FALSE;
-			attachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+		// {
+		// 	VkPipelineColorBlendAttachmentState attachment = {};
+		// 	attachment.blendEnable = VK_FALSE;
+		// 	attachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 			
-			info.colorAttachments.push_back(attachment);
-		}
+		// 	info.colorAttachments.push_back(attachment);
+		// }
 
-		{
-			info.dynamicStateEnables.insert(info.dynamicStateEnables.end(), {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR});
-		}
+		// {
+		// 	info.dynamicStateEnables.insert(info.dynamicStateEnables.end(), {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR});
+		// }
 
-		{
-			VkPipelineShaderStageCreateInfo frag{};
-			frag.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-			frag.stage = VK_SHADER_STAGE_FRAGMENT_BIT,
-			frag.pName = "main";
-			frag.module = _fragmentModule;
+		// {
+		// 	VkPipelineShaderStageCreateInfo frag{};
+		// 	frag.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		// 	frag.stage = VK_SHADER_STAGE_FRAGMENT_BIT,
+		// 	frag.pName = "main";
+		// 	frag.module = _fragmentModule;
 
-			info.stages.push_back(frag);
-		}
+		// 	info.stages.push_back(frag);
+		// }
 
-		{
-			VkPipelineShaderStageCreateInfo vert{};
-			vert.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-			vert.stage = VK_SHADER_STAGE_VERTEX_BIT,
-			vert.pName = "main";
-			vert.module = _vertexModule;
+		// {
+		// 	VkPipelineShaderStageCreateInfo vert{};
+		// 	vert.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		// 	vert.stage = VK_SHADER_STAGE_VERTEX_BIT,
+		// 	vert.pName = "main";
+		// 	vert.module = _vertexModule;
 
-			info.stages.push_back(vert);
-		}
+		// 	info.stages.push_back(vert);
+		// }
 
-		using Vertex = Models::Vertex;
+		// using Vertex = Models::Vertex;
 
-		info.vertices = {
-			VkVertexInputAttributeDescription{
-				.location = 0,
-				.binding = 0,
-				.format = VK_FORMAT_R32G32B32_SFLOAT,
-				.offset = offsetof(Vertex, position)
-			},
+		// info.vertices = {
+		// 	VkVertexInputAttributeDescription{
+		// 		.location = 0,
+		// 		.binding = 0,
+		// 		.format = VK_FORMAT_R32G32B32_SFLOAT,
+		// 		.offset = offsetof(Vertex, position)
+		// 	},
 
-			VkVertexInputAttributeDescription{
-				.location = 1,
-				.binding = 0,
-				.format = VK_FORMAT_R32G32B32_SFLOAT,
-				.offset = offsetof(Vertex, normal)
-			},
+		// 	VkVertexInputAttributeDescription{
+		// 		.location = 1,
+		// 		.binding = 0,
+		// 		.format = VK_FORMAT_R32G32B32_SFLOAT,
+		// 		.offset = offsetof(Vertex, normal)
+		// 	},
 
-			VkVertexInputAttributeDescription{
-				.location = 2,
-				.binding = 0,
-				.format = VK_FORMAT_R32G32B32_SFLOAT,
-				.offset = offsetof(Vertex, color)
-			},
+		// 	VkVertexInputAttributeDescription{
+		// 		.location = 2,
+		// 		.binding = 0,
+		// 		.format = VK_FORMAT_R32G32B32_SFLOAT,
+		// 		.offset = offsetof(Vertex, color)
+		// 	},
 
-			VkVertexInputAttributeDescription{
-				.location = 3,
-				.binding = 0,
-				.format = VK_FORMAT_R32G32_SFLOAT,
-				.offset = offsetof(Vertex, UV)
-			}
-		};
+		// 	VkVertexInputAttributeDescription{
+		// 		.location = 3,
+		// 		.binding = 0,
+		// 		.format = VK_FORMAT_R32G32_SFLOAT,
+		// 		.offset = offsetof(Vertex, UV)
+		// 	}
+		// };
 
-		info.bindings = {
-			VkVertexInputBindingDescription{
-				.binding = 0,
-				.stride = sizeof(Vertex),
-				.inputRate = VK_VERTEX_INPUT_RATE_VERTEX
-			}
-		};
+		// info.bindings = {
+		// 	VkVertexInputBindingDescription{
+		// 		.binding = 0,
+		// 		.stride = sizeof(Vertex),
+		// 		.inputRate = VK_VERTEX_INPUT_RATE_VERTEX
+		// 	}
+		// };
 
-		info.viewportInfo.viewportCount = 1;
-		info.viewportInfo.pViewports = nullptr;
-		info.viewportInfo.scissorCount = 1;
-		info.viewportInfo.pScissors = nullptr;
+		// info.viewportInfo.viewportCount = 1;
+		// info.viewportInfo.pViewports = nullptr;
+		// info.viewportInfo.scissorCount = 1;
+		// info.viewportInfo.pScissors = nullptr;
 
-		info.update();
+		// info.update();
 
-		_pipeline = std::make_unique<GraphicsPipeline>(_context, info);
+		// _pipeline = std::make_unique<GraphicsPipeline>(_context, info);
 	}
 	
 	void Default::createShaderModules(){
