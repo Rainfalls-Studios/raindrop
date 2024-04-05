@@ -1,4 +1,4 @@
-#include <Raindrop/Graphics/Wrappers/Material.hpp>
+#include <Raindrop/Graphics/Wrappers/MaterialWrapper.hpp>
 #include <Raindrop/Graphics/Context.hpp>
 
 namespace Raindrop::Graphics::Wrappers{

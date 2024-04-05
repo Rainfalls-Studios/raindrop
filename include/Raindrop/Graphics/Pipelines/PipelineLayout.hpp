@@ -17,6 +17,8 @@ namespace Raindrop::Graphics::Pipelines{
 			PipelineLayout(const PipelineLayout& other) = delete;
 			PipelineLayout& operator=(const PipelineLayout& other) = delete;
 
+			VkPipelineLayout get() const noexcept;
+
 		private:
 			Context& _context;
 			VkPipelineLayout _layout;

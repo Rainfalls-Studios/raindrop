@@ -15,6 +15,9 @@ namespace Raindrop::Graphics::Pipelines{
 
 	using LayoutID = std::uint32_t;
 	using GraphicsPipelineID = std::uint32_t;
+
+	static constexpr LayoutID INVALID_LAYOUT_ID = (LayoutID)(~0);
+	static constexpr GraphicsPipelineID INVALID_GRAPHICS_PIPELINE_ID = (GraphicsPipelineID)(~0);
 }
 
 #endif

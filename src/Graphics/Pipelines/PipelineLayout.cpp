@@ -43,4 +43,8 @@ namespace Raindrop::Graphics::Pipelines{
 			_layout = VK_NULL_HANDLE;	
 		}
 	}
+
+	VkPipelineLayout PipelineLayout::get() const noexcept{
+		return _layout;
+	}
 }

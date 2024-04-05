@@ -5,8 +5,8 @@
 #include "Materials/Manager.hpp"
 #include "RenderSystems/Registry.hpp"
 
-#include "Wrappers/Material.hpp"
-#include "Wrappers/RenderSystem.hpp"
+#include "Wrappers/MaterialWrapper.hpp"
+#include "Wrappers/RenderSystemWrapper.hpp"
 
 namespace Raindrop::Graphics{
 	using namespace Wrappers;
