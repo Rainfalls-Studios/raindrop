@@ -10,8 +10,6 @@
 
 #include "Wrappers/SceneWrapper.hpp"
 
-// TODO: Add Raindrop.inl
-
 namespace Raindrop{
 	using Scene = Core::Scenes::Scene;
 	using SceneID = Core::Scenes::SceneID;

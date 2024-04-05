@@ -3,40 +3,27 @@
 
 #include "common.hpp"
 #include "../Pipelines/common.hpp"
+#include "../../Utils/Wrapper.hpp"
 
 namespace Raindrop::Graphics::Wrappers{
-	class GraphicsPipelineWrapper{
+	class GraphicsPipelineWrapper : private Utils::Wrapper<Context, Pipelines::GraphicsPipeline, Pipelines::GraphicsPipelineID, Pipelines::INVALID_GRAPHICS_PIPELINE_ID>{
 		public:
 			using GraphicsPipelineID = Pipelines::GraphicsPipelineID;
 			using GraphicsPipeline = Pipelines::GraphicsPipeline;
 
-			GraphicsPipelineWrapper(Context& context);
-			GraphicsPipelineWrapper(Context& context, const GraphicsPipelineID& ID);
-			GraphicsPipelineWrapper(const GraphicsPipelineWrapper& other);
+			using Wrapper::Wrapper;
+			using Wrapper::operator=;
+			using Wrapper::operator->;
+			using Wrapper::ID;
 
-			GraphicsPipelineWrapper& operator=(const GraphicsPipelineWrapper& other);
-			GraphicsPipelineWrapper& operator=(const GraphicsPipelineID& ID);
-			
-			~GraphicsPipelineWrapper();
-		
-			GraphicsPipeline& get();
-			const GraphicsPipeline& get() const;
-			
-			GraphicsPipelineID ID() const;
-
-			GraphicsPipeline* operator->();
-			const GraphicsPipeline* operator->() const;
-
+			virtual GraphicsPipeline& get() override;
+			virtual const GraphicsPipeline& get() const override;
 
 			VkPipeline pipeline() const;
 			void bind(VkCommandBuffer commandBuffer);
 
 			Pipelines::LayoutID layoutID() const;
 			PipelineLayoutWrapper layout() const;
-
-		private:
-			Context* _context;
-			GraphicsPipelineID _ID;
 	};
 }
 

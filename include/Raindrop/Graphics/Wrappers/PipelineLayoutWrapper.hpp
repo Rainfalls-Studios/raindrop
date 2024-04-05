@@ -3,35 +3,23 @@
 
 #include "common.hpp"
 #include "../Pipelines/common.hpp"
+#include "../../Utils/Wrapper.hpp"
 
 namespace Raindrop::Graphics::Wrappers{
-	class PipelineLayoutWrapper{
+	class PipelineLayoutWrapper : private Utils::Wrapper<Context, Pipelines::PipelineLayout, Pipelines::LayoutID, Pipelines::INVALID_LAYOUT_ID>{
 		public:
 			using LayoutID = Pipelines::LayoutID;
 			using Layout = Pipelines::PipelineLayout;
 
-			PipelineLayoutWrapper(Context& context);
-			PipelineLayoutWrapper(Context& context, const LayoutID& ID);
-			PipelineLayoutWrapper(const PipelineLayoutWrapper& other);
+			using Wrapper::Wrapper;
+			using Wrapper::operator=;
+			using Wrapper::operator->;
+			using Wrapper::ID;
 
-			PipelineLayoutWrapper& operator=(const PipelineLayoutWrapper& other);
-			PipelineLayoutWrapper& operator=(const LayoutID& ID);
-			
-			~PipelineLayoutWrapper();
-		
-			Layout& get();
-			const Layout& get() const;
+			virtual Layout& get() override;
+			virtual const Layout& get() const override;
 
 			VkPipelineLayout layout() const;
-			
-			LayoutID ID() const;
-
-			Layout* operator->();
-			const Layout* operator->() const;
-
-		private:
-			Context* _context;
-			Pipelines::LayoutID _ID;
 	};
 }
 

@@ -6,7 +6,7 @@
 namespace Raindrop::Graphics::Wrappers{
 	class MaterialWrapper;
 	class PipelineLayoutWrapper;
-	class GraphicsPipelineWrapper; // TODO
+	class GraphicsPipelineWrapper;
 	// Cannot prototype template classes
 	// class RenderSystemWrapper;
 

@@ -3,58 +3,32 @@
 
 #include "common.hpp"
 #include "../RenderSystems/common.hpp"
+#include "../../Utils/Wrapper.hpp"
 
 namespace Raindrop::Graphics::Wrappers{
+	RenderSystems::RenderSystem& ___get_render_system___(Context& context, const RenderSystems::RenderSystemID& ID);
+
 	template<typename T = RenderSystems::RenderSystem>
-	class RenderSystemWrapper{
+	class RenderSystemWrapper : private Utils::Wrapper<Context, T, RenderSystems::RenderSystemID, RenderSystems::INVALID_RENDER_SYSTEM_ID>{
 		public:
 			using RenderSystemID = RenderSystems::RenderSystemID;
 			using RenderSystem = RenderSystems::RenderSystem;
 
 			static_assert(std::is_base_of_v<RenderSystem, T>, "Cannot create a render system wrapper from a class that is not derived from Raindrop::Graphics::RenderSystem (Raindrop::Graphics::RenderSystems::RenderSystem)");
 
-			RenderSystemWrapper(Context& context) : _context{&context}, _ID{RenderSystems::INVALID_RENDER_SYSTEM_ID}{}
-			RenderSystemWrapper(Context& context, const RenderSystemID& ID) : _context{&context}, _ID{ID}{}
-			RenderSystemWrapper(const RenderSystemWrapper& other) : _context{other._context}, _ID{other._ID}{}
-			~RenderSystemWrapper() = default;
+			using Wrapper = Utils::Wrapper<Context, T, RenderSystems::RenderSystemID, RenderSystems::INVALID_RENDER_SYSTEM_ID>;
+            using Wrapper::Wrapper;
+            using Wrapper::operator=;
+            using Wrapper::operator->;
+            using Wrapper::ID;
 
-
-			RenderSystemWrapper& operator=(const RenderSystemWrapper& other){
-				_context = other._context;
-				_ID = other._ID;
-				return *this;
+			virtual T& get() final override{
+				return static_cast<T&>(___get_render_system___(*Wrapper::_context, Wrapper::_ID));
 			}
 
-			RenderSystemWrapper& operator=(const RenderSystemID& ID){
-				_ID = ID;
-				return *this;
+			virtual const T& get() const final override{
+				return static_cast<const T&>(___get_render_system___(*Wrapper::_context, Wrapper::_ID));
 			}
-
-			T& get(){
-				return static_cast<T&>(get_raw(*_context, _ID));
-			}
-
-			const T& get() const{
-				return static_cast<const T&>(get_raw(*_context, _ID));
-			}
-
-			RenderSystemID ID() const{
-				return _ID;
-			}
-
-			RenderSystem* operator->(){
-				return &get();
-			}
-
-			const RenderSystem* operator->() const{
-				return &get();
-			}
-
-		private:
-			Context* _context;
-			RenderSystemID _ID;
-
-			static RenderSystem& get_raw(Context& context, const RenderSystemID& ID);
 	};
 }
 
