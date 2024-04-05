@@ -201,4 +201,36 @@ namespace Raindrop::Graphics{
 	const RenderSystems::Registry& Renderer::renderSystems() const{
 		return _context->renderSystems;
 	}
+
+	PipelineLayoutWrapper Renderer::createPipelineLayout(const Pipelines::PipelineLayoutConfigInfo& info){
+		return PipelineLayoutWrapper(*_context, _context->pipelineLayoutRegistry.create(info));
+	}
+
+	void Renderer::destroyPipelineLayout(const PipelineLayoutWrapper& wrapper){
+		_context->pipelineLayoutRegistry.destroy(wrapper.ID());
+	}
+
+	Pipelines::LayoutRegistry& Renderer::pipelineLayouts(){
+		return _context->pipelineLayoutRegistry;
+	}
+
+	const Pipelines::LayoutRegistry& Renderer::pipelineLayouts() const{
+		return _context->pipelineLayoutRegistry;
+	}
+
+	GraphicsPipelineWrapper Renderer::createGraphicsPipeline(const Pipelines::GraphicsPipelineConfigInfo& info){
+		return GraphicsPipelineWrapper(*_context, _context->graphicsPipelineRegistry.create(info));
+	}
+
+	void Renderer::destroyGraphicsPipeline(const GraphicsPipelineWrapper& wrapper){
+		_context->graphicsPipelineRegistry.destroy(wrapper.ID());
+	}
+
+	Pipelines::GraphicsPipelineRegistry& Renderer::graphicsPipelines(){
+		return _context->graphicsPipelineRegistry;
+	}
+
+	const Pipelines::GraphicsPipelineRegistry& Renderer::graphicsPipelines() const{
+		return _context->graphicsPipelineRegistry;
+	}
 }

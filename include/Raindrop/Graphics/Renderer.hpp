@@ -7,11 +7,15 @@
 
 #include "Wrappers/MaterialWrapper.hpp"
 #include "Wrappers/RenderSystemWrapper.hpp"
+#include "Wrappers/PipelineLayoutWrapper.hpp"
+#include "Wrappers/GraphicsPipelineWrapper.hpp"
 
 namespace Raindrop::Graphics{
 	using namespace Wrappers;
 	using Material = Materials::Material;
 	using RenderSystem = RenderSystems::RenderSystem;
+	using PipelineLayout = Pipelines::PipelineLayout;
+	using GraphicsPipeline = Pipelines::GraphicsPipeline;
 
 	class Renderer{
 		public:
@@ -40,6 +44,22 @@ namespace Raindrop::Graphics{
 
 			RenderSystems::Registry& renderSystems();
 			const RenderSystems::Registry& renderSystems() const;
+
+			// === Pipeline layouts ===
+
+			PipelineLayoutWrapper createPipelineLayout(const Pipelines::PipelineLayoutConfigInfo& info);
+			void destroyPipelineLayout(const PipelineLayoutWrapper& wrapper);
+
+			Pipelines::LayoutRegistry& pipelineLayouts();
+			const Pipelines::LayoutRegistry& pipelineLayouts() const;
+
+			// == Graphics pipelines ===
+
+			GraphicsPipelineWrapper createGraphicsPipeline(const Pipelines::GraphicsPipelineConfigInfo& info);
+			void destroyGraphicsPipeline(const GraphicsPipelineWrapper& wrapper);
+
+			Pipelines::GraphicsPipelineRegistry& graphicsPipelines();
+			const Pipelines::GraphicsPipelineRegistry& graphicsPipelines() const;
 
 			// === Runtime ===
 
