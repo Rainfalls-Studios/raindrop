@@ -61,4 +61,12 @@ namespace Raindrop::Graphics::Materials{
 		_freeHandles.pop();
 		return nextID;
 	}
+
+	std::size_t Registry::size(){
+		return _handles.size();
+	}
+
+	std::size_t Registry::freeSize(){
+		return _freeHandles.size();
+	}
 }

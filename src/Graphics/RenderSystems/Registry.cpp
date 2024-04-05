@@ -10,7 +10,7 @@ namespace Raindrop::Graphics::RenderSystems{
 	}
 
 	Registry::~Registry(){
-		spdlog::info("Destroying Renderer render system registry ...");
+		spdlog::info("Destroying Renderer render system registry ... ({} systems)", _renderSystems.size());
 		_renderSystems.clear();
 	}
 

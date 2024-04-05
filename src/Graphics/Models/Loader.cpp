@@ -10,7 +10,8 @@ namespace Raindrop::Graphics::Models{
 	}
 
 	Loader::~Loader(){
-		spdlog::info("Destroying model asset loader ...");
+		spdlog::info("Destroying model asset loader ... ({} models)", _models.size());
+		_models.clear();
 	}
 
 	std::shared_ptr<Loader::Asset> Loader::load(const Path& path){

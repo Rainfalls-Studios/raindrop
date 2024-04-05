@@ -5,6 +5,7 @@
 
 namespace Raindrop::Graphics::Materials{
 	Manager::Manager(::Raindrop::Graphics::Context& context) : _context{nullptr}{
+		spdlog::info("Constructing graphics matetial manager ...");
 		_context = new Context(context);
 
 		Material placeholder(context);
@@ -19,6 +20,11 @@ namespace Raindrop::Graphics::Materials{
 
 	Manager::~Manager(){
 		if (_context != nullptr){
+			{
+				std::size_t total = _context->registry.size();
+				std::size_t freeSize = _context->registry.freeSize();
+				spdlog::info("Destroying graphics material manager ... ({} material(s) out of {})", total - freeSize, total);
+			}
 			delete _context;
 			_context = nullptr;
 		}

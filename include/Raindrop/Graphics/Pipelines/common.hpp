@@ -14,6 +14,7 @@ namespace Raindrop::Graphics::Pipelines{
 	// class ComputePipeline; TODO
 
 	using LayoutID = std::uint32_t;
+	using GraphicsPipelineID = std::uint32_t;
 }
 
 #endif

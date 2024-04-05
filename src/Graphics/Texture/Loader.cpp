@@ -10,7 +10,8 @@ namespace Raindrop::Graphics::Textures{
 	}
 
 	Loader::~Loader(){
-		spdlog::info("Destroying texture asset loader ...");
+		spdlog::info("Destroying texture asset loader ... ({} textures)", _textures.size());
+		_textures.clear();
 	}
 
 	std::shared_ptr<Loader::Asset> Loader::load(const Path& path){

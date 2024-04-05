@@ -6,15 +6,16 @@
 
 namespace Raindrop::Core::Assets{
 	Manager::Manager(Context& context) : _context{context}{
-		spdlog::info("Constructing asset Manager...");
+		spdlog::info("Constructing asset Manager ...");
 	}
 	
 	Manager::~Manager(){
-		spdlog::info("Destroying asset Manager...");
+		spdlog::info("Destroying asset Manager ... ({} asset types)", _typeToLoader.size());
+		_typeToLoader.clear();
 	}
 
 	void Manager::registerAsset(const std::string& type, const Path& path, const std::shared_ptr<Asset>& asset){
-		spdlog::trace("Registring asset \"{}\" (type : \"{}\") ...", path.string(), type);
+		spdlog::trace("Registring asset \"{}\" ... (type : \"{}\")", path.string(), type);
 
 		TypeData* typeData = getTypeData(type);
 		if (typeData == nullptr){
@@ -27,7 +28,7 @@ namespace Raindrop::Core::Assets{
 	}
 
 	std::shared_ptr<Asset> Manager::get(const std::string& type, const Path& path){
-		spdlog::trace("Requirering asset \"{}\" (type : \"{}\") ... ", path.string(), type);
+		spdlog::trace("Requirering asset \"{}\" ... (type : \"{}\")", path.string(), type);
 
 		TypeData* typeData = getTypeData(type);
 		if (typeData == nullptr){
@@ -40,21 +41,21 @@ namespace Raindrop::Core::Assets{
 		{
 			auto it = pathToAsset.find(path);
 			if (it != pathToAsset.end()){
-				spdlog::trace("Found asset \"{}\" (type : \"{}\")", path.string(), type);
+				spdlog::trace("Found asset \"{}\" ! (type : \"{}\")", path.string(), type);
 				auto lock = it->second.lock();
 				if (lock != nullptr){
 					return lock;
 				}
 
 				pathToAsset.erase(it);
-				spdlog::trace("Asset \"{}\" (type : \"{}\") is not valid anymore, trying to load it ...", path.string(), type);
+				spdlog::trace("Asset \"{}\" is not valid anymore, trying to load it ... (type : \"{}\")", path.string(), type);
 			}
 		}
 
 		auto loader = typeData->_loader;
-		assert(loader != nullptr && "The asset type is not linked to any asset loader");
+		assert(loader != nullptr && "The asset type is not linked to any asset loader !");
 
-		spdlog::trace("Loading asset \"{}\" (type : \"{}\") ...", path.string(), type);
+		spdlog::trace("Loading asset \"{}\" ... (type : \"{}\")", path.string(), type);
 		std::shared_ptr<Asset> asset = loader->load(path);
 		pathToAsset[path] = asset;
 

@@ -26,6 +26,9 @@ namespace Raindrop::Graphics::Materials{
 			void unregisterMaterial(const MaterialID& ID);
 
 			MaterialPair* get(const MaterialID& id);
+
+			std::size_t size();
+			std::size_t freeSize();
 		
 		private:
 			Context& _context;
