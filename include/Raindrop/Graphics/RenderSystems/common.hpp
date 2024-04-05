@@ -12,7 +12,7 @@ namespace Raindrop::Graphics::RenderSystems{
 	static constexpr RenderSystemID INVALID_RENDER_SYSTEM_ID = (RenderSystemID)(~0);
 
 	class RenderSystem;
-	class Registry;
+	class RenderSystemRegistry;
 }
 
 #endif

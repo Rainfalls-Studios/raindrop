@@ -13,7 +13,7 @@
 #include "Queues/CommandPools.hpp"
 #include "Textures/Texture.hpp"
 #include "Materials/Manager.hpp"
-#include "RenderSystems/Registry.hpp"
+#include "RenderSystems/RenderSystemRegistry.hpp"
 #include "WhiteTexture.hpp"
 #include "Pipelines/LayoutRegistry.hpp"
 #include "Pipelines/GraphicsPipelineRegistry.hpp"
@@ -39,7 +39,7 @@ namespace Raindrop::Graphics{
 		WhiteTexture white;
 		
 		Materials::Manager materials;
-		RenderSystems::Registry renderSystems;
+		RenderSystems::RenderSystemRegistry renderSystems;
 	};
 }
 

@@ -3,7 +3,7 @@
 
 #include "common.hpp"
 #include "Materials/Manager.hpp"
-#include "RenderSystems/Registry.hpp"
+#include "RenderSystems/RenderSystemRegistry.hpp"
 
 #include "Wrappers/MaterialWrapper.hpp"
 #include "Wrappers/RenderSystemWrapper.hpp"
@@ -35,15 +35,15 @@ namespace Raindrop::Graphics{
 
 			template<typename T, typename... Args>
 			RenderSystemWrapper<T> createRenderSystem(Args&&... args){
-				auto ID = renderSystems().createRenderSystem<T>(args...);
+				auto ID = renderSystems().create<T, Args...>(std::forward<Args>(args)...);
 				return RenderSystemWrapper(*_context, ID);
 			}
 
-			RenderSystemWrapper<> registerRenderSystem(std::unique_ptr<RenderSystem> system);
+			RenderSystemWrapper<> registerRenderSystem(std::unique_ptr<RenderSystem>&& system);
 			void destroyRenderSystem(const RenderSystemWrapper<>& wrapper);
 
-			RenderSystems::Registry& renderSystems();
-			const RenderSystems::Registry& renderSystems() const;
+			RenderSystems::RenderSystemRegistry& renderSystems();
+			const RenderSystems::RenderSystemRegistry& renderSystems() const;
 
 			// === Pipeline layouts ===
 

@@ -185,20 +185,20 @@ namespace Raindrop::Graphics{
 		_context->materials.destroyMaterial(wrapper.ID());
 	}
 
-	RenderSystemWrapper<> Renderer::registerRenderSystem(std::unique_ptr<RenderSystem> system){
-		auto ID = _context->renderSystems.registerRenderSystem(std::move(system));
+	RenderSystemWrapper<> Renderer::registerRenderSystem(std::unique_ptr<RenderSystem>&& system){
+		auto ID = _context->renderSystems.create(std::move(system));
 		return RenderSystemWrapper<>(*_context, ID);
 	}
 
 	void Renderer::destroyRenderSystem(const RenderSystemWrapper<>& wrapper){
-		_context->renderSystems.destroyRenderSystem(wrapper.ID());
+		_context->renderSystems.destroy(wrapper.ID());
 	}
 
-	RenderSystems::Registry& Renderer::renderSystems(){
+	RenderSystems::RenderSystemRegistry& Renderer::renderSystems(){
 		return _context->renderSystems;
 	}
 
-	const RenderSystems::Registry& Renderer::renderSystems() const{
+	const RenderSystems::RenderSystemRegistry& Renderer::renderSystems() const{
 		return _context->renderSystems;
 	}
 
