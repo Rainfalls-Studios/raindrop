@@ -5,7 +5,7 @@
 #include "Core/Assets/Manager.hpp"
 #include "Core/Event/Manager.hpp"
 #include "Graphics/Renderer.hpp"
-#include "Core/Scenes/Registry.hpp"
+#include "Core/Scenes/SceneRegistry.hpp"
 #include "Camera.hpp"
 
 namespace Raindrop{
@@ -15,7 +15,7 @@ namespace Raindrop{
 
 		Core::Assets::Manager assetManager;
 		Core::Event::Manager eventManager;
-		Core::Scenes::Registry scenes;
+		Core::Scenes::SceneRegistry scenes;
 		Camera camera;
 		Graphics::Renderer renderer;
 		

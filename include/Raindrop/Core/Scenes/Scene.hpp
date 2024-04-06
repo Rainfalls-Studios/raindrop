@@ -28,18 +28,18 @@ namespace Raindrop::Core::Scenes{
 			Component& get(const EntityLUID& entity);
 			using registry::get;
 
-			void addProperty(const std::type_index& typeID, std::unique_ptr<Property> property);
+			void addProperty(const std::type_index& typeID, std::unique_ptr<Property>&& property);
 			void removeProperty(const std::type_index& typeID);
 			Property* getProperty(const std::type_index& typeID);
 
-			template<typename Property, typename... Args>
-			void addProperty(Args&... args);
+			template<typename P, typename... Args>
+			void addProperty(Args&&... args);
 
-			template<typename Property>
+			template<typename P>
 			void removeProperty();
 
-			template<typename Property>
-			Property* getProperty();
+			template<typename P>
+			P* getProperty();
 
 		private:
 			std::unordered_map<std::type_index, std::unique_ptr<Property>> _properties;

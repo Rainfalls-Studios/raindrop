@@ -6,11 +6,11 @@
 
 namespace Raindrop::Graphics::RenderSystems{
 	RenderSystemRegistry::RenderSystemRegistry(Context& context) : _context{context}{
-		spdlog::info("Creating graphics pipeline registry ...");
+		spdlog::info("Creating render system registry ...");
 	}
 
 	RenderSystemRegistry::~RenderSystemRegistry(){
-		spdlog::info("Destroying graphics pipeline registry ... ({} pipeline(s))", Registry::usedSize());
+		spdlog::info("Destroying render system registry ... ({} render system(s))", Registry::usedSize());
 	}
 
 	RenderSystemID RenderSystemRegistry::create(std::unique_ptr<RenderSystem>&& system){

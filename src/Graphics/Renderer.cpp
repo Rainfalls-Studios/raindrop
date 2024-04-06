@@ -30,6 +30,8 @@ namespace Raindrop::Graphics{
 			auto size = _context->window.getSize();
 			_context->core.camera.setAspectRatio(static_cast<float>(size.x) / static_cast<float>(size.y));
 		}
+
+		_context->core.eventManager.registerEvent<VkCommandBuffer>("Renderer.baseFramebuffer.renderPass");
 	}
 
 	Renderer::~Renderer(){
@@ -46,13 +48,14 @@ namespace Raindrop::Graphics{
 	}
 
 	void Renderer::render(){
-		static auto start = std::chrono::high_resolution_clock::now();
 		auto& swapchain = _context->swapchain;	
+		auto& events = _context->core.eventManager;
 		
 		VkCommandBuffer commandBuffer = beginFrame();
 		if (commandBuffer != nullptr){
 			
 			_context->baseFramebuffer.beginRenderPass(commandBuffer);
+			events.trigger("Renderer.baseFramebuffer.renderPass", commandBuffer);
 			_context->baseFramebuffer.endRenderPass(commandBuffer);
 
 			swapchain.beginRenderPass(commandBuffer);

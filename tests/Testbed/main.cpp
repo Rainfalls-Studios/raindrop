@@ -7,6 +7,8 @@
 #include "config.h"
 #include <SDL3/SDL.h>
 
+#include "ForwardRenderSystem.hpp"
+
 void testbed(){
 	namespace RD = Raindrop;
 	namespace fs = std::filesystem;
@@ -34,6 +36,19 @@ void testbed(){
 					SDL_SetRelativeMouseMode(SDL_TRUE);
 				}
 			}
+		}
+	);
+
+	
+	auto scene = engine.createScene();
+	scene.addProperty<ForwardRenderSceneProperties>();
+
+	auto renderSystem = engine.renderer().createRenderSystem<ForwardRenderSystem>(engine);
+
+	engine.subscribeEvent(
+		"Renderer.baseFramebuffer.renderPass",
+		[&](VkCommandBuffer commandBuffer) -> void {
+			renderSystem->render(scene);
 		}
 	);
 

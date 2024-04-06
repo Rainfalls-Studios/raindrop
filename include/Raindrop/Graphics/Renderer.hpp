@@ -4,6 +4,7 @@
 #include "common.hpp"
 #include "Materials/Manager.hpp"
 #include "RenderSystems/RenderSystemRegistry.hpp"
+#include "RenderSystems/RenderSystem.hpp"
 
 #include "Wrappers/MaterialWrapper.hpp"
 #include "Wrappers/RenderSystemWrapper.hpp"
@@ -36,7 +37,7 @@ namespace Raindrop::Graphics{
 			template<typename T, typename... Args>
 			RenderSystemWrapper<T> createRenderSystem(Args&&... args){
 				auto ID = renderSystems().create<T, Args...>(std::forward<Args>(args)...);
-				return RenderSystemWrapper(*_context, ID);
+				return RenderSystemWrapper<T>(*_context, ID);
 			}
 
 			RenderSystemWrapper<> registerRenderSystem(std::unique_ptr<RenderSystem>&& system);

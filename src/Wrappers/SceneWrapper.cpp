@@ -1,4 +1,5 @@
 #include <Raindrop/Wrappers/SceneWrapper.hpp>
+#include <Raindrop/Core/Scenes/Scene.hpp>
 #include <Raindrop/Context.hpp>
 
 namespace Raindrop::Wrappers{

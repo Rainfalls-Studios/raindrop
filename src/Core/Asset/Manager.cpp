@@ -10,7 +10,7 @@ namespace Raindrop::Core::Assets{
 	}
 	
 	Manager::~Manager(){
-		spdlog::info("Destroying asset Manager ... ({} asset types)", _typeToLoader.size());
+		spdlog::info("Destroying asset Manager ... ({} asset type(s))", _typeToLoader.size());
 		_typeToLoader.clear();
 	}
 

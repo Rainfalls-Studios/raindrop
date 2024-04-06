@@ -3,6 +3,7 @@
 
 #include "common.hpp"
 #include "Core/Scenes/Scene.hpp"
+#include "Core/Scenes/Property.hpp"
 #include "Core/Scenes/Entity.hpp"
 #include "Core/Assets/Manager.hpp"
 #include "Core/Event/Manager.hpp"
@@ -13,6 +14,7 @@
 namespace Raindrop{
 	using Scene = Core::Scenes::Scene;
 	using SceneID = Core::Scenes::SceneID;
+	using SceneProperty = Core::Scenes::Property;
 
 	using Entity = Core::Scenes::Entity;
 	using EntityGUID = Core::Scenes::EntityGUID;

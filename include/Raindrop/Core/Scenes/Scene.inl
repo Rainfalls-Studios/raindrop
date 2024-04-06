@@ -6,7 +6,7 @@
 namespace Raindrop::Core::Scenes{
 	template<typename Component, typename... Args>
 	Component& Scene::emplace(const EntityLUID& entity, Args&&... args){
-		return registry::emplace<Component>(static_cast<entt::entity>(entity), args...);
+		return registry::emplace<Component, Args...>(static_cast<entt::entity>(entity), std::forward<Args>(args)...);
 	}
 
 	template<typename Component>
@@ -14,19 +14,21 @@ namespace Raindrop::Core::Scenes{
 		return registry::get<Component>(static_cast<entt::entity>(entity));
 	}
 
-	template<typename Property, typename... Args>
-	void Scene::addProperty(Args&... args){
-		addProperty(typeid(Property), std::make_unique<Property>(args...));
+	template<typename P, typename... Args>
+	void Scene::addProperty(Args&&... args){
+		static_assert(std::is_base_of_v<Property, P>, "The custom property type has to be derived from Raindrop::SceneProperty (Raindrop::Core::Scenes::Property)");
+		auto property = std::make_unique<P>(std::forward<Args>(args)...);
+		addProperty(typeid(P), std::unique_ptr<Property>(static_cast<Property*>(property.release())));
 	}
 
-	template<typename Property>
+	template<typename P>
 	void Scene::removeProperty(){
-		removeProperty(typeid(Property));
+		removeProperty(typeid(P));
 	}
 
-	template<typename Property>
-	Property* Scene::getProperty(){
-		return getProperty(typeid(Property));
+	template<typename P>
+	P* Scene::getProperty(){
+		return getProperty(typeid(P));
 	}
 }
 
