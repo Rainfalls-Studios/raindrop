@@ -6,8 +6,10 @@
 namespace Raindrop::Utils{
 	template<typename T, typename ID = std::size_t, typename... Default_T_Args>
 	class Registry{
-		protected:
+		private:
 			using Default_T = typename std::conditional<std::is_pointer_v<T>, std::nullptr_t, T>::type;
+			
+		public:
 
 			Registry() = default;
 

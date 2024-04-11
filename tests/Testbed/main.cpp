@@ -39,23 +39,36 @@ void testbed(){
 		}
 	);
 
-	
 	auto scene = engine.createScene();
-	scene.addProperty<ForwardRenderSceneProperties>();
 
 	auto renderSystem = engine.renderer().createRenderSystem<ForwardRenderSystem>(engine);
+	renderSystem->bind(scene);
+	
+	{
+		auto entity = scene.create();
+		scene.emplaceComponent<Raindrop::Components::Transformation>(entity);
+		auto& model = scene.emplaceComponent<Raindrop::Components::Model>(entity);
+
+		model.model = engine.getAsset<Raindrop::Graphics::Models::Model>("Model", fs::current_path() / "models/Sponza/Sponza.gltf");
+	}
+
+	engine.subscribeEvent(
+		"Renderer.frame",
+		[&](VkCommandBuffer commandBuffer) -> void {
+			auto properties = scene.getProperty<ForwardRenderSceneProperties>();
+			
+			properties->data.viewProjection = engine.camera().viewTransform();
+
+			renderSystem->updateScene(commandBuffer, scene);
+		}
+	);
 
 	engine.subscribeEvent(
 		"Renderer.baseFramebuffer.renderPass",
 		[&](VkCommandBuffer commandBuffer) -> void {
-			renderSystem->render(scene);
+			renderSystem->render(commandBuffer, scene);
 		}
 	);
-
-	// auto entity = RD::Entity::create(engine.scene());
-
-	// entity.emplace<RD::Components::Model>().model = engine.assetManager().get<RD::Renderer::Model::Model>("Model", current_path() / "models/Sponza/Sponza.gltf");
-	// entity.emplace<RD::Components::Transformation>();
 
 	engine.run();
 }

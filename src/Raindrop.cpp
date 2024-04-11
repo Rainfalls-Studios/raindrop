@@ -161,4 +161,9 @@ namespace Raindrop{
 	std::shared_ptr<AssetLoader> Raindrop::getAssetLoader(const std::string& type){
 		return _context->assetManager.findLoader(type);
 	}
+
+	Camera& Raindrop::camera(){
+		return _context->camera;
+	}
+
 }

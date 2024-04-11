@@ -10,13 +10,17 @@ layout (location = 1) out vec3 out_position;
 layout (location = 2) out vec3 out_normal;
 layout (location = 3) out vec2 out_UV;
 
-layout (push_constant) uniform matrix{
+layout(set = 1, binding = 0) uniform Scene{
 	mat4 viewProjection;
+	vec4 ambientColor;
+} scene;
+
+layout (push_constant) uniform matrix{
 	mat4 localTransform;
 } Matrix;
 
 void main(){
-	vec4 position = Matrix.viewProjection * Matrix.localTransform * vec4(in_position, 1.);
+	vec4 position = scene.viewProjection * Matrix.localTransform * vec4(in_position, 1.);
 
 	out_normal = mat3(Matrix.localTransform) * in_normal;
 	out_position = vec3(position);

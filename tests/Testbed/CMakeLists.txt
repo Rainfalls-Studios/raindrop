@@ -12,6 +12,8 @@ endif()
 target_link_libraries(
 	Raindrop-Testbed
 	${RAINDROP_LIB}
+	spdlog::spdlog_header_only
+	SDL3::SDL3-static
 )
 
 set_target_properties(

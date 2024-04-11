@@ -74,7 +74,7 @@ namespace Raindrop::Graphics::BaseFramebuffer{
 		_context = new Context(renderer);
 
 		for (std::size_t i=0; i<4; i++){
-			clearColor.color.float32[i] = .5f;
+			clearColor.color.float32[i] = 0.3f;
 		}
 
 		resize(size);

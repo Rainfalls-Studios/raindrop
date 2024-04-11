@@ -421,4 +421,14 @@ namespace Raindrop::Graphics::Models{
 	std::vector<std::unique_ptr<Mesh>>::iterator Model::end(){
 		return _meshes.end();
 	}
+	
+	
+	std::size_t Model::meshCount() const{
+		return _meshes.size();
+	}
+
+	Mesh& Model::mesh(const std::size_t& ID) const{
+		assert(ID < meshCount() && "Mesh ID out of bounds");
+		return *_meshes[ID];
+	}
 }

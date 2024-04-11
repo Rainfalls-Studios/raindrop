@@ -8,6 +8,7 @@
 #include "Core/Assets/Manager.hpp"
 #include "Core/Event/Manager.hpp"
 #include "Graphics/Renderer.hpp"
+#include "Camera.hpp"
 
 #include "Wrappers/SceneWrapper.hpp"
 
@@ -77,6 +78,8 @@ namespace Raindrop{
 			// === Graphics ===
 			
 			Renderer& renderer();
+
+			Camera& camera();
 
 			// === Runtime ===
 

@@ -10,8 +10,9 @@ namespace Raindrop::Core::Scenes{
 		registry::destroy(static_cast<entt::entity>(entity));
 	}
 
-	void Scene::addProperty(const std::type_index& typeID, std::unique_ptr<Property>&& property){
+	Property* Scene::addProperty(const std::type_index& typeID, std::unique_ptr<Property>&& property){
 		_properties[typeID] = std::move(property);
+		return getProperty(typeID);
 	}
 
 	void Scene::removeProperty(const std::type_index& typeID){

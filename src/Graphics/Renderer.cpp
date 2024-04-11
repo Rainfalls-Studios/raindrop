@@ -32,6 +32,7 @@ namespace Raindrop::Graphics{
 		}
 
 		_context->core.eventManager.registerEvent<VkCommandBuffer>("Renderer.baseFramebuffer.renderPass");
+		_context->core.eventManager.registerEvent<VkCommandBuffer>("Renderer.frame");
 	}
 
 	Renderer::~Renderer(){
@@ -53,6 +54,8 @@ namespace Raindrop::Graphics{
 		
 		VkCommandBuffer commandBuffer = beginFrame();
 		if (commandBuffer != nullptr){
+			
+			events.trigger("Renderer.frame", commandBuffer);
 			
 			_context->baseFramebuffer.beginRenderPass(commandBuffer);
 			events.trigger("Renderer.baseFramebuffer.renderPass", commandBuffer);

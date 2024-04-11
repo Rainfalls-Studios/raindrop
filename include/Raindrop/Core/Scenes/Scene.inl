@@ -15,10 +15,11 @@ namespace Raindrop::Core::Scenes{
 	}
 
 	template<typename P, typename... Args>
-	void Scene::addProperty(Args&&... args){
+	P* Scene::addProperty(Args&&... args){
 		static_assert(std::is_base_of_v<Property, P>, "The custom property type has to be derived from Raindrop::SceneProperty (Raindrop::Core::Scenes::Property)");
 		auto property = std::make_unique<P>(std::forward<Args>(args)...);
 		addProperty(typeid(P), std::unique_ptr<Property>(static_cast<Property*>(property.release())));
+		return getProperty<P>();
 	}
 
 	template<typename P>
@@ -28,7 +29,8 @@ namespace Raindrop::Core::Scenes{
 
 	template<typename P>
 	P* Scene::getProperty(){
-		return getProperty(typeid(P));
+		static_assert(std::is_base_of_v<Property, P>, "The custom property type has to be derived from Raindrop::SceneProperty (Raindrop::Core::Scenes::Property)");
+		return static_cast<P*>(getProperty(typeid(P)));
 	}
 }
 

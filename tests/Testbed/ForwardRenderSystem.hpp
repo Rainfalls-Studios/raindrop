@@ -5,7 +5,14 @@
 #include "config.h"
 
 struct ForwardRenderSceneProperties : public Raindrop::SceneProperty{
-	glm::vec4 ambientColor;
+	struct{
+		glm::mat4 viewProjection;
+		glm::vec4 ambientColor;
+	} data;
+
+	struct{
+		std::size_t setID;
+	} __internal__;
 };
 
 class ForwardRenderSystem : public Raindrop::Graphics::RenderSystem{
@@ -13,10 +20,54 @@ class ForwardRenderSystem : public Raindrop::Graphics::RenderSystem{
 		ForwardRenderSystem(Raindrop::Raindrop& engine);
 		~ForwardRenderSystem();
 
-		void render(Raindrop::SceneWrapper& scene);
+		void bind(Raindrop::SceneWrapper scene);
+		void release(Raindrop::SceneWrapper scene);
+
+		void updateScene(VkCommandBuffer commandBuffer, Raindrop::SceneWrapper scene);
+		void render(VkCommandBuffer commandBuffer, Raindrop::SceneWrapper scene);
 
 	private:
 		Raindrop::Raindrop& _engine;
+
+		void createDescriptorSetLayout();
+		void createDescriptorPool();
+		void createDescriptorBuffer();
+
+		void destroyDescriptorSetLayout();
+		void destroyDescriptorPool();
+		void destroyDescriptorBuffer();
+		
+		void populateInternProperty(ForwardRenderSceneProperties& prop);
+
+		void allocateDescriptorSets();
+		void updateDescriptorSets();
+
+		void createPipelineLayout();
+		void createShaderModules();
+		void createPipeline();
+
+		void destroyPipelineLayout();
+		void destroyShaderModules();
+		void destroyPipeline();
+
+		void createShaderModule(const std::vector<char>& code, VkShaderModule& module);
+
+
+		std::vector<VkDescriptorSet> _sets;
+		std::deque<std::size_t> _freeSetIDs;
+
+		VkDescriptorSetLayout _descriptorSetLayout;
+		VkDescriptorPool _descriptorPool;
+		VkBuffer _descriptorsBuffer;
+		VkDeviceMemory _descriptorsMemory;
+
+		std::size_t _alignedDescriptorSize;
+
+		Raindrop::Graphics::PipelineLayoutWrapper _pipelineLayout;
+		Raindrop::Graphics::GraphicsPipelineWrapper _pipeline;
+
+		VkShaderModule _vertexShader;
+		VkShaderModule _fragmentShader;
 };
 
 #endif

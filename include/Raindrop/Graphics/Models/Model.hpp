@@ -17,6 +17,9 @@ namespace Raindrop::Graphics::Models{
 			std::vector<std::unique_ptr<Mesh>>::iterator begin();
 			std::vector<std::unique_ptr<Mesh>>::iterator end();
 
+			std::size_t meshCount() const;
+			Mesh& mesh(const std::size_t& ID) const;
+
 		private:
 			Context& _context;
 			std::vector<std::unique_ptr<Mesh>> _meshes;

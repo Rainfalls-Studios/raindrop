@@ -59,8 +59,8 @@ namespace Raindrop::Wrappers{
 			}
 
 			template<typename P, typename... Args>
-			inline void addProperty(Args&&... args){
-				get().addProperty<P, Args...>(std::forward<Args>(args)...);
+			inline P* addProperty(Args&&... args){
+				return get().addProperty<P, Args...>(std::forward<Args>(args)...);
 			}
 
 			template<typename P>
