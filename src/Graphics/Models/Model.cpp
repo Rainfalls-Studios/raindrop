@@ -3,6 +3,7 @@
 #include <Raindrop/Graphics/Models/Vertex.hpp>
 #include <Raindrop/Graphics/Context.hpp>
 #include <Raindrop/Context.hpp>
+#include <Raindrop/Exceptions/ResourceExceptions.hpp>
 
 #include <spdlog/spdlog.h>
 
@@ -348,29 +349,29 @@ namespace Raindrop::Graphics::Models{
 		spdlog::info("Loading model \"{}\" ...", path.string());
 
 		Assimp::Importer importer;
-		const aiScene *baseframebuffer = importer.ReadFile(path.string().c_str(), aiProcess_Triangulate | aiProcess_GenNormals);
+		const aiScene *scene = importer.ReadFile(path.string().c_str(), aiProcess_Triangulate | aiProcess_GenNormals);
 
-		if (baseframebuffer == nullptr || baseframebuffer->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !baseframebuffer->mRootNode){
+		if (scene == nullptr || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode){
 			spdlog::error("Failed to load model \"{}\" : {}", path.string(), importer.GetErrorString());
-			throw std::runtime_error("Failed to load model");
+			throw Exceptions::ResourceLoadException(path, "Model", importer.GetErrorString());
 		}
 
 		auto directory = path.parent_path();
 
-		if (!baseframebuffer->HasMeshes()){
+		if (!scene->HasMeshes()){
 			spdlog::error("The model \"{}\" does not contain meshs", path.string());
-			throw std::runtime_error("The model has no meshes");
+			throw Exceptions::ResourceLoadException(path, "Model", "scene contains no meshes");
 		}
 
-		spdlog::info("Loading model \"{}\" ({} meshes | {} materials) ...", path.string(), baseframebuffer->mNumMeshes, baseframebuffer->mNumMaterials);
+		spdlog::info("Loading model \"{}\" ({} meshes | {} materials) ...", path.string(), scene->mNumMeshes, scene->mNumMaterials);
 
-		if (baseframebuffer->HasMaterials()){
+		if (scene->HasMaterials()){
 
 			auto& assets = _context.core.assetManager;
-			_materials.resize(static_cast<std::size_t>(baseframebuffer->mNumMaterials));
+			_materials.resize(static_cast<std::size_t>(scene->mNumMaterials));
 
-			for (std::size_t i=0; i<baseframebuffer->mNumMaterials; i++){
-				const auto& data = baseframebuffer->mMaterials[i];
+			for (std::size_t i=0; i<scene->mNumMaterials; i++){
+				const auto& data = scene->mMaterials[i];
 
 				Materials::Material material(_context);
 
@@ -397,14 +398,14 @@ namespace Raindrop::Graphics::Models{
 			}
 		}
 
-		_meshes.resize(static_cast<std::size_t>(baseframebuffer->mNumMeshes));
+		_meshes.resize(static_cast<std::size_t>(scene->mNumMeshes));
 		
-		for (std::size_t i=0; i<baseframebuffer->mNumMeshes; i++){
-			const auto& meshData = baseframebuffer->mMeshes[i];
+		for (std::size_t i=0; i<scene->mNumMeshes; i++){
+			const auto& meshData = scene->mMeshes[i];
 
 			if (!(meshData->mPrimitiveTypes & aiPrimitiveType_TRIANGLE)){
 				spdlog::error("Cannot load mesh \"{}\" containing another primitive type than triangle ({})", meshData->mName.C_Str(), primitiveTypesToStr(meshData->mPrimitiveTypes));
-				throw std::runtime_error("Invalid primitive type");
+				throw Exceptions::ResourceLoadException(path, "Model", "The scene contains not supported primitive types");
 			}
 
 			std::unique_ptr<Mesh> mesh = std::make_unique<Mesh>(_context);

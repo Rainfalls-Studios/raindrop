@@ -1,5 +1,6 @@
 #include <Raindrop/Graphics/Textures/Texture.hpp>
 #include <Raindrop/Graphics/Context.hpp>
+#include <Raindrop/Exceptions/ResourceExceptions.hpp>
 
 #include <spdlog/spdlog.h>
 #include <future>
@@ -327,7 +328,7 @@ namespace Raindrop::Graphics::Textures{
 
 		if (!pixels){
 			spdlog::error("Failed to load texture image from \"{}\", reason : {}", path.string(), stbi_failure_reason());
-			throw std::runtime_error("failed to load texture image!");
+			throw Exceptions::ResourceLoadException(path, "Texture", stbi_failure_reason());
 		}
 
 		ConstructData data;
