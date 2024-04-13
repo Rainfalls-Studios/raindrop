@@ -326,7 +326,7 @@ namespace Raindrop::Graphics::Textures{
 		VkDeviceSize imageSize = texWidth * texHeight * 4;
 
 		if (!pixels){
-			spdlog::error("Failed to load texture image from \"{}\" !", path.string());
+			spdlog::error("Failed to load texture image from \"{}\", reason : {}", path.string(), stbi_failure_reason());
 			throw std::runtime_error("failed to load texture image!");
 		}
 

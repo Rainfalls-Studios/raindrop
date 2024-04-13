@@ -10,8 +10,8 @@ namespace Raindrop::Graphics::Materials{
 
 		Material placeholder(context);
 		placeholder.properties = {
-			.diffuseColor = glm::vec4(0.f),
-			.specularColor = glm::vec4(0.f),
+			.diffuseColor = Maths::vec4(0.f),
+			.specularColor = Maths::vec4(0.f),
 			.shininess = 0.f,
 		};
 

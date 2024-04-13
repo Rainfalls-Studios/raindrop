@@ -14,11 +14,11 @@ namespace Raindrop::Graphics::Core{
 			void destroySurface();
 
 			void setTitle(const char* title);
-			void setSize(glm::u32vec2 size);
-			void setPosition(glm::u32vec2 position);
+			void setSize(Maths::u32vec2 size);
+			void setPosition(Maths::u32vec2 position);
 			const char* getTitle() const;
-			glm::u32vec2 getSize() const;
-			glm::u32vec2 getPosition() const;
+			Maths::u32vec2 getSize() const;
+			Maths::u32vec2 getPosition() const;
 			bool loaded() const;
 			SDL_Window* get() const;
 

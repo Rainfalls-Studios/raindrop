@@ -12,21 +12,21 @@ namespace Raindrop::Core::Event{
 			ButtonState& state(MouseButton button);
 			const ButtonState& state(MouseButton button) const;
 
-			glm::vec2& pos();
-			const glm::vec2& pos() const;
+			Maths::vec2& pos();
+			const Maths::vec2& pos() const;
 
-			glm::vec2& relPos();
-			const glm::vec2& relPos() const;
+			Maths::vec2& relPos();
+			const Maths::vec2& relPos() const;
 
-			glm::vec2& scroll();
-			const glm::vec2& scroll() const;
+			Maths::vec2& scroll();
+			const Maths::vec2& scroll() const;
 
 		private:
 			ButtonState _states[static_cast<std::size_t>(BUTTON_COUNT)];
 
-			glm::vec2 _pos;
-			glm::vec2 _relPos;
-			glm::vec2 _scroll;
+			Maths::vec2 _pos;
+			Maths::vec2 _relPos;
+			Maths::vec2 _scroll;
 			
 	};
 }

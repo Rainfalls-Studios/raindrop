@@ -15,27 +15,27 @@ namespace Raindrop::Core::Event{
 		return _states[static_cast<int>(button)];
 	}
 
-	glm::vec2& MouseEvents::pos(){
+	Maths::vec2& MouseEvents::pos(){
 		return _pos;
 	}
 
-	const glm::vec2& MouseEvents::pos() const{
+	const Maths::vec2& MouseEvents::pos() const{
 		return _pos;
 	}
 
-	glm::vec2& MouseEvents::relPos(){
+	Maths::vec2& MouseEvents::relPos(){
 		return _relPos;
 	}
 
-	const glm::vec2& MouseEvents::relPos() const{
+	const Maths::vec2& MouseEvents::relPos() const{
 		return _relPos;
 	}
 
-	glm::vec2& MouseEvents::scroll(){
+	Maths::vec2& MouseEvents::scroll(){
 		return _scroll;
 	}
 
-	const glm::vec2& MouseEvents::scroll() const{
+	const Maths::vec2& MouseEvents::scroll() const{
 		return _scroll;
 	}
 }

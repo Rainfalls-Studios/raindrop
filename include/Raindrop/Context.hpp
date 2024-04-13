@@ -2,6 +2,8 @@
 #define __RAINDROP_CONTEXT_HPP__
 
 #include "common.hpp"
+
+#include "Maths/Maths.hpp"
 #include "Core/Assets/Manager.hpp"
 #include "Core/Event/Manager.hpp"
 #include "Graphics/Renderer.hpp"
@@ -16,10 +18,8 @@ namespace Raindrop{
 		Core::Assets::Manager assetManager;
 		Core::Event::Manager eventManager;
 		Core::Scenes::SceneRegistry scenes;
-		Camera camera;
 		Graphics::Renderer renderer;
 		
-
 		bool running;
 	};
 }

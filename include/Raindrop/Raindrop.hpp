@@ -79,8 +79,6 @@ namespace Raindrop{
 			
 			Renderer& renderer();
 
-			Camera& camera();
-
 			// === Runtime ===
 
 			void run();

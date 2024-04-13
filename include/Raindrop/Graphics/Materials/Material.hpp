@@ -15,10 +15,11 @@ namespace Raindrop::Graphics::Materials{
 		Material& operator=(const Material& other);
 
 		struct Properties{
-			glm::vec4 ambientColor;
-			glm::vec4 diffuseColor;
-			glm::vec4 specularColor;
+			Maths::vec4 ambientColor;
+			Maths::vec4 diffuseColor;
+			Maths::vec4 specularColor;
 			float shininess;
+			float specularFactor;
 
 			bool operator==(const Properties& other) const;
 		} properties;

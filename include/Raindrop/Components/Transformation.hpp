@@ -3,18 +3,15 @@
 
 #include "common.hpp"
 
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/quaternion.hpp>
-
 namespace Raindrop::Components{
 	struct Transformation{
 		Transformation();
 
-		glm::mat4 matrix;
+		Maths::mat4 matrix;
 
-		glm::vec3 translation;
-		glm::vec3 scale;
-		glm::quat rotation;
+		Maths::vec3 translation;
+		Maths::vec3 scale;
+		Maths::quat rotation;
 
 		void updateMatrix();
 	};

@@ -81,6 +81,8 @@ namespace Raindrop::Graphics{
 			void freeFrameCommandBuffers();
 			void destroyRenderCommandPool();
 
+			void updateSwapchainSize();
+
 			VkCommandPool _renderCommandPool;
 			std::vector<VkCommandBuffer> _frameCommandBuffers;
 			std::size_t _currentFrameID;

@@ -15,7 +15,7 @@
 
 
 struct PushConstant{
-	glm::mat4 localTransform;
+	Raindrop::Maths::mat4 localTransform;
 
 	static VkPushConstantRange range(){
 		return VkPushConstantRange{

@@ -26,13 +26,11 @@ namespace Raindrop::Graphics{
 		_context->core.assetManager.createLoader<Textures::Loader>("Texture", *_context);
 		_context->core.assetManager.createLoader<Models::Loader>("Model", *_context);
 
-		{
-			auto size = _context->window.getSize();
-			_context->core.camera.setAspectRatio(static_cast<float>(size.x) / static_cast<float>(size.y));
-		}
-
 		_context->core.eventManager.registerEvent<VkCommandBuffer>("Renderer.baseFramebuffer.renderPass");
 		_context->core.eventManager.registerEvent<VkCommandBuffer>("Renderer.frame");
+		_context->core.eventManager.registerEvent<Maths::uvec2>("Renderer.swapchain.resized");
+		
+		_context->core.eventManager.trigger("Renderer.swapchain.resized", Maths::uvec2(_context->window.getSize()));
 	}
 
 	Renderer::~Renderer(){
@@ -120,11 +118,7 @@ namespace Raindrop::Graphics{
 
 		VkResult result = swapchain.acquireNextImage();
 		if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-			auto size = window.getSize();
-			swapchain.setExtent(VkExtent2D{size.x, size.y});
-			swapchain.rebuildSwapchain();
-			_context->baseFramebuffer.resize(size);
-			_context->core.camera.setAspectRatio(static_cast<float>(size.x) / static_cast<float>(size.y));
+			updateSwapchainSize();
 			return nullptr;
 		}
 
@@ -154,15 +148,22 @@ namespace Raindrop::Graphics{
 		VkResult result = swapchain.submitCommandBuffer(&commandBuffer);
 
 		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || window.resized()){
-			auto size = window.getSize();
-			window.resetResizedFlags();
-			swapchain.setExtent(VkExtent2D{size.x, size.y});
-			swapchain.rebuildSwapchain();
-			_context->baseFramebuffer.resize(size);
-			_context->core.camera.setAspectRatio(static_cast<float>(size.x) / static_cast<float>(size.y));
+			updateSwapchainSize();
 		} else if (result != VK_SUCCESS){
 			throw std::runtime_error("failed to submit the command buffer");
 		}
+	}
+
+	void Renderer::updateSwapchainSize(){
+		auto& window = _context->window;
+		auto& swapchain = _context->swapchain;
+		
+		auto size = window.getSize();
+		window.resetResizedFlags();
+		swapchain.setExtent(VkExtent2D{size.x, size.y});
+		swapchain.rebuildSwapchain();
+		_context->baseFramebuffer.resize(size);
+		_context->core.eventManager.trigger("Renderer.swapchain.resized", Maths::uvec2(size));
 	}
 
 	Context& Renderer::context(){

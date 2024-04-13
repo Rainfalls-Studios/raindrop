@@ -2,6 +2,7 @@
 #define __RAINDROP_COMMON_HPP__
 
 #include "pch.pch"
+#include "Maths/Maths.hpp"
 
 namespace Raindrop{
 	struct Context;

@@ -8,9 +8,9 @@ namespace Raindrop::Components{
 		rotation(){}
 	
 	void Transformation::updateMatrix(){
-		glm::mat4 translationMatrix = glm::translate(glm::mat4(1.f), translation);
-		glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.f), scale);
-		glm::mat4 rotationMatrix = glm::toMat4(rotation);
+		Maths::mat4 translationMatrix = Maths::translate(Maths::mat4(1.f), translation);
+		Maths::mat4 scaleMatrix = Maths::scale(Maths::mat4(1.f), scale);
+		Maths::mat4 rotationMatrix = Maths::toMat4(rotation);
 
 		matrix = translationMatrix * rotationMatrix * scaleMatrix;
 	}

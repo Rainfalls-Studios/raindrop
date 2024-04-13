@@ -11,8 +11,9 @@ layout (location = 2) out vec3 out_normal;
 layout (location = 3) out vec2 out_UV;
 
 layout(set = 1, binding = 0) uniform Scene{
+	vec3 ambientColor;
 	mat4 viewProjection;
-	vec4 ambientColor;
+	vec3 cameraPosition;
 } scene;
 
 layout (push_constant) uniform matrix{
@@ -23,7 +24,7 @@ void main(){
 	vec4 position = scene.viewProjection * Matrix.localTransform * vec4(in_position, 1.);
 
 	out_normal = mat3(Matrix.localTransform) * in_normal;
-	out_position = vec3(position);
+	out_position = position.xyz;
 	out_color = in_color;
 	out_UV = in_UV;
 

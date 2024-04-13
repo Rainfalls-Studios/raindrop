@@ -66,7 +66,7 @@ namespace Raindrop::Graphics::BaseFramebuffer{
 
 	Framebuffer::Framebuffer(::Raindrop::Graphics::Context& renderer) : Framebuffer(renderer, {1080, 720}){}
 
-	Framebuffer::Framebuffer(::Raindrop::Graphics::Context& renderer, glm::uvec2 size) : 
+	Framebuffer::Framebuffer(::Raindrop::Graphics::Context& renderer, Maths::uvec2 size) : 
 		_renderer{renderer},
 		_framebuffer{VK_NULL_HANDLE},
 		_size{size}{
@@ -188,7 +188,7 @@ namespace Raindrop::Graphics::BaseFramebuffer{
 	}
 
 
-	void Framebuffer::resize(const glm::uvec2& size){
+	void Framebuffer::resize(const Maths::uvec2& size){
 		#if !NDEBUG
 			auto& limits = _context->renderer.physicalDevice.limits();
 			assert(size.x <= limits.maxFramebufferWidth);
@@ -349,7 +349,7 @@ namespace Raindrop::Graphics::BaseFramebuffer{
 		return _framebuffer;
 	}
 	
-	glm::uvec2 Framebuffer::size() const{
+	Maths::uvec2 Framebuffer::size() const{
 		return _size;
 	}
 }

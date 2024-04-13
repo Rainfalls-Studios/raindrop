@@ -5,10 +5,10 @@
 
 namespace Raindrop::Graphics::Models{
 	struct Vertex{
-		glm::vec3 position;
-		glm::vec3 normal;
-		glm::vec3 color;
-		glm::vec2 UV;
+		Maths::vec3 position;
+		Maths::vec3 normal;
+		Maths::vec3 color;
+		Maths::vec2 UV;
 	};
 }
 

@@ -10,32 +10,33 @@ namespace Raindrop{
 			Camera();
 			~Camera();
 
-			void translate(const glm::vec3& translation);
-			void scale(const glm::vec3& factor);
-			void rotate(const glm::quat& rotation);
+			void translate(const Maths::vec3& translation);
+			void scale(const Maths::vec3& factor);
+			void rotate(const Maths::quat& rotation);
 
-			void setTranslation(const glm::vec3& translation);
-			void setScale(const glm::vec4& scale);
-			void setRotation(const glm::quat& rotation);
+			void setTranslation(const Maths::vec3& translation);
+			void setScale(const Maths::vec4& scale);
+			void setRotation(const Maths::quat& rotation);
 
 			void setAspectRatio(float ratio);
 			void setFov(float fov);
 
-			const glm::mat4& projection() const;
-			const glm::mat4& transform() const;
-			const glm::mat4& viewTransform() const;
+			const Maths::mat4& projection() const;
+			const Maths::mat4& transform() const;
+			const Maths::mat4& viewProjection() const;
 
-			const glm::vec3& translation() const;
-			const glm::vec3& scale() const;
-			const glm::quat& rotation() const;
+			const Maths::vec3& translation() const;
+			const Maths::vec3& scale() const;
+			const Maths::quat& rotation() const;
 
 			void updateTransform();
 			void updateProjection();
-			void updateViewTransform();
+			void updateViewProjection();
+			
 			
 		private:
-			glm::mat4 _projection;
-			glm::mat4 _viewTranform;
+			Maths::mat4 _projection;
+			Maths::mat4 _viewProjection;
 
 			Components::Transformation _transform;
 

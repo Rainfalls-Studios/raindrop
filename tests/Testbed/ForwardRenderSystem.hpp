@@ -6,8 +6,9 @@
 
 struct ForwardRenderSceneProperties : public Raindrop::SceneProperty{
 	struct{
-		glm::mat4 viewProjection;
-		glm::vec4 ambientColor;
+		Raindrop::Maths::vec4 ambientColor;
+		Raindrop::Maths::mat4 viewProjection;
+		Raindrop::Maths::vec4 cameraPosition;
 	} data;
 
 	struct{

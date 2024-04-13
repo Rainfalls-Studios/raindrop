@@ -83,8 +83,8 @@ namespace Raindrop::Graphics::Core{
 			event.registerEvent<>("window.hidden");
 			event.registerEvent<>("window.exposed");
 			event.registerEvent<>("window.moved");
-			event.registerEvent<glm::ivec2>("window.resized");
-			event.registerEvent<glm::ivec2>("window.pixel_size.changed");
+			event.registerEvent<Maths::ivec2>("window.resized");
+			event.registerEvent<Maths::ivec2>("window.pixel_size.changed");
 			event.registerEvent<>("window.minimized");
 			event.registerEvent<>("window.maximized");
 			event.registerEvent<>("window.restored");
@@ -133,14 +133,14 @@ namespace Raindrop::Graphics::Core{
 		#endif
 		
 		#if EVENT_MOUSE
-			event.registerEvent<glm::vec2, glm::vec2>("mouse.motion");
-			event.registerEvent<uint8_t, uint8_t, glm::vec2>("mouse.button.down");
-			event.registerEvent<uint8_t, glm::vec2>("mouse.button.up");
-			event.registerEvent<glm::vec2, glm::vec2>("mouse.wheel");
+			event.registerEvent<Maths::vec2, Maths::vec2>("mouse.motion");
+			event.registerEvent<uint8_t, uint8_t, Maths::vec2>("mouse.button.down");
+			event.registerEvent<uint8_t, Maths::vec2>("mouse.button.up");
+			event.registerEvent<Maths::vec2, Maths::vec2>("mouse.wheel");
 
 			event.subscribe(
 				"mouse.motion",
-				[&event](glm::vec2 position, glm::vec2 relativePosition){
+				[&event](Maths::vec2 position, Maths::vec2 relativePosition){
 					event.mouseEvents().pos() = position;
 					event.mouseEvents().relPos() = relativePosition;
 				}
@@ -151,14 +151,14 @@ namespace Raindrop::Graphics::Core{
 
 			event.subscribe(
 				"mouse.button.down",
-				[&event](uint8_t button, uint8_t clicks, glm::vec2 position){
+				[&event](uint8_t button, uint8_t clicks, Maths::vec2 position){
 					event.mouseEvents().state(static_cast<Button>(button)) = ButtonState::BUTTON_DOWN;
 				}
 			);
 
 			event.subscribe(
 				"mouse.button.up",
-				[&event](uint8_t button, glm::vec2 position){
+				[&event](uint8_t button, Maths::vec2 position){
 					event.mouseEvents().state(static_cast<Button>(button)) = ButtonState::BUTTON_UP;
 				}
 			);
@@ -182,18 +182,18 @@ namespace Raindrop::Graphics::Core{
 			event.registerEvent<>("gamepad.added");
 			event.registerEvent<>("gamepad.removed");
 			event.registerEvent<>("gamepad.remapped");
-			event.registerEvent<glm::vec2, float>("gamepad.touchpad.down");
-			event.registerEvent<glm::vec2, float>("gamepad.touchpad.motion");
-			event.registerEvent<glm::vec2, float>("gamepad.touchpad.up");
-			event.registerEvent<uint64_t, glm::vec3>("gamepad.sensor.update");
+			event.registerEvent<Maths::vec2, float>("gamepad.touchpad.down");
+			event.registerEvent<Maths::vec2, float>("gamepad.touchpad.motion");
+			event.registerEvent<Maths::vec2, float>("gamepad.touchpad.up");
+			event.registerEvent<uint64_t, Maths::vec3>("gamepad.sensor.update");
 			event.registerEvent<>("gamepad.update.complete");
 			event.registerEvent<>("gamepad.steam_handle_updated");
 		#endif
 
 		#if EVENT_FINGER
-			event.registerEvent<SDL_FingerID, glm::vec2>("finger.down");
-			event.registerEvent<SDL_FingerID, glm::vec2>("finger.up");
-			event.registerEvent<SDL_FingerID, glm::vec2, glm::vec2>("finger.motion");
+			event.registerEvent<SDL_FingerID, Maths::vec2>("finger.down");
+			event.registerEvent<SDL_FingerID, Maths::vec2>("finger.up");
+			event.registerEvent<SDL_FingerID, Maths::vec2, Maths::vec2>("finger.motion");
 		#endif
 
 		#if EVENT_CLIPBOARD
@@ -283,11 +283,11 @@ namespace Raindrop::Graphics::Core{
 		SDL_SetWindowTitle(_window, title);
 	}
 
-	void Window::setSize(glm::u32vec2 size){
+	void Window::setSize(Maths::u32vec2 size){
 		SDL_SetWindowSize(_window, static_cast<int>(size.x), static_cast<int>(size.y));
 	}
 
-	void Window::setPosition(glm::u32vec2 position){
+	void Window::setPosition(Maths::u32vec2 position){
 		SDL_SetWindowPosition(_window, static_cast<int>(position.x), static_cast<int>(position.y));
 	}
 
@@ -295,16 +295,16 @@ namespace Raindrop::Graphics::Core{
 		return SDL_GetWindowTitle(_window);
 	}
 
-	glm::u32vec2 Window::getSize() const{
+	Maths::u32vec2 Window::getSize() const{
 		int w, h;
 		SDL_GetWindowSize(_window, &w, &h);
-		return glm::u32vec2(w, h);
+		return Maths::u32vec2(w, h);
 	}
 
-	glm::u32vec2 Window::getPosition() const{
+	Maths::u32vec2 Window::getPosition() const{
 		int x, y;
 		SDL_GetWindowPosition(_window, &x, &y);
-		return glm::u32vec2(x, y);
+		return Maths::u32vec2(x, y);
 	}
 
 	SDL_Window* Window::get() const{
@@ -547,11 +547,11 @@ namespace Raindrop::Graphics::Core{
 
 	void Window::windowResizedEvent(SDL_Event& e){
 		_resized = true;
-		_context.core.eventManager.trigger("window.resized", glm::ivec2(e.window.data1, e.window.data2));
+		_context.core.eventManager.trigger("window.resized", Maths::ivec2(e.window.data1, e.window.data2));
 	}
 
 	void Window::windowPixelSizeChangedEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("window.pixel_size.changed", glm::ivec2(e.window.data1, e.window.data2));
+		_context.core.eventManager.trigger("window.pixel_size.changed", Maths::ivec2(e.window.data1, e.window.data2));
 	}
 
 	void Window::windowMinimizedEvent(SDL_Event& e){
@@ -653,19 +653,19 @@ namespace Raindrop::Graphics::Core{
 	}
 
 	void Window::mouseMotionEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("mouse.motion", glm::vec2(e.motion.x, e.motion.y), glm::vec2(e.motion.xrel, e.motion.yrel));
+		_context.core.eventManager.trigger("mouse.motion", Maths::vec2(e.motion.x, e.motion.y), Maths::vec2(e.motion.xrel, e.motion.yrel));
 	}
 
 	void Window::mouseButtonDownEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("mouse.button.down", e.button.button, e.button.clicks, glm::vec2(e.button.x, e.button.y));
+		_context.core.eventManager.trigger("mouse.button.down", e.button.button, e.button.clicks, Maths::vec2(e.button.x, e.button.y));
 	}
 
 	void Window::mouseButtonUpEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("mouse.button.up", e.button.button, glm::vec2(e.button.x, e.button.y));
+		_context.core.eventManager.trigger("mouse.button.up", e.button.button, Maths::vec2(e.button.x, e.button.y));
 	}
 
 	void Window::mouseWheelEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("mouse.wheel", glm::vec2(e.wheel.x, e.wheel.y), glm::vec2(e.wheel.mouse_x, e.wheel.mouse_y));
+		_context.core.eventManager.trigger("mouse.wheel", Maths::vec2(e.wheel.x, e.wheel.y), Maths::vec2(e.wheel.mouse_x, e.wheel.mouse_y));
 	}
 
 	void Window::joystickAxisMotionEvent(SDL_Event& e){
@@ -725,19 +725,19 @@ namespace Raindrop::Graphics::Core{
 	}
 
 	void Window::gamepadTouchpadDownEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("gamepad.touchpad.down", glm::vec2(e.gtouchpad.x, e.gtouchpad.y), e.gtouchpad.pressure);
+		_context.core.eventManager.trigger("gamepad.touchpad.down", Maths::vec2(e.gtouchpad.x, e.gtouchpad.y), e.gtouchpad.pressure);
 	}
 	
 	void Window::gamepadTouchpadMotionEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("gamepad.touchpad.motion", glm::vec2(e.gtouchpad.x, e.gtouchpad.y), e.gtouchpad.pressure);
+		_context.core.eventManager.trigger("gamepad.touchpad.motion", Maths::vec2(e.gtouchpad.x, e.gtouchpad.y), e.gtouchpad.pressure);
 	}
 
 	void Window::gamepadTouchpadUpEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("gamepad.touchpad.up", glm::vec2(e.gtouchpad.x, e.gtouchpad.y), e.gtouchpad.pressure);
+		_context.core.eventManager.trigger("gamepad.touchpad.up", Maths::vec2(e.gtouchpad.x, e.gtouchpad.y), e.gtouchpad.pressure);
 	}
 
 	void Window::gamepadSensorUpdateEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("gamepad.sensor.update", e.gsensor.sensor_timestamp, glm::vec3(e.gsensor.data[0], e.gsensor.data[1], e.gsensor.data[2]));
+		_context.core.eventManager.trigger("gamepad.sensor.update", e.gsensor.sensor_timestamp, Maths::vec3(e.gsensor.data[0], e.gsensor.data[1], e.gsensor.data[2]));
 	}
 
 	void Window::gamepadUpdateCompleteEvent(SDL_Event& e){
@@ -749,15 +749,15 @@ namespace Raindrop::Graphics::Core{
 	}
 
 	void Window::fingerDownEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("finger.down", e.tfinger.fingerID, glm::vec2(e.tfinger.x, e.tfinger.y));
+		_context.core.eventManager.trigger("finger.down", e.tfinger.fingerID, Maths::vec2(e.tfinger.x, e.tfinger.y));
 	}
 
 	void Window::fingerUpEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("finger.up", e.tfinger.fingerID, glm::vec2(e.tfinger.x, e.tfinger.y));
+		_context.core.eventManager.trigger("finger.up", e.tfinger.fingerID, Maths::vec2(e.tfinger.x, e.tfinger.y));
 	}
 
 	void Window::fingerMotionEvent(SDL_Event& e){
-		_context.core.eventManager.trigger("finger.motion", e.tfinger.fingerID, glm::vec2(e.tfinger.x, e.tfinger.y), glm::vec2(e.tfinger.dx, e.tfinger.dy));
+		_context.core.eventManager.trigger("finger.motion", e.tfinger.fingerID, Maths::vec2(e.tfinger.x, e.tfinger.y), Maths::vec2(e.tfinger.dx, e.tfinger.dy));
 	}
 
 	void Window::clipboardUpdateEvent(SDL_Event& e){

@@ -1,40 +1,54 @@
 #version 450
 
-#define SUN_DIRECTION vec3(0.866, -0.5, 0.)
-#define SCENE_AMBIENT_COLOR vec3(0.7, 0.7, 0.7)
+#define SUN_DIRECTION vec3(0.866, 0.5, 0.)
+#define SUN_COLOR vec3(1.)
 
 layout(location = 0) in vec3 in_color;
 layout(location = 1) in vec3 in_position;
 layout(location = 2) in vec3 in_normal;
 layout(location = 3) in vec2 in_UV;
 
-
 layout(set = 0, binding = 0) uniform Material {
 	vec4 ambient;
 	vec4 diffuse;
 	vec4 specular;
 	float shininess;
+	float specularFactor;
 } material;
 
 layout(set = 0, binding = 1) uniform sampler2D diffuseTexture;
 
 layout(set = 1, binding = 0) uniform Scene{
-	mat4 viewProjection;
 	vec4 ambientColor;
+	mat4 viewProjection;
+	vec4 cameraPosition;
 } scene;
 
 layout(location = 0) out vec4 out_color;
 
 void main() {
-    vec3 normal = in_normal;
+	// process input
+	vec3 norm = normalize(in_normal);
+	vec3 lightDir = normalize(SUN_DIRECTION);
 
-    vec3 ambientColor = SCENE_AMBIENT_COLOR + material.ambient.xyz;
+	// ambient
+	vec3 ambient = scene.ambientColor.xyz + material.ambient.xyz;
 
-    float diffuseFactor = max(dot(normal, -SUN_DIRECTION), 0.0);
-    vec4 diffuseColor = texture(diffuseTexture, in_UV) * vec4(material.diffuse.xyz * diffuseFactor, 1.);
+	// diffuse
+	float diff = max(dot(norm, lightDir), 0.0);
+	vec3 diffuse = diff * SUN_COLOR;
 
-    vec4 result = vec4(ambientColor, 1.) * diffuseColor;
+	// specular
+	vec3 viewDir = normalize(scene.cameraPosition.xyz - in_position);
+	vec3 reflectDir = reflect(-viewDir, norm);
 
-    // Output
-    out_color = result;
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+	vec3 specular = material.specular.xyz * spec * material.specularFactor * SUN_COLOR;
+
+	// object color
+	vec3 objectColor = texture(diffuseTexture, in_UV).xyz;
+
+	// final
+	vec3 result = (ambient + diffuse + specular) * objectColor;
+    out_color = vec4(result, 1.0);
 }

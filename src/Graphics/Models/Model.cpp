@@ -10,6 +10,8 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include <iostream>
+
 
 namespace Raindrop::Graphics::Models{
 	void loadVertices(std::vector<Vertex>& vertices, const aiMesh* mesh){
@@ -377,8 +379,17 @@ namespace Raindrop::Graphics::Models{
 				data->Get(AI_MATKEY_COLOR_SPECULAR, material.properties.specularColor);
 				data->Get(AI_MATKEY_SHININESS, material.properties.shininess);
 
+				data->Get(AI_MATKEY_SPECULAR_FACTOR, material.properties.specularFactor);
+
 				aiString path;
 				if (data->GetTexture(aiTextureType_DIFFUSE, 0, &path) == AI_SUCCESS){
+					std::replace(
+						path.data,
+						path.data + path.length,
+						'\\',
+						'/'
+					);
+
 					material.textures.diffuse = assets.get<Textures::Texture>("Texture", directory / path.C_Str());
 				}
 
@@ -391,7 +402,7 @@ namespace Raindrop::Graphics::Models{
 		for (std::size_t i=0; i<baseframebuffer->mNumMeshes; i++){
 			const auto& meshData = baseframebuffer->mMeshes[i];
 
-			if (meshData->mPrimitiveTypes != aiPrimitiveType_TRIANGLE){
+			if (!(meshData->mPrimitiveTypes & aiPrimitiveType_TRIANGLE)){
 				spdlog::error("Cannot load mesh \"{}\" containing another primitive type than triangle ({})", meshData->mName.C_Str(), primitiveTypesToStr(meshData->mPrimitiveTypes));
 				throw std::runtime_error("Invalid primitive type");
 			}
