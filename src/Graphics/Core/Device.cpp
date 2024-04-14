@@ -3,6 +3,8 @@
 
 #include <spdlog/spdlog.h>
 
+#include <Raindrop/Exceptions/VulkanExceptions.hpp>
+
 namespace Raindrop::Graphics::Core{
 	Device::Device(Context& context) : _context{context}{
 		spdlog::info("Constructing vulkan device ...");
@@ -23,7 +25,11 @@ namespace Raindrop::Graphics::Core{
 		const auto& instance = _context.instance.get();
 
 		uint32_t count = 0;
-		vkEnumeratePhysicalDevices(instance, &count, nullptr);
+		Exceptions::checkVkOperation<VkInstance>(
+			vkEnumeratePhysicalDevices(instance, &count, nullptr),
+			"Failed to enumerate physical devices",
+			Exceptions::VulkanOperationType::QUERYING
+		);
 
 		if (count == 0){
 			spdlog::error("Failed to find a suitable physical device with vulkan support");
@@ -31,7 +37,11 @@ namespace Raindrop::Graphics::Core{
 		}
 
 		std::vector<VkPhysicalDevice> physicalDevices(count);
-		vkEnumeratePhysicalDevices(instance, &count, physicalDevices.data());
+		Exceptions::checkVkOperation<VkInstance>(
+			vkEnumeratePhysicalDevices(instance, &count, physicalDevices.data()),
+			"Failed to enumerate physical devices",
+			Exceptions::VulkanOperationType::QUERYING
+		);
 
 		for (auto &device : physicalDevices){
 			if (isPhysicalDeviceSuitable(device)){
@@ -50,11 +60,19 @@ namespace Raindrop::Graphics::Core{
 		uint32_t surfaceFormatCount = 0;
 		uint32_t presentModeCount = 0;
 
-		vkGetPhysicalDeviceSurfaceFormatsKHR(device, _context.window.surface(), &surfaceFormatCount, nullptr);
-		vkGetPhysicalDeviceSurfacePresentModesKHR(device, _context.window.surface(), &presentModeCount, nullptr);
+		Exceptions::checkVkOperation<VkInstance>(
+			vkGetPhysicalDeviceSurfaceFormatsKHR(device, _context.window.surface(), &surfaceFormatCount, nullptr),
+			"Failed to get physical device surface formats",
+			Exceptions::VulkanOperationType::QUERYING
+		);
+
+		Exceptions::checkVkOperation<VkInstance>(
+			vkGetPhysicalDeviceSurfacePresentModesKHR(device, _context.window.surface(), &presentModeCount, nullptr),
+			"Failed to get physical device surface present modes",
+			Exceptions::VulkanOperationType::QUERYING
+		);
 
 		return surfaceFormatCount && presentModeCount;
-		return true;
 	}
 	
 	VkDevice Device::get() const{
@@ -109,10 +127,10 @@ namespace Raindrop::Graphics::Core{
 		info.pQueueCreateInfos = queueCreateInfos.data();
 		info.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
 
-		if (vkCreateDevice(physicalDevice.get(), &info, allocationCallbacks, &_device) != VK_SUCCESS){
-			spdlog::error("Failed to create vulkan device");
-			throw std::runtime_error("failed to create vulkan device");
-		}
+		Exceptions::checkVkCreation<VkDevice>(
+			vkCreateDevice(physicalDevice.get(), &info, allocationCallbacks, &_device),
+			"Failed to create device"
+		);
 	}
 
 	bool Device::isExtensionsSupported(){

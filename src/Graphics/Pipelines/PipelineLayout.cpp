@@ -3,6 +3,8 @@
 
 #include <spdlog/spdlog.h>
 
+#include <Raindrop/Exceptions/VulkanExceptions.hpp>
+
 namespace Raindrop::Graphics::Pipelines{
 	PipelineLayout::PipelineLayout(Context& context, const PipelineLayoutConfigInfo& info) :
 			_context{context},
@@ -28,10 +30,10 @@ namespace Raindrop::Graphics::Pipelines{
 		createInfo.setLayoutCount = static_cast<uint32_t>(info.setLayouts.size());
 		createInfo.pSetLayouts = info.setLayouts.data();
 
-		if (vkCreatePipelineLayout(device.get(), &createInfo, allocationCallbacks, &_layout) != VK_SUCCESS){
-			spdlog::error("Failed to create a pipeline layout");
-			throw std::runtime_error("Failed to create pipeline layout");
-		}
+		Exceptions::checkVkCreation<VkPipelineLayout>(
+			vkCreatePipelineLayout(device.get(), &createInfo, allocationCallbacks, &_layout),
+			"Failed to create pipeline layout"
+		);
 	}
 
 	void PipelineLayout::destroyLayout(){

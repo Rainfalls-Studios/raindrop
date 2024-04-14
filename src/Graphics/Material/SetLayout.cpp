@@ -3,6 +3,8 @@
 
 #include <spdlog/spdlog.h>
 
+#include <Raindrop/Exceptions/VulkanExceptions.hpp>
+
 namespace Raindrop::Graphics::Materials{
 	SetLayout::SetLayout(Context& context) : 
 			_context{context},
@@ -48,11 +50,11 @@ namespace Raindrop::Graphics::Materials{
 		info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 		info.bindingCount = sizeof(bindings) / sizeof(bindings[0]);
 		info.pBindings = bindings;
-		
-		if (vkCreateDescriptorSetLayout(device.get(), &info, allocationCallbacks, &_setLayout) != VK_SUCCESS){
-			spdlog::error("Failed to create descriptor set layout");
-			throw std::runtime_error("Failed to create descriptor set layout");
-		}
+
+		Exceptions::checkVkCreation<VkDescriptorSetLayout>(
+			vkCreateDescriptorSetLayout(device.get(), &info, allocationCallbacks, &_setLayout),
+			"Failed to create descriptor set layout"
+		);
 	}
 }
 

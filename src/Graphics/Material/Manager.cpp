@@ -3,6 +3,8 @@
 
 #include <spdlog/spdlog.h>
 
+#include <Raindrop/Exceptions/VulkanExceptions.hpp>
+
 namespace Raindrop::Graphics::Materials{
 	Manager::Manager(::Raindrop::Graphics::Context& context) : _context{nullptr}{
 		spdlog::info("Constructing graphics matetial manager ...");
@@ -97,7 +99,7 @@ namespace Raindrop::Graphics::Materials{
 				.pImageInfo = imageInfos
 			}
 		};
-
+	
 		vkUpdateDescriptorSets(
 			device.get(),
 			sizeof(writes) / sizeof(writes[0]),

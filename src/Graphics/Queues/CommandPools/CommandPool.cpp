@@ -3,6 +3,8 @@
 
 #include <spdlog/spdlog.h>
 
+#include <Raindrop/Exceptions/VulkanExceptions.hpp>
+
 namespace Raindrop::Graphics::Queues{
 	CommandPool::CommandPool(Context& context) : 
 		_context{context},
@@ -25,10 +27,10 @@ namespace Raindrop::Graphics::Queues{
 
 		VkCommandPoolCreateInfo info = createInfo();
 
-		if (vkCreateCommandPool(device.get(), &info, allocationCallbacks, &_pool) != VK_SUCCESS){
-			spdlog::error("Failed to create command pool");
-			throw std::runtime_error("Failed to create command pool");
-		}
+		Exceptions::checkVkCreation<VkCommandPool>(
+			vkCreateCommandPool(device.get(), &info, allocationCallbacks, &_pool),
+			"Failed to create command pool"
+		);
 	}
 
 	VkCommandPool CommandPool::get() const{

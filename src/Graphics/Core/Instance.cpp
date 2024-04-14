@@ -4,6 +4,8 @@
 #include <spdlog/spdlog.h>
 #include <set>
 
+#include <Raindrop/Exceptions/VulkanExceptions.hpp>
+
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData, void *pUserData){
 	Raindrop::Graphics::Context* context = static_cast<Raindrop::Graphics::Context*>(pUserData);
 	spdlog::level::level_enum level = spdlog::level::info;
@@ -92,20 +94,28 @@ namespace Raindrop::Graphics::Core{
 		checkExtensions();
 		checkLayers();
 
-		if (vkCreateInstance(&info, _context.allocationCallbacks, &_instance) != VK_SUCCESS){
-			spdlog::error("Failed to create vulkan instance");
-			throw std::runtime_error("Failed to create vulkan instance");
-		}
+		Exceptions::checkVkCreation<VkInstance>(
+			vkCreateInstance(&info, _context.allocationCallbacks, &_instance),
+			"Failed to create vulkan instance"
+		);
 	}
 
 	void Instance::checkExtensions(){
 		std::set<const char*> extensions(&REQUIRED_EXTENSIONS[0], &REQUIRED_EXTENSIONS[REQUIRED_EXTENSIONS_COUNT]);
 
 		uint32_t extensionsCount;
-		vkEnumerateInstanceExtensionProperties(nullptr, &extensionsCount, nullptr);
+		Exceptions::checkVkOperation<VkInstance>(
+			vkEnumerateInstanceExtensionProperties(nullptr, &extensionsCount, nullptr),
+			"Failed to enumerate instance extensions properties",
+			Exceptions::VulkanOperationType::QUERYING
+		);
 
 		std::vector<VkExtensionProperties> extensionsProperties(extensionsCount);
-		vkEnumerateInstanceExtensionProperties(nullptr, &extensionsCount, extensionsProperties.data());
+		Exceptions::checkVkOperation<VkInstance>(
+			vkEnumerateInstanceExtensionProperties(nullptr, &extensionsCount, extensionsProperties.data()),
+			"Failed to enumerate instance extensions properties",
+			Exceptions::VulkanOperationType::QUERYING
+		);
 
 		for(uint32_t i=0; i<extensionsCount; i++){
 			auto& properties = extensionsProperties[i];
@@ -117,10 +127,18 @@ namespace Raindrop::Graphics::Core{
 		std::set<const char*> layers(&REQUIRED_LAYERS[0], &REQUIRED_LAYERS[REQUIRED_LAYERS_COUNT]);
 
 		uint32_t layersCount;
-		vkEnumerateInstanceLayerProperties(&layersCount, nullptr);
+		Exceptions::checkVkOperation<VkInstance>(
+			vkEnumerateInstanceLayerProperties(&layersCount, nullptr),
+			"Failed to enumerate instance layer properties",
+			Exceptions::VulkanOperationType::QUERYING
+		);
 
 		std::vector<VkLayerProperties> extensionsProperties(layersCount);
-		vkEnumerateInstanceLayerProperties(&layersCount, extensionsProperties.data());
+		Exceptions::checkVkOperation<VkInstance>(
+			vkEnumerateInstanceLayerProperties(&layersCount, extensionsProperties.data()),
+			"Failed to enumerate instance layer properties",
+			Exceptions::VulkanOperationType::QUERYING
+		);
 
 		for(uint32_t i=0; i<layersCount; i++){
 			auto& properties = extensionsProperties[i];
@@ -138,10 +156,19 @@ namespace Raindrop::Graphics::Core{
 
 	void Instance::checkValidationLayers(){
 		uint32_t count;
-		vkEnumerateInstanceLayerProperties(&count, nullptr);
+
+		Exceptions::checkVkOperation<VkInstance>(
+			vkEnumerateInstanceLayerProperties(&count, nullptr),
+			"Failed to enumerate instance layer properties",
+			Exceptions::VulkanOperationType::QUERYING
+		);
 
 		std::vector<VkLayerProperties> availableLayers(count);
-		vkEnumerateInstanceLayerProperties(&count, availableLayers.data());
+		Exceptions::checkVkOperation<VkInstance>(
+			vkEnumerateInstanceLayerProperties(&count, availableLayers.data()),
+			"Failed to enumerate instance layer properties",
+			Exceptions::VulkanOperationType::QUERYING
+		);
 
 		for (const auto &layerName : REQUIRED_LAYERS){
 			bool layerFound = false;

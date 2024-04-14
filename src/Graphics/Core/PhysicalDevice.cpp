@@ -4,6 +4,8 @@
 
 #include <spdlog/spdlog.h>
 
+#include <Raindrop/Exceptions/VulkanExceptions.hpp>
+
 namespace Raindrop::Graphics::Core{
 	PhysicalDevice::PhysicalDevice(Context& context, VkPhysicalDevice device) : _context{context}, _device{device}{
 		reset();
@@ -91,11 +93,21 @@ namespace Raindrop::Graphics::Core{
 
 	bool PhysicalDevice::isExtensionSupported(const char* extension) const{
 		uint32_t count=0;
-		vkEnumerateDeviceExtensionProperties(_device, nullptr, &count, nullptr);
+
+		Exceptions::checkVkOperation<VkPhysicalDevice>(
+			vkEnumerateDeviceExtensionProperties(_device, nullptr, &count, nullptr),
+			"Failed to enumerate physical device extension properties",
+			Exceptions::VulkanOperationType::QUERYING
+		);
 
 		if (count == 0) return false;
 		std::vector<VkExtensionProperties> extensions(count);
-		vkEnumerateDeviceExtensionProperties(_device, nullptr, &count, extensions.data());
+
+		Exceptions::checkVkOperation<VkPhysicalDevice>(
+			vkEnumerateDeviceExtensionProperties(_device, nullptr, &count, extensions.data()),
+			"Failed to enumerate physical device extension properties",
+			Exceptions::VulkanOperationType::QUERYING
+		);
 		
 		for (auto &e : extensions){
 			if (std::strcmp(e.extensionName, extension) == 0) return true;
@@ -105,11 +117,21 @@ namespace Raindrop::Graphics::Core{
 
 	bool PhysicalDevice::isLayerSupported(const char* layer) const{
 		uint32_t count=0;
-		vkEnumerateDeviceLayerProperties(_device, &count, nullptr);
+
+		Exceptions::checkVkOperation<VkPhysicalDevice>(
+			vkEnumerateDeviceLayerProperties(_device, &count, nullptr),
+			"Failed to enumerate physical device layer properties",
+			Exceptions::VulkanOperationType::QUERYING
+		);
 
 		if (count == 0) return false;
 		std::vector<VkLayerProperties> layers(count);
-		vkEnumerateDeviceLayerProperties(_device, &count, layers.data());
+
+		Exceptions::checkVkOperation<VkPhysicalDevice>(
+			vkEnumerateDeviceLayerProperties(_device, &count, layers.data()),
+			"Failed to enumerate physical device layer properties",
+			Exceptions::VulkanOperationType::QUERYING
+		);
 		
 		for (auto &l : layers){
 			if (std::strcmp(l.layerName, layer) == 0) return true;
@@ -120,20 +142,43 @@ namespace Raindrop::Graphics::Core{
 	SwapchainSupport PhysicalDevice::getSwapchainSupport(VkSurfaceKHR surface) const{
 		SwapchainSupport support;
 
-		vkGetPhysicalDeviceSurfaceCapabilitiesKHR(_device, surface, &support.capabilities);
+		Exceptions::checkVkOperation<VkPhysicalDevice>(
+			vkGetPhysicalDeviceSurfaceCapabilitiesKHR(_device, surface, &support.capabilities),
+			"Failed to get physical device surface capabilities",
+			Exceptions::VulkanOperationType::QUERYING
+		);
 
 		uint32_t count;
-
-		vkGetPhysicalDeviceSurfaceFormatsKHR(_device, surface, &count, nullptr);
+		
+		Exceptions::checkVkOperation<VkPhysicalDevice>(
+			vkGetPhysicalDeviceSurfaceFormatsKHR(_device, surface, &count, nullptr),
+			"Failed to get physical device surface formats",
+			Exceptions::VulkanOperationType::QUERYING
+		);
+		
 		if (count){
 			support.formats.resize(count);
-			vkGetPhysicalDeviceSurfaceFormatsKHR(_device, surface, &count, support.formats.data());
+
+			Exceptions::checkVkOperation<VkPhysicalDevice>(
+				vkGetPhysicalDeviceSurfaceFormatsKHR(_device, surface, &count, support.formats.data()),
+				"Failed to get physical device surface formats",
+				Exceptions::VulkanOperationType::QUERYING
+			);
 		}
 
-		vkGetPhysicalDeviceSurfacePresentModesKHR(_device, surface, &count, nullptr);
+		Exceptions::checkVkOperation<VkPhysicalDevice>(
+			vkGetPhysicalDeviceSurfacePresentModesKHR(_device, surface, &count, nullptr),
+			"Failed to get physical device surface formats",
+			Exceptions::VulkanOperationType::QUERYING
+		);
 		if (count){
 			support.presentModes.resize(count);
-			vkGetPhysicalDeviceSurfacePresentModesKHR(_device, surface, &count, support.presentModes.data());
+
+			Exceptions::checkVkOperation<VkPhysicalDevice>(
+				vkGetPhysicalDeviceSurfacePresentModesKHR(_device, surface, &count, support.presentModes.data()),
+				"Failed to get physical device surface formats",
+				Exceptions::VulkanOperationType::QUERYING
+			);
 		}
 
 		support.supported = !support.formats.empty() && !support.presentModes.empty();
@@ -183,10 +228,18 @@ namespace Raindrop::Graphics::Core{
 		}
 		
 		uint32_t count;
-		vkGetPhysicalDeviceToolProperties(_device, &count, nullptr);
+		Exceptions::checkVkOperation<VkPhysicalDevice>(
+			vkGetPhysicalDeviceToolProperties(_device, &count, nullptr),
+			"Failed to get physical device tool properties",
+			Exceptions::VulkanOperationType::QUERYING
+		);
 
 		_toolProperties.resize(count);
-		vkGetPhysicalDeviceToolProperties(_device, &count, _toolProperties.data());
+		Exceptions::checkVkOperation<VkPhysicalDevice>(
+			vkGetPhysicalDeviceToolProperties(_device, &count, _toolProperties.data()),
+			"Failed to get physical device tool properties",
+			Exceptions::VulkanOperationType::QUERYING
+		);
 	}
 
 	void PhysicalDevice::getFamilyProperties(){
@@ -199,17 +252,34 @@ namespace Raindrop::Graphics::Core{
 
 	void PhysicalDevice::getExtensionProperties(){
 		uint32_t count;
-		vkEnumerateDeviceExtensionProperties(_device, nullptr, &count, nullptr);
+
+		Exceptions::checkVkOperation<VkPhysicalDevice>(
+			vkEnumerateDeviceExtensionProperties(_device, nullptr, &count, nullptr),
+			"Failed to get physical extensions properties",
+			Exceptions::VulkanOperationType::QUERYING
+		);
 
 		_supportedExtensionProperties.resize(count);
-		vkEnumerateDeviceExtensionProperties(_device, nullptr, &count, _supportedExtensionProperties.data());
+		Exceptions::checkVkOperation<VkPhysicalDevice>(
+			vkEnumerateDeviceExtensionProperties(_device, nullptr, &count, _supportedExtensionProperties.data()),
+			"Failed to get physical extensions properties",
+			Exceptions::VulkanOperationType::QUERYING
+		);
 	}
 
 	void PhysicalDevice::getLayerProperties(){
 		uint32_t count;
-		vkEnumerateDeviceLayerProperties(_device, &count, nullptr);
+		Exceptions::checkVkOperation<VkPhysicalDevice>(
+			vkEnumerateDeviceLayerProperties(_device, &count, nullptr),
+			"Failed to get physical extensions properties",
+			Exceptions::VulkanOperationType::QUERYING
+		);
 
 		_supportedLayerProperties.resize(count);
-		vkEnumerateDeviceLayerProperties(_device, &count, _supportedLayerProperties.data());
+		Exceptions::checkVkOperation<VkPhysicalDevice>(
+			vkEnumerateDeviceLayerProperties(_device, &count, _supportedLayerProperties.data()),
+			"Failed to get physical extensions properties",
+			Exceptions::VulkanOperationType::QUERYING
+		);
 	}
 }

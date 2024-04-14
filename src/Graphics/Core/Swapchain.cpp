@@ -2,6 +2,8 @@
 #include <Raindrop/Graphics/Context.hpp>
 #include <spdlog/spdlog.h>
 
+#include <Raindrop/Exceptions/VulkanExceptions.hpp>
+
 namespace Raindrop::Graphics::Core{
 	Swapchain::Swapchain(Context& context) :
 			_context{context},
@@ -102,9 +104,10 @@ namespace Raindrop::Graphics::Core{
 		info.imageArrayLayers = 1;
 		info.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-		if (vkCreateSwapchainKHR(device.get(), &info, allocationCallbacks, &_swapchain->_swapchain) != VK_SUCCESS){
-			throw std::runtime_error("Failed to create window vulkan swapchain !");
-		}
+		Exceptions::checkVkCreation<VkSwapchainKHR>(
+			vkCreateSwapchainKHR(device.get(), &info, allocationCallbacks, &_swapchain->_swapchain),
+			"Failed to create swapchain"
+		);
 
 		getSwapchainImages();
 		createImageViews();
@@ -205,9 +208,10 @@ namespace Raindrop::Graphics::Core{
 		info.dependencyCount = 1;
 		info.pDependencies = &dependency;
 
-		if (vkCreateRenderPass(device.get(), &info, allocationCallbacks, &_renderPass) != VK_SUCCESS){
-			throw std::runtime_error("Failed to create swapchain render pass");
-		}
+		Exceptions::checkVkCreation<VkRenderPass>(
+			vkCreateRenderPass(device.get(), &info, allocationCallbacks, &_renderPass),
+			"Failed to create swapchain render pass"
+		);
 	}
 
 	void Swapchain::createImageViews(){
@@ -226,18 +230,28 @@ namespace Raindrop::Graphics::Core{
 			viewInfo.subresourceRange.baseArrayLayer = 0;
 			viewInfo.subresourceRange.layerCount = 1;
 
-			if (vkCreateImageView(device.get(), &viewInfo, allocationCallbacks, &f.imageView) != VK_SUCCESS){
-				spdlog::error("Failed to create a vulkan swapchain attachment image view");
-				throw std::runtime_error("failed to create texture image view!");
-			}
+			Exceptions::checkVkCreation<VkImageView>(
+				vkCreateImageView(device.get(), &viewInfo, allocationCallbacks, &f.imageView),
+				"Failed to create swapchain attachment image view"
+			);
 		}
 	}
 
 	void Swapchain::getSwapchainImages(){
 		auto& device = _context.device;
-		vkGetSwapchainImagesKHR(device.get(), _swapchain->_swapchain, &_frameCount, nullptr);
+
+		Exceptions::checkVkOperation<VkSwapchainKHR>(
+			vkGetSwapchainImagesKHR(device.get(), _swapchain->_swapchain, &_frameCount, nullptr),
+			"Failed to get swapchain images",
+			Exceptions::VulkanOperationType::QUERYING
+		);
+
 		std::vector<VkImage> images(_frameCount);
-		vkGetSwapchainImagesKHR(device.get(), _swapchain->_swapchain, &_frameCount, images.data());
+		Exceptions::checkVkOperation<VkSwapchainKHR>(
+			vkGetSwapchainImagesKHR(device.get(), _swapchain->_swapchain, &_frameCount, images.data()),
+			"Failed to get swapchain images",
+			Exceptions::VulkanOperationType::QUERYING
+		);
 
 		_swapchain->_frames.resize(_frameCount);
 
@@ -260,10 +274,10 @@ namespace Raindrop::Graphics::Core{
 			framebufferInfo.height = _extent.height;
 			framebufferInfo.layers = 1;
 
-			if (vkCreateFramebuffer(device.get(), &framebufferInfo, allocationCallbacks, &f.framebuffer) != VK_SUCCESS){
-				spdlog::error("Failed to create a vulkan swapchain framebuffer");
-				throw std::runtime_error("failed to create a framebuffer");
-			}
+			Exceptions::checkVkCreation<VkFramebuffer>(
+				vkCreateFramebuffer(device.get(), &framebufferInfo, allocationCallbacks, &f.framebuffer),
+				"Failed to create swapchain framebuffer"
+			);
 		}
 	}
 
@@ -279,29 +293,34 @@ namespace Raindrop::Graphics::Core{
 		fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
 		for (auto &f : _swapchain->_frames) {
-			if (vkCreateSemaphore(device.get(), &semaphoreInfo, allocationCallbacks, &f.imageAvailable) != VK_SUCCESS){
-				spdlog::error("Failed to create a vulkan swapchain attachment semaphore");
-				throw std::runtime_error("failed to create image available semaphore");
-			}
+			Exceptions::checkVkCreation<VkSemaphore>(
+				vkCreateSemaphore(device.get(), &semaphoreInfo, allocationCallbacks, &f.imageAvailable),
+				"Failed to create swapchain attachment image available semahore"
+			);
+
+			Exceptions::checkVkCreation<VkSemaphore>(
+				vkCreateSemaphore(device.get(), &semaphoreInfo, allocationCallbacks, &f.imageFinished),
+				"Failed to create swapchain attachment image finished semahore"
+			);
 			
-			if (vkCreateSemaphore(device.get(), &semaphoreInfo, allocationCallbacks, &f.imageFinished) != VK_SUCCESS){
-				spdlog::error("Failed to create a vulkan swapchain attachment semaphore");
-				throw std::runtime_error("failed to create image finished semaphore");
-			}
-			
-			if (vkCreateFence(device.get(), &fenceInfo, allocationCallbacks, &f.inFlightFence) != VK_SUCCESS){
-				spdlog::error("Failed to create a vulkan swapchain attachment fence");
-				throw std::runtime_error("failed to create in flight fence");
-			}
+			Exceptions::checkVkCreation<VkFence>(
+				vkCreateFence(device.get(), &fenceInfo, allocationCallbacks, &f.inFlightFence),
+				"Faile dto create swapchain attachment in flight fence"
+			);
 		}
 	}
 	
 	VkResult Swapchain::acquireNextImage(){
 		auto& device = _context.device;
-
 		uint32_t index = _currentFrame;
-		vkWaitForFences(device.get(), 1, &_swapchain->_frames[_currentFrame].inFlightFence, VK_TRUE, std::numeric_limits<uint64_t>::max());
-		VkResult result = vkAcquireNextImageKHR(device.get(), _swapchain->_swapchain, std::numeric_limits<uint64_t>::max(), _swapchain->_frames[_currentFrame].imageAvailable, VK_NULL_HANDLE, &index);
+
+		Exceptions::checkVkOperation<VkFence>(
+			vkWaitForFences(device.get(), 1, &_swapchain->_frames[_currentFrame].inFlightFence, VK_TRUE, UINT64_MAX),
+			"Failed to wait for swapchain attachment in flight fence",
+			Exceptions::VulkanOperationType::WAIT
+		);
+
+		VkResult result = vkAcquireNextImageKHR(device.get(), _swapchain->_swapchain, UINT64_MAX, _swapchain->_frames[_currentFrame].imageAvailable, VK_NULL_HANDLE, &index);
 		return result;
 	}
 
@@ -309,8 +328,13 @@ namespace Raindrop::Graphics::Core{
 		auto& device = _context.device;
 		auto& allocationCallbacks = _context.allocationCallbacks;
 
-		if (_swapchain->_frames[_currentFrame].imageInFlight != VK_NULL_HANDLE)
-			vkWaitForFences(device.get(), 1, &_swapchain->_frames[_currentFrame].imageInFlight, VK_TRUE, UINT64_MAX);
+		if (_swapchain->_frames[_currentFrame].imageInFlight != VK_NULL_HANDLE){
+			Exceptions::checkVkOperation<VkFence>(
+				vkWaitForFences(device.get(), 1, &_swapchain->_frames[_currentFrame].imageInFlight, VK_TRUE, UINT64_MAX),
+				"Failed to wait for swapchain attachment in flight fence",
+				Exceptions::VulkanOperationType::WAIT
+			);
+		}
 		
 		_swapchain->_frames[_currentFrame].imageInFlight = _swapchain->_frames[_currentFrame].inFlightFence;
 
@@ -330,12 +354,17 @@ namespace Raindrop::Graphics::Core{
 		submitInfo.signalSemaphoreCount = 1;
 		submitInfo.pSignalSemaphores = signalSemaphores;
 
-		vkResetFences(device.get(), 1, &_swapchain->_frames[_currentFrame].inFlightFence);
+		Exceptions::checkVkOperation<VkFence>(
+			vkResetFences(device.get(), 1, &_swapchain->_frames[_currentFrame].inFlightFence),
+			"Failed to reset swapchain attachment in flight fence",
+			Exceptions::VulkanOperationType::RESET
+		);
 
-		if (vkQueueSubmit(_context.queues.graphicsQueue(), 1, &submitInfo, _swapchain->_frames[_currentFrame].inFlightFence) != VK_SUCCESS){
-			spdlog::error("Failed to submit graphics framebuffer to graphics queue");
-			throw std::runtime_error("Failed to submit framebuffer");
-		}
+		Exceptions::checkVkOperation<VkCommandBuffer>(
+			vkQueueSubmit(_context.queues.graphicsQueue(), 1, &submitInfo, _swapchain->_frames[_currentFrame].inFlightFence),
+			"Faile to submit graphics command buffer",
+			Exceptions::VulkanOperationType::SUBMIT
+		);
 
 		VkPresentInfoKHR presentInfo = {};
 		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;

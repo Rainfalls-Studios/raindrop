@@ -9,8 +9,10 @@
 #include <Raindrop/Graphics/Models/Mesh.hpp>
 #include <Raindrop/Graphics/RenderSystems/RenderSystem.hpp>
 
-#include<Raindrop/Components/Transformation.hpp>
-#include<Raindrop/Components/Model.hpp>
+#include <Raindrop/Components/Transformation.hpp>
+#include <Raindrop/Components/Model.hpp>
+
+#include <Raindrop/Exceptions/VulkanExceptions.hpp>
 
 namespace Raindrop::Graphics{
 	Renderer::Renderer(::Raindrop::Context& context) : 
@@ -79,9 +81,10 @@ namespace Raindrop::Graphics{
 		info.queueFamilyIndex = _context->queues.graphicsFamily();
 		info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
-		if (vkCreateCommandPool(_context->device.get(), &info, _context->allocationCallbacks, &_renderCommandPool) != VK_SUCCESS){
-			throw std::runtime_error("Failed to create render command pool");
-		}
+		Exceptions::checkVkCreation<VkCommandPool>(
+			vkCreateCommandPool(_context->device.get(), &info, _context->allocationCallbacks, &_renderCommandPool),
+			"Failed to create frame command buffer pool"
+		);
 	}
 
 	void Renderer::allocateFrameCommandBuffers(){
@@ -94,9 +97,10 @@ namespace Raindrop::Graphics{
 		info.commandBufferCount = static_cast<uint32_t>(count);
 		info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 		
-		if (vkAllocateCommandBuffers(_context->device.get(), &info, _frameCommandBuffers.data()) != VK_SUCCESS){
-			throw std::runtime_error("Failed to allocate frame command buffers");
-		}
+		Exceptions::checkVkCreation<VkCommandBuffer>(
+			vkAllocateCommandBuffers(_context->device.get(), &info, _frameCommandBuffers.data()),
+			"Failed to allocate frame command buffers"
+		);
 	}
 
 	void Renderer::freeFrameCommandBuffers(){
@@ -130,9 +134,12 @@ namespace Raindrop::Graphics{
 		VkCommandBufferBeginInfo beginInfo{};
 		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-		if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
-			throw std::runtime_error("failed to begin recording command buffer!");
-		}
+		Exceptions::checkVkOperation<VkCommandBuffer>(
+			vkBeginCommandBuffer(commandBuffer, &beginInfo),
+			"Failed to begin command buffer",
+			Exceptions::VulkanOperationType::BEGIN
+		);
+
 		return commandBuffer;
 	}
 
@@ -142,15 +149,18 @@ namespace Raindrop::Graphics{
 
 		VkCommandBuffer commandBuffer = _frameCommandBuffers[_currentFrameID];
 
-		if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
-			throw std::runtime_error("failed to record command buffer");
+		Exceptions::checkVkOperation<VkCommandBuffer>(
+			vkEndCommandBuffer(commandBuffer),
+			"Failed to end command buffer",
+			Exceptions::VulkanOperationType::END
+		);
 		
 		VkResult result = swapchain.submitCommandBuffer(&commandBuffer);
 
 		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || window.resized()){
 			updateSwapchainSize();
 		} else if (result != VK_SUCCESS){
-			throw std::runtime_error("failed to submit the command buffer");
+			throw Exceptions::VulkanResourceOperationException(result, "Failed to submit command buffer", Exceptions::VulkanOperationType::SUBMIT, VK_OBJECT_TYPE_COMMAND_BUFFER);
 		}
 	}
 

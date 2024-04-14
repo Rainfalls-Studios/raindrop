@@ -3,6 +3,8 @@
 #include <Raindrop/Graphics/Materials/Material.hpp>
 #include <spdlog/spdlog.h>
 
+#include <Raindrop/Exceptions/VulkanExceptions.hpp>
+
 namespace Raindrop::Graphics::Materials{
 	Buffer::Buffer(Context& context) : 
 			_context{context},
@@ -51,11 +53,10 @@ namespace Raindrop::Graphics::Materials{
 			info.size = size;
 			info.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 			
-
-			if (vkCreateBuffer(device.get(), &info, allocationCallbacks, &_buffer) != VK_SUCCESS){
-				spdlog::error("Failed to create material uniform buffer ! (size : {})", size);
-				throw std::runtime_error("Failed to create material uniform buffer !");
-			}
+			Exceptions::checkVkCreation<VkBuffer>(
+				vkCreateBuffer(device.get(), &info, allocationCallbacks, &_buffer),
+				"Failed to create material uniform buffer"
+			);
 		}
 
 		{
@@ -67,15 +68,16 @@ namespace Raindrop::Graphics::Materials{
 			info.allocationSize = requirements.size;
 			info.memoryTypeIndex = device.findMemoryType(requirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 			
-			if (vkAllocateMemory(device.get(), &info, allocationCallbacks, &_memory) != VK_SUCCESS){
-				spdlog::error("Failed to allocate material uniform buffer memory !");
-				throw std::runtime_error("Failed to allocate material uniform buffer memory");
-			}
+			Exceptions::checkVkCreation<VkDeviceMemory>(
+				vkAllocateMemory(device.get(), &info, allocationCallbacks, &_memory),
+				"Failed to allocate material uniform buffer memory"
+			);
 
-			if (vkBindBufferMemory(device.get(), _buffer, _memory, 0) != VK_SUCCESS){
-				spdlog::error("Failed to bind material uniform buffer memory !");
-				throw std::runtime_error("Failed to bind material uniform buffer memory");
-			}
+			Exceptions::checkVkOperation<VkBuffer>(
+				vkBindBufferMemory(device.get(), _buffer, _memory, 0),
+				"Failed to bind material uniform buffer memory",
+				Exceptions::VulkanOperationType::BINDING
+			);
 		}
 	}
 
@@ -95,10 +97,12 @@ namespace Raindrop::Graphics::Materials{
 		std::size_t size = sizeof(Material::Properties);
 
 		void* ptr;
-		if (vkMapMemory(device.get(), _memory, offset, size, 0, &ptr) != VK_SUCCESS){
-			spdlog::error("Failed to map material memory (size : {} | offset : {})", size, offset);
-			throw std::runtime_error("Failed to map material memory");
-		}
+
+		Exceptions::checkVkOperation<VkDeviceMemory>(
+			vkMapMemory(device.get(), _memory, offset, size, 0, &ptr),
+			"Failed to map material memory",
+			Exceptions::VulkanOperationType::MAPPING
+		);
 
 		memcpy(ptr, &data, size);
 

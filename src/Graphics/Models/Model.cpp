@@ -13,6 +13,7 @@
 
 #include <iostream>
 
+#include <Raindrop/Exceptions/VulkanExceptions.hpp>
 
 namespace Raindrop::Graphics::Models{
 	void loadVertices(std::vector<Vertex>& vertices, const aiMesh* mesh){
@@ -83,10 +84,10 @@ namespace Raindrop::Graphics::Models{
 			info.size = size;
 			info.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 
-			if (vkCreateBuffer(device.get(), &info, allocationCallbacks, &buffer) != VK_SUCCESS){
-				spdlog::error("Failed to create staging buffer !");
-				throw std::runtime_error("Failed to create staging buffer");
-			}
+			Exceptions::checkVkCreation<VkBuffer>(
+				vkCreateBuffer(device.get(), &info, allocationCallbacks, &buffer),
+				"Failed to create mesh stagin buffer"
+			);
 		}
 
 		{
@@ -97,16 +98,17 @@ namespace Raindrop::Graphics::Models{
 			info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 			info.allocationSize = requirements.size;
 			info.memoryTypeIndex = device.findMemoryType(requirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
-			
-			if (vkAllocateMemory(device.get(), &info, allocationCallbacks, &memory) != VK_SUCCESS){
-				spdlog::error("Failed to allocate staging buffer memory !");
-				throw std::runtime_error("Failed to allocate staging buffer memory");
-			}
 
-			if (vkBindBufferMemory(device.get(), buffer, memory, 0) != VK_SUCCESS){
-				spdlog::error("Failed to bind staging buffer memory !");
-				throw std::runtime_error("Failed to bind staging buffer memory");
-			}
+			Exceptions::checkVkCreation<VkDeviceMemory>(
+				vkAllocateMemory(device.get(), &info, allocationCallbacks, &memory),
+				"Failed to allocate mesh stagin buffer memory"
+			);
+
+			Exceptions::checkVkOperation<VkBuffer>(
+				vkBindBufferMemory(device.get(), buffer, memory, 0),
+				"Failed to bind mesh stagin buffer memory",
+				Exceptions::VulkanOperationType::BINDING
+			);
 		}
 	}
 
@@ -121,10 +123,10 @@ namespace Raindrop::Graphics::Models{
 			info.commandPool = context.commandPools.singleUseTransfert.get();
 			info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 
-			if (vkAllocateCommandBuffers(device.get(), &info, &commandBuffer) != VK_SUCCESS){
-				spdlog::error("Failed to allocate command buffer");
-				throw std::runtime_error("Failed to allocate command buffer");
-			}
+			Exceptions::checkVkCreation<VkCommandBuffer>(
+				vkAllocateCommandBuffers(device.get(), &info, &commandBuffer),
+				"Failed to allocate model transfert command buffer"
+			);
 		}
 
 		{
@@ -132,10 +134,11 @@ namespace Raindrop::Graphics::Models{
 			info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 			info.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
-			if (vkBeginCommandBuffer(commandBuffer, &info) != VK_SUCCESS){
-				spdlog::error("Failed to begin command buffer");
-				throw std::runtime_error("Failed to begin command buffer");
-			}
+			Exceptions::checkVkOperation<VkCommandBuffer>(
+				vkBeginCommandBuffer(commandBuffer, &info),
+				"Failed to begin model transfert command buffer",
+				Exceptions::VulkanOperationType::BEGIN
+			);
 		}
 	}
 
@@ -189,25 +192,32 @@ namespace Raindrop::Graphics::Models{
 			VkFenceCreateInfo info{};
 			info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 
-			if (vkCreateFence(device.get(), &info, allocationCallbacks, &fence) != VK_SUCCESS){
-				spdlog::error("Failed to create submit fence");
-				throw std::runtime_error("Failed to create submit fence");
-			}
+			Exceptions::checkVkCreation<VkFence>(
+				vkCreateFence(device.get(), &info, allocationCallbacks, &fence),
+				"Failed to create model transfert command buffer submit fence"
+			);
 		}
 
 		{
-			vkEndCommandBuffer(commandBuffer);
+
+			Exceptions::checkVkOperation<VkCommandBuffer>(
+				vkEndCommandBuffer(commandBuffer),
+				"Failed to end model transfert command buffer",
+				Exceptions::VulkanOperationType::END
+			);
+
 			VkSubmitInfo info{};
 			info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 			info.waitSemaphoreCount = 0;
 			info.signalSemaphoreCount = 0;
 			info.commandBufferCount = 1;
 			info.pCommandBuffers = &commandBuffer;
-
-			if (vkQueueSubmit(context.queues.transfertQueue(), 1, &info, fence) != VK_SUCCESS){
-				spdlog::error("Failed to submit command buffer");
-				throw std::runtime_error("Failed to submit command buffer");
-			}
+			
+			Exceptions::checkVkOperation<VkCommandBuffer>(
+				vkQueueSubmit(context.queues.transfertQueue(), 1, &info, fence),
+				"Failed to submit model transfert command buffer",
+				Exceptions::VulkanOperationType::SUBMIT
+			);
 		}
 
 		vkWaitForFences(device.get(), 1, &fence, VK_TRUE, UINT64_MAX);

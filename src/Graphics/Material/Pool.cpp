@@ -3,6 +3,7 @@
 
 #include <spdlog/spdlog.h>
 
+#include <Raindrop/Exceptions/VulkanExceptions.hpp>
 
 namespace Raindrop::Graphics::Materials{
 	Pool::Pool(Context& context) : 
@@ -44,10 +45,10 @@ namespace Raindrop::Graphics::Materials{
 		info.pPoolSizes = sizes;
 		info.poolSizeCount = sizeof(sizes) / sizeof(sizes[0]);
 
-		if (vkCreateDescriptorPool(device.get(), &info, allocationCallbacks, &_pool) != VK_SUCCESS){
-			spdlog::error("Failed to create material descriptor pool (size : {})", instanceCount);
-			throw std::runtime_error("Failed to create descriptor pool");
-		}
+		Exceptions::checkVkCreation<VkDescriptorPool>(
+			vkCreateDescriptorPool(device.get(), &info, allocationCallbacks, &_pool),
+			"Failed to create material descriptor pool"
+		);
 	}
 
 	void Pool::allocateDescriptors(){
@@ -64,10 +65,10 @@ namespace Raindrop::Graphics::Materials{
 		info.descriptorSetCount = static_cast<uint32_t>(instanceCount);
 		info.pSetLayouts = setLayouts.data();
 
-		if (vkAllocateDescriptorSets(device.get(), &info, _descriptorSets.data()) != VK_SUCCESS){
-			spdlog::error("Failed to allocate material descriptor sets (count : {})", instanceCount);
-			throw std::runtime_error("Failed to allocate material descriptor sets");
-		}
+		Exceptions::checkVkCreation<VkDescriptorSet>(
+			vkAllocateDescriptorSets(device.get(), &info, _descriptorSets.data()),
+			"Failed to allocate material descriptor sets"
+		);
 	}
 
 	VkDescriptorPool Pool::get() const{

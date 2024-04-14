@@ -4,6 +4,8 @@
 
 #include <spdlog/spdlog.h>
 
+#include <Raindrop/Exceptions/VulkanExceptions.hpp>
+
 namespace Raindrop::Graphics::BaseFramebuffer{
 	Framebuffer::Attachment::Attachment(Context& context) : 
 		context{context},
@@ -35,9 +37,10 @@ namespace Raindrop::Graphics::BaseFramebuffer{
 		auto& device = context.renderer.device;
 		auto& allocationCallbacks = context.renderer.allocationCallbacks;
 
-		if (vkCreateImage(device.get(), &imageInfo, allocationCallbacks, &image) != VK_SUCCESS){
-			throw std::runtime_error("Failed to create attachment");
-		}
+		Exceptions::checkVkCreation<VkImage>(
+			vkCreateImage(device.get(), &imageInfo, allocationCallbacks, &image),
+			"Failed to create base framebuffer attachment"
+		);
 
 		VkMemoryRequirements requirements;
 		vkGetImageMemoryRequirements(device.get(), image, &requirements);

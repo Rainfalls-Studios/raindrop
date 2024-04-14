@@ -4,6 +4,8 @@
 
 #include <spdlog/spdlog.h>
 
+#include <Raindrop/Exceptions/VulkanExceptions.hpp>
+
 namespace Raindrop::Graphics::BaseFramebuffer{
 	DescriptorSet::DescriptorSet(Context& context) : 
 		_context{context},
@@ -36,10 +38,10 @@ namespace Raindrop::Graphics::BaseFramebuffer{
 		auto& device = _context.renderer.device;
 		auto& allocationCallbacks = _context.renderer.allocationCallbacks;
 		
-		if (vkAllocateDescriptorSets(device.get(), &info, &_set) != VK_SUCCESS){
-			spdlog::error("Failed to allocate baseframebuffer descriptor set");
-			throw std::runtime_error("Failed to allocate descriptor set");
-		}
+		Exceptions::checkVkCreation<VkDescriptorSet>(
+			vkAllocateDescriptorSets(device.get(), &info, &_set),
+			"Failed to allocate base framebuffer descriptor set"
+		);
 	}
 
 	void DescriptorSet::destroySet(){
@@ -68,17 +70,21 @@ namespace Raindrop::Graphics::BaseFramebuffer{
 		auto& device = _context.renderer.device;
 		auto& allocationCallbacks = _context.renderer.allocationCallbacks;
 
-		if (vkCreateDescriptorPool(device.get(), &info, allocationCallbacks, &_pool) != VK_SUCCESS){
-			spdlog::error("Failed to create baseframebuffer descriptor pool");
-			throw std::runtime_error("Failed to create descriptor pool");
-		}
+		Exceptions::checkVkCreation<VkDescriptorPool>(
+			vkCreateDescriptorPool(device.get(), &info, allocationCallbacks, &_pool),
+			"Failed to create base framebuffer descriptor pool"
+		);
 	}
 
 	void DescriptorSet::destroyPool(){
 		auto& device = _context.renderer.device;
 		auto& allocationCallbacks = _context.renderer.allocationCallbacks;
 		
-		vkResetDescriptorPool(device.get(), _pool, 0);
+		Exceptions::checkVkOperation<VkDescriptorPool>(
+			vkResetDescriptorPool(device.get(), _pool, 0),
+			"Failed to reset base framebuffer descriptor pool",
+			Exceptions::VulkanOperationType::RESET
+		);
 		
 		if (_pool != VK_NULL_HANDLE){
 			vkDestroyDescriptorPool(device.get(), _pool, allocationCallbacks);
@@ -101,10 +107,10 @@ namespace Raindrop::Graphics::BaseFramebuffer{
 		auto& device = _context.renderer.device;
 		auto& allocationCallbacks = _context.renderer.allocationCallbacks;
 
-		if (vkCreateDescriptorSetLayout(device.get(), &info, allocationCallbacks, &_layout) != VK_SUCCESS){
-			spdlog::error("Failed to create baseframebuffer descriptor set layout");
-			throw std::runtime_error("Failed to create descriptor set layout");
-		}
+		Exceptions::checkVkCreation<VkDescriptorSetLayout>(
+			vkCreateDescriptorSetLayout(device.get(), &info, allocationCallbacks, &_layout),
+			"Failed to create base framebuffer descriptor set layout"
+		);
 	}
 
 	void DescriptorSet::destroyLayout(){

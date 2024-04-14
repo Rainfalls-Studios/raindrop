@@ -2,6 +2,8 @@
 #include <Raindrop/Graphics/Context.hpp>
 #include <spdlog/spdlog.h>
 
+#include <Raindrop/Exceptions/VulkanExceptions.hpp>
+
 namespace Raindrop::Graphics::Queues{
 	Manager::Manager(Context& context) :
 			_context{context},
@@ -43,20 +45,32 @@ namespace Raindrop::Graphics::Queues{
 
 	void Manager::findPresentFamily(std::vector<VkQueueFamilyProperties>& families){
 		spdlog::trace("Looking for present queue family ...");
+
+		// Check is the graphics family also has present capabilities
 		{
 			VkBool32 supported = VK_FALSE;
-			vkGetPhysicalDeviceSurfaceSupportKHR(_context.physicalDevice.get(), _graphicsFamily, _context.window.surface(), &supported);
+			
+			Exceptions::checkVkOperation<VkPhysicalDevice>(
+				vkGetPhysicalDeviceSurfaceSupportKHR(_context.physicalDevice.get(), _graphicsFamily, _context.window.surface(), &supported),
+				"Failed to get physical device surface support",
+				Exceptions::VulkanOperationType::QUERYING
+			);
+
 			if (supported){
 				_presentFamily = _graphicsFamily;
 				return;
 			} 
 		}
 
+		// If not, then try to get the first family with present support
 		for (std::size_t i=0; i<families.size(); i++){
 			VkBool32 presentSupport = VK_FALSE;
-			if (vkGetPhysicalDeviceSurfaceSupportKHR(_context.physicalDevice.get(), i, _context.window.surface(), &presentSupport) != VK_SUCCESS){
-				throw std::runtime_error("Failed to query queue physical device support");
-			}
+
+			Exceptions::checkVkOperation<VkPhysicalDevice>(
+				vkGetPhysicalDeviceSurfaceSupportKHR(_context.physicalDevice.get(), i, _context.window.surface(), &presentSupport),
+				"Failed to get queue family physical device surface support",
+				Exceptions::VulkanOperationType::QUERYING
+			);
 
 			if (presentSupport == VK_TRUE){
 				_presentFamily = i;

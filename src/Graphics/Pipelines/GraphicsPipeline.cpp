@@ -3,6 +3,8 @@
 #include <Raindrop/Graphics/Context.hpp>
 #include <spdlog/spdlog.h>
 
+#include <Raindrop/Exceptions/VulkanExceptions.hpp>
+
 namespace Raindrop::Graphics::Pipelines{
 	GraphicsPipelineConfigInfo::GraphicsPipelineConfigInfo() : 
 		vertexInfo{.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO},
@@ -138,10 +140,10 @@ namespace Raindrop::Graphics::Pipelines{
 		auto& device = _context.device;
 		auto& allocationCallbacks = _context.allocationCallbacks;
 
-		if (vkCreateGraphicsPipelines(device.get(), VK_NULL_HANDLE, 1, &createInfo, allocationCallbacks, &_pipeline) != VK_SUCCESS){
-			spdlog::error("Failed to create a graphics pipeline");
-			throw std::runtime_error("Failed to create a graphics pipeline");
-		}
+		Exceptions::checkVkCreation<VkPipeline>(
+			vkCreateGraphicsPipelines(device.get(), VK_NULL_HANDLE, 1, &createInfo, allocationCallbacks, &_pipeline),
+			"Failed to create graphics pipeline"
+		);
 	}
 
 	GraphicsPipeline::~GraphicsPipeline(){

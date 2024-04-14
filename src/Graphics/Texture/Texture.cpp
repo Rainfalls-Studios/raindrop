@@ -8,6 +8,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
+#include <Raindrop/Exceptions/VulkanExceptions.hpp>
+
 namespace Raindrop::Graphics::Textures{
 	void createStagingBuffer(Context& context, VkBuffer& buffer, VkDeviceMemory& memory, std::size_t size){
 		auto& device = context.device;
@@ -20,10 +22,10 @@ namespace Raindrop::Graphics::Textures{
 			info.size = static_cast<VkDeviceSize>(size);
 			info.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 
-			if (vkCreateBuffer(device.get(), &info, allocationCallbacks, &buffer) != VK_SUCCESS){
-				spdlog::error("Failed to create staging buffer !");
-				throw std::runtime_error("Failed to create staging buffer");
-			}
+			Exceptions::checkVkCreation<VkBuffer>(
+				vkCreateBuffer(device.get(), &info, allocationCallbacks, &buffer),
+				"Failed to create stagin buffer"
+			);
 		}
 
 		{
@@ -35,15 +37,16 @@ namespace Raindrop::Graphics::Textures{
 			info.allocationSize = requirements.size;
 			info.memoryTypeIndex = device.findMemoryType(requirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 			
-			if (vkAllocateMemory(device.get(), &info, allocationCallbacks, &memory) != VK_SUCCESS){
-				spdlog::error("Failed to allocate staging buffer memory !");
-				throw std::runtime_error("Failed to allocate staging buffer memory");
-			}
+			Exceptions::checkVkCreation<VkDeviceMemory>(
+				vkAllocateMemory(device.get(), &info, allocationCallbacks, &memory),
+				"Failed to allocate stagin buffer memory"
+			);
 
-			if (vkBindBufferMemory(device.get(), buffer, memory, 0) != VK_SUCCESS){
-				spdlog::error("Failed to bind staging buffer memory !");
-				throw std::runtime_error("Failed to bind staging buffer memory");
-			}
+			Exceptions::checkVkOperation<VkBuffer>(
+				vkBindBufferMemory(device.get(), buffer, memory, 0),
+				"Failed to bind stagin buffer memory",
+				Exceptions::VulkanOperationType::BINDING
+			);
 		}
 	}
 
@@ -53,12 +56,14 @@ namespace Raindrop::Graphics::Textures{
 
 		void* map;
 
-		if (vkMapMemory(device.get(), memory, 0, size, 0, &map) != VK_SUCCESS){
-			spdlog::error("Failed to map staging buffer memory !");
-			throw std::runtime_error("Failed to map staging buffer memory");
-		}
+		Exceptions::checkVkOperation<VkDeviceMemory>(
+			vkMapMemory(device.get(), memory, 0, size, 0, &map),
+			"Failed to map staging buffer memory",
+			Exceptions::VulkanOperationType::MAPPING
+		);
 
 		memcpy(map, data, static_cast<size_t>(size));
+
 		vkUnmapMemory(device.get(), memory);
 	}
 
@@ -85,10 +90,10 @@ namespace Raindrop::Graphics::Textures{
 			info.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 			info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-			if (vkCreateImage(device.get(), &info, nullptr, &image) != VK_SUCCESS) {
-				spdlog::error("Failed to create image !");
-				throw std::runtime_error("Failed to create image");
-			}
+			Exceptions::checkVkCreation<VkImage>(
+				vkCreateImage(device.get(), &info, nullptr, &image),
+				"Failed to create texture image"
+			);
 		}
 
 		{
@@ -100,15 +105,16 @@ namespace Raindrop::Graphics::Textures{
 			allocInfo.allocationSize = memRequirements.size;
 			allocInfo.memoryTypeIndex = device.findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-			if (vkAllocateMemory(device.get(), &allocInfo, nullptr, &memory) != VK_SUCCESS) {
-				spdlog::error("Failed to allocate image memory !");
-				throw std::runtime_error("Failed to allocate image memory");
-			}
+			Exceptions::checkVkCreation<VkDeviceMemory>(
+				vkAllocateMemory(device.get(), &allocInfo, nullptr, &memory),
+				"Failed to allocate texture image memory"
+			);
 
-			if (vkBindImageMemory(device.get(), image, memory, 0) != VK_SUCCESS){
-				spdlog::error("Failed to bind image memory !");
-				throw std::runtime_error("Failed to bind image memory");
-			}
+			Exceptions::checkVkOperation<VkImage>(
+				vkBindImageMemory(device.get(), image, memory, 0),
+				"Failed to bind texture image memory",
+				Exceptions::VulkanOperationType::BINDING
+			);
 		}
 	}
 
@@ -123,10 +129,10 @@ namespace Raindrop::Graphics::Textures{
 			info.commandPool = context.commandPools.singleUseTransfert.get();
 			info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 
-			if (vkAllocateCommandBuffers(device.get(), &info, &commandBuffer) != VK_SUCCESS){
-				spdlog::error("Failed to allocate command buffer");
-				throw std::runtime_error("Failed to allocate command buffer");
-			}
+			Exceptions::checkVkCreation<VkCommandBuffer>(
+				vkAllocateCommandBuffers(device.get(), &info, &commandBuffer),
+				"Failed to allocate texture transfert command buffer"
+			);
 		}
 
 		{
@@ -134,10 +140,11 @@ namespace Raindrop::Graphics::Textures{
 			info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 			info.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
-			if (vkBeginCommandBuffer(commandBuffer, &info) != VK_SUCCESS){
-				spdlog::error("Failed to begin command buffer");
-				throw std::runtime_error("Failed to begin command buffer");
-			}
+			Exceptions::checkVkOperation<VkCommandBuffer>(
+				vkBeginCommandBuffer(commandBuffer, &info),
+				"Failed to begin texture transfert command buffer",
+				Exceptions::VulkanOperationType::BEGIN
+			);
 		}
 	}
 
@@ -244,10 +251,10 @@ namespace Raindrop::Graphics::Textures{
 			VkFenceCreateInfo info{};
 			info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 
-			if (vkCreateFence(device.get(), &info, allocationCallbacks, &fence) != VK_SUCCESS){
-				spdlog::error("Failed to create submit fence");
-				throw std::runtime_error("Failed to create submit fence");
-			}
+			Exceptions::checkVkCreation<VkFence>(
+				vkCreateFence(device.get(), &info, allocationCallbacks, &fence),
+				"Failed to create texture submit fence"
+			);
 		}
 
 		{
@@ -258,11 +265,12 @@ namespace Raindrop::Graphics::Textures{
 			info.signalSemaphoreCount = 0;
 			info.commandBufferCount = 1;
 			info.pCommandBuffers = &commandBuffer;
-
-			if (vkQueueSubmit(context.queues.transfertQueue(), 1, &info, fence) != VK_SUCCESS){
-				spdlog::error("Failed to submit command buffer");
-				throw std::runtime_error("Failed to submit command buffer");
-			}
+			
+			Exceptions::checkVkOperation<VkCommandBuffer>(
+				vkQueueSubmit(context.queues.transfertQueue(), 1, &info, fence),
+				"Failed to submit texture transfert command buffer",
+				Exceptions::VulkanOperationType::SUBMIT
+			);
 		}
 
 		vkWaitForFences(device.get(), 1, &fence, VK_TRUE, UINT64_MAX);
@@ -394,10 +402,10 @@ namespace Raindrop::Graphics::Textures{
 			.layerCount = 1
 		};
 
-		if (vkCreateImageView(device.get(), &info, allocationCallbacks, &_view) != VK_SUCCESS){
-			spdlog::error("Failed to submit command buffer");
-			throw std::runtime_error("Failed to submit command buffer");
-		}
+		Exceptions::checkVkCreation<VkImageView>(
+			vkCreateImageView(device.get(), &info, allocationCallbacks, &_view),
+			"Failed to create texture image view"
+		);
 	}
 
 
@@ -440,10 +448,10 @@ namespace Raindrop::Graphics::Textures{
 		auto& device = _context.device;
 		auto& allocationCallbacks = _context.allocationCallbacks;
 
-		if (vkCreateSampler(device.get(), &info, allocationCallbacks, &_sampler) != VK_SUCCESS){
-			spdlog::error("Failed to create sampler");
-			throw std::runtime_error("Failed to create sampler");
-		}
+		Exceptions::checkVkCreation<VkSampler>(
+			vkCreateSampler(device.get(), &info, allocationCallbacks, &_sampler),
+			"Failed to create texture image sampler"
+		);
 	}
 
 	VkSampler Texture::sampler() const{

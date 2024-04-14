@@ -3,6 +3,8 @@
 
 #include <spdlog/spdlog.h>
 
+#include <Raindrop/Exceptions/VulkanExceptions.hpp>
+
 namespace Raindrop::Graphics::Models{
 	Mesh::Mesh(Context& context) :
 		_context{context},
@@ -69,10 +71,10 @@ namespace Raindrop::Graphics::Models{
 			info.size = size;
 			info.usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 
-			if (vkCreateBuffer(device.get(), &info, allocationCallbacks, &_vertexBuffer) != VK_SUCCESS){
-				spdlog::error("Failed to create vertex buffer (size : {})", size);
-				throw std::runtime_error("Failed to create vertex buffer");
-			}
+			Exceptions::checkVkCreation<VkBuffer>(
+				vkCreateBuffer(device.get(), &info, allocationCallbacks, &_vertexBuffer),
+				"Failed to create mesh vertex buffer"
+			);
 		}
 
 		{
@@ -84,15 +86,16 @@ namespace Raindrop::Graphics::Models{
 			info.allocationSize = requirements.size;
 			info.memoryTypeIndex = device.findMemoryType(requirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 			
-			if (vkAllocateMemory(device.get(), &info, allocationCallbacks, &_vertexMemory) != VK_SUCCESS){
-				spdlog::error("Failed to allocate vertex buffer memory (size : {})", size);
-				throw std::runtime_error("Failed to allocate vertex buffer memory");
-			}
+			Exceptions::checkVkCreation<VkDeviceMemory>(
+				vkAllocateMemory(device.get(), &info, allocationCallbacks, &_vertexMemory),
+				"Failed to allocate mesg vertex buffer memory"
+			);
 
-			if (vkBindBufferMemory(device.get(), _vertexBuffer, _vertexMemory, 0) != VK_SUCCESS){
-				spdlog::error("Failed to bind vertex buffer memory !");
-				throw std::runtime_error("Failed to bind vertex buffer memory");
-			}
+			Exceptions::checkVkOperation<VkBuffer>(
+				vkBindBufferMemory(device.get(), _vertexBuffer, _vertexMemory, 0),
+				"Failed to bind mesh vertex buffer memory",
+				Exceptions::VulkanOperationType::BINDING
+			);
 		}
 	}
 
@@ -109,10 +112,10 @@ namespace Raindrop::Graphics::Models{
 			info.size = size;
 			info.usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
 
-			if (vkCreateBuffer(device.get(), &info, allocationCallbacks, &_indexBuffer) != VK_SUCCESS){
-				spdlog::error("Failed to create index buffer (size : {})", size);
-				throw std::runtime_error("Failed to create index buffer");
-			}
+			Exceptions::checkVkCreation<VkBuffer>(
+				vkCreateBuffer(device.get(), &info, allocationCallbacks, &_indexBuffer),
+				"Failed to create mesh index buffer"
+			);
 		}
 
 		{
@@ -124,15 +127,16 @@ namespace Raindrop::Graphics::Models{
 			info.allocationSize = requirements.size;
 			info.memoryTypeIndex = device.findMemoryType(requirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 			
-			if (vkAllocateMemory(device.get(), &info, allocationCallbacks, &_indexMemory) != VK_SUCCESS){
-				spdlog::error("Failed to allocate index buffer memory (size : {})", size);
-				throw std::runtime_error("Failed to allocate index buffer memory");
-			}
+			Exceptions::checkVkCreation<VkDeviceMemory>(
+				vkAllocateMemory(device.get(), &info, allocationCallbacks, &_indexMemory),
+				"Failed to allocate mesg index buffer memory"
+			);
 
-			if (vkBindBufferMemory(device.get(), _indexBuffer, _indexMemory, 0) != VK_SUCCESS){
-				spdlog::error("Failed to bind index buffer memory !");
-				throw std::runtime_error("Failed to bind idnex buffer memory");
-			}
+			Exceptions::checkVkOperation<VkBuffer>(
+				vkBindBufferMemory(device.get(), _indexBuffer, _indexMemory, 0),
+				"Failed to bind mesh index buffer memory",
+				Exceptions::VulkanOperationType::BINDING
+			);
 		}
 	}
 
