@@ -56,6 +56,8 @@ namespace Raindrop::Graphics::Core{
 
 	void Window::registerEvents(){
 		auto& event = _context.core.eventManager;
+		using Key = ::Raindrop::Core::Event::Key;
+		using KeyMod = ::Raindrop::Core::Event::KeyMod;
 
 		#if EVENT_INFO
 			event.registerEvent<>("quit");
@@ -107,8 +109,8 @@ namespace Raindrop::Graphics::Core{
 		#endif
 
 		#if EVENT_KEY
-			event.registerEvent<SDL_Scancode, SDL_Keycode, uint16_t>("key.down");
-			event.registerEvent<SDL_Scancode, SDL_Keycode, uint16_t>("key.up");
+			event.registerEvent<Key, Key, KeyMod>("key.down");
+			event.registerEvent<Key, Key, KeyMod>("key.up");
 			event.registerEvent<const char*, unsigned int, unsigned int>("text.editing");
 			event.registerEvent<const char*>("text.input");
 			event.registerEvent<const char*>("keymap.changed");
@@ -118,15 +120,15 @@ namespace Raindrop::Graphics::Core{
 			
 			event.subscribe(
 				"key.down",
-				[&event](SDL_Scancode scancode, SDL_Keycode keysym, uint16_t modifier){
-					event.keyEvents().state(static_cast<Key>(scancode)) = KeyState::KEY_PRESSED;
+				[&event](Key scancode, Key keysym, KeyMod modifier){
+					event.keyEvents().state(scancode) = KeyState::KEY_PRESSED;
 				}
 			);
 
 			event.subscribe(
 				"key.up",
-				[&event](SDL_Scancode scancode, SDL_Keycode keysym, uint16_t modifier){
-					event.keyEvents().state(static_cast<Key>(scancode)) = KeyState::KEY_RELEASED;
+				[&event](Key scancode, Key keysym, KeyMod modifier){
+					event.keyEvents().state(scancode) = KeyState::KEY_RELEASED;
 				}
 			);
 
@@ -469,6 +471,18 @@ namespace Raindrop::Graphics::Core{
 		}
 	}
 
+	::Raindrop::Core::Event::Key SDL_ScancodeToKey(SDL_Scancode code){
+		return static_cast<::Raindrop::Core::Event::Key>(code);
+	}
+
+	::Raindrop::Core::Event::Key SDL_KeycodeToKey(SDL_Keycode code){
+		return SDL_ScancodeToKey(SDL_GetScancodeFromKey(code));
+	}
+
+	::Raindrop::Core::Event::KeyMod SDL_KeyModeToKeyMode(Uint16 code){
+		return static_cast<::Raindrop::Core::Event::KeyMod>(code);
+	}
+
 	void Window::quitEvent(SDL_Event &e){
 		_context.core.eventManager.trigger("quit");
 	}
@@ -632,12 +646,12 @@ namespace Raindrop::Graphics::Core{
 
 	void Window::keyDownEvent(SDL_Event& e){
 		const auto& keysym = e.key.keysym;
-		_context.core.eventManager.trigger("key.down", keysym.scancode, keysym.sym, keysym.mod);
+		_context.core.eventManager.trigger("key.down", SDL_ScancodeToKey(keysym.scancode), SDL_KeycodeToKey(keysym.sym), keysym.mod);
 	}
 
 	void Window::keyUpEvent(SDL_Event& e){
 		const auto& keysym = e.key.keysym;
-		_context.core.eventManager.trigger("key.up", keysym.scancode, keysym.sym, keysym.mod);
+		_context.core.eventManager.trigger("key.up", SDL_ScancodeToKey(keysym.scancode), SDL_KeycodeToKey(keysym.sym), keysym.mod);
 	}
 
 	void Window::textEditingEvent(SDL_Event& e){

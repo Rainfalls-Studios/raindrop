@@ -3,6 +3,7 @@
 
 #include "common.hpp"
 #include <vulkan/vulkan.h>
+#include <spdlog/spdlog.h>
 
 namespace Raindrop::Exceptions{
 	enum class VulkanOperationType{
@@ -118,19 +119,18 @@ namespace Raindrop::Exceptions{
 			VkObjectType _type;
 	};
 
-
-	void checkVkCreation(VkResult result, const std::string& failureReason, VkObjectType resourceType);
+	void checkVkCreation(VkResult result, const std::string& failureReason, VkObjectType resourceType, std::shared_ptr<spdlog::logger> logger = spdlog::default_logger());
 
 	template<typename T>
-	inline void checkVkCreation(VkResult result, const std::string& failureReason){
-		checkVkCreation(result, failureReason, deduceVkObjectType<T>());
+	inline void checkVkCreation(VkResult result, const std::string& failureReason, std::shared_ptr<spdlog::logger> logger = spdlog::default_logger()){
+		checkVkCreation(result, failureReason, deduceVkObjectType<T>(), logger);
 	}
 
-	void checkVkOperation(VkResult result, const std::string& failureReason, VulkanOperationType operationType, VkObjectType resourceType);
+	void checkVkOperation(VkResult result, const std::string& failureReason, VulkanOperationType operationType, VkObjectType resourceType, std::shared_ptr<spdlog::logger> logger = spdlog::default_logger());
 
 	template<typename T>
-	inline void checkVkOperation(VkResult result, const std::string& failureReason, VulkanOperationType operationType){
-		checkVkOperation(result, failureReason, operationType, deduceVkObjectType<T>());
+	inline void checkVkOperation(VkResult result, const std::string& failureReason, VulkanOperationType operationType, std::shared_ptr<spdlog::logger> logger = spdlog::default_logger()){
+		checkVkOperation(result, failureReason, operationType, deduceVkObjectType<T>(), logger);
 	}
 }
 

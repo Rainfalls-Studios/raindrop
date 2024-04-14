@@ -28,8 +28,8 @@ void testbed(){
 
 	engine.subscribeEvent(
 		"key.down",
-		[](SDL_Scancode scancode, SDL_Keycode keycode, uint16_t repeat) -> void {
-			if (keycode == SDLK_LCTRL){
+		[](RD::Key scancode, RD::Key keycode, RD::KeyMod repeat) -> void {
+			if (keycode == RD::Key::KEY_LCTRL){
 				if (SDL_GetRelativeMouseMode() == SDL_TRUE){
 					SDL_SetRelativeMouseMode(SDL_FALSE);
 				} else {

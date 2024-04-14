@@ -256,7 +256,31 @@ namespace Raindrop::Core::Event{
 		KEY_CALL = 289,
 		KEY_ENDCALL = 290,
 		KEY_COUNT,
+	};	
+	
+	// Base of SDL_Keymod
+	enum KeyModBit{
+		KEY_MOD_NONE = 		0,
+		KEY_MOD_LSHIFT = 	1 << 0,
+		KEY_MOD_RSHIFT = 	1 << 1,
+		KEY_MOD_LCTRL = 	1 << 2,
+		KEY_MOD_RCTRL = 	1 << 3,
+		KEY_MOD_LALT = 		1 << 4,
+		KEY_MOD_RALT = 		1 << 5,
+		KEY_MOD_LGUI = 		1 << 6,
+		KEY_MOD_RGUI = 		1 << 7,
+		KEY_MOD_NUM = 		1 << 8,
+		KEY_MOD_CAPS = 		1 << 9,
+		KEY_MOD_MODE = 		1 << 10,
+		KEY_MOD_SCROLL = 	1 << 11,
+
+		KEY_MOD_CTRL = KEY_MOD_LCTRL | KEY_MOD_RCTRL,
+		KEY_MOD_SHIFT = KEY_MOD_LSHIFT | KEY_MOD_RSHIFT,
+		KEY_MOD_ALT = KEY_MOD_LALT | KEY_MOD_RALT,
+		KEY_MOD_GUI = KEY_MOD_LGUI | KEY_MOD_RGUI,
 	};
+
+	using KeyMod = uint16_t;
 
 	enum MouseButton{
 		BUTTON_LEFT,

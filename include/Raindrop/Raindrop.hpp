@@ -29,6 +29,9 @@ namespace Raindrop{
 	using EventManager = Core::Event::Manager;
 	using Renderer = Graphics::Renderer;
 
+	using Key = Core::Event::Key;
+	using KeyMod = Core::Event::KeyMod;
+
 	using namespace Wrappers;
 	
 	class Raindrop{
