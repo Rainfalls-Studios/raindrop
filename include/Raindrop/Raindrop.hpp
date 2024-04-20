@@ -8,7 +8,7 @@
 #include "Core/Assets/Manager.hpp"
 #include "Core/Event/Manager.hpp"
 #include "Graphics/Renderer.hpp"
-#include "Core/Modules/Module.hpp"
+#include "Modules/Module.hpp"
 #include "Camera.hpp"
 
 #include "Wrappers/SceneWrapper.hpp"
@@ -25,7 +25,7 @@ namespace Raindrop{
 
 	using Asset = Core::Assets::Asset;
 	using AssetLoader = Core::Assets::Loader;
-	using Module = Core::Modules::Module;
+	using Module = Modules::Module;
 
 	using AssetManager = Core::Assets::Manager;
 	using EventManager = Core::Event::Manager;

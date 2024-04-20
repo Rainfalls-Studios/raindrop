@@ -1,5 +1,5 @@
-#include <Raindrop/Core/Modules/Loader.hpp>
-#include <Raindrop/Core/Modules/Module.hpp>
+#include <Raindrop/Modules/Loader.hpp>
+#include <Raindrop/Modules/Module.hpp>
 #include <spdlog/spdlog.h>
 
 #ifdef _WIN32
@@ -12,7 +12,7 @@
     #error Unsupported platform
 #endif
 
-namespace Raindrop::Core::Modules{
+namespace Raindrop::Modules{
 	Loader::Loader(Context &context) : _context{context}{
 		spdlog::info("Constructing module loader ...");
 	}

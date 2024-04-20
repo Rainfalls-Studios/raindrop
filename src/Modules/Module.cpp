@@ -1,6 +1,6 @@
-#include <Raindrop/Core/Modules/Module.hpp>
+#include <Raindrop/Modules/Module.hpp>
 #include <Raindrop/Exceptions/ResourceExceptions.hpp>
-#include <Raindrop/Core/Modules/ModuleInterface.hpp>
+#include <Raindrop/Modules/ModuleInterface.hpp>
 
 #ifdef _WIN32
     #include <windows.h>
@@ -10,7 +10,7 @@
 
 #include <spdlog/spdlog.h>
 
-namespace Raindrop::Core::Modules{
+namespace Raindrop::Modules{
 	struct Module::__Module__{
 		#ifdef _WIN32
 			HINSTANCE libraryHandle = nullptr;

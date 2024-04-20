@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <list>
 #include <queue>
+#include <initializer_list>
 
 #include <cstdint>
 #include <string>

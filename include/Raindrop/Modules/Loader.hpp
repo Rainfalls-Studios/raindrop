@@ -1,13 +1,13 @@
-#ifndef __RAINDROP_CORE_MODULES_LOADER_HPP__
-#define __RAINDROP_CORE_MODULES_LOADER_HPP__
+#ifndef __RAINDROP_MODULES_LOADER_HPP__
+#define __RAINDROP_MODULES_LOADER_HPP__
 
 #include "common.hpp"
 #include <Raindrop/Core/Assets/Loader.hpp>
 
-namespace Raindrop::Core::Modules{
-	class Loader : public ::Raindrop::Core::Assets::Loader{
+namespace Raindrop::Modules{
+	class Loader : public Core::Assets::Loader{
 		public:
-			using Asset = ::Raindrop::Core::Assets::Asset;
+			using Asset = Core::Assets::Asset;
 
 			Loader(Context &context);
 			virtual ~Loader() override;

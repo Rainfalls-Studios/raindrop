@@ -25,7 +25,7 @@ class ForwardRenderSystem : public Raindrop::Graphics::RenderSystem{
 		void release(Raindrop::SceneWrapper scene);
 
 		void updateScene(VkCommandBuffer commandBuffer, Raindrop::SceneWrapper scene);
-		void render(VkCommandBuffer commandBuffer, Raindrop::SceneWrapper scene);
+		virtual void render(VkCommandBuffer commandBuffer, Raindrop::SceneWrapper scene) override;
 
 	private:
 		Raindrop::Raindrop& _engine;

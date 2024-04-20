@@ -3,14 +3,14 @@
 #include <spdlog/spdlog.h>
 #include <Raindrop/Core/Event/Manager.hpp>
 
-#include <Raindrop/Core/Modules/Loader.hpp>
+#include <Raindrop/Modules/Loader.hpp>
 
 namespace Raindrop{
 	Raindrop::Raindrop(){
 		spdlog::info("Constructing Raindrop engine ...");
 		_context = new Context();
 
-		createAssetLoader<Core::Modules::Loader>("Module", *_context);
+		createAssetLoader<Modules::Loader>("Module", *_context);
 		registerEvent("OnTick");
 	}
 
@@ -94,7 +94,7 @@ namespace Raindrop{
 	}
 
 	std::shared_ptr<Module> Raindrop::getModule(const std::string& alias){
-		auto moduleLoader = getAssetLoader<Core::Modules::Loader>("Module");
+		auto moduleLoader = getAssetLoader<Modules::Loader>("Module");
 		assert(moduleLoader);
 
 		return moduleLoader->get(alias);

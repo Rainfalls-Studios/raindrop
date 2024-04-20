@@ -1,10 +1,10 @@
 #include <Raindrop/Raindrop.hpp>
-#include <Raindrop/Core/Modules/ModuleInterface.hpp>
+#include <Raindrop/Modules/ModuleInterface.hpp>
 #include <Raindrop/Context.hpp>
 
 #include <iostream>
 
-class Interface : public Raindrop::Core::Modules::ModuleInterface{
+class Interface : public Raindrop::Modules::ModuleInterface{
 	public:
 		Interface(){
 			std::cout << "Interface created !" << std::endl;
