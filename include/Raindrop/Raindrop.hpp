@@ -8,6 +8,7 @@
 #include "Core/Assets/Manager.hpp"
 #include "Core/Event/Manager.hpp"
 #include "Graphics/Renderer.hpp"
+#include "Core/Modules/Module.hpp"
 #include "Camera.hpp"
 
 #include "Wrappers/SceneWrapper.hpp"
@@ -24,6 +25,7 @@ namespace Raindrop{
 
 	using Asset = Core::Assets::Asset;
 	using AssetLoader = Core::Assets::Loader;
+	using Module = Core::Modules::Module;
 
 	using AssetManager = Core::Assets::Manager;
 	using EventManager = Core::Event::Manager;
@@ -77,6 +79,10 @@ namespace Raindrop{
 
 			template<typename T>
 			inline constexpr std::shared_ptr<T> getAssetLoader(const std::string& type);
+
+			// === Modules ===
+			std::shared_ptr<Module> getModule(const std::string& alias);
+			std::shared_ptr<Module> loadModule(const Path& path);
 
 			// === Graphics ===
 			

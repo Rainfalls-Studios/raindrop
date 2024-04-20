@@ -154,13 +154,36 @@ void testbed(){
 	engine.run();
 }
 
+void test_modules(){
+	namespace RD = Raindrop;
+	namespace fs = std::filesystem;
+
+	using fs::current_path;
+
+	current_path(PATH);
+	RD::Raindrop engine;
+	auto& renderer = engine.renderer();
+
+	auto module = engine.loadModule(RD::Path(MODULE_PATH) / "barebone");
+
+	engine.subscribeEvent(
+		"quit",
+		[&engine]() -> void {
+			engine.quit();
+		}
+	);
+
+	engine.run();
+}
+
 int main(int argc, char** argv){
 	std::cout << "==========================================" << std::endl;
 	std::cout << "=                 TESTBED                =" << std::endl;
 	std::cout << "==========================================" << std::endl;
 	std::cout << std::endl;
 	
-	testbed();
+	// testbed();
+	test_modules();
 
 	std::cout << std::endl;
 	std::cout << "==========================================" << std::endl;

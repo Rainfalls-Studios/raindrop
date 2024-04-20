@@ -3,14 +3,14 @@
 #include <spdlog/spdlog.h>
 #include <Raindrop/Core/Event/Manager.hpp>
 
-#include <iostream>
-#include <SDL3/SDL.h>
+#include <Raindrop/Core/Modules/Loader.hpp>
 
 namespace Raindrop{
 	Raindrop::Raindrop(){
 		spdlog::info("Constructing Raindrop engine ...");
 		_context = new Context();
 
+		createAssetLoader<Core::Modules::Loader>("Module", *_context);
 		registerEvent("OnTick");
 	}
 
@@ -28,6 +28,8 @@ namespace Raindrop{
 
 	Raindrop::~Raindrop(){
 		spdlog::info("Destroying Raindrop engine ...");
+		
+		unregisterAssetLoader("Module");
 		delete _context;
 	}
 
@@ -89,5 +91,16 @@ namespace Raindrop{
 
 	std::shared_ptr<AssetLoader> Raindrop::getAssetLoader(const std::string& type){
 		return _context->assetManager.findLoader(type);
+	}
+
+	std::shared_ptr<Module> Raindrop::getModule(const std::string& alias){
+		auto moduleLoader = getAssetLoader<Core::Modules::Loader>("Module");
+		assert(moduleLoader);
+
+		return moduleLoader->get(alias);
+	}
+
+	std::shared_ptr<Module> Raindrop::loadModule(const Path& path){
+		return getAsset<Module>("Module", path);
 	}
 }
