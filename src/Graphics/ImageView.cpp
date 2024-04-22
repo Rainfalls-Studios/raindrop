@@ -25,7 +25,7 @@ namespace Raindrop::Graphics{
 
 		VkImageViewCreateInfo info{};
 		info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-		info.image = _image->image();
+		info.image = _image->get();
 		info.format = _format;
 		info.subresourceRange = builder.subResource;
 		info.viewType = _viewType;

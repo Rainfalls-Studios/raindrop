@@ -10,6 +10,7 @@ namespace Raindrop::Graphics{
 	class Buffer;
 	class Image;
 	class ImageView;
+	class Sampler;
 }
 
 #endif

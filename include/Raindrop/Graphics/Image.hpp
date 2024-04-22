@@ -26,11 +26,10 @@ namespace Raindrop::Graphics{
 			Image(Context& context, const ImageConfigInfo& config);
 			~Image();
 
-			VkImage image() const;
+			VkImage get() const;
+			VkDeviceMemory memory() const;
 			VkFormat format() const;
 			VkExtent3D extent() const;
-			uint32_t mipLevels() const;
-			uint32_t arrayLayers() const;
 
 		private:
 			Context& _context;
@@ -39,8 +38,6 @@ namespace Raindrop::Graphics{
 			VkFormat _format;
 			VkDeviceMemory _memory;
 			VkExtent3D _extent;
-			uint32_t _mipLevels;
-			uint32_t _arrLayers;
 	};
 }
 

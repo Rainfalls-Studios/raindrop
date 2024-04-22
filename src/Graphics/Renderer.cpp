@@ -18,7 +18,9 @@ namespace Raindrop::Graphics{
 	Renderer::Renderer(::Raindrop::Context& context) : 
 			_context{nullptr},
 			_renderCommandPool{VK_NULL_HANDLE},
-			_currentFrameID{0}{
+			_currentFrameID{0}
+		{
+		
 		spdlog::info("Constructing renderer ...");
 		_context = new Context(context);
 

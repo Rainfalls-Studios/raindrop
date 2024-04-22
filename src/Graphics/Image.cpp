@@ -3,22 +3,24 @@
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
 
 namespace Raindrop::Graphics{
-	Image::Image(Context& context, const ImageConfigInfo& config) : _context{context}{
-		_image = VK_NULL_HANDLE;
-		_memory = VK_NULL_HANDLE;
-
+	Image::Image(Context& context, const ImageConfigInfo& config) :
+			_context{context},
+			_image{VK_NULL_HANDLE},
+			_format{VK_FORMAT_UNDEFINED},
+			_memory{VK_NULL_HANDLE},
+			_extent{}
+		{
+		
 		_format = config.format;
 		_extent = config.extent;
-		_mipLevels = config.mipLevels;
-		_arrLayers = config.arrLayers;
 
 		VkImageCreateInfo info{};
 
 		info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-		info.arrayLayers =_arrLayers;
 		info.extent = _extent;
 		info.format = _format;
-		info.mipLevels = _mipLevels;
+		info.arrayLayers = config.arrLayers;
+		info.mipLevels = config.mipLevels;
 		info.flags = config.flags;
 		info.imageType = config.type;
 		info.initialLayout = config.layout;
@@ -73,8 +75,12 @@ namespace Raindrop::Graphics{
 
 	}
 	
-	VkImage Image::image() const{
+	VkImage Image::get() const{
 		return _image;
+	}
+
+	VkDeviceMemory Image::memory() const{
+		return _memory;
 	}
 
 	VkFormat Image::format() const{
@@ -83,13 +89,5 @@ namespace Raindrop::Graphics{
 
 	VkExtent3D Image::extent() const{
 		return _extent;
-	}
-	
-	uint32_t Image::mipLevels() const{
-		return _mipLevels;
-	}
-
-	uint32_t Image::arrayLayers() const{
-		return _arrLayers;
 	}
 }
