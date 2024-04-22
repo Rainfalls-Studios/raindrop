@@ -24,7 +24,8 @@ namespace Raindrop::Exceptions{
 		BEGIN,
 		END,
 		WAIT,
-		RESET
+		RESET,
+		FLUSHING,
 	};
 
 	template<typename T>

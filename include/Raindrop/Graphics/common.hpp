@@ -11,6 +11,8 @@ namespace Raindrop::Graphics{
 	class Image;
 	class ImageView;
 	class Sampler;
+	class Framebuffer;
+	class RenderPass;
 }
 
 #endif

@@ -3,6 +3,27 @@
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
 
 namespace Raindrop::Graphics{
+	ImageConfigInfo::ImageConfigInfo() : 
+		format{VK_FORMAT_UNDEFINED},
+		extent{
+			.width = 1,
+			.height = 1,
+			.depth = 1,
+		},
+		usage{0},
+		layout{VK_IMAGE_LAYOUT_UNDEFINED},
+		mipLevels{1},
+		arrLayers{1},
+		sampleCount{VK_SAMPLE_COUNT_1_BIT},
+		tiling{VK_IMAGE_TILING_OPTIMAL},
+		type{VK_IMAGE_TYPE_2D},
+		features{0},
+		flags{0},
+		sharingMode{VK_SHARING_MODE_EXCLUSIVE},
+		queueFamilies{}
+	{}
+
+
 	Image::Image(Context& context, const ImageConfigInfo& config) :
 			_context{context},
 			_image{VK_NULL_HANDLE},
@@ -29,7 +50,7 @@ namespace Raindrop::Graphics{
 		info.samples = config.sampleCount;
 		info.tiling = config.tiling;
 		info.usage = config.usage;
-		info.sharingMode = config.queueFamilies.size() == 1 ? VK_SHARING_MODE_EXCLUSIVE : VK_SHARING_MODE_CONCURRENT;
+		info.sharingMode = config.sharingMode;
 
 		auto& device = _context.device;
 		auto& allocationCallbacks = _context.allocationCallbacks;

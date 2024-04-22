@@ -4,6 +4,26 @@
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
 
 namespace Raindrop::Graphics{
+	ImageViewConfigInfo::ImageViewConfigInfo() : 
+		image{nullptr},
+		viewType{VK_IMAGE_VIEW_TYPE_2D},
+		format{VK_FORMAT_UNDEFINED},
+		componentMapping{
+			.r = VK_COMPONENT_SWIZZLE_R,	
+			.g = VK_COMPONENT_SWIZZLE_G,	
+			.b = VK_COMPONENT_SWIZZLE_B,	
+			.a = VK_COMPONENT_SWIZZLE_A,	
+		},
+		subResource{
+			.aspectMask = VK_IMAGE_ASPECT_NONE,
+			.baseMipLevel = 0,
+			.levelCount = 1,
+			.baseArrayLayer = 0,
+			.layerCount = 1
+		}
+	{}
+
+
 	ImageView::ImageView(Context& context, const ImageViewConfigInfo& builder) :
 		_context{context},
 		_image{nullptr},

@@ -20,7 +20,7 @@ namespace Raindrop::Graphics{
 			VkResult map(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
   			void unmap();
 
-			void writeToBuffer(void* data, VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
+			void write(const void* data, VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
 			VkResult flush(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
 			VkDescriptorBufferInfo descriptorInfo(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
 			VkResult invalidate(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
@@ -30,9 +30,9 @@ namespace Raindrop::Graphics{
 			VkDescriptorBufferInfo descriptorInfoForIndex(int index);
 			VkResult invalidateIndex(int index);
 
-			VkBuffer get();
-			VkDeviceMemory memory();
-			void* mapped();
+			VkBuffer get() const;
+			VkDeviceMemory memory() const;
+			void* mapped() const;
 
 		private:
 			Context& _context;
@@ -40,6 +40,7 @@ namespace Raindrop::Graphics{
 			VkBuffer _buffer;
 			void* _mapped;
 
+			VkDeviceSize _size;
 			uint32_t _instanceCount;
 			VkDeviceSize _instanceSize;
 			VkDeviceSize _alignmentSize;

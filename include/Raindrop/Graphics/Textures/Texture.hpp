@@ -19,21 +19,21 @@ namespace Raindrop::Graphics::Textures{
 
 			virtual ~Texture();
 
-			VkImage image() const;
-			VkImageView imageView() const;
-			VkDeviceMemory memory() const;
-			VkSampler sampler() const;
+			const std::shared_ptr<Image>& image() const;
+			const std::shared_ptr<ImageView>& imageView() const;
+			const std::shared_ptr<Sampler>& sampler() const;
 
 			VkDescriptorImageInfo info() const;
 
 		private:
 			Context& _context;
 
-			VkImage _image;
-			VkImageView _view;
-			VkSampler _sampler;
-			VkDeviceMemory _memory;
+			Maths::uvec2 _size;
+			std::shared_ptr<Image> _image;
+			std::shared_ptr<ImageView> _imageView;
+			std::shared_ptr<Sampler> _sampler;
 
+			void createImage();
 			void createSampler();
 			void createImageView();
 

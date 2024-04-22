@@ -19,8 +19,12 @@ namespace Raindrop::Graphics{
 		float maxLod;
 		bool anisotropyEnable;
 		bool compareEnable;
+		bool unnormalizedCoordinates;
 		VkSamplerCreateFlags flags;
+
+		SamplerConfigInfo();
 	};
+
 	class Sampler{
 		public:
 			Sampler(Context& context, const SamplerConfigInfo& config);

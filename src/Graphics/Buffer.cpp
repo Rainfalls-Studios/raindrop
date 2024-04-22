@@ -31,10 +31,11 @@ namespace Raindrop::Graphics{
 		_instanceCount = instanceCount;
 		_usageFlags = usageFlags;
 		_memoryPropertyFlags = memoryPropertyFlags;
+		_size = instanceSize * instanceCount;
 
 		VkBufferCreateInfo bufferInfo{};
 		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-		bufferInfo.size = instanceSize * instanceCount;
+		bufferInfo.size = _size;
 		bufferInfo.usage = usageFlags;
 		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
@@ -94,7 +95,9 @@ namespace Raindrop::Graphics{
 		}
 	}
 
-	void Buffer::writeToBuffer(void *data, VkDeviceSize size, VkDeviceSize offset) {
+	void Buffer::write(const void *data, VkDeviceSize size, VkDeviceSize offset){
+		size = std::min(size, _size);
+
 		if (size == VK_WHOLE_SIZE) {
 			memcpy(_mapped, data, _instanceSize * _instanceCount);
 		} else {
@@ -127,7 +130,7 @@ namespace Raindrop::Graphics{
 	}
 
 	void Buffer::writeToIndex(void *data, int index) {
-		writeToBuffer(data, _instanceSize, index * _alignmentSize);
+		write(data, _instanceSize, index * _alignmentSize);
 	}
 
 	VkResult Buffer::flushIndex(int index) {
@@ -142,15 +145,15 @@ namespace Raindrop::Graphics{
 		return invalidate(_alignmentSize, index * _alignmentSize);
 	}
 
-	VkBuffer Buffer::get(){
+	VkBuffer Buffer::get() const{
 		return _buffer;
 	}
 
-	VkDeviceMemory Buffer::memory(){
+	VkDeviceMemory Buffer::memory() const{
 		return _memory;
 	}
 
-	void* Buffer::mapped(){
+	void* Buffer::mapped() const{
 		return _mapped;
 	}
 }

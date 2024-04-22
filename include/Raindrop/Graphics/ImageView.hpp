@@ -10,6 +10,8 @@ namespace Raindrop::Graphics{
 		VkFormat format;
 		VkComponentMapping componentMapping;
 		VkImageSubresourceRange subResource;
+
+		ImageViewConfigInfo();
 	};
 
 	class ImageView{

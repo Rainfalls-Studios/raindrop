@@ -182,8 +182,8 @@ int main(int argc, char** argv){
 	std::cout << "==========================================" << std::endl;
 	std::cout << std::endl;
 	
-	// testbed();
-	test_modules();
+	testbed();
+	// test_modules();
 
 	std::cout << std::endl;
 	std::cout << "==========================================" << std::endl;

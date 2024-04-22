@@ -3,6 +3,25 @@
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
 
 namespace Raindrop::Graphics{
+	SamplerConfigInfo::SamplerConfigInfo() : 
+		magFilter{VK_FILTER_NEAREST},
+		minFilter{VK_FILTER_NEAREST},
+		addressModeU{VK_SAMPLER_ADDRESS_MODE_REPEAT},
+		addressModeV{VK_SAMPLER_ADDRESS_MODE_REPEAT},
+		addressModeW{VK_SAMPLER_ADDRESS_MODE_REPEAT},
+		borderColor{VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK},
+		anisotropyEnable{false},
+		maxAnisotropy{0},
+		mipmapMode{VK_SAMPLER_MIPMAP_MODE_LINEAR},
+		mipLodBias{0},
+		minLod{0},
+		maxLod{0},
+		compareEnable{false},
+		compareOp{VK_COMPARE_OP_ALWAYS},
+		unnormalizedCoordinates{false},
+		flags{0}
+	{}
+
 	Sampler::Sampler(Context& context, const SamplerConfigInfo& config) : 
 		_context{context},
 		_sampler{VK_NULL_HANDLE}

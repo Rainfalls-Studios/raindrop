@@ -2,6 +2,11 @@
 #include <Raindrop/Graphics/Context.hpp>
 #include <Raindrop/Exceptions/ResourceExceptions.hpp>
 
+#include <Raindrop/Graphics/Image.hpp>
+#include <Raindrop/Graphics/ImageView.hpp>
+#include <Raindrop/Graphics/Sampler.hpp>
+#include <Raindrop/Graphics/Buffer.hpp>
+
 #include <spdlog/spdlog.h>
 #include <future>
 
@@ -11,111 +16,49 @@
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
 
 namespace Raindrop::Graphics::Textures{
-	void createStagingBuffer(Context& context, VkBuffer& buffer, VkDeviceMemory& memory, std::size_t size){
-		auto& device = context.device;
-		auto& allocationCallbacks = context.allocationCallbacks;
-
-		{
-			VkBufferCreateInfo info{};
-			info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-			info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-			info.size = static_cast<VkDeviceSize>(size);
-			info.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
-
-			Exceptions::checkVkCreation<VkBuffer>(
-				vkCreateBuffer(device.get(), &info, allocationCallbacks, &buffer),
-				"Failed to create stagin buffer"
-			);
-		}
-
-		{
-			VkMemoryRequirements requirements;
-			vkGetBufferMemoryRequirements(device.get(), buffer, &requirements);
-
-			VkMemoryAllocateInfo info{};
-			info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-			info.allocationSize = requirements.size;
-			info.memoryTypeIndex = device.findMemoryType(requirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-			
-			Exceptions::checkVkCreation<VkDeviceMemory>(
-				vkAllocateMemory(device.get(), &info, allocationCallbacks, &memory),
-				"Failed to allocate stagin buffer memory"
-			);
-
-			Exceptions::checkVkOperation<VkBuffer>(
-				vkBindBufferMemory(device.get(), buffer, memory, 0),
-				"Failed to bind stagin buffer memory",
-				Exceptions::VulkanOperationType::BINDING
-			);
-		}
-	}
-
-	void writeBuffer(Context& context, VkDeviceMemory& memory, const void* data, const std::size_t size){
+	
+	void writeBuffer(Context& context, Buffer& buffer, const void* data, const std::size_t size){
 		auto& device = context.device;
 		auto& allocationCallbacks = context.allocationCallbacks;
 
 		void* map;
 
-		Exceptions::checkVkOperation<VkDeviceMemory>(
-			vkMapMemory(device.get(), memory, 0, size, 0, &map),
-			"Failed to map staging buffer memory",
+		Exceptions::checkVkOperation<VkBuffer>(
+		 	buffer.map(),
+			"Failed to map staging buffer",
 			Exceptions::VulkanOperationType::MAPPING
 		);
 
-		memcpy(map, data, static_cast<size_t>(size));
+		buffer.write(data, size);
+		
+		Exceptions::checkVkOperation<VkBuffer>(
+			buffer.flush(),
+			"Failed to flush staging buffer",
+			Exceptions::VulkanOperationType::FLUSHING
+		);
 
-		vkUnmapMemory(device.get(), memory);
+		buffer.unmap();
+
 	}
 
-	void createImage(Context& context, VkImage& image, VkDeviceMemory& memory, std::size_t width, std::size_t height){
-		auto& device = context.device;
-		auto& allocationCallbacks = context.allocationCallbacks;
+	void Texture::createImage(){
+		auto& device = _context.device;
+		auto& allocationCallbacks = _context.allocationCallbacks;
+		
+		ImageConfigInfo info{};
 
-		{
-			VkImageCreateInfo info{};
-			info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-			info.imageType = VK_IMAGE_TYPE_2D;
+		info.extent = {
+			.width = _size.x,
+			.height = _size.y,
+			.depth = 1
+		};
 
-			info.extent.width = static_cast<uint32_t>(width);
-			info.extent.height = static_cast<uint32_t>(height);
-			info.extent.depth = 1;
+		info.layout = VK_IMAGE_LAYOUT_UNDEFINED;
+		info.format = VK_FORMAT_R8G8B8A8_SRGB;
+		info.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+		info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-			info.mipLevels = 1;
-			info.arrayLayers = 1;
-
-			info.samples = VK_SAMPLE_COUNT_1_BIT;
-			info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-			info.tiling = VK_IMAGE_TILING_OPTIMAL;
-			info.format = VK_FORMAT_R8G8B8A8_SRGB;
-			info.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-			info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-			Exceptions::checkVkCreation<VkImage>(
-				vkCreateImage(device.get(), &info, nullptr, &image),
-				"Failed to create texture image"
-			);
-		}
-
-		{
-			VkMemoryRequirements memRequirements;
-			vkGetImageMemoryRequirements(device.get(), image, &memRequirements);
-
-			VkMemoryAllocateInfo allocInfo{};
-			allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-			allocInfo.allocationSize = memRequirements.size;
-			allocInfo.memoryTypeIndex = device.findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-
-			Exceptions::checkVkCreation<VkDeviceMemory>(
-				vkAllocateMemory(device.get(), &allocInfo, nullptr, &memory),
-				"Failed to allocate texture image memory"
-			);
-
-			Exceptions::checkVkOperation<VkImage>(
-				vkBindImageMemory(device.get(), image, memory, 0),
-				"Failed to bind texture image memory",
-				Exceptions::VulkanOperationType::BINDING
-			);
-		}
+		_image = std::make_shared<Image>(_context, info);
 	}
 
 	void createCommandBuffer(Context& context, VkCommandBuffer& commandBuffer){
@@ -148,7 +91,7 @@ namespace Raindrop::Graphics::Textures{
 		}
 	}
 
-	void transfertToTransfert(const VkCommandBuffer& commandBuffer, const VkImage& image){
+	void transfertToTransfert(const VkCommandBuffer& commandBuffer, const std::shared_ptr<Image>& image){
 		VkImageMemoryBarrier barrier{};
 		barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
 		barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
@@ -156,7 +99,7 @@ namespace Raindrop::Graphics::Textures{
 
 		barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 		barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-		barrier.image = image;
+		barrier.image = image->get();
 
 
 		barrier.subresourceRange = {
@@ -181,7 +124,7 @@ namespace Raindrop::Graphics::Textures{
 		);
 	}
 
-	void copyToImage(const VkCommandBuffer& commandBuffer, const VkImage& image, const VkBuffer& buffer, std::size_t width, std::size_t height){
+	void copyToImage(const VkCommandBuffer& commandBuffer, const std::shared_ptr<Image>& image, const Buffer& buffer, std::size_t width, std::size_t height){
 		VkBufferImageCopy region{};
 		region.bufferOffset = 0;
 		region.bufferRowLength = 0;
@@ -201,15 +144,15 @@ namespace Raindrop::Graphics::Textures{
 
 		vkCmdCopyBufferToImage(
 			commandBuffer,
-			buffer,
-			image,
+			buffer.get(),
+			image->get(),
 			VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 			1,
 			&region
 		);
 	}
 
-	void transfertToReadOnly(const VkCommandBuffer& commandBuffer, const VkImage& image){
+	void transfertToReadOnly(const VkCommandBuffer& commandBuffer, const std::shared_ptr<Image>& image){
 		VkImageMemoryBarrier barrier{};
 		barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
 		barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
@@ -217,7 +160,7 @@ namespace Raindrop::Graphics::Textures{
 
 		barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 		barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-		barrier.image = image;
+		barrier.image = image->get();
 
 
 		barrier.subresourceRange = {
@@ -281,15 +224,22 @@ namespace Raindrop::Graphics::Textures{
 		auto& device = _context.device;
 		auto& allocationCallbacks = _context.allocationCallbacks;
 
-		VkBuffer stagingBuffer = VK_NULL_HANDLE;
-		VkDeviceMemory stagingBufferMemory = VK_NULL_HANDLE;
-
 		VkDeviceSize imageSize = data.width * data.height * data.channels;
 
-		createStagingBuffer(_context, stagingBuffer, stagingBufferMemory, imageSize);
-		writeBuffer(_context, stagingBufferMemory, data.data, imageSize);
+		_size.x = data.width;
+		_size.y = data.height;
 
-		createImage(_context, _image, _memory, data.width, data.height);
+		Buffer stagingBuffer(_context);
+
+		stagingBuffer.allocate(
+			imageSize,
+			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
+		);
+
+		writeBuffer(_context, stagingBuffer, data.data, imageSize);
+
+		createImage();
 		createImageView();
 		createSampler();
 
@@ -303,26 +253,23 @@ namespace Raindrop::Graphics::Textures{
 
 		submitAndWait(_context, commandBuffer);
 
-		vkFreeMemory(device.get(), stagingBufferMemory, allocationCallbacks);
-		vkDestroyBuffer(device.get(), stagingBuffer, allocationCallbacks);
 		vkFreeCommandBuffers(device.get(), _context.commandPools.singleUseTransfert.get(), 1, &commandBuffer);
 	}
 
 	Texture::Texture(Context& context, const ConstructData& data) : 
 			_context{context},
-			_image{VK_NULL_HANDLE},
-			_view{VK_NULL_HANDLE},
-			_sampler{VK_NULL_HANDLE},
-			_memory{VK_NULL_HANDLE}
+			_image{nullptr},
+			_imageView{nullptr},
+			_sampler{nullptr}
 		{
 		loadFromConstructData(data);
 	}
 
 	Texture::Texture(Context& context, const std::filesystem::path& path) :
 			_context{context},
-			_image{VK_NULL_HANDLE},
-			_view{VK_NULL_HANDLE},
-			_memory{VK_NULL_HANDLE}
+			_image{nullptr},
+			_imageView{nullptr},
+			_sampler{nullptr}
 		{
 		
 		auto& device = _context.device;
@@ -355,113 +302,57 @@ namespace Raindrop::Graphics::Textures{
 		auto& device = _context.device;
 		auto& allocationCallbacks = _context.allocationCallbacks;
 
-		if (_image != VK_NULL_HANDLE){
-			vkDestroyImage(device.get(), _image, allocationCallbacks);
-			_image = VK_NULL_HANDLE;
-		}
-
-		if (_view != VK_NULL_HANDLE){
-			vkDestroyImageView(device.get(), _view, allocationCallbacks);
-			_view = VK_NULL_HANDLE;
-		}
-
-		if (_memory != VK_NULL_HANDLE){
-			vkFreeMemory(device.get(), _memory, allocationCallbacks);
-			_memory = VK_NULL_HANDLE;
-		}
-
-		if (_sampler != VK_NULL_HANDLE){
-			vkDestroySampler(device.get(), _sampler, allocationCallbacks);
-			_sampler = VK_NULL_HANDLE;
-		}
+		_imageView.reset();
+		_image.reset();
+		_sampler.reset();
 	}
 
 	void Texture::createImageView(){
 		auto& device = _context.device;
 		auto& allocationCallbacks = _context.allocationCallbacks;
 
-		VkImageViewCreateInfo info{};
+		ImageViewConfigInfo info{};
 
-		info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 		info.image = _image;
-		info.components = {
-			.r = VK_COMPONENT_SWIZZLE_R,
-			.g = VK_COMPONENT_SWIZZLE_G,
-			.b = VK_COMPONENT_SWIZZLE_B,
-			.a = VK_COMPONENT_SWIZZLE_A
-		};
 
 		info.format = VK_FORMAT_R8G8B8A8_SRGB;
 		info.viewType = VK_IMAGE_VIEW_TYPE_2D;
+		info.subResource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 
-		info.subresourceRange = VkImageSubresourceRange{
-			.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-			.baseMipLevel = 0,
-			.levelCount = 1,
-			.baseArrayLayer = 0,
-			.layerCount = 1
-		};
-
-		Exceptions::checkVkCreation<VkImageView>(
-			vkCreateImageView(device.get(), &info, allocationCallbacks, &_view),
-			"Failed to create texture image view"
-		);
+		_imageView = std::make_shared<ImageView>(_context, info);
 	}
 
-
-	VkImage Texture::image() const{
+	const std::shared_ptr<Image>& Texture::image() const{
 		return _image;
 	}
 
-	VkImageView Texture::imageView() const{
-		return _view;
-	}
-
-	VkDeviceMemory Texture::memory() const{
-		return _memory;
+	const std::shared_ptr<ImageView>& Texture::imageView() const{
+		return _imageView;
 	}
 
 	void Texture::createSampler(){
-		VkSamplerCreateInfo info{};
-		info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+		SamplerConfigInfo info{};
+
 		info.unnormalizedCoordinates = VK_FALSE;
-
-		info.magFilter = VK_FILTER_NEAREST;
-		info.minFilter = VK_FILTER_NEAREST;
-
-		info.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-		info.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-		info.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-		info.borderColor = VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK;
 
 		info.anisotropyEnable = VK_TRUE;
 		info.maxAnisotropy = _context.physicalDevice.limits().maxSamplerAnisotropy;
 
-		info.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-		info.mipLodBias = 0.0f;
-		info.minLod = 0.0f;
-		info.maxLod = 0.0f;
-
-		info.compareEnable = VK_FALSE;
-		info.compareOp = VK_COMPARE_OP_ALWAYS;
-
 		auto& device = _context.device;
 		auto& allocationCallbacks = _context.allocationCallbacks;
 
-		Exceptions::checkVkCreation<VkSampler>(
-			vkCreateSampler(device.get(), &info, allocationCallbacks, &_sampler),
-			"Failed to create texture image sampler"
-		);
+		_sampler = std::make_shared<Sampler>(_context, info);
 	}
 
-	VkSampler Texture::sampler() const{
+	const std::shared_ptr<Sampler>& Texture::sampler() const{
 		return _sampler;
 	}
 
 	VkDescriptorImageInfo Texture::info() const{
+		assert(_sampler && _imageView);
 		return VkDescriptorImageInfo{
-			.sampler = _sampler,
-			.imageView = _view,
+			.sampler = _sampler->get(),
+			.imageView = _imageView->get(),
 			.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
 		};
 	}

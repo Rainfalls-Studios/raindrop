@@ -17,8 +17,11 @@ namespace Raindrop::Graphics{
 		VkImageType type;
 		VkFormatFeatureFlags features;
 		VkImageCreateFlags flags;
-
+		VkSharingMode sharingMode;
+		
 		std::vector<uint32_t> queueFamilies;
+
+		ImageConfigInfo();
 	};
 
 	class Image{
