@@ -23,16 +23,18 @@ namespace Raindrop{
 	using EntityID = EntityGUID;
 	using EntityLUID = Core::Scenes::EntityLUID;
 
+	using AssetManager = Core::Assets::Manager;
 	using Asset = Core::Assets::Asset;
 	using AssetLoader = Core::Assets::Loader;
-	using Module = Modules::Module;
 
-	using AssetManager = Core::Assets::Manager;
 	using EventManager = Core::Event::Manager;
-	using Renderer = Graphics::Renderer;
-
 	using Key = Core::Event::Key;
 	using KeyMod = Core::Event::KeyMod;
+
+	using Module = Modules::Module;
+
+	using Renderer = Graphics::Renderer;
+	using RenderSystem = Graphics::RenderSystem;
 
 	using namespace Wrappers;
 	

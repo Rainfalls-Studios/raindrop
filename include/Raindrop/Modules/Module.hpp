@@ -12,13 +12,15 @@ namespace Raindrop::Modules{
 
 			ModuleInterface* interface() const;
 
-			/**
-			 * @brief returns a const char* array of lenght 'l' that contains each aliases given to the module
-			 * 
-			 * @param l the number of element in the array
-			 * @return const const char** 
-			 */
-			const char** aliases(std::size_t& l) const;
+			const std::string& name() const;
+			const std::string& description() const;
+			const Version& version() const;
+			const std::vector<std::string>& aliases() const;
+
+			// ==== Render systems ====
+
+			const std::vector<std::shared_ptr<RenderSystem>>& renderSystems() const;
+			std::shared_ptr<RenderSystem> getRenderSystem(const std::string& name);
 
 		private:
 			struct __Module__;

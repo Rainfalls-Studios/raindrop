@@ -6,6 +6,36 @@
 #include <Raindrop/Modules/Loader.hpp>
 
 namespace Raindrop{
+	Version::Version() noexcept :
+		variant{0},
+		major{0},
+		minor{0},
+		patch{0}
+	{}
+
+	Version::Version(const Version& other) noexcept :
+		variant{other.variant},
+		major{other.major},
+		minor{other.minor},
+		patch{other.patch}
+	{}
+
+	Version::Version(std::size_t variant, std::size_t major, std::size_t minor, std::size_t patch) noexcept : 
+		variant{variant},
+		major{major},
+		minor{minor},
+		patch{patch}
+	{}
+
+	Version& Version::operator=(const Version& other) noexcept{
+		variant = other.variant;
+		major = other.major;
+		minor = other.minor;
+		patch = other.patch;
+		return *this;
+	}
+
+
 	Raindrop::Raindrop(){
 		spdlog::info("Constructing Raindrop engine ...");
 		_context = new Context();

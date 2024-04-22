@@ -8,6 +8,10 @@ namespace Raindrop::Modules{
 		public:
 			ModuleInterface() = default;
 			virtual ~ModuleInterface() = default;
+
+			virtual const std::vector<std::shared_ptr<RenderSystem>>& renderSystems() const;
+			
+
 	};
 }
 

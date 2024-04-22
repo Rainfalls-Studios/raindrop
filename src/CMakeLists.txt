@@ -47,6 +47,10 @@ endfunction()
 
 if (RAINDROP_BUILD_SHARED)
 	add_library_target(SHARED)
+	set_target_properties(
+		RAINDROP-SHARED
+		PROPERTIES POSITION_INDEPENDENT_CODE ON
+	)
 endif()
 
 if (RAINDROP_BUILD_STATIC)

@@ -10,7 +10,12 @@ namespace Raindrop::Graphics::RenderSystems{
 			RenderSystem() = default;
 			virtual ~RenderSystem() = default;
 
+			virtual std::string name() const;
+			virtual std::string description() const;
+			virtual Version version() const;
+
 			virtual void render(VkCommandBuffer commandBuffer, ::Raindrop::Wrappers::SceneWrapper scene) = 0;
+
 	};
 }
 

@@ -7,6 +7,9 @@
 namespace Raindrop::Graphics{
 	struct Context;
 	class Renderer;
+	class Buffer;
+	class Image;
+	class ImageView;
 }
 
 #endif

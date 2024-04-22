@@ -68,15 +68,12 @@ namespace Raindrop::Modules{
 	}
 
 	void Loader::loadAliases(const std::shared_ptr<Module>& module){
-		std::size_t aliasCount;
-		const char** const aliases = module->aliases(aliasCount);
+		const auto& aliases = module->aliases();
 
-		for (std::size_t i=0; i<aliasCount; i++){
-			const auto& alias = aliases[i];
-			
+		for (const auto& alias : aliases){
 			auto it = _aliasToModule.find(alias);
 			if (it != _aliasToModule.end()){
-				// If it is expired, there is no need to worry
+				// If it is expired, there is no problem overwriting it
 				if (!it->second.expired()){
 					spdlog::warn("Possibly critical warning ! Overwriting \"{}\" module alias", alias);
 				}

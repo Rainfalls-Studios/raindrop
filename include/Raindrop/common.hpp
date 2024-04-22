@@ -15,9 +15,13 @@ namespace Raindrop{
 		std::size_t major;
 		std::size_t minor;
 		std::size_t patch;
-	};
 
-	Version makeVersion(std::size_t variant, std::size_t major, std::size_t minor, std::size_t patch);
+		Version() noexcept;
+		Version(const Version& other) noexcept;
+		Version(std::size_t variant, std::size_t major, std::size_t minor, std::size_t patch) noexcept;
+
+		Version& operator=(const Version& other) noexcept;
+	};
 }
 
 #endif

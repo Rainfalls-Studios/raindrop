@@ -13,6 +13,8 @@ namespace Raindrop::Graphics::RenderSystems{
 
 	class RenderSystem;
 	class RenderSystemRegistry;
+	class RenderSystemCollection;
+	class RenderPipeline;
 }
 
 #endif

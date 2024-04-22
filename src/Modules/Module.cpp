@@ -1,6 +1,7 @@
 #include <Raindrop/Modules/Module.hpp>
 #include <Raindrop/Exceptions/ResourceExceptions.hpp>
 #include <Raindrop/Modules/ModuleInterface.hpp>
+#include <Raindrop/Graphics/RenderSystems/RenderSystem.hpp>
 
 #ifdef _WIN32
     #include <windows.h>
@@ -62,6 +63,8 @@ namespace Raindrop::Modules{
 			}
 		#endif
 
+		// Interface
+
 		struct Interface{
 			using InitFnc_t = ModuleInterface*(*)(Context&);
 			using DestroyFnc_t = void(*)(ModuleInterface*);
@@ -70,11 +73,6 @@ namespace Raindrop::Modules{
 			DestroyFnc_t destroy = nullptr;
 		} interface;
 
-		struct Aliases{
-			uint32_t lenght;
-			const char** aliases;
- 		} aliases;
-
 		bool tryLoadInterface() noexcept{
 			interface.init = reinterpret_cast<Interface::InitFnc_t>(getFunc("initializeInterface"));
 			interface.destroy = reinterpret_cast<Interface::DestroyFnc_t>(getFunc("destroyInterface"));
@@ -82,16 +80,48 @@ namespace Raindrop::Modules{
 			return interface.init && interface.destroy;
 		}
 
+		// Aliases
+
+		struct Aliases{
+			std::vector<std::string> aliases = {};
+ 		} aliases;
+
 		bool tryLoadAliases() noexcept{
-			using GetAliasesFnc_t = const char**(*)(uint32_t*);
+			using GetAliasesFnc_t = std::vector<std::string>(*)();
 			GetAliasesFnc_t getAliases = reinterpret_cast<GetAliasesFnc_t>(getFunc("getAliases"));
 
 			if (getAliases == nullptr){
 				return false;
 			}
 
-			aliases.aliases = getAliases(&aliases.lenght);
+			aliases.aliases = getAliases();
 			return true;
+		}
+
+		// Metadata
+
+		struct Metadata{
+			std::string name = "None";
+			std::string description = "None";
+			Version version = Version(0, 1, 0, 0);
+		} metadata;
+
+		void tryLoadMetadata() noexcept{
+			using GetNameFnc_t = std::string(*)(void);
+			using GetDescriptionFnc_t = std::string(*)(void);
+			using GetVersionFnc_t = Version(*)(void);
+
+			if (GetNameFnc_t getName = reinterpret_cast<GetNameFnc_t>(getFunc("getName")); getName){
+				metadata.name = getName();
+			}
+
+			if (GetDescriptionFnc_t getDescription = reinterpret_cast<GetDescriptionFnc_t>(getFunc("getDescription")); getDescription){
+				metadata.description = getDescription();
+			}
+
+			if (GetVersionFnc_t getVersion = reinterpret_cast<GetVersionFnc_t>(getFunc("getVersion")); getVersion){
+				metadata.version = getVersion();
+			}
 		}
 	};
 
@@ -106,10 +136,14 @@ namespace Raindrop::Modules{
 		if (_module->tryLoadInterface()){
 			_interface = _module->interface.init(context);
 		} else {
-			spdlog::info("Non interface module loaded");
+			spdlog::info("The module does not contain an accessible interface");
 		}
 
-		_module->tryLoadAliases();
+		if (_module->tryLoadAliases() == false){
+			spdlog::info("The module does not contain aliases");
+		}
+
+		_module->tryLoadMetadata();
 	}
 
 	Module::~Module(){
@@ -128,9 +162,42 @@ namespace Raindrop::Modules{
 		return _interface;
 	}
 
-	const char** Module::aliases(std::size_t& l) const{
+	const std::string& Module::name() const{
 		assert(_module != nullptr && "The module is invalid !");
-		l = static_cast<std::size_t>(_module->aliases.lenght);
+		return _module->metadata.name;
+	}
+
+	const std::string& Module::description() const{
+		assert(_module != nullptr && "The module is invalid !");
+		return _module->metadata.description;
+	}
+
+	const Version& Module::version() const{
+		assert(_module != nullptr && "The module is invalid !");
+		return _module->metadata.version;
+	}
+
+	const std::vector<std::string>& Module::aliases() const{
+		assert(_module != nullptr && "The module is invalid !");
 		return _module->aliases.aliases;
 	}
+
+	const std::vector<std::shared_ptr<RenderSystem>>& Module::renderSystems() const{
+		assert(_interface != nullptr && "Either the module is invalid or it does not contain an interface");
+		return _interface->renderSystems();
+	}
+
+	std::shared_ptr<RenderSystem> Module::getRenderSystem(const std::string& name){
+		const auto& systems = renderSystems();
+
+		// linear search is not the best. However, since a module will probably not contain a lot of them, this shouldn't be a bottleneck
+		for (const auto& system : systems){
+			if (system->name() == name){
+				return system;
+			}
+		}
+		spdlog::warn("Cannot find render system named \"{}\"", name);
+		return nullptr;
+	}
+
 }

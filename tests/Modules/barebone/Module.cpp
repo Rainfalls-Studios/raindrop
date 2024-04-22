@@ -13,6 +13,9 @@ class Interface : public Raindrop::Modules::ModuleInterface{
 		~Interface(){
 			std::cout << "Interface destroyed !" << std::endl;
 		}
+
+		// Since we do not have any render systems, it is better to not override this method
+		// virtual const std::vector<std::shared_ptr<Raindrop::RenderSystem>>& renderSystems() const override{}
 };
 
 extern "C" {
@@ -24,15 +27,22 @@ extern "C" {
 		delete interface;
 	}
 
-	const char** getAliases(uint32_t* lenght){
-		assert(lenght);
-
-		static const char* aliases[] = {
+	std::vector<std::string> getAliases(){
+		return {
 			"Module",
 			"Mod"
 		};
+	}
 
-		*lenght = sizeof(aliases) / sizeof(aliases[0]);
-		return aliases;
+	std::string getName(){
+		return "barbone module";
+	}
+
+	std::string getDescription(){
+		return "The simplest module";
+	}
+
+	Raindrop::Version getVersion(){
+		return Raindrop::Version(0, 1, 0, 0);
 	}
 }
