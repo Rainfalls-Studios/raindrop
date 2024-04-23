@@ -19,8 +19,11 @@ namespace Raindrop::Modules{
 
 			// ==== Render systems ====
 
-			const std::vector<std::shared_ptr<RenderSystem>>& renderSystems() const;
-			std::shared_ptr<RenderSystem> getRenderSystem(const std::string& name);
+			const std::vector<RenderSystemID>& renderSystemIDs() const;
+			bool hasRenderSystem(const RenderSystemID& id);
+
+			const std::vector<RenderSystemCollection>& renderSystemCollections() const;
+			const RenderSystemCollection* getRenderSystemCollection(const std::string& name) const;
 
 		private:
 			struct __Module__;

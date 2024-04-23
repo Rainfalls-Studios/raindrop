@@ -1,8 +1,16 @@
 #include <Raindrop/Modules/ModuleInterface.hpp>
+#include <Raindrop/Graphics/RenderSystems/RenderSystem.hpp>
+#include <Raindrop/Graphics/RenderSystems/RenderSystemCollection.hpp>
 
 namespace Raindrop::Modules{
-	const std::vector<std::shared_ptr<RenderSystem>>& ModuleInterface::renderSystems() const{
-		static const std::vector<std::shared_ptr<RenderSystem>> empty;
+	const std::vector<RenderSystemID>& ModuleInterface::renderSystemIDs() const{
+		static const std::vector<RenderSystemID> empty;
 		return empty;
 	}
+
+	const std::vector<RenderSystemCollection>& ModuleInterface::renderSystemCollections() const{
+		static const std::vector<RenderSystemCollection> empty;
+		return empty;
+	}
+
 }

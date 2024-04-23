@@ -9,8 +9,8 @@ namespace Raindrop::Modules{
 			ModuleInterface() = default;
 			virtual ~ModuleInterface() = default;
 
-			virtual const std::vector<std::shared_ptr<RenderSystem>>& renderSystems() const;
-			
+			virtual const std::vector<RenderSystemID>& renderSystemIDs() const;
+			virtual const std::vector<RenderSystemCollection>& renderSystemCollections() const;
 
 	};
 }

@@ -5,6 +5,7 @@
 #include "Materials/Manager.hpp"
 #include "RenderSystems/RenderSystemRegistry.hpp"
 #include "RenderSystems/RenderSystem.hpp"
+#include "RenderSystems/RenderSystemCollection.hpp"
 
 #include "Wrappers/MaterialWrapper.hpp"
 #include "Wrappers/RenderSystemWrapper.hpp"
@@ -15,6 +16,7 @@ namespace Raindrop::Graphics{
 	using namespace Wrappers;
 	using Material = Materials::Material;
 	using RenderSystem = RenderSystems::RenderSystem;
+	using RenderSystemCollection = RenderSystems::RenderSystemCollection;
 	using PipelineLayout = Pipelines::PipelineLayout;
 	using GraphicsPipeline = Pipelines::GraphicsPipeline;
 

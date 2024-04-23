@@ -123,14 +123,16 @@ namespace Raindrop{
 		return _context->assetManager.findLoader(type);
 	}
 
-	std::shared_ptr<Module> Raindrop::getModule(const std::string& alias){
+	template<>
+	std::shared_ptr<Module> Raindrop::getModule<Module>(const std::string& alias){
 		auto moduleLoader = getAssetLoader<Modules::Loader>("Module");
 		assert(moduleLoader);
 
 		return moduleLoader->get(alias);
 	}
 
-	std::shared_ptr<Module> Raindrop::loadModule(const Path& path){
+	template<>
+	std::shared_ptr<Module> Raindrop::loadModule<Module>(const Path& path){
 		return getAsset<Module>("Module", path);
 	}
 }

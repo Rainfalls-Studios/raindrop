@@ -4,26 +4,44 @@
 #include <spdlog/spdlog.h>
 
 namespace Raindrop::Graphics::RenderSystems{
-	RenderSystemCollection::RenderSystemCollection(Context& context) : _context{context}{}
-	RenderSystemCollection::~RenderSystemCollection(){}
-
-	void RenderSystemCollection::pushRenderSystem(const std::shared_ptr<RenderSystem>& system){
-		_renderSystems.push_back(system);
-	}
-
-	void RenderSystemCollection::pushRenderSystems(const std::initializer_list<std::shared_ptr<RenderSystem>>& systems){
-		for (const auto& system : systems){
-			pushRenderSystem(system);
+	RenderSystemCollection::RenderSystemCollection(const std::string& name, const std::initializer_list<std::pair<std::shared_ptr<RenderSystem>, std::string>>& systems, const std::string& description) : 
+			_name{name},
+			_description{description}
+	{
+		for (const auto& pair : systems){
+			const auto& system = pair.first;
+			const auto& name = pair.second;
+			
+			_renderSystems.insert_or_assign(name, system);
 		}
 	}
 
-	void RenderSystemCollection::render(VkCommandBuffer commandBuffer, ::Raindrop::Wrappers::SceneWrapper scene){
-		for (auto& system : _renderSystems){
-			try{
-				system->render(commandBuffer, scene);
-			} catch (const std::exception& e){
-				spdlog::error("Render error : {}", e.what());
-			}
+	const std::string& RenderSystemCollection::name() const{
+		return _name;
+	}
+
+	const std::string& RenderSystemCollection::descrition() const{
+		return _description;
+	}
+
+	std::shared_ptr<RenderSystem> RenderSystemCollection::get(const std::string& name) const{
+		auto it = _renderSystems.find(name);
+		if (it == _renderSystems.end()){
+			spdlog::warn("Cannot locate render system name \"{}\" in collection", name);
+			return nullptr;
 		}
+		return it->second;
+	}
+
+	std::vector<std::shared_ptr<RenderSystem>> RenderSystemCollection::systems() const{
+		std::vector<std::shared_ptr<RenderSystem>> systems(_renderSystems.size());
+
+		std::size_t i=0;
+		for (const auto& pair : _renderSystems){
+			systems[i] = pair.second;
+			i++;
+		}
+
+		return systems;
 	}
 }

@@ -35,6 +35,7 @@ namespace Raindrop{
 
 	using Renderer = Graphics::Renderer;
 	using RenderSystem = Graphics::RenderSystem;
+	using RenderSystemCollection = Graphics::RenderSystemCollection;
 
 	using namespace Wrappers;
 	
@@ -83,8 +84,11 @@ namespace Raindrop{
 			inline constexpr std::shared_ptr<T> getAssetLoader(const std::string& type);
 
 			// === Modules ===
-			std::shared_ptr<Module> getModule(const std::string& alias);
-			std::shared_ptr<Module> loadModule(const Path& path);
+			template<typename F = Module>
+			inline std::shared_ptr<F> getModule(const std::string& alias);
+
+			template<typename F = Module>
+			inline std::shared_ptr<F> loadModule(const Path& path);
 
 			// === Graphics ===
 			

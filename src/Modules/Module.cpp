@@ -2,6 +2,7 @@
 #include <Raindrop/Exceptions/ResourceExceptions.hpp>
 #include <Raindrop/Modules/ModuleInterface.hpp>
 #include <Raindrop/Graphics/RenderSystems/RenderSystem.hpp>
+#include <Raindrop/Graphics/RenderSystems/RenderSystemCollection.hpp>
 
 #ifdef _WIN32
     #include <windows.h>
@@ -182,22 +183,33 @@ namespace Raindrop::Modules{
 		return _module->aliases.aliases;
 	}
 
-	const std::vector<std::shared_ptr<RenderSystem>>& Module::renderSystems() const{
-		assert(_interface != nullptr && "Either the module is invalid or it does not contain an interface");
-		return _interface->renderSystems();
+	const std::vector<RenderSystemID>& Module::renderSystemIDs() const{
+		assert(_interface != nullptr && "The module interface is invalid !");
+		return _interface->renderSystemIDs();
 	}
 
-	std::shared_ptr<RenderSystem> Module::getRenderSystem(const std::string& name){
-		const auto& systems = renderSystems();
-
-		// linear search is not the best. However, since a module will probably not contain a lot of them, this shouldn't be a bottleneck
+	bool Module::hasRenderSystem(const RenderSystemID& id){
+		assert(_interface != nullptr && "The module interface is invalid !");
+		auto& systems = renderSystemIDs();
 		for (const auto& system : systems){
-			if (system->name() == name){
-				return system;
+			if (system == id) return true;
+		}
+		return false;
+	}
+
+	const std::vector<RenderSystemCollection>& Module::renderSystemCollections() const{
+		assert(_interface != nullptr && "The module interface is invalid !");
+		return _interface->renderSystemCollections();
+	}
+
+	const RenderSystemCollection* Module::getRenderSystemCollection(const std::string& name) const{
+		assert(_interface != nullptr && "The module interface is invalid !");
+		auto& collections = renderSystemCollections();
+		for (const auto& collection : collections){
+			if (collection.name() == name){
+				return &collection;
 			}
 		}
-		spdlog::warn("Cannot find render system named \"{}\"", name);
 		return nullptr;
 	}
-
 }

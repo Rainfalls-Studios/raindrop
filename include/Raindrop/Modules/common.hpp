@@ -6,6 +6,8 @@
 
 namespace Raindrop::Modules{
 	using RenderSystem = Graphics::RenderSystems::RenderSystem;
+	using RenderSystemID = Graphics::RenderSystems::RenderSystemID;
+	using RenderSystemCollection = Graphics::RenderSystems::RenderSystemCollection;
 
 	class Module;
 	class ModuleInterface;

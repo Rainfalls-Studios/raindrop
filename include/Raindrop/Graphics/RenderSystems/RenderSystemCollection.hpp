@@ -7,16 +7,18 @@
 namespace Raindrop::Graphics::RenderSystems{
 	class RenderSystemCollection{
 		public:
-			RenderSystemCollection(Context& context);
-			~RenderSystemCollection();
+			RenderSystemCollection(const std::string& name, const std::initializer_list<std::pair<std::shared_ptr<RenderSystem>, std::string>>& systems = {}, const std::string& description = "None");
 
-			void pushRenderSystem(const std::shared_ptr<RenderSystem>& system);
-			void pushRenderSystems(const std::initializer_list<std::shared_ptr<RenderSystem>>& systems);
-			void render(VkCommandBuffer commandBuffer, ::Raindrop::Wrappers::SceneWrapper scene);
+			const std::string& name() const;
+			const std::string& descrition() const;
+
+			std::shared_ptr<RenderSystem> get(const std::string& name) const;
+			std::vector<std::shared_ptr<RenderSystem>> systems() const;
 
 		private:
-			Context& _context;
-			std::list<std::shared_ptr<RenderSystem>> _renderSystems;
+			std::string _name;
+			std::string _description;
+			std::unordered_map<std::string, std::shared_ptr<RenderSystem>> _renderSystems;
 	};
 }
 

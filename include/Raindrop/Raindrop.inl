@@ -41,6 +41,18 @@ namespace Raindrop{
 		return std::static_pointer_cast<T>(getAssetLoader(type));
 	}
 
+	// === Modules ===
+	
+	template<typename F>
+	inline std::shared_ptr<F> Raindrop::getModule(const std::string& alias){
+		return std::static_pointer_cast<F>(getModule(alias));
+	}
+
+	template<typename F>
+	inline std::shared_ptr<F> Raindrop::loadModule(const Path& path){
+		return std::static_pointer_cast<F>(loadModule(path));
+	}
+
 	// === Graphics ===
 }
 
