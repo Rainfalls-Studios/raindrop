@@ -15,11 +15,19 @@ class Interface : public Raindrop::Modules::ModuleInterface{
 		}
 
 		// Since we do not have any render systems, it is better to not override this method
-		// virtual const std::vector<std::shared_ptr<Raindrop::RenderSystem>>& renderSystems() const override{}
+		// const std::unordered_map<std::string, RenderSystemCollection>& renderSystemCollections() const;
 };
 
 extern "C" {
-	Interface* initializeInterface(Raindrop::Context& context){
+	void startup(Raindrop::Context& context){
+		
+	}
+
+	void shutdown(){
+		
+	}
+
+	Interface* initializeInterface(){
 		return new Interface();
 	}
 

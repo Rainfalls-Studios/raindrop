@@ -108,7 +108,7 @@ namespace Raindrop{
 	}
 
 	std::shared_ptr<Asset> Raindrop::getAsset(const std::string& type, const Path& path){
-		return _context->assetManager.get(type, path);
+		return _context->assetManager.getAsset(type, path);
 	}
 
 	void Raindrop::registerAssetLoader(const std::string& type, const std::shared_ptr<AssetLoader>& loader){
@@ -116,7 +116,7 @@ namespace Raindrop{
 	}
 
 	void Raindrop::unregisterAssetLoader(const std::string& type){
-		_context->assetManager.unregisterType(type);
+		_context->assetManager.unregisterLoader(type);
 	}
 
 	std::shared_ptr<AssetLoader> Raindrop::getAssetLoader(const std::string& type){

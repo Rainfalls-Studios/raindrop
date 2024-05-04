@@ -1,5 +1,4 @@
 #include <Raindrop/Core/Scenes/Scene.hpp>
-#include <Raindrop/Core/Scenes/Entity.hpp>
 
 namespace Raindrop::Core::Scenes{
 	EntityLUID Scene::create(){

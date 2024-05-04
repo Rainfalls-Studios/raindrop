@@ -1,5 +1,5 @@
 #include <Raindrop/Components/Model.hpp>
 
 namespace Raindrop::Components{
-	Model::Model(){}
+	Model::Model() : _model{}{}
 }

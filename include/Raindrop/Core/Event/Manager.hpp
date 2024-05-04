@@ -16,65 +16,46 @@ namespace Raindrop::Core::Event{
 			Manager();
 			~Manager();
 
-			void subscribe(const std::string& eventName, std::function<void()> subscriber) {
-				auto it = _nameToEvent.find(eventName);
-				assert(it != _nameToEvent.end() && "Event not registred");
-				assert(it->second.argCount == 0 && "Invalid argument count");
-
-				it->second.subscribers.push_back(
-					[=](const std::vector<void*>& args){
-						subscriber();
-					}
-				);
-			}
+			void subscribe(const std::string& eventName, std::function<void()> callback);
 
 			template<typename... Args>
-			void subscribe(const std::string& eventName, std::function<void(Args...)> subscriber) {
-				auto it = _nameToEvent.find(eventName);
-				assert(it != _nameToEvent.end() && "Event not registred");
-				assert(sizeof...(Args) == it->second.argCount && "Invalid argument count");
+			void subscribe(const std::string& eventName, std::function<void(Args...)> callback);
 
-				it->second.subscribers.push_back(
-					[=](const std::vector<void*>& args){
-						std::size_t i = args.size()-1;
-						subscriber(*reinterpret_cast<Args*>(args[i--])...);
-					}
-				);
-			}
-
+			/**
+			 * @brief Subscribes a callback to an event
+			 * 
+			 * @tparam F The function callbacks type
+			 * @param eventName The name of the event to subscribe to
+			 * @param callback The callback itself
+			 */
 			template<typename F>
-			void subscribe(const std::string& eventName, F&& callback){
-				std::function func(callback);
-				subscribe(eventName, func);
-			}
+			void subscribe(const std::string& eventName, F&& callback);
 
-			// Trigger an event
+			/**
+			 * @brief Triggers an event, all the callbacks linked to this event will be called
+			 * 
+			 * @tparam Args The event paramaters
+			 * @param eventName The name of the event to trigger
+			 * @param args The event arguments
+			 */
 			template<typename... Args>
-			void trigger(const std::string& eventName, Args... args) {
-				auto it = _nameToEvent.find(eventName);
-				assert(it != _nameToEvent.end() && "Event not registred");
+			void trigger(const std::string& eventName, Args... args);
 
-				assert(sizeof...(Args) == it->second.argCount && "Invalid argument count");
-				std::vector<void*> arguments = {reinterpret_cast<void*>(&args)...};
-
-				for (auto& subscriber : it->second.subscribers){
-					subscriber(arguments);
-				}
-			}
-
+			/**
+			 * @brief Registers an event, predefines the event arguments
+			 * 
+			 * @tparam Args The event's argument types
+			 * @param eventName The event's name
+			 */
 			template<typename... Args>
-			void registerEvent(const std::string& eventName){
-				auto it = _nameToEvent.find(eventName);
-				assert(it == _nameToEvent.end() && "Event already regsitred");
-				
-				_nameToEvent[eventName].argCount = sizeof...(Args);
-			}
+			void registerEvent(const std::string& eventName);
 
-			KeyEvents& keyEvents();
-			MouseEvents& mouseEvents();
+			
+			inline KeyEvents& keyEvents();
+			inline const KeyEvents& keyEvents() const;
 
-			const KeyEvents& keyEvents() const;
-			const MouseEvents& mouseEvents() const;
+			inline MouseEvents& mouseEvents();
+			inline const MouseEvents& mouseEvents() const;
 
 		private:
 			struct EventInfo{
@@ -87,5 +68,7 @@ namespace Raindrop::Core::Event{
 			MouseEvents _mouseEvents;
 	};
 }
+
+#include "Manager.inl"
 
 #endif

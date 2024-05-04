@@ -54,4 +54,16 @@ namespace Raindrop::Graphics{
 			_framebuffer = VK_NULL_HANDLE;
 		}
 	}
+
+	const VkFramebuffer& Framebuffer::get() const{
+		return _framebuffer;
+	}
+
+	const std::shared_ptr<RenderPass>& Framebuffer::renderPass() const{
+		return _renderPass;
+	}
+
+	const std::vector<std::shared_ptr<ImageView>>& Framebuffer::attachments() const{
+		return _attachments;
+	}
 }

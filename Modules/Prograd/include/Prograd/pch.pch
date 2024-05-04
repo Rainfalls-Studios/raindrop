@@ -1,0 +1,7 @@
+#ifndef __PROGRAD_PCH_PCH_HPP__
+#define __PROGRAD_PCH_PCH_HPP__
+
+#include <Raindrop/Raindrop.hpp>
+#include <Raindrop/Modules/ModuleInterface.hpp>
+
+#endif

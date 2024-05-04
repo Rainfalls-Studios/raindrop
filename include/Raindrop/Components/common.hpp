@@ -4,8 +4,8 @@
 #include "../common.hpp"
 
 namespace Raindrop::Components{
-	struct Transformation;
-	struct Model;
+	class Transformation;
+	class Model;
 }
 
 #endif

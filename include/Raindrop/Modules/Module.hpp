@@ -19,10 +19,7 @@ namespace Raindrop::Modules{
 
 			// ==== Render systems ====
 
-			const std::vector<RenderSystemID>& renderSystemIDs() const;
-			bool hasRenderSystem(const RenderSystemID& id);
-
-			const std::vector<RenderSystemCollection>& renderSystemCollections() const;
+			const std::unordered_map<std::string, RenderSystemCollection>& renderSystemCollections() const;
 			const RenderSystemCollection* getRenderSystemCollection(const std::string& name) const;
 
 		private:
@@ -30,7 +27,7 @@ namespace Raindrop::Modules{
 
 			__Module__* _module;
 			ModuleInterface* _interface;
-
+			
 	};
 }
 

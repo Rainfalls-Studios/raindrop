@@ -49,7 +49,7 @@ void testbed(){
 		scene.emplaceComponent<Raindrop::Components::Transformation>(entity);
 		auto& model = scene.emplaceComponent<Raindrop::Components::Model>(entity);
 
-		model.model = engine.getAsset<Raindrop::Graphics::Models::Model>("Model", fs::current_path() / "models/sponza/sponza.obj");
+		model.setModel(engine.getAsset<Raindrop::Graphics::Models::Model>("Model", fs::current_path() / "models/sponza/sponza.obj"));
 	}
 
 	Raindrop::Camera camera;
@@ -66,8 +66,6 @@ void testbed(){
 		"mouse.motion",
 		[&](RD::Maths::vec2 position, RD::Maths::vec2 relativePosition) -> void {
 			if (SDL_GetRelativeMouseMode() == SDL_TRUE){
-				auto& rotation = camera.rotation();
-
 				const float sensitivity = 0.1f;
 
 				float yaw = relativePosition.x * sensitivity;
@@ -76,7 +74,7 @@ void testbed(){
 				RD::Maths::quat yawRotation = RD::Maths::angleAxis(RD::Maths::radians(yaw), RD::Maths::normalize(RD::Maths::vec3(0.0f, 1.0f, 0.0f)));
 				RD::Maths::quat pitchRotation = RD::Maths::angleAxis(RD::Maths::radians(pitch), RD::Maths::normalize(RD::Maths::vec3(1.0f, 0.0f, 0.0f)));
 
-				RD::Maths::quat cameraRotation = camera.rotation();
+				RD::Maths::quat cameraRotation = camera.getRotation();
 
 				cameraRotation = yawRotation * cameraRotation;
 				cameraRotation = cameraRotation * pitchRotation;
@@ -95,8 +93,8 @@ void testbed(){
 
 			using namespace RD::Core::Event;
 
-			auto& translation = camera.translation();
-			auto& rotation = camera.rotation();
+			auto& translation = camera.getTranslation();
+			auto& rotation = camera.getRotation();
 
 			RD::Maths::vec3 forward = RD::Maths::rotate(rotation, RD::Maths::vec3(0.f, 0.f, -1.f));
 			RD::Maths::vec3 up = RD::Maths::rotate(rotation, RD::Maths::vec3(0.f, 1.f, 0.f));
@@ -137,8 +135,8 @@ void testbed(){
 			auto& data = properties->data;
 			
 			data.ambientColor = RD::Maths::vec4(RD::Maths::vec3(0.1), 1.0);
-			data.viewProjection = camera.viewProjection();
-			data.cameraPosition = RD::Maths::vec4(camera.translation() / 2.f, 0.0);
+			data.viewProjection = camera.getViewProjection();
+			data.cameraPosition = RD::Maths::vec4(camera.getTranslation() / 2.f, 0.0);
 
 			renderSystem->updateScene(commandBuffer, scene);
 		}
@@ -154,7 +152,8 @@ void testbed(){
 	engine.run();
 }
 
-void test_modules(){
+
+void test_prograd(){
 	namespace RD = Raindrop;
 	namespace fs = std::filesystem;
 
@@ -164,7 +163,7 @@ void test_modules(){
 	RD::Raindrop engine;
 	auto& renderer = engine.renderer();
 
-	auto module = engine.loadModule(RD::Path(MODULE_PATH) / "barebone");
+	auto module = engine.loadModule(RD::Path(PROGRAD_PATH) / "Prograd");
 
 	engine.subscribeEvent(
 		"quit",
@@ -182,8 +181,8 @@ int main(int argc, char** argv){
 	std::cout << "==========================================" << std::endl;
 	std::cout << std::endl;
 	
-	testbed();
-	// test_modules();
+	// testbed();
+	// test_prograd();
 
 	std::cout << std::endl;
 	std::cout << "==========================================" << std::endl;

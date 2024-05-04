@@ -4,7 +4,6 @@
 #include "common.hpp"
 #include "Core/Scenes/Scene.hpp"
 #include "Core/Scenes/Property.hpp"
-#include "Core/Scenes/Entity.hpp"
 #include "Core/Assets/Manager.hpp"
 #include "Core/Event/Manager.hpp"
 #include "Graphics/Renderer.hpp"
@@ -18,7 +17,6 @@ namespace Raindrop{
 	using SceneID = Core::Scenes::SceneID;
 	using SceneProperty = Core::Scenes::Property;
 
-	using Entity = Core::Scenes::Entity;
 	using EntityGUID = Core::Scenes::EntityGUID;
 	using EntityID = EntityGUID;
 	using EntityLUID = Core::Scenes::EntityLUID;
@@ -36,6 +34,7 @@ namespace Raindrop{
 	using Renderer = Graphics::Renderer;
 	using RenderSystem = Graphics::RenderSystem;
 	using RenderSystemCollection = Graphics::RenderSystemCollection;
+	using RenderSequence = Graphics::RenderSequence;
 
 	using namespace Wrappers;
 	

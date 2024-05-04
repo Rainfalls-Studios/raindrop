@@ -10,34 +10,70 @@ namespace Raindrop::Core::Assets{
 			Manager(Context &context);
 			~Manager();
 
-			std::shared_ptr<Asset> get(const std::string& type, const Path& path);
+			/**
+			 * @brief 
+			 * 
+			 * @param type The type of asset to query ("Texture", "Model", ...)
+			 * @param path The path of the asset file
+			 * @return std::shared_ptr<Asset> 
+			 */
+			std::shared_ptr<Asset> getAsset(const std::string& type, const Path& path);
 
+			/**
+			 * @brief Get the Asset object
+			 * 
+			 * @tparam T The class type of assets required
+			 * @param type The type of asset to query ("Texture", "Model", ...)
+			 * @param path The path of the asset file
+			 * @return std::shared_ptr<T> 
+			 */
 			template<typename T>
-			std::shared_ptr<T> get(const std::string& type, const Path& path){
-				return std::static_pointer_cast<T>(get(type, path));
-			}
+			inline std::shared_ptr<T> getAsset(const std::string& type, const Path& path);
 
+			/**
+			 * @brief Forcefully registers an asset at a given path
+			 * 
+			 * @param type The type of the asset ("Texture", "Model", ...)
+			 * @param path The path to assign for this specific asset
+			 * @param asset The asset itself
+			 */
 			void registerAsset(const std::string& type, const Path& path, const std::shared_ptr<Asset>& asset);
 			
+
+
+			/**
+			 * @brief Registers and assigns an asset loader to a given asset type
+			 * 
+			 * @param type The type of assets the loader handles
+			 * @param loader The loader itself
+			 */
 			void registerLoader(const std::string& type, const std::shared_ptr<Loader>& loader);
 
+			/**
+			 * @brief Create and registers a loader
+			 * 
+			 * @tparam T The type of the loader. It HAS to be derived from the Loader class
+			 * @tparam Args 
+			 * @param type The type of assets the loader handles
+			 * @param args The loader creation arguments
+			 */
 			template<typename T, typename... Args>
-			void createLoader(const std::string& type, Args&&... args){
-				static_assert(std::is_base_of_v<Loader, T>);
-				
-				std::shared_ptr<T> loader;
-				try{
-					loader = std::make_shared<T>(args...);
-				} catch (const std::exception& e){
-					throw std::runtime_error("Failed to create loader");
-				}
-
-				registerLoader(type, std::dynamic_pointer_cast<Loader>(loader));
-			}
-
+			void createLoader(const std::string& type, Args&&... args);
+			
+			/**
+			 * @brief Find the loader that handles the given asset type
+			 * 
+			 * @param type The type of assets the handled by the loader
+			 * @return std::shared_ptr<Loader> 
+			 */
 			std::shared_ptr<Loader> findLoader(const std::string& type) const noexcept;
 
-			void unregisterType(const std::string& type);
+			/**
+			 * @brief Unregisters the loader that handles the given asset type
+			 * 
+			 * @param type The type of assets the handled by the loader
+			 */
+			void unregisterLoader(const std::string& type);
 
 		private:
 			Context& _context;
@@ -51,5 +87,7 @@ namespace Raindrop::Core::Assets{
 			TypeData* getTypeData(const std::string& type) const noexcept;
 	};
 }
+
+#include "Manager.inl"
 
 #endif

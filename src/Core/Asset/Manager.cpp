@@ -27,7 +27,7 @@ namespace Raindrop::Core::Assets{
 		typeData->_pathToAssets[path] = asset;
 	}
 
-	std::shared_ptr<Asset> Manager::get(const std::string& type, const Path& path){
+	std::shared_ptr<Asset> Manager::getAsset(const std::string& type, const Path& path){
 		spdlog::trace("Requirering asset \"{}\" ... (type : \"{}\")", path.string(), type);
 
 		TypeData* typeData = getTypeData(type);
@@ -83,7 +83,7 @@ namespace Raindrop::Core::Assets{
 		return typeData ? typeData->_loader : nullptr;
 	}
 
-	void Manager::unregisterType(const std::string& type){
+	void Manager::unregisterLoader(const std::string& type){
 		_typeToLoader.erase(type);
 	}
 }

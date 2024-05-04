@@ -6,7 +6,6 @@
 namespace Raindrop::Core::Scenes{
 	class Scenes;
 	class Scene;
-	class Entity;
 	class Property;
 	
 	// I suppose that 65.5 thousand scenes should be enough

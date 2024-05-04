@@ -3,22 +3,23 @@
 
 #include "common.hpp"
 #include <Raindrop/Wrappers/SceneWrapper.hpp>
+#include <Raindrop/Graphics/RenderSystems/RenderSequence.hpp>
 
 namespace Raindrop::Graphics::RenderSystems{
 	class RenderSystemCollection{
 		public:
-			RenderSystemCollection(const std::string& name, const std::initializer_list<std::pair<std::shared_ptr<RenderSystem>, std::string>>& systems = {}, const std::string& description = "None");
+			RenderSystemCollection(const std::initializer_list<std::pair<std::shared_ptr<RenderSystem>, std::string>>& systems, const std::initializer_list<std::pair<RenderSequence, std::string>>& sequences);
+			RenderSystemCollection();
 
-			const std::string& name() const;
-			const std::string& descrition() const;
+			std::shared_ptr<RenderSystem> getRenderSystem(const std::string& name) const;
+			std::vector<std::shared_ptr<RenderSystem>> renderSystems() const;
 
-			std::shared_ptr<RenderSystem> get(const std::string& name) const;
-			std::vector<std::shared_ptr<RenderSystem>> systems() const;
+			const RenderSequence* getRenderSequence(const std::string& name) const;
+			std::vector<RenderSequence> renderSequences() const;
 
 		private:
-			std::string _name;
-			std::string _description;
 			std::unordered_map<std::string, std::shared_ptr<RenderSystem>> _renderSystems;
+			std::unordered_map<std::string, RenderSequence> _renderSequences;
 	};
 }
 

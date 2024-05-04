@@ -41,8 +41,8 @@ namespace Raindrop::Graphics{
 		spdlog::info("Destroying renderer ...");
 		_context->device.waitIdle();
 
-		_context->core.assetManager.unregisterType("Model");
-		_context->core.assetManager.unregisterType("Texture");
+		_context->core.assetManager.unregisterLoader("Model");
+		_context->core.assetManager.unregisterLoader("Texture");
 
 		freeFrameCommandBuffers();
 		destroyRenderCommandPool();

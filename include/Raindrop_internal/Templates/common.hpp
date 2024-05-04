@@ -1,0 +1,6 @@
+#ifndef __RAINDROP_INTERNAL_TEMPLATES_COMMON_HPP__
+#define __RAINDROP_INTERNAL_TEMPLATES_COMMON_HPP__
+
+#include "../common.hpp"
+
+#endif

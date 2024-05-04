@@ -5,11 +5,19 @@
 #include <Raindrop/Graphics/Models/Model.hpp>
 
 namespace Raindrop::Components{
-	struct Model{
-		Model();
+	class Model{
+		public:
+			Model();
 
-		std::weak_ptr<Graphics::Models::Model> model;
+			inline void setModel(const std::weak_ptr<Graphics::Models::Model>& model);
+			inline std::weak_ptr<Graphics::Models::Model>& getModel();
+			inline const std::weak_ptr<Graphics::Models::Model>& getModel() const;
+
+		private:
+			std::weak_ptr<Graphics::Models::Model> _model;
 	};
 }
+
+#include "Model.inl"
 
 #endif

@@ -563,7 +563,7 @@ void ForwardRenderSystem::render(VkCommandBuffer commandBuffer, Raindrop::SceneW
 		// Here we use 'useless' tabulations to make the loop more understandable
 		{
 			// We need to update and push the push constant
-			pushConstant.localTransform = transformation.matrix;
+			pushConstant.localTransform = transformation.getMatrix();
 
 			vkCmdPushConstants(
 				commandBuffer,
@@ -577,7 +577,7 @@ void ForwardRenderSystem::render(VkCommandBuffer commandBuffer, Raindrop::SceneW
 
 		// We can't really know if a model has been removed / invalidated
 		// So we check if the model is valid
-		auto modelRef = model.model.lock();
+		auto modelRef = model.getModel().lock();
 		if (modelRef != nullptr){
 
 			// We iterate through every meshes

@@ -3,5 +3,6 @@
 
 #define PATH "${CMAKE_CURRENT_SOURCE_DIR}"
 #define MODULE_PATH "${MODULE_BUILD_DIR}"
+#define PROGRAD_PATH "${PROGRAD_BUILD_DIR}"
 
 #endif

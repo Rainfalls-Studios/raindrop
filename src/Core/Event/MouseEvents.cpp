@@ -14,28 +14,4 @@ namespace Raindrop::Core::Event{
 	const ButtonState& MouseEvents::state(MouseButton button) const{
 		return _states[static_cast<int>(button)];
 	}
-
-	Maths::vec2& MouseEvents::pos(){
-		return _pos;
-	}
-
-	const Maths::vec2& MouseEvents::pos() const{
-		return _pos;
-	}
-
-	Maths::vec2& MouseEvents::relPos(){
-		return _relPos;
-	}
-
-	const Maths::vec2& MouseEvents::relPos() const{
-		return _relPos;
-	}
-
-	Maths::vec2& MouseEvents::scroll(){
-		return _scroll;
-	}
-
-	const Maths::vec2& MouseEvents::scroll() const{
-		return _scroll;
-	}
 }

@@ -46,7 +46,7 @@ namespace Raindrop::Utils{
 				assert(inRange(id));
 				return _handles[id];
 			}
-
+			
 			bool exists(const ID& id) const noexcept{
 				auto it = std::find(_freeIDs.begin(), _freeIDs.end(), id);
 				return it == _freeIDs.end();

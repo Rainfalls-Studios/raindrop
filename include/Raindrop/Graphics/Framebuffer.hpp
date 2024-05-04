@@ -17,6 +17,10 @@ namespace Raindrop::Graphics{
 			Framebuffer(Context& context, FramebufferConfigInfo& confuig);
 			~Framebuffer();
 
+			const VkFramebuffer& get() const;
+			const std::shared_ptr<RenderPass>& renderPass() const;
+			const std::vector<std::shared_ptr<ImageView>>& attachments() const;
+
 		private:
 			Context& _context;
 			VkFramebuffer _framebuffer;

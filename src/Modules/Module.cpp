@@ -64,10 +64,28 @@ namespace Raindrop::Modules{
 			}
 		#endif
 
+		void startup(Context& context){
+			using Fnc_t = void(*)(Context&);
+
+			Fnc_t startupFnc = reinterpret_cast<Fnc_t>(getFunc("startup"));
+			if (startupFnc == nullptr) return;
+
+			startupFnc(context);
+		}
+		
+		void shutdown(){
+			using Fnc_t = void(*)();
+			
+			Fnc_t shutdownFnc = reinterpret_cast<Fnc_t>(getFunc("shutdown"));
+			if (shutdownFnc == nullptr) return;
+
+			shutdownFnc();
+		}
+		
 		// Interface
 
 		struct Interface{
-			using InitFnc_t = ModuleInterface*(*)(Context&);
+			using InitFnc_t = ModuleInterface*(*)();
 			using DestroyFnc_t = void(*)(ModuleInterface*);
 
 			InitFnc_t init = nullptr;
@@ -134,8 +152,14 @@ namespace Raindrop::Modules{
 		_module = new __Module__();
 		_module->open(path);
 
+		try{
+			_module->startup(context);
+		} catch (const std::exception& e){
+			throw Exceptions::ResourceLoadException(path, "Module", e.what());
+		}
+
 		if (_module->tryLoadInterface()){
-			_interface = _module->interface.init(context);
+			_interface = _module->interface.init();
 		} else {
 			spdlog::info("The module does not contain an accessible interface");
 		}
@@ -153,6 +177,8 @@ namespace Raindrop::Modules{
 				_module->interface.destroy(_interface);
 				_interface = nullptr;
 			}
+
+			_module->shutdown();
 
 			delete _module;
 			_module = nullptr;
@@ -183,33 +209,16 @@ namespace Raindrop::Modules{
 		return _module->aliases.aliases;
 	}
 
-	const std::vector<RenderSystemID>& Module::renderSystemIDs() const{
-		assert(_interface != nullptr && "The module interface is invalid !");
-		return _interface->renderSystemIDs();
-	}
-
-	bool Module::hasRenderSystem(const RenderSystemID& id){
-		assert(_interface != nullptr && "The module interface is invalid !");
-		auto& systems = renderSystemIDs();
-		for (const auto& system : systems){
-			if (system == id) return true;
-		}
-		return false;
-	}
-
-	const std::vector<RenderSystemCollection>& Module::renderSystemCollections() const{
-		assert(_interface != nullptr && "The module interface is invalid !");
+	const std::unordered_map<std::string, RenderSystemCollection>& Module::renderSystemCollections() const{
+		assert(_interface != nullptr && "The interface is invalid !");
 		return _interface->renderSystemCollections();
 	}
 
 	const RenderSystemCollection* Module::getRenderSystemCollection(const std::string& name) const{
-		assert(_interface != nullptr && "The module interface is invalid !");
-		auto& collections = renderSystemCollections();
-		for (const auto& collection : collections){
-			if (collection.name() == name){
-				return &collection;
-			}
-		}
-		return nullptr;
+		const auto& map = renderSystemCollections();
+		auto it = map.find(name);
+
+		if (it == map.end()) return nullptr;
+		return &it->second;
 	}
 }

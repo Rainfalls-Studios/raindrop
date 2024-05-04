@@ -6,15 +6,15 @@ namespace Raindrop::Core::Event{
 	}
 
 	KeyState& KeyEvents::state(Key key){
-		return _keys[static_cast<int>(key)];
+		return _keys[static_cast<std::size_t>(key)];
 	}
 
 	const KeyState& KeyEvents::state(Key key) const{
-		return _keys[static_cast<int>(key)];
+		return _keys[static_cast<std::size_t>(key)];
 	}
 
 	void KeyEvents::clear(){
-		for (int i=0; i<static_cast<int>(KEY_COUNT); i++){
+		for (std::size_t i=0; i<static_cast<std::size_t>(KEY_COUNT); i++){
 			_keys[i] = KEY_RELEASED;
 		}
 	}

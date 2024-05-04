@@ -10,29 +10,28 @@ namespace Raindrop{
 			Camera();
 			~Camera();
 
-			void translate(const Maths::vec3& translation);
-			void scale(const Maths::vec3& factor);
-			void rotate(const Maths::quat& rotation);
+			inline void translate(const Maths::vec3& translation);
+			inline void scale(const Maths::vec3& factor);
+			inline void rotate(const Maths::quat& rotation);
 
-			void setTranslation(const Maths::vec3& translation);
-			void setScale(const Maths::vec4& scale);
-			void setRotation(const Maths::quat& rotation);
+			inline void setTranslation(const Maths::vec3& translation);
+			inline void setScale(const Maths::vec4& scale);
+			inline void setRotation(const Maths::quat& rotation);
 
-			void setAspectRatio(float ratio);
-			void setFov(float fov);
+			inline void setAspectRatio(float ratio);
+			inline void setFov(float fov);
 
-			const Maths::mat4& projection() const;
-			const Maths::mat4& transform() const;
-			const Maths::mat4& viewProjection() const;
+			inline const Maths::mat4& getProjection() const;
+			inline const Maths::mat4& getTransform() const;
+			inline const Maths::mat4& getViewProjection() const;
 
-			const Maths::vec3& translation() const;
-			const Maths::vec3& scale() const;
-			const Maths::quat& rotation() const;
+			inline const Maths::vec3& getTranslation() const;
+			inline const Maths::vec3& getScale() const;
+			inline const Maths::quat& getRotation() const;
 
 			void updateTransform();
 			void updateProjection();
 			void updateViewProjection();
-			
 			
 		private:
 			Maths::mat4 _projection;
@@ -45,5 +44,7 @@ namespace Raindrop{
 
 	};
 }
+
+#include "Camera.inl"
 
 #endif

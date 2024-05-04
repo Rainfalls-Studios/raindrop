@@ -401,7 +401,7 @@ namespace Raindrop::Graphics::Models{
 						'/'
 					);
 
-					material.textures.diffuse = assets.get<Textures::Texture>("Texture", directory / path.C_Str());
+					material.textures.diffuse = assets.getAsset<Textures::Texture>("Texture", directory / path.C_Str());
 				}
 
 				_materials[i] = _context.materials.registerMaterial(material);

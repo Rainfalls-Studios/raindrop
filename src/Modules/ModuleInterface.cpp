@@ -3,14 +3,8 @@
 #include <Raindrop/Graphics/RenderSystems/RenderSystemCollection.hpp>
 
 namespace Raindrop::Modules{
-	const std::vector<RenderSystemID>& ModuleInterface::renderSystemIDs() const{
-		static const std::vector<RenderSystemID> empty;
+	const std::unordered_map<std::string, RenderSystemCollection>& ModuleInterface::renderSystemCollections() const{
+		static std::unordered_map<std::string, RenderSystemCollection> empty;
 		return empty;
 	}
-
-	const std::vector<RenderSystemCollection>& ModuleInterface::renderSystemCollections() const{
-		static const std::vector<RenderSystemCollection> empty;
-		return empty;
-	}
-
 }

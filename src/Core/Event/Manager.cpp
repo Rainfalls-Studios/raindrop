@@ -12,20 +12,16 @@ namespace Raindrop::Core::Event{
 	Manager::~Manager(){
 		spdlog::info("Destroying event manager ... ({} event(s))", _nameToEvent.size());
 	}
-	
-	KeyEvents& Manager::keyEvents(){
-		return _keyEvents;
-	}
 
-	MouseEvents& Manager::mouseEvents(){
-		return _mouseEvents;
-	}
-	
-	const KeyEvents& Manager::keyEvents() const{
-		return _keyEvents;
-	}
+	void Manager::subscribe(const std::string& eventName, std::function<void()> callback) {
+		auto it = _nameToEvent.find(eventName);
+		assert(it != _nameToEvent.end() && "Event not registred");
+		assert(it->second.argCount == 0 && "Invalid argument count");
 
-	const MouseEvents& Manager::mouseEvents() const{
-		return _mouseEvents;
+		it->second.subscribers.push_back(
+			[=](const std::vector<void*>& args){
+				callback();
+			}
+		);
 	}
 }
