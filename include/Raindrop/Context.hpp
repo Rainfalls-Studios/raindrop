@@ -3,25 +3,46 @@
 
 #include "common.hpp"
 
-#include "Maths/Maths.hpp"
-#include "Core/Assets/Manager.hpp"
-#include "Core/Event/Manager.hpp"
-#include "Graphics/Renderer.hpp"
-#include "Core/Scenes/SceneRegistry.hpp"
-#include "Camera.hpp"
-
 namespace Raindrop{
-	struct Context{
-		Context();
-		~Context() = default;
+	namespace Internal{
+		class Context;
+	}
 
-		Core::Assets::Manager assetManager;
-		Core::Event::Manager eventManager;
-		Core::Scenes::SceneRegistry scenes;
-		Graphics::Renderer renderer;
-		
-		bool running;
+	class Context{
+		public:
+			using Handle = void*;
+
+			static Context Create();
+
+			~Context();
+
+			Context(const Context& other) = delete;
+			Context& operator=(const Context& other) = delete;
+
+			void initialize();
+			void release();
+
+			bool isInitialized() const noexcept;
+			Handle getHandle() const noexcept;
+
+			Internal::Context* getInternalContext();
+
+			void start();
+			void stop();
+
+		private:
+			Context();
+
+			Handle _handle;
 	};
+
+	inline Context CreateContext(){
+		return Context::Create();
+	}
+
+	inline void Start(Context& context){
+		context.start();
+	}
 }
 
 #endif

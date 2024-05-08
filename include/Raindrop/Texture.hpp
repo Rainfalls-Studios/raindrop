@@ -166,6 +166,8 @@ namespace Raindrop{
 					};
 			};
 
+			using Handle = std::size_t;
+
 			static Texture Create(Context& context, std::size_t width, std::size_t height, const Format& format, const Usage& usage);
 			
 			Texture();
@@ -201,12 +203,11 @@ namespace Raindrop{
 
 			bool isInitialized() const noexcept;
 			void* getNativeHandle() const noexcept;
-			// TextureID getHandle() const noexcept; TODO: unique runtime texture scope id
-			// InstanceID getInstanceID() const noexcept; TODO: unique runtime engine scope id
+			Handle getHandle() const noexcept;
+			GUID getGUID() const noexcept;
 
 		private:
-
-			// TextureID _handle;
+			Handle _handle;
 	};
 
 	inline static Texture CreateTexture(Context& context, std::size_t width, std::size_t height, const Format& format, const Texture::Usage& usage){

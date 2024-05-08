@@ -1,5 +1,5 @@
-#ifndef __RAINDROP_INLINE_GUID_HPP__
-#define __RAINDROP_INLINE_GUID_HPP__
+#ifndef __RAINDROP_INLINE_GUID_INL__
+#define __RAINDROP_INLINE_GUID_INL__
 
 #include "../GUID.hpp"
 

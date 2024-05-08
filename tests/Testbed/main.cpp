@@ -1,193 +1,233 @@
-#include <iostream>
-#include <Raindrop/Raindrop.hpp>
-#include <Raindrop/Graphics/Renderer.hpp>
-#include <Raindrop/Components/Transformation.hpp>
-#include <Raindrop/Components/Model.hpp>
+// #include <iostream>
+// #include <Raindrop/Raindrop.hpp>
+// #include <Raindrop_internal/Graphics/Renderer.hpp>
+// #include <Raindrop/Components/Transformation.hpp>
+// #include <Raindrop/Components/Model.hpp>
 
-#include "config.h"
-#include <SDL3/SDL.h>
+// #include "config.h"
+// #include <SDL3/SDL.h>
 
-#include "ForwardRenderSystem.hpp"
+// #include "ForwardRenderSystem.hpp"
 
-void testbed(){
-	namespace RD = Raindrop;
-	namespace fs = std::filesystem;
+// void testbed(){
+// 	namespace RD = Raindrop;
+// 	namespace fs = std::filesystem;
 
-	using fs::current_path;
+// 	using fs::current_path;
 
-	current_path(PATH);
-	RD::Raindrop engine;
-	auto& renderer = engine.renderer();
+// 	current_path(PATH);
+// 	RD::Raindrop engine;
+// 	auto& renderer = engine.renderer();
 
-	engine.subscribeEvent(
-		"quit",
-		[&engine]() -> void {
-			engine.quit();
-		}
-	);
+// 	engine.subscribeEvent(
+// 		"quit",
+// 		[&engine]() -> void {
+// 			engine.quit();
+// 		}
+// 	);
 
-	engine.subscribeEvent(
-		"key.down",
-		[](RD::Key scancode, RD::Key keycode, RD::KeyMod repeat) -> void {
-			if (keycode == RD::Key::KEY_LCTRL){
-				if (SDL_GetRelativeMouseMode() == SDL_TRUE){
-					SDL_SetRelativeMouseMode(SDL_FALSE);
-				} else {
-					SDL_SetRelativeMouseMode(SDL_TRUE);
-				}
-			}
-		}
-	);
+// 	engine.subscribeEvent(
+// 		"key.down",
+// 		[](RD::Key scancode, RD::Key keycode, RD::KeyMod repeat) -> void {
+// 			if (keycode == RD::Key::KEY_LCTRL){
+// 				if (SDL_GetRelativeMouseMode() == SDL_TRUE){
+// 					SDL_SetRelativeMouseMode(SDL_FALSE);
+// 				} else {
+// 					SDL_SetRelativeMouseMode(SDL_TRUE);
+// 				}
+// 			}
+// 		}
+// 	);
 
-	auto scene = engine.createScene();
+// 	auto scene = engine.createScene();
 
-	auto renderSystem = engine.renderer().createRenderSystem<ForwardRenderSystem>(engine);
-	renderSystem->bind(scene);
+// 	auto renderSystem = engine.renderer().createRenderSystem<ForwardRenderSystem>(engine);
+// 	renderSystem->bind(scene);
 	
-	{
-		auto entity = scene.create();
-		scene.emplaceComponent<Raindrop::Components::Transformation>(entity);
-		auto& model = scene.emplaceComponent<Raindrop::Components::Model>(entity);
+// 	{
+// 		auto entity = scene.create();
+// 		scene.emplaceComponent<Raindrop::Components::Transformation>(entity);
+// 		auto& model = scene.emplaceComponent<Raindrop::Components::Model>(entity);
 
-		model.setModel(engine.getAsset<Raindrop::Graphics::Models::Model>("Model", fs::current_path() / "models/sponza/sponza.obj"));
-	}
+// 		model.setModel(engine.getAsset<Raindrop::Internal::Graphics::Models::Model>("Model", fs::current_path() / "models/sponza/sponza.obj"));
+// 	}
 
-	Raindrop::Camera camera;
+// 	Raindrop::Camera camera;
 
-	engine.subscribeEvent(
-		"Renderer.swapchain.resized",
-		[&camera](RD::Maths::uvec2 size) -> void {
-			camera.setAspectRatio(static_cast<float>(size.x) / static_cast<float>(size.y));
-			camera.updateProjection();
-		}
-	);
+// 	engine.subscribeEvent(
+// 		"Renderer.swapchain.resized",
+// 		[&camera](RD::Maths::uvec2 size) -> void {
+// 			camera.setAspectRatio(static_cast<float>(size.x) / static_cast<float>(size.y));
+// 			camera.updateProjection();
+// 		}
+// 	);
 
-	engine.subscribeEvent(
-		"mouse.motion",
-		[&](RD::Maths::vec2 position, RD::Maths::vec2 relativePosition) -> void {
-			if (SDL_GetRelativeMouseMode() == SDL_TRUE){
-				const float sensitivity = 0.1f;
+// 	engine.subscribeEvent(
+// 		"mouse.motion",
+// 		[&](RD::Maths::vec2 position, RD::Maths::vec2 relativePosition) -> void {
+// 			if (SDL_GetRelativeMouseMode() == SDL_TRUE){
+// 				const float sensitivity = 0.1f;
 
-				float yaw = relativePosition.x * sensitivity;
-				float pitch = -relativePosition.y * sensitivity;
+// 				float yaw = relativePosition.x * sensitivity;
+// 				float pitch = -relativePosition.y * sensitivity;
 				
-				RD::Maths::quat yawRotation = RD::Maths::angleAxis(RD::Maths::radians(yaw), RD::Maths::normalize(RD::Maths::vec3(0.0f, 1.0f, 0.0f)));
-				RD::Maths::quat pitchRotation = RD::Maths::angleAxis(RD::Maths::radians(pitch), RD::Maths::normalize(RD::Maths::vec3(1.0f, 0.0f, 0.0f)));
+// 				RD::Maths::quat yawRotation = RD::Maths::angleAxis(RD::Maths::radians(yaw), RD::Maths::normalize(RD::Maths::vec3(0.0f, 1.0f, 0.0f)));
+// 				RD::Maths::quat pitchRotation = RD::Maths::angleAxis(RD::Maths::radians(pitch), RD::Maths::normalize(RD::Maths::vec3(1.0f, 0.0f, 0.0f)));
 
-				RD::Maths::quat cameraRotation = camera.getRotation();
+// 				RD::Maths::quat cameraRotation = camera.getRotation();
 
-				cameraRotation = yawRotation * cameraRotation;
-				cameraRotation = cameraRotation * pitchRotation;
+// 				cameraRotation = yawRotation * cameraRotation;
+// 				cameraRotation = cameraRotation * pitchRotation;
 
-				cameraRotation = RD::Maths::normalize(cameraRotation);
-				camera.setRotation(cameraRotation);
-			}
-		}
-	);
+// 				cameraRotation = RD::Maths::normalize(cameraRotation);
+// 				camera.setRotation(cameraRotation);
+// 			}
+// 		}
+// 	);
 
-	engine.subscribeEvent(
-		"OnTick",
-			[&]() -> void {
-			auto& keys = engine.eventManager().keyEvents();
-			auto& mouse = engine.eventManager().mouseEvents();
+// 	engine.subscribeEvent(
+// 		"OnTick",
+// 			[&]() -> void {
+// 			auto& keys = engine.eventManager().keyEvents();
+// 			auto& mouse = engine.eventManager().mouseEvents();
 
-			using namespace RD::Core::Event;
+// 			using namespace RD::Core::Event;
 
-			auto& translation = camera.getTranslation();
-			auto& rotation = camera.getRotation();
+// 			auto& translation = camera.getTranslation();
+// 			auto& rotation = camera.getRotation();
 
-			RD::Maths::vec3 forward = RD::Maths::rotate(rotation, RD::Maths::vec3(0.f, 0.f, -1.f));
-			RD::Maths::vec3 up = RD::Maths::rotate(rotation, RD::Maths::vec3(0.f, 1.f, 0.f));
-			RD::Maths::vec3 left = RD::Maths::rotate(rotation, RD::Maths::vec3(1.f, 0.f, 0.f));
+// 			RD::Maths::vec3 forward = RD::Maths::rotate(rotation, RD::Maths::vec3(0.f, 0.f, -1.f));
+// 			RD::Maths::vec3 up = RD::Maths::rotate(rotation, RD::Maths::vec3(0.f, 1.f, 0.f));
+// 			RD::Maths::vec3 left = RD::Maths::rotate(rotation, RD::Maths::vec3(1.f, 0.f, 0.f));
 
-			float factor = 1.f;//0.0005f;
+// 			float factor = 1.f;//0.0005f;
 
-			if (keys[KEY_W]){
-				camera.translate(forward * factor);
-			}
+// 			if (keys[KEY_W]){
+// 				camera.translate(forward * factor);
+// 			}
 
-			if (keys[KEY_S]){
-				camera.translate(-forward * factor);
-			}
+// 			if (keys[KEY_S]){
+// 				camera.translate(-forward * factor);
+// 			}
 
-			if (keys[KEY_A]){
-				camera.translate(left * factor);
-			}
+// 			if (keys[KEY_A]){
+// 				camera.translate(left * factor);
+// 			}
 
-			if (keys[KEY_D]){
-				camera.translate(-left * factor);
-			}
+// 			if (keys[KEY_D]){
+// 				camera.translate(-left * factor);
+// 			}
 
-			if (keys[KEY_SPACE]){
-				camera.translate(up * factor);
-			}
+// 			if (keys[KEY_SPACE]){
+// 				camera.translate(up * factor);
+// 			}
 
-			if (keys[KEY_LSHIFT]){
-				camera.translate(-up * factor);
-			}
-		}
-	);
+// 			if (keys[KEY_LSHIFT]){
+// 				camera.translate(-up * factor);
+// 			}
+// 		}
+// 	);
 
-	engine.subscribeEvent(
-		"Renderer.frame",
-		[&](VkCommandBuffer commandBuffer) -> void {
-			auto properties = scene.getProperty<ForwardRenderSceneProperties>();
-			auto& data = properties->data;
+// 	engine.subscribeEvent(
+// 		"Renderer.frame",
+// 		[&](VkCommandBuffer commandBuffer) -> void {
+// 			auto properties = scene.getProperty<ForwardRenderSceneProperties>();
+// 			auto& data = properties->data;
 			
-			data.ambientColor = RD::Maths::vec4(RD::Maths::vec3(0.1), 1.0);
-			data.viewProjection = camera.getViewProjection();
-			data.cameraPosition = RD::Maths::vec4(camera.getTranslation() / 2.f, 0.0);
+// 			data.ambientColor = RD::Maths::vec4(RD::Maths::vec3(0.1), 1.0);
+// 			data.viewProjection = camera.getViewProjection();
+// 			data.cameraPosition = RD::Maths::vec4(camera.getTranslation() / 2.f, 0.0);
 
-			renderSystem->updateScene(commandBuffer, scene);
-		}
-	);
+// 			renderSystem->updateScene(commandBuffer, scene);
+// 		}
+// 	);
 
-	engine.subscribeEvent(
-		"Renderer.baseFramebuffer.renderPass",
-		[&](VkCommandBuffer commandBuffer) -> void {
-			renderSystem->render(commandBuffer, scene);
-		}
-	);
+// 	engine.subscribeEvent(
+// 		"Renderer.baseFramebuffer.renderPass",
+// 		[&](VkCommandBuffer commandBuffer) -> void {
+// 			renderSystem->render(commandBuffer, scene);
+// 		}
+// 	);
 
-	engine.run();
-}
+// 	engine.run();
+// }
 
 
-void test_prograd(){
-	namespace RD = Raindrop;
-	namespace fs = std::filesystem;
+// void test_prograd(){
+// 	namespace RD = Raindrop;
+// 	namespace fs = std::filesystem;
 
-	using fs::current_path;
+// 	using fs::current_path;
 
-	current_path(PATH);
-	RD::Raindrop engine;
-	auto& renderer = engine.renderer();
+// 	current_path(PATH);
+// 	RD::Raindrop engine;
+// 	auto& renderer = engine.renderer();
 
-	auto module = engine.loadModule(RD::Path(PROGRAD_PATH) / "Prograd");
+// 	auto module = engine.loadModule(RD::Path(PROGRAD_PATH) / "Prograd");
 
-	engine.subscribeEvent(
-		"quit",
-		[&engine]() -> void {
-			engine.quit();
-		}
-	);
+// 	engine.subscribeEvent(
+// 		"quit",
+// 		[&engine]() -> void {
+// 			engine.quit();
+// 		}
+// 	);
 
-	engine.run();
-}
+// 	engine.run();
+// }
 
-int main(int argc, char** argv){
-	std::cout << "==========================================" << std::endl;
-	std::cout << "=                 TESTBED                =" << std::endl;
-	std::cout << "==========================================" << std::endl;
-	std::cout << std::endl;
+// int main(int argc, char** argv){
+// 	std::cout << "==========================================" << std::endl;
+// 	std::cout << "=                 TESTBED                =" << std::endl;
+// 	std::cout << "==========================================" << std::endl;
+// 	std::cout << std::endl;
 	
-	// testbed();
-	// test_prograd();
+// 	// testbed();
+// 	// test_prograd();
 
-	std::cout << std::endl;
-	std::cout << "==========================================" << std::endl;
-	std::cout << "=                 TESTBED                =" << std::endl;
-	std::cout << "==========================================" << std::endl;
+// 	std::cout << std::endl;
+// 	std::cout << "==========================================" << std::endl;
+// 	std::cout << "=                 TESTBED                =" << std::endl;
+// 	std::cout << "==========================================" << std::endl;
 
-	return 0;
+// 	return 0;
+// }
+
+#include <Raindrop/Raindrop.hpp>
+#include <iostream>
+
+class Asset : public ::Raindrop::Asset{
+	public:
+		Asset(){
+			std::cout << "new asset" << std::endl;
+		}
+};
+
+class Loader : public ::Raindrop::Asset::Loader{
+	public:
+		virtual std::shared_ptr<Raindrop::Asset> load(const Raindrop::Path& path) override{
+			std::cout << "load new asset" << std::endl;
+			return std::make_unique<Asset>();
+		}
+
+		void print(){
+			std::cout << "test" << std::endl;
+		}
+};
+
+
+int main(){
+	Raindrop::Context context = Raindrop::CreateContext();
+	context.initialize();
+
+	Raindrop::Event::Subscribe(
+		context,
+		"quit",
+		[&context](){
+			context.stop();
+		}
+	);
+
+	Raindrop::Start(context);
+
+	context.release();
 }

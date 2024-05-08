@@ -1,27 +1,28 @@
 #ifndef __RAINDROP_COMMON_HPP__
 #define __RAINDROP_COMMON_HPP__
 
-#include "pch.pch"
-#include "Maths/Maths.hpp"
+#include <cstddef>
+#include <cstdint>
+#include <initializer_list>
+#include <typeindex>
+#include <list>
+#include <string>
+#include <functional>
+#include <memory>
+#include <filesystem>
 
 namespace Raindrop{
-	struct Context;
-	class Raindrop;
-	
 	using Path = std::filesystem::path;
 
-	struct Version{
-		std::size_t variant;
-		std::size_t major;
-		std::size_t minor;
-		std::size_t patch;
-
-		Version() noexcept;
-		Version(const Version& other) noexcept;
-		Version(std::size_t variant, std::size_t major, std::size_t minor, std::size_t patch) noexcept;
-
-		Version& operator=(const Version& other) noexcept;
-	};
+	class Context;
+	class Format;
+	class Texture;
+	class RenderPass;
+	class GUID;
+	class TextureSubset;
+	class Color;
+	class Event;
+	class Asset;
 }
 
 #endif

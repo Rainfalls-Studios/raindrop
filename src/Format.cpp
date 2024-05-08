@@ -1,6 +1,5 @@
 #include <Raindrop/Format.hpp>
 #include <Raindrop/Context.hpp>
-#include <Raindrop/Graphics/Context.hpp>
 #include <vulkan/utility/vk_format_utils.h>
 
 namespace Raindrop{
@@ -260,27 +259,27 @@ namespace Raindrop{
 	};
 
 	bool isFormatSupported(Context& context, const Format& format, const Format::Properties& required, const Format::Features& features, const Format::Properties& except, const FormatUsage& usage){
-		const auto& physicalDevice = context.renderer.context().physicalDevice;
-		const auto& properties = format.getProperties();
+		// const auto& physicalDevice = context.renderer.context().physicalDevice;
+		// const auto& properties = format.getProperties();
 
-		// If the format does not support ALL required properties, we skip this format
-		if ((properties & required) != required) return false;
+		// // If the format does not support ALL required properties, we skip this format
+		// if ((properties & required) != required) return false;
 
-		// If the format supports at least one non wanted property, we also skip the format
-		if (properties & except) return false;
+		// // If the format supports at least one non wanted property, we also skip the format
+		// if (properties & except) return false;
 
-		VkFormatProperties formatProps;
-		vkGetPhysicalDeviceFormatProperties(physicalDevice.get(), typeToVkFormat(format.get()), &formatProps);
+		// VkFormatProperties formatProps;
+		// vkGetPhysicalDeviceFormatProperties(physicalDevice.get(), typeToVkFormat(format.get()), &formatProps);
 
-		VkFormatFeatureFlags supportedFeatures = 0;
-		switch (usage){
-			case BUFFER: supportedFeatures = formatProps.bufferFeatures; break;
-			case LINEAR: supportedFeatures = formatProps.linearTilingFeatures; break;
-			case OPTIMAL: supportedFeatures = formatProps.optimalTilingFeatures; break;
-		}
+		// VkFormatFeatureFlags supportedFeatures = 0;
+		// switch (usage){
+		// 	case BUFFER: supportedFeatures = formatProps.bufferFeatures; break;
+		// 	case LINEAR: supportedFeatures = formatProps.linearTilingFeatures; break;
+		// 	case OPTIMAL: supportedFeatures = formatProps.optimalTilingFeatures; break;
+		// }
 
-		// Same as required propeties, we check that ALL required features are supported
-		if ((featuresToVkFeatures(features) & supportedFeatures) != supportedFeatures) return false;
+		// // Same as required propeties, we check that ALL required features are supported
+		// if ((featuresToVkFeatures(features) & supportedFeatures) != supportedFeatures) return false;
 
 		return true;
 	}

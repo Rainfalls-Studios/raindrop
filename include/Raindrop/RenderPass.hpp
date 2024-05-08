@@ -89,13 +89,13 @@ namespace Raindrop{
 			bool isInitialized() const noexcept;
 			void* getNativeHandle() const noexcept;
 			Handle getHandle() const noexcept;
-			// InstanceID getInstanceID() const noexcept; TODO: unique runtime engine scope id
+			GUID getGUID() const noexcept;
 
 			void addAttachment(const std::size_t& index, const Format& format, const Texture::Operation& operation, const Texture::Layout& initLayout, const Texture::Layout& finalLayout);
 			Subpass addSubpass();
 
 		private:
-			// RenderPassID _handle;
+			Handle _handle;
 	};
 
 	static RenderPass CreateRenderPass(Context& context){

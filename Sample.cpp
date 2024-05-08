@@ -6,7 +6,6 @@
 
 Raindrop::Context context = Raindrop::CreateContext();
 context.setName("sample");
-
 context.initialize();
 
 Raindrop::GUID::CreateStorage<Raindrop::RenderPass>(context);
@@ -17,6 +16,10 @@ renderPass.addAttachment(1, Raindrop::Format::D32, Raindrop::Texture::Operation:
 Raindrop::GUID::Store<Raindrop::RenderPass>(context, renerPass);
 
 Raindrop::Subpass subpass = renderPass.addSubpass();
+
+#include "TextureLoader.hpp"
+Raindrop::Asset::CreateLoader<TextureLoader>(context, "Texture");
+Raindrop::Texture = Raindrop::Asset::Load<Texture>(context, "Texture", "images/image.jpg");
 
 subpass.setColorAttachments(0);
 subpass.setDepth(1);
@@ -86,3 +89,12 @@ depth.initialize();
 
 Raindrop::Framebuffer framebuffer = Raindrop::CreateFramebuffer(context, renderPass, 1080, 720, {color, depth});
 framebuffer.initialize();
+
+Raindrop::Event event = Raindrop::Event::Register<int, char, char>("My event");
+
+Raindrop::Event::Subscribe(eventID, [](int, char, char){...});
+event.subscribe("My event", [](int, char, char){...});
+
+event.trigger()
+
+

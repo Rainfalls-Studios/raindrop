@@ -36,4 +36,6 @@ namespace Raindrop{
 	};
 }
 
+#include "Inline/GUID.inl"
+
 #endif

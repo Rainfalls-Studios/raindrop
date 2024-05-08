@@ -1,4 +1,5 @@
 #include <Raindrop/Texture.hpp>
+#include <Raindrop/GUID.hpp>
 
 namespace Raindrop{
 	const Texture::Operation Texture::Operation::DEFAULT = Texture::Operation(
@@ -171,5 +172,13 @@ namespace Raindrop{
 
 	void* Texture::getNativeHandle() const noexcept{
 		// TODO
+	}
+
+	Texture::Handle Texture::getHandle() const noexcept{
+		return _handle;
+	}
+
+	GUID Texture::getGUID() const noexcept{
+		
 	}
 }

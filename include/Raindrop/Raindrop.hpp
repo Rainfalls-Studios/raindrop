@@ -2,112 +2,16 @@
 #define __RAINDROP_RAINDROP_HPP__
 
 #include "common.hpp"
-#include "Core/Scenes/Scene.hpp"
-#include "Core/Scenes/Property.hpp"
-#include "Core/Assets/Manager.hpp"
-#include "Core/Event/Manager.hpp"
-#include "Graphics/Renderer.hpp"
-#include "Modules/Module.hpp"
-#include "Camera.hpp"
-
-#include "Wrappers/SceneWrapper.hpp"
-
-namespace Raindrop{
-	using Scene = Core::Scenes::Scene;
-	using SceneID = Core::Scenes::SceneID;
-	using SceneProperty = Core::Scenes::Property;
-
-	using EntityGUID = Core::Scenes::EntityGUID;
-	using EntityID = EntityGUID;
-	using EntityLUID = Core::Scenes::EntityLUID;
-
-	using AssetManager = Core::Assets::Manager;
-	using Asset = Core::Assets::Asset;
-	using AssetLoader = Core::Assets::Loader;
-
-	using EventManager = Core::Event::Manager;
-	using Key = Core::Event::Key;
-	using KeyMod = Core::Event::KeyMod;
-
-	using Module = Modules::Module;
-
-	using Renderer = Graphics::Renderer;
-	using RenderSystem = Graphics::RenderSystem;
-	using RenderSystemCollection = Graphics::RenderSystemCollection;
-	using RenderSequence = Graphics::RenderSequence;
-
-	using namespace Wrappers;
-	
-	class Raindrop{
-		public:
-			Raindrop();
-			~Raindrop();
-
-			// === Scenes ===
-
-			SceneWrapper createScene();
-			SceneWrapper registerScene(std::unique_ptr<Scene> scene);
-			void unregisterScene(const SceneWrapper& ID);
-
-			SceneWrapper getScene(const SceneID& ID);
-
-			// === Events ===
-
-			EventManager& eventManager();
-
-			template<typename F>
-			inline constexpr void subscribeEvent(const std::string& name, F&& callback);
-
-			template<typename... Args>
-			inline constexpr void triggerEvent(const std::string& name, Args... args);
-
-			template<typename... Args>
-			inline constexpr void registerEvent(const std::string& name);
-
-			// === Assets ===
-
-			AssetManager& assetManager();
-
-			std::shared_ptr<Asset> getAsset(const std::string& type, const Path& path);
-			void registerAssetLoader(const std::string& type, const std::shared_ptr<AssetLoader>& loader);
-			void unregisterAssetLoader(const std::string& type);
-			std::shared_ptr<AssetLoader> getAssetLoader(const std::string& type);
-
-			template<typename T>
-			inline constexpr std::shared_ptr<T> getAsset(const std::string& type, const Path& path);
-
-			template<typename T, typename... Args>
-			inline constexpr void createAssetLoader(const std::string& type, Args&&... args);
-
-			template<typename T>
-			inline constexpr std::shared_ptr<T> getAssetLoader(const std::string& type);
-
-			// === Modules ===
-			template<typename F = Module>
-			inline std::shared_ptr<F> getModule(const std::string& alias);
-
-			template<typename F = Module>
-			inline std::shared_ptr<F> loadModule(const Path& path);
-
-			// === Graphics ===
-			
-			Renderer& renderer();
-
-			// === Runtime ===
-
-			void run();
-			void quit();
-
-		private:
-			Context* _context;
-
-			void render();
-			void events();
-
-			void updateCameraPosition();
-	};
-}
-
-#include "Raindrop.inl"
+#include "Maths.hpp"
+#include "Context.hpp"
+#include "Format.hpp"
+#include "Texture.hpp"
+#include "RenderPass.hpp"
+#include "GUID.hpp"
+#include "TextureSubset.hpp"
+#include "Color.hpp"
+#include "Event.hpp"
+#include "Scene.hpp"
+#include "Asset.hpp"
 
 #endif
