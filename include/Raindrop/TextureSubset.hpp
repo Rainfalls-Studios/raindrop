@@ -17,7 +17,7 @@ namespace Raindrop{
 				std::size_t layer = 0;
 				std::size_t layerCount = 1;
 			};
-
+			
 			enum class Type{
 				LINEAR,
 				PLANAR,
@@ -40,11 +40,12 @@ namespace Raindrop{
 					};
 			};
 
-			using Handle = void*;
+			struct Impl;
 
 			static TextureSubset Create(Context& context, const Texture& origin);
 
-			TextureSubset();
+			TextureSubset(Context& context);
+			~TextureSubset();
 
 			TextureSubset(const TextureSubset& other);
 			TextureSubset& operator=(const TextureSubset& other);
@@ -54,7 +55,7 @@ namespace Raindrop{
 
 			bool isInitialized() const noexcept;
 			void* getNativeHandle() const noexcept;
-			Handle getHandle() const noexcept;
+			Impl* getImpl() const noexcept;
 
 			void setSource(const Texture& source);
 			void setRange(const Range& range);
@@ -63,19 +64,19 @@ namespace Raindrop{
 			void setFormat(const Format& format);
 			void setFlags(const Flags& info);
 
-			const Texture& getSource() const noexcept;
-			const Range& getRange() const noexcept;
-			const Color::Swizzle& getComponentSwizzle(const Color::Component& component) const noexcept;
-			const Type& getType() const noexcept;
-			const Format& getFormat() const noexcept;
-			const Flags& getFlags() const noexcept;
+			Texture getSource() const noexcept;
+			Range getRange() const noexcept;
+			Color::Swizzle getComponentSwizzle(const Color::Component& component) const noexcept;
+			Type getType() const noexcept;
+			Format getFormat() const noexcept;
+			Flags getFlags() const noexcept;
 
 		private:
-			Handle _handle;
+			Impl* _impl;
 	};
 
-	static inline TextureSubset CreateTextureSubset(Context& context, const Texture& origin){
-		return TextureSubset::Create(context, origin);
+	static inline TextureSubset CreateTextureSubset(Context& context, const Texture& source){
+		return TextureSubset::Create(context, source);
 	}
 }
 

@@ -226,6 +226,7 @@ int main(){
 		}
 	);
 
+	
 	auto texture = Raindrop::CreateTexture(context);
 	texture.setWidth(255);
 	texture.setHeight(255);
@@ -243,9 +244,17 @@ int main(){
 	texture.setFormat(a);
 
 	texture.initialize();
-	texture.release();
+	
 
+	auto textureSubset = Raindrop::CreateTextureSubset(context, texture);
+	textureSubset.initialize();
+	textureSubset.release();
+
+	
 	Raindrop::Start(context);
 
+	textureSubset.release();
+	texture.release();
+	
 	context.release();
 }

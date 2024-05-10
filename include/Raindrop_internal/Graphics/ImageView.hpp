@@ -10,6 +10,7 @@ namespace Raindrop::Internal::Graphics{
 		VkFormat format;
 		VkComponentMapping componentMapping;
 		VkImageSubresourceRange subResource;
+		VkImageViewCreateFlags flags;
 
 		ImageViewConfigInfo();
 	};

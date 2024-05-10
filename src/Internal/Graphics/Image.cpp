@@ -31,6 +31,8 @@ namespace Raindrop::Internal::Graphics{
 			_memory{VK_NULL_HANDLE},
 			_extent{}
 		{
+
+		_context.getLogger().info("Creating new image...");
 		
 		_format = config.format;
 		_extent = config.extent;
@@ -78,9 +80,13 @@ namespace Raindrop::Internal::Graphics{
 			"Failed to bind image memory",
 			Exceptions::VulkanOperationType::BINDING
 		);
+
+
+		_context.getLogger().info("Image created successfully !");
 	}
 
 	Image::~Image(){
+		_context.getLogger().info("Destroying image");
 		auto& device = _context.getDevice();
 		auto& allocationCallbacks = _context.getAllocationCallbacks();
 
@@ -94,6 +100,8 @@ namespace Raindrop::Internal::Graphics{
 			_memory = VK_NULL_HANDLE;
 		}
 
+
+		_context.getLogger().info("Image destroyed successfully !");
 	}
 	
 	VkImage Image::get() const{

@@ -8,7 +8,9 @@
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
 #include <vulkan/vk_enum_string_helper.h>
 
-#include <bit>
+#define LOGGER _impl->context->getInternalContext()->getLogger()
+#define INFO _impl->info
+#define GRAPHICS_CONTEXT _impl->context->getInternalContext()->getRenderer().getContext()
 
 namespace Raindrop{
 
@@ -67,7 +69,7 @@ namespace Raindrop{
 		return std::runtime_error("The texture is not initialized");
 	}
 
-	#define INFO _impl->info
+	const Texture::FormatProperties Texture::FormatProperties::UNSUPPORTED = Texture::FormatProperties{false, 0, 0, 0, 0, 0, 0};
 
 	Texture Texture::Create(Context& context){
 		return Texture(context);
@@ -91,10 +93,10 @@ namespace Raindrop{
 		return *this;
 	}
 
-	#define GRAPHICS_CONTEXT _impl->context->getInternalContext()->getRenderer().getContext()
-
 	void Texture::initialize(){
+		LOGGER->info("Initializing texture...");
 		_impl->image = std::make_shared<Internal::Graphics::Image>(GRAPHICS_CONTEXT, _impl->info);
+		LOGGER->info("Texture initialized with success !");
 	}
 
 	void Texture::release(){
@@ -210,11 +212,9 @@ namespace Raindrop{
 		
 	}
 
-	const Texture::FormatProperties Texture::FormatProperties::UNSUPPORTED = Texture::FormatProperties{false, 0, 0, 0, 0, 0, 0};
 
 	Texture::FormatProperties Texture::getFormatProperties(const Format& format) const{
 		const auto& physicalDevice = _impl->context->getInternalContext()->getRenderer().getContext().getPhysicalDevice();
-		auto& logger = _impl->context->getInternalContext()->getRenderer().getContext().getLogger();
 		VkFormat vkFormat = static_cast<VkFormat>(format.get());
 
 		VkImageFormatProperties vkProperties;
@@ -234,7 +234,7 @@ namespace Raindrop{
 		}
 
 		if (result != VK_SUCCESS){
-			logger.error("Failed to query image format properties {}", string_VkResult(result));
+			LOGGER->error("Failed to query image format properties {}", string_VkResult(result));
 			throw Exceptions::VulkanResourceOperationException(result, "Failed to query image format properties", Exceptions::VulkanOperationType::QUERYING, VK_OBJECT_TYPE_PHYSICAL_DEVICE);
 		}
 
@@ -283,7 +283,7 @@ namespace Raindrop{
 		{
 			auto source = findAllSupportedFormats(requiredProperties, requiredFeatures, except);
 			if (source.empty()){
-				_impl->context->getInternalContext()->getLogger()->warn("Cannot find a single supported format");
+				LOGGER->warn("Cannot find a single supported format");
 				return Format::UNDEFINED;
 			}
 
