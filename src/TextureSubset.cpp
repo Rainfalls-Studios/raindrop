@@ -1,10 +1,10 @@
 #include <Raindrop/TextureSubset.hpp>
+#include <Raindrop_internal/Graphics/ImageView.hpp>
 
 namespace Raindrop{
+	struct Handle_impl{
 
-	//--------------------------------------------------------------------
-	//-----------------         TEXTURE SUBSET           -----------------
-	//--------------------------------------------------------------------
+	};
 
 	TextureSubset TextureSubset::Create(Context& context, const Texture& origin){
 		// TODO
@@ -38,9 +38,6 @@ namespace Raindrop{
 	void* TextureSubset::getNativeHandle() const noexcept{
 		// TODO
 	}
-
-	// TextureSubsetID getHandle() const noexcept; TODO: unique runtime texture subset scope id
-	// InstanceID getInstanceID() const noexcept; TODO: unique runtime engine scope id
 
 	void TextureSubset::setSource(const Texture& source){
 		// TODO
@@ -90,4 +87,7 @@ namespace Raindrop{
 		// TOOD
 	}
 
+	TextureSubset::Handle TextureSubset::getHandle() const noexcept{
+		return _handle;
+	}
 }

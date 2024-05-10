@@ -40,6 +40,8 @@ namespace Raindrop{
 					};
 			};
 
+			using Handle = void*;
+
 			static TextureSubset Create(Context& context, const Texture& origin);
 
 			TextureSubset();
@@ -52,8 +54,7 @@ namespace Raindrop{
 
 			bool isInitialized() const noexcept;
 			void* getNativeHandle() const noexcept;
-			// TextureSubsetID getHandle() const noexcept; TODO: unique runtime texture subset scope id
-			// InstanceID getInstanceID() const noexcept; TODO: unique runtime engine scope id
+			Handle getHandle() const noexcept;
 
 			void setSource(const Texture& source);
 			void setRange(const Range& range);
@@ -70,7 +71,7 @@ namespace Raindrop{
 			const Flags& getFlags() const noexcept;
 
 		private:
-			// TextureSubsetID _handle;
+			Handle _handle;
 	};
 
 	static inline TextureSubset CreateTextureSubset(Context& context, const Texture& origin){

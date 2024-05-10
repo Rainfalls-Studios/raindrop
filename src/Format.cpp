@@ -1,5 +1,8 @@
 #include <Raindrop/Format.hpp>
 #include <Raindrop/Context.hpp>
+#include <Raindrop_internal/Context.hpp>
+#include <Raindrop_internal/Graphics/Renderer.hpp>
+#include <Raindrop_internal/Graphics/Context.hpp>
 #include <vulkan/utility/vk_format_utils.h>
 
 namespace Raindrop{
@@ -259,27 +262,28 @@ namespace Raindrop{
 	};
 
 	bool isFormatSupported(Context& context, const Format& format, const Format::Properties& required, const Format::Features& features, const Format::Properties& except, const FormatUsage& usage){
-		// const auto& physicalDevice = context.renderer.context().physicalDevice;
-		// const auto& properties = format.getProperties();
+		const auto& physicalDevice = context.getInternalContext()->getRenderer().getContext().getPhysicalDevice();
+		const auto& properties = format.getProperties();
 
-		// // If the format does not support ALL required properties, we skip this format
-		// if ((properties & required) != required) return false;
+		// If the format does not support ALL required properties, we skip this format
+		if ((properties & required) != required) return false;
 
-		// // If the format supports at least one non wanted property, we also skip the format
-		// if (properties & except) return false;
+		// If the format supports at least one non wanted property, we also skip the format
+		if (properties & except) return false;
 
-		// VkFormatProperties formatProps;
-		// vkGetPhysicalDeviceFormatProperties(physicalDevice.get(), typeToVkFormat(format.get()), &formatProps);
+		VkFormat vkFormat = typeToVkFormat(format.get());
+		VkFormatProperties formatProps;
+		vkGetPhysicalDeviceFormatProperties(physicalDevice.get(), vkFormat, &formatProps);
 
-		// VkFormatFeatureFlags supportedFeatures = 0;
-		// switch (usage){
-		// 	case BUFFER: supportedFeatures = formatProps.bufferFeatures; break;
-		// 	case LINEAR: supportedFeatures = formatProps.linearTilingFeatures; break;
-		// 	case OPTIMAL: supportedFeatures = formatProps.optimalTilingFeatures; break;
-		// }
+		VkFormatFeatureFlags supportedFeatures = 0;
+		switch (usage){
+			case BUFFER: supportedFeatures = formatProps.bufferFeatures; break;
+			case LINEAR: supportedFeatures = formatProps.linearTilingFeatures; break;
+			case OPTIMAL: supportedFeatures = formatProps.optimalTilingFeatures; break;
+		}
 
-		// // Same as required propeties, we check that ALL required features are supported
-		// if ((featuresToVkFeatures(features) & supportedFeatures) != supportedFeatures) return false;
+		// Same as required propeties, we check that ALL required features are supported
+		if ((supportedFeatures & featuresToVkFeatures(features)) != featuresToVkFeatures(features)) return false;
 
 		return true;
 	}
@@ -292,15 +296,40 @@ namespace Raindrop{
 		return Format::UNDEFINED;
 	}
 
-	Format Format::findTilingOptimal(Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except){
+	Format Format::FindTilingOptimal(Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except){
 		return findFormat(context, requiredProperties, requiredFeatures, except, OPTIMAL);
 	}
 
-	Format Format::findTilingLinear(Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except){
+	Format Format::FindTilingLinear(Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except){
 		return findFormat(context, requiredProperties, requiredFeatures, except, LINEAR);
 	}
 
-	Format Format::findBuffer(Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except){
+	Format Format::FindBuffer(Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except){
 		return findFormat(context, requiredProperties, requiredFeatures, except, BUFFER);
+	}
+
+	std::list<Format> findAllFormats(Context& context, const Format::Properties& required, const Format::Features& features, const Format::Properties& except, const FormatUsage& usage){
+		std::list<Format> formats;
+
+		for (std::size_t i=0; i<static_cast<std::size_t>(Format::ASTC_12x12_SRGB_BLOCK); i++){
+			Format format(static_cast<Format::Type>(i));
+
+			if (isFormatSupported(context, format ,required, features, except, usage)){
+				formats.push_back(format);
+			}
+		}
+		return formats;
+	}
+
+	std::list<Format> Format::FindAllTilingOptimal(Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except){
+		return findAllFormats(context, requiredProperties, requiredFeatures, except, OPTIMAL);
+	}
+	
+	std::list<Format> Format::FindAllTilingLinear(Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except){
+		return findAllFormats(context, requiredProperties, requiredFeatures, except, LINEAR);
+	}
+
+	std::list<Format> Format::FindAllBuffer(Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except){
+		return findAllFormats(context, requiredProperties, requiredFeatures, except, BUFFER);
 	}
 }

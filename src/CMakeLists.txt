@@ -15,6 +15,7 @@ function(add_library_target TARGET_TYPE)
 		SOVERSION 1
 		ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin"
 		LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin"
+		CXX_STANDARD_REQUIRED 20
 	)
 	
 	target_include_directories(

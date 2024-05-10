@@ -191,4 +191,8 @@ namespace Raindrop::Internal::Graphics{
 			eventManager.trigger(_eventCache->swapchainResized, Maths::uvec2(size));
 		}
 	}
+
+	Context& Renderer::getContext(){
+		return *_context;
+	}
 }

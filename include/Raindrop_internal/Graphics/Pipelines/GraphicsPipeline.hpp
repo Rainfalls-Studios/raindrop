@@ -19,7 +19,7 @@ namespace Raindrop::Internal::Graphics::Pipelines{
 		VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
 		VkPipelineDynamicStateCreateInfo dynamicStateInfo;
 		VkPipelineTessellationStateCreateInfo tessellationInfo;
-		LayoutID pipelineLayoutID;
+		std::shared_ptr<PipelineLayout> pipelineLayout;
 		VkRenderPass renderPass;
 		uint32_t subpass;
 
@@ -45,10 +45,12 @@ namespace Raindrop::Internal::Graphics::Pipelines{
 
 			void bind(VkCommandBuffer commandBuffer) noexcept;
 			VkPipeline get() const;
+			std::shared_ptr<PipelineLayout> getLayout() const;
 
 		private:
 			Context& _context;
 			VkPipeline _pipeline;
+			std::shared_ptr<PipelineLayout> _layout;
 	};
 }
 

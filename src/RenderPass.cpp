@@ -12,6 +12,7 @@ namespace Raindrop{
 
 	RenderPass& RenderPass::operator=(const RenderPass& other){
 
+		return *this;
 	}
 
 	void RenderPass::initialize(){

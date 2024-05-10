@@ -2,11 +2,15 @@
 #include <Raindrop_internal/Graphics/Context.hpp>
 
 #include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 #include <set>
 
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
 
+
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData, void *pUserData){
+	static std::shared_ptr<spdlog::logger> logger = spdlog::stdout_color_mt("Vulkan");
+
 	Raindrop::Internal::Graphics::Context* context = static_cast<Raindrop::Internal::Graphics::Context*>(pUserData);
 	spdlog::level::level_enum level = spdlog::level::info;
 
@@ -17,7 +21,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityF
 		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT: level = spdlog::level::err; break;
 	}
 
-	spdlog::log(level, "{}", pCallbackData->pMessage);
+	logger->log(level, "{}", pCallbackData->pMessage);
 	return VK_FALSE;
 }
 

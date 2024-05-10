@@ -264,7 +264,7 @@ namespace Raindrop{
 					using FlagsTemplate<Properties, std::uint64_t>::FlagsTemplate;
 
 					enum Bits : Bitset {
-						NONE = 0ULL,
+						NONE = 0,
 						SFLOAT = 1ULL << 0,
 						SINT = 1ULL << 1,
 						SNORM = 1ULL << 2,
@@ -406,9 +406,14 @@ namespace Raindrop{
 
 			Properties getProperties() const noexcept;
 
-			static Format findTilingOptimal(Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except = Properties::NONE);
-			static Format findTilingLinear(Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except = Properties::NONE);
-			static Format findBuffer(Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except = Properties::NONE);
+			static Format FindTilingOptimal(Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except = Properties::NONE);
+			static Format FindTilingLinear(Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except = Properties::NONE);
+			static Format FindBuffer(Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except = Properties::NONE);
+
+			static std::list<Format> FindAllTilingOptimal(Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except = Properties::NONE);
+			static std::list<Format> FindAllTilingLinear(Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except = Properties::NONE);
+			static std::list<Format> FindAllBuffer(Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except = Properties::NONE);
+
 
 		private:
 			Type _type;

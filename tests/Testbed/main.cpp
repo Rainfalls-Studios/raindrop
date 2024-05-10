@@ -214,7 +214,6 @@ class Loader : public ::Raindrop::Asset::Loader{
 		}
 };
 
-
 int main(){
 	Raindrop::Context context = Raindrop::CreateContext();
 	context.initialize();
@@ -226,6 +225,25 @@ int main(){
 			context.stop();
 		}
 	);
+
+	auto texture = Raindrop::CreateTexture(context);
+	texture.setWidth(255);
+	texture.setHeight(255);
+	texture.setUsage(Raindrop::Texture::Usage::SAMPLED);
+	
+	Raindrop::Format a = texture.findBestFormat(
+		{
+			Raindrop::Format::Properties::RED,
+			Raindrop::Format::Properties::GREEN,
+			Raindrop::Format::Properties::BLUE
+		},
+		Raindrop::Format::Features::SAMPLED_IMAGE,
+		Raindrop::Format::Properties::PACKED
+	);
+	texture.setFormat(a);
+
+	texture.initialize();
+	texture.release();
 
 	Raindrop::Start(context);
 

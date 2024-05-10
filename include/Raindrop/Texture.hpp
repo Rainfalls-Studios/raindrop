@@ -166,11 +166,26 @@ namespace Raindrop{
 					};
 			};
 
-			using Handle = std::size_t;
+			struct FormatProperties{
+				bool supported;
+				std::size_t maxWidth;
+				std::size_t maxHeight;
+				std::size_t maxDepth;
+				std::size_t maxMipmapLevels;
+				std::size_t maxArrayLayers;
+				// Texture::Sample supportedSampleCount;
+				std::size_t maxResourcesSize;
 
-			static Texture Create(Context& context, std::size_t width, std::size_t height, const Format& format, const Usage& usage);
+				static const FormatProperties UNSUPPORTED;
+			};
+
+			struct Impl;
+
+			static Texture Create(Context& context);
 			
-			Texture();
+			Texture(Context& context);
+			~Texture();
+
 			Texture(const Texture& other);
 			Texture& operator=(const Texture& other);
 
@@ -189,29 +204,33 @@ namespace Raindrop{
 			void setArrayLayers(const std::size_t layers);
 			void setFlags(const Flags& flags);
 
-			const Format& getFormat() const noexcept;
-			const std::size_t& getWidth() const noexcept;
-			const std::size_t& getHeight() const noexcept;
-			const std::size_t& getDepth() const noexcept;
-			const Usage& getUsage() const noexcept;
-			const Layout& getLayout() const noexcept;
-			const Tiling& getTiling() const noexcept;
-			const Type& getType() const noexcept;
-			const std::size_t& getMipmapCount() const noexcept;
-			const std::size_t& getArrayLayers() const noexcept;
-			const Flags& getFlags() const noexcept;
+			Format getFormat() const noexcept;
+			std::size_t getWidth() const noexcept;
+			std::size_t getHeight() const noexcept;
+			std::size_t getDepth() const noexcept;
+			Usage getUsage() const noexcept;
+			Layout getLayout() const noexcept;
+			Tiling getTiling() const noexcept;
+			Type getType() const noexcept;
+			std::size_t getMipmapCount() const noexcept;
+			std::size_t getArrayLayers() const noexcept;
+			Flags getFlags() const noexcept;
 
 			bool isInitialized() const noexcept;
-			void* getNativeHandle() const noexcept;
-			Handle getHandle() const noexcept;
+			void* getNativeHandle() const;
+			Impl* getImpl() const noexcept;
 			GUID getGUID() const noexcept;
 
+			FormatProperties getFormatProperties(const Format& format) const;
+			std::list<Format> findAllSupportedFormats(const Format::Properties& requiredProperties, const Format::Features& requiredFeatures, const Format::Properties& except = Format::Properties::NONE) const;
+			Format findBestFormat(const Format::Properties& requiredProperties, const Format::Features& requiredFeatures, const Format::Properties& except = Format::Properties::NONE) const;
+
 		private:
-			Handle _handle;
+			Impl* _impl;
 	};
 
-	inline static Texture CreateTexture(Context& context, std::size_t width, std::size_t height, const Format& format, const Texture::Usage& usage){
-		return Texture::Create(context, width, height, format, usage);
+	inline static Texture CreateTexture(Context& context){
+		return Texture::Create(context);
 	}
 }
 

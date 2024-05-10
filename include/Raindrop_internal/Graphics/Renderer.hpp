@@ -12,6 +12,8 @@ namespace Raindrop::Internal::Graphics{
 			void render();
 			void events();
 
+			Context& getContext();
+
 		private:
 			struct EventCache;
 			EventCache* _eventCache;
