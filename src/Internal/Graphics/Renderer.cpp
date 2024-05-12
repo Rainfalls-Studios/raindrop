@@ -3,6 +3,8 @@
 #include <Raindrop_internal/Context.hpp>
 #include <Raindrop_internal/Events/Manager.hpp>
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
+#include <Raindrop_internal/Assets/Manager.hpp>
+#include <Raindrop_internal/Graphics/ShaderLoader.hpp>
 
 namespace Raindrop::Internal::Graphics{
 	struct Renderer::EventCache{
@@ -30,13 +32,17 @@ namespace Raindrop::Internal::Graphics{
 		allocateFrameCommandBuffers();
 
 		_eventCache = new EventCache;
-
 		registerEvents();
+
+		_shaderLoader = std::make_shared<ShaderLoader>(*_context);
+		_context->getInternalContext().getAssetManager().registerLoader("Shader", _shaderLoader);
 	}
 
 	Renderer::~Renderer(){
 		_internal.getLogger()->info("Destroying graphics renderer...");
 		_context->getDevice().waitIdle();
+
+		_shaderLoader.reset();
 
 		if (_eventCache != nullptr){
 			unregisterEvents();
@@ -65,8 +71,7 @@ namespace Raindrop::Internal::Graphics{
 
 		eventManager.unregisterEvent(_eventCache->swapchainResized);
 	}
-
-
+	
 	void Renderer::render(){
 		auto& swapchain = _context->getSwapchain();	
 		auto& events = _context->getInternalContext().getEventManager();

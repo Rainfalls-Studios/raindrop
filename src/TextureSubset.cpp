@@ -84,7 +84,7 @@ namespace Raindrop{
 		};
 	}
 
-	void TextureSubset::swizzleComponent(const Color::Component& component, const Color::Swizzle& swizzle){
+	void TextureSubset::swizzleComponent(const Color::Components::Bits& component, const Color::Swizzle& swizzle){
 		VkComponentSwizzle vkSwizzle = VK_COMPONENT_SWIZZLE_IDENTITY;
 		switch (swizzle){
 			case Color::Swizzle::RED: vkSwizzle = VK_COMPONENT_SWIZZLE_R; break;
@@ -97,10 +97,10 @@ namespace Raindrop{
 		}
 
 		switch (component){
-			case Color::Component::RED: INFO.componentMapping.r = vkSwizzle; break;
-			case Color::Component::GREEN: INFO.componentMapping.g = vkSwizzle; break;
-			case Color::Component::BLUE: INFO.componentMapping.b = vkSwizzle; break;
-			case Color::Component::ALPHA: INFO.componentMapping.a = vkSwizzle; break;
+			case Color::Components::RED: INFO.componentMapping.r = vkSwizzle; break;
+			case Color::Components::GREEN: INFO.componentMapping.g = vkSwizzle; break;
+			case Color::Components::BLUE: INFO.componentMapping.b = vkSwizzle; break;
+			case Color::Components::ALPHA: INFO.componentMapping.a = vkSwizzle; break;
 		}
 	}
 
@@ -138,13 +138,13 @@ namespace Raindrop{
 		};
 	}
 
-	Color::Swizzle TextureSubset::getComponentSwizzle(const Color::Component& component) const noexcept{
+	Color::Swizzle TextureSubset::getComponentSwizzle(const Color::Components::Bits& component) const noexcept{
 		VkComponentSwizzle swizzle = VK_COMPONENT_SWIZZLE_IDENTITY;
 		switch (component){
-			case Color::Component::RED: swizzle = INFO.componentMapping.r; break;
-			case Color::Component::GREEN: swizzle = INFO.componentMapping.g; break;
-			case Color::Component::BLUE: swizzle = INFO.componentMapping.b; break;
-			case Color::Component::ALPHA: swizzle = INFO.componentMapping.a; break;
+			case Color::Components::RED: swizzle = INFO.componentMapping.r; break;
+			case Color::Components::GREEN: swizzle = INFO.componentMapping.g; break;
+			case Color::Components::BLUE: swizzle = INFO.componentMapping.b; break;
+			case Color::Components::ALPHA: swizzle = INFO.componentMapping.a; break;
 		}
 
 		switch (swizzle){

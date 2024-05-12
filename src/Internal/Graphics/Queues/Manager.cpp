@@ -15,7 +15,7 @@ namespace Raindrop::Internal::Graphics::Queues{
 			_transfertQueue{VK_NULL_HANDLE}
 		{
 
-		_context.getLogger().info("Constructing vulkan queue manager ...");
+		_context.getLogger()->info("Constructing vulkan queue manager ...");
 		auto queueFamilies = context.getPhysicalDevice().queueFamilyProperties();
 
 		findGraphicsFamily(queueFamilies);
@@ -25,11 +25,11 @@ namespace Raindrop::Internal::Graphics::Queues{
 	}
 
 	Manager::~Manager(){
-		_context.getLogger().info("Destroying vulkan queue manager ...");
+		_context.getLogger()->info("Destroying vulkan queue manager ...");
 	}
 
 	void Manager::findGraphicsFamily(std::vector<VkQueueFamilyProperties>& families){
-		_context.getLogger().trace("Looking for graphics queue family ...");
+		_context.getLogger()->trace("Looking for graphics queue family ...");
 
 		for (std::size_t i=0; i<families.size(); i++){
 			auto &family = families[i];
@@ -44,7 +44,7 @@ namespace Raindrop::Internal::Graphics::Queues{
 	}
 
 	void Manager::findPresentFamily(std::vector<VkQueueFamilyProperties>& families){
-		_context.getLogger().trace("Looking for present queue family ...");
+		_context.getLogger()->trace("Looking for present queue family ...");
 
 		// Check is the graphics family also has present capabilities
 		{
@@ -82,7 +82,7 @@ namespace Raindrop::Internal::Graphics::Queues{
 	}
 
 	void Manager::findTransfertFamily(std::vector<VkQueueFamilyProperties>& families){
-		_context.getLogger().trace("Looking for transfert queue family ...");
+		_context.getLogger()->trace("Looking for transfert queue family ...");
 		// tries to use the same family as the graphics family
 		if (families[_graphicsFamily].queueFlags & VK_QUEUE_TRANSFER_BIT){
 			_transfertFamily = _graphicsFamily;

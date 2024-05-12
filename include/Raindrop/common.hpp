@@ -23,6 +23,9 @@ namespace Raindrop{
 	class Color;
 	class Event;
 	class Asset;
+	class Pipeline;
+	class GraphicsPipeline;
+	class ComputePipeline;
 }
 
 #endif

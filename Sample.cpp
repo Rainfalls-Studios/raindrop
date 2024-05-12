@@ -97,4 +97,5 @@ event.subscribe("My event", [](int, char, char){...});
 
 event.trigger()
 
+auto stage = Raindrop::Asset::Load<Raindrop::Shader>(context, "path/to/shader.vert.glsl");
 

@@ -1,5 +1,6 @@
 #include <Raindrop_internal/Graphics/Pipelines/GraphicsPipeline.hpp>
 #include <Raindrop_internal/Graphics/Pipelines/PipelineLayout.hpp>
+#include <Raindrop_internal/Graphics/RenderPass.hpp>
 #include <Raindrop_internal/Graphics/Context.hpp>
 #include <spdlog/spdlog.h>
 
@@ -113,10 +114,11 @@ namespace Raindrop::Internal::Graphics::Pipelines{
 			_pipeline{VK_NULL_HANDLE}{
 		info.assertValidity();
 
-		context.getLogger().info("Constructing graphics pipeline...");
+		context.getLogger()->info("Constructing graphics pipeline...");
 		VkGraphicsPipelineCreateInfo createInfo{};
 
 		_layout = info.pipelineLayout;
+		_renderPass = info.renderPass;
 
 		createInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 		createInfo.pNext = info.pNext;
@@ -133,7 +135,7 @@ namespace Raindrop::Internal::Graphics::Pipelines{
 		createInfo.pDynamicState = &info.dynamicStateInfo;
 		createInfo.pTessellationState = &info.tessellationInfo;
 		createInfo.layout = _layout->get();
-		createInfo.renderPass = info.renderPass;
+		createInfo.renderPass = info.renderPass->get();
 		createInfo.subpass = info.subpass;
 
 		createInfo.basePipelineIndex = -1;
@@ -168,5 +170,9 @@ namespace Raindrop::Internal::Graphics::Pipelines{
 
 	std::shared_ptr<PipelineLayout> GraphicsPipeline::getLayout() const{
 		return _layout;
+	}
+
+	std::shared_ptr<RenderPass> GraphicsPipeline::getRenderPass() const{
+		return _renderPass;
 	}
 }

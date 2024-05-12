@@ -32,7 +32,7 @@ namespace Raindrop::Internal::Graphics{
 			_extent{}
 		{
 
-		_context.getLogger().info("Creating new image...");
+		_context.getLogger()->info("Creating new image...");
 		
 		_format = config.format;
 		_extent = config.extent;
@@ -82,11 +82,11 @@ namespace Raindrop::Internal::Graphics{
 		);
 
 
-		_context.getLogger().info("Image created successfully !");
+		_context.getLogger()->info("Image created successfully !");
 	}
 
 	Image::~Image(){
-		_context.getLogger().info("Destroying image");
+		_context.getLogger()->info("Destroying image");
 		auto& device = _context.getDevice();
 		auto& allocationCallbacks = _context.getAllocationCallbacks();
 
@@ -101,7 +101,7 @@ namespace Raindrop::Internal::Graphics{
 		}
 
 
-		_context.getLogger().info("Image destroyed successfully !");
+		_context.getLogger()->info("Image destroyed successfully !");
 	}
 	
 	VkImage Image::get() const{

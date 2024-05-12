@@ -7,9 +7,6 @@ namespace Raindrop::Internal::Graphics::Pipelines{
 	struct GraphicsPipelineConfigInfo{
 		GraphicsPipelineConfigInfo();
 
-		GraphicsPipelineConfigInfo(const GraphicsPipelineConfigInfo&) = delete;
-		GraphicsPipelineConfigInfo &operator=(const GraphicsPipelineConfigInfo&) = delete;
-
 		VkPipelineVertexInputStateCreateInfo vertexInfo;
 		VkPipelineViewportStateCreateInfo viewportInfo;
 		VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
@@ -20,7 +17,7 @@ namespace Raindrop::Internal::Graphics::Pipelines{
 		VkPipelineDynamicStateCreateInfo dynamicStateInfo;
 		VkPipelineTessellationStateCreateInfo tessellationInfo;
 		std::shared_ptr<PipelineLayout> pipelineLayout;
-		VkRenderPass renderPass;
+		std::shared_ptr<RenderPass> renderPass;
 		uint32_t subpass;
 
 		VkPipelineCreateFlags flags;
@@ -31,6 +28,8 @@ namespace Raindrop::Internal::Graphics::Pipelines{
 		std::vector<VkPipelineColorBlendAttachmentState> colorAttachments;
 		std::vector<VkVertexInputAttributeDescription> vertices;
 		std::vector<VkVertexInputBindingDescription> bindings;
+		std::vector<VkViewport> viewports;
+		std::vector<VkRect2D> scissors;
 
 		void update();
 		void assertValidity() const noexcept;
@@ -46,11 +45,13 @@ namespace Raindrop::Internal::Graphics::Pipelines{
 			void bind(VkCommandBuffer commandBuffer) noexcept;
 			VkPipeline get() const;
 			std::shared_ptr<PipelineLayout> getLayout() const;
+			std::shared_ptr<RenderPass> getRenderPass() const;
 
 		private:
 			Context& _context;
 			VkPipeline _pipeline;
 			std::shared_ptr<PipelineLayout> _layout;
+			std::shared_ptr<RenderPass> _renderPass;
 	};
 }
 

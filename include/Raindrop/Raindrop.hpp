@@ -13,5 +13,6 @@
 #include "Event.hpp"
 #include "Scene.hpp"
 #include "Asset.hpp"
+#include "Pipeline.hpp"
 
 #endif

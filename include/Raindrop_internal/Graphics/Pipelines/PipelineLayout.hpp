@@ -7,6 +7,7 @@ namespace Raindrop::Internal::Graphics::Pipelines{
 	struct PipelineLayoutConfigInfo{
 		std::vector<VkDescriptorSetLayout> setLayouts;
 		std::vector<VkPushConstantRange> pushConstants;
+		VkPipelineLayoutCreateFlags flags;
 	};
 
 	class PipelineLayout{

@@ -193,6 +193,7 @@
 // }
 
 #include <Raindrop/Raindrop.hpp>
+#include "config.h"
 #include <iostream>
 
 class Asset : public ::Raindrop::Asset{
@@ -215,6 +216,8 @@ class Loader : public ::Raindrop::Asset::Loader{
 };
 
 int main(){
+	std::filesystem::current_path(PATH);
+
 	Raindrop::Context context = Raindrop::CreateContext();
 	context.initialize();
 
@@ -250,9 +253,15 @@ int main(){
 	textureSubset.initialize();
 	textureSubset.release();
 
+	auto shader = Raindrop::Asset::Load<Raindrop::Pipeline::Shader>(context, "Shader", "shaders/scene/fullscreenQuad/shader.glsl.vert.spv");
+
+	Raindrop::Pipeline::Layout layout = Raindrop::CreatePipelineLayout(context);
+	layout.initialize();
 	
 	Raindrop::Start(context);
-
+	
+	layout.release();
+	shader.reset();
 	textureSubset.release();
 	texture.release();
 	

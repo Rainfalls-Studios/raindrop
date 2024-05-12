@@ -33,8 +33,8 @@ namespace Raindrop::Internal::Graphics{
 		return allocationCallbacks;
 	}
 
-	spdlog::logger& Context::getLogger(){
-		return *logger;
+	std::shared_ptr<spdlog::logger> Context::getLogger(){
+		return logger;
 	}
 
 	Core::Window& Context::getWindow(){

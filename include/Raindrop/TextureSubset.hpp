@@ -59,14 +59,14 @@ namespace Raindrop{
 
 			void setSource(const Texture& source);
 			void setRange(const Range& range);
-			void swizzleComponent(const Color::Component& component, const Color::Swizzle& swizzle);
+			void swizzleComponent(const Color::Components::Bits& component, const Color::Swizzle& swizzle);
 			void setType(const Type& type);
 			void setFormat(const Format& format);
 			void setFlags(const Flags& info);
 
 			Texture getSource() const noexcept;
 			Range getRange() const noexcept;
-			Color::Swizzle getComponentSwizzle(const Color::Component& component) const noexcept;
+			Color::Swizzle getComponentSwizzle(const Color::Components::Bits& component) const noexcept;
 			Type getType() const noexcept;
 			Format getFormat() const noexcept;
 			Flags getFlags() const noexcept;

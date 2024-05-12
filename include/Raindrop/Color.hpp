@@ -2,15 +2,22 @@
 #define __RAINDROP_COLOR_HPP__
 
 #include "common.hpp"
+#include "Utils/Flags.hpp"
 
 namespace Raindrop{
 	class Color{
 		public:
-			enum class Component{
-				RED,
-				GREEN,
-				BLUE,
-				ALPHA
+			class Components : public Utils::FlagsTemplate<Components>{
+				public:
+					using FlagsTemplate<Components>::FlagsTemplate;
+
+					enum Bits : Bitset{
+						NONE = 0,
+						RED = 1 << 0,
+						GREEN = 1 << 1,
+						BLUE = 1 << 2,
+						ALPHA = 1 << 3
+					};
 			};
 
 			enum class Swizzle{
@@ -21,6 +28,82 @@ namespace Raindrop{
 				ONE,
 				ZERO,
 				IDENTITY
+			};
+
+			enum class BlendFactor{
+				ZERO = 0,
+				ONE = 1,
+				SRC_COLOR = 2,
+				ONE_MINUS_SRC_COLOR = 3,
+				DST_COLOR = 4,
+				ONE_MINUS_DST_COLOR = 5,
+				SRC_ALPHA = 6,
+				ONE_MINUS_SRC_ALPHA = 7,
+				DST_ALPHA = 8,
+				ONE_MINUS_DST_ALPHA = 9,
+				CONSTANT_COLOR = 10,
+				ONE_MINUS_CONSTANT_COLOR = 11,
+				CONSTANT_ALPHA = 12,
+				ONE_MINUS_CONSTANT_ALPHA = 13,
+				SRC_ALPHA_SATURATE = 14,
+				SRC1_COLOR = 15,
+				ONE_MINUS_SRC1_COLOR = 16,
+				SRC1_ALPHA = 17,
+				ONE_MINUS_SRC1_ALPHA = 18,
+			};
+
+			enum class BlendOperation{
+				ADD = 0,
+				SUBTRACT = 1,
+				REVERSE_SUBTRACT = 2,
+				MIN = 3,
+				MAX = 4,
+				ZERO = 1000148000,
+				SRC = 1000148001,
+				DST = 1000148002,
+				SRC_OVER = 1000148003,
+				DST_OVER = 1000148004,
+				SRC_IN = 1000148005,
+				DST_IN = 1000148006,
+				SRC_OUT = 1000148007,
+				DST_OUT = 1000148008,
+				SRC_ATOP = 1000148009,
+				DST_ATOP = 1000148010,
+				XOR = 1000148011,
+				MULTIPLY = 1000148012,
+				SCREEN = 1000148013,
+				OVERLAY = 1000148014,
+				DARKEN = 1000148015,
+				LIGHTEN = 1000148016,
+				COLORDODGE = 1000148017,
+				COLORBURN = 1000148018,
+				HARDLIGHT = 1000148019,
+				SOFTLIGHT = 1000148020,
+				DIFFERENCE = 1000148021,
+				EXCLUSION = 1000148022,
+				INVERT = 1000148023,
+				INVERT_RGB = 1000148024,
+				LINEARDODGE = 1000148025,
+				LINEARBURN = 1000148026,
+				VIVIDLIGHT = 1000148027,
+				LINEARLIGHT = 1000148028,
+				PINLIGHT = 1000148029,
+				HARDMIX = 1000148030,
+				HSL_HUE = 1000148031,
+				HSL_SATURATION = 1000148032,
+				HSL_COLOR = 1000148033,
+				HSL_LUMINOSITY = 1000148034,
+				PLUS = 1000148035,
+				PLUS_CLAMPED = 1000148036,
+				PLUS_CLAMPED_ALPHA = 1000148037,
+				PLUS_DARKER = 1000148038,
+				MINUS = 1000148039,
+				MINUS_CLAMPED = 1000148040,
+				CONTRAST = 1000148041,
+				INVERT_OVG = 1000148042,
+				RED = 1000148043,
+				GREEN = 1000148044,
+				BLUE = 1000148045,
 			};
 
 		private:

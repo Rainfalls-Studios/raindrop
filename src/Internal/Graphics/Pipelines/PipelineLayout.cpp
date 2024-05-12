@@ -17,7 +17,7 @@ namespace Raindrop::Internal::Graphics::Pipelines{
 	}
 
 	void PipelineLayout::createLayout(const PipelineLayoutConfigInfo& info){
-		_context.getLogger().info("Creating a pipeline layout ...");
+		_context.getLogger()->info("Creating a pipeline layout ...");
 
 		auto& device = _context.getDevice();
 		auto& allocationCallbacks = _context.getAllocationCallbacks();

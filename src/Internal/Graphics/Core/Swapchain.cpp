@@ -17,7 +17,7 @@ namespace Raindrop::Internal::Graphics::Core{
 			_extent{0, 0},
 			_presentMode{VK_PRESENT_MODE_IMMEDIATE_KHR},
 			_surfaceFormat{VK_FORMAT_UNDEFINED}{
-		_context.getLogger().info("Constructing vulkan swapchain...");
+		_context.getLogger()->info("Constructing vulkan swapchain...");
 
 		_wantedExtent = {0, 0};
 		_wantedFrameCount = 2;
@@ -33,7 +33,7 @@ namespace Raindrop::Internal::Graphics::Core{
 	}
 
 	Swapchain::~Swapchain(){
-		_context.getLogger().info("Destroying vulkan swapchain...");
+		_context.getLogger()->info("Destroying vulkan swapchain...");
 		auto device = _context.getDevice().get();
 		auto allocationCallbacks = _context.getAllocationCallbacks();
 
@@ -66,7 +66,7 @@ namespace Raindrop::Internal::Graphics::Core{
 		auto& device = _context.getDevice();
 		auto& allocationCallbacks = _context.getAllocationCallbacks();
 
-		_context.getLogger().info("Rebuilding vulkan swapchain...");
+		_context.getLogger()->info("Rebuilding vulkan swapchain...");
 		device.waitIdle();
 		
 		std::swap(_swapchain, _oldSwapchain);
@@ -80,7 +80,7 @@ namespace Raindrop::Internal::Graphics::Core{
 		bool hasFormatChanged = surfaceFormat.format != _surfaceFormat.format;
 
 		if (hasColorSpaceChanged || hasFormatChanged){
-			_context.getLogger().error("The swapchain surface format and / or color space has changed");
+			_context.getLogger()->error("The swapchain surface format and / or color space has changed");
 			throw std::runtime_error("The surface format and/or color space has changed");
 		}
 
@@ -115,7 +115,7 @@ namespace Raindrop::Internal::Graphics::Core{
 		createSyncObjects();
 
 		_currentFrame = 0;
-		_context.getLogger().info("The vulkan swapchain has been rebuilt without any critical error");
+		_context.getLogger()->info("The vulkan swapchain has been rebuilt without any critical error");
 	}
 
 	void Swapchain::findSurfaceFormat(){

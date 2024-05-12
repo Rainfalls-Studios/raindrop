@@ -6,7 +6,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 
 namespace Raindrop::Internal{
-	Context::Context(){
+	Context::Context(Raindrop::Context& interface) : _interface{interface}{
 		_logger = spdlog::stdout_color_mt("Raindrop");
 		_eventManager = std::make_unique<Events::Manager>(*this);
 		_assetManager = std::make_unique<Assets::Manager>(*this); 
@@ -38,6 +38,10 @@ namespace Raindrop::Internal{
 
 	Graphics::Renderer& Context::getRenderer(){
 		return *_renderer;
+	}
+
+	Raindrop::Context& Context::getInterface(){
+		return _interface;
 	}
 
 	void Context::start(){

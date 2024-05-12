@@ -223,7 +223,7 @@ namespace Raindrop::Internal::Graphics::Core{
 
 	void PhysicalDevice::getToolProperties(){
 		if (_context.getInstance().API_VERSION != VK_VERSION_1_3){
-			_context.getLogger().warn("vkGetPhysicalDeviceToolProperties is only available in Vulkan 1.3.0");
+			_context.getLogger()->warn("vkGetPhysicalDeviceToolProperties is only available in Vulkan 1.3.0");
 			return;
 		}
 		

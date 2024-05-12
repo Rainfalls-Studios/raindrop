@@ -13,6 +13,8 @@ namespace Raindrop::Internal::Graphics{
 	class Sampler;
 	class Framebuffer;
 	class RenderPass;
+	class Shader;
+	class ShaderLoader;
 }
 
 #endif

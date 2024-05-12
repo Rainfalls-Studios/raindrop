@@ -81,6 +81,7 @@ namespace Raindrop{
 
 	Texture::~Texture(){
 		delete _impl;
+		_impl = nullptr;
 	}
 
 	Texture::Texture(const Texture& other) : _impl{nullptr}{

@@ -18,7 +18,7 @@ namespace Raindrop::Internal::Assets{
 			Context& _context;
 
 			struct AssetType{
-				std::shared_ptr<Loader> loader;
+				std::weak_ptr<Loader> loader;
 				std::unordered_map<Path, std::weak_ptr<Asset>> pathToAssets;
 			};
 

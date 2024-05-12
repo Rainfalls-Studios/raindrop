@@ -21,7 +21,7 @@ namespace Raindrop::Internal::Graphics{
 
 			Internal::Context& getInternalContext();
 			VkAllocationCallbacks*& getAllocationCallbacks();
-			spdlog::logger& getLogger();
+			std::shared_ptr<spdlog::logger> getLogger();
 
 			Core::Window& getWindow();
 			Core::Instance& getInstance();

@@ -38,7 +38,7 @@ static inline void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUti
 
 namespace Raindrop::Internal::Graphics::Core{
 	Instance::Instance(Context& context) : _context{context}{
-		_context.getLogger().info("Constructing vulkan Instance...");
+		_context.getLogger()->info("Constructing vulkan Instance...");
 		_requiredExtensions.insert(_requiredExtensions.end(), &REQUIRED_EXTENSIONS[0], &REQUIRED_EXTENSIONS[REQUIRED_EXTENSIONS_COUNT]);
 		requireGraphicsExtensions();
 		build();
@@ -150,9 +150,9 @@ namespace Raindrop::Internal::Graphics::Core{
 		}
 
 		if (!layers.empty()){
-			_context.getLogger().warn("Missing {} vulkan instance layer(s) : ", layers.size());
+			_context.getLogger()->warn("Missing {} vulkan instance layer(s) : ", layers.size());
 			for (const auto& l : layers){
-				_context.getLogger().warn("\t- {}", l);
+				_context.getLogger()->warn("\t- {}", l);
 			}
 			throw std::runtime_error("Missing layer");
 		}
@@ -185,7 +185,7 @@ namespace Raindrop::Internal::Graphics::Core{
 			}
 
 			if (!layerFound){
-				_context.getLogger().warn("Missing vulkan validation layer(s) : {}", layerName);
+				_context.getLogger()->warn("Missing vulkan validation layer(s) : {}", layerName);
 				throw std::runtime_error("Missing validation layer");
 			}
 		}

@@ -2,6 +2,30 @@
 #include <Raindrop/GUID.hpp>
 
 namespace Raindrop{
+	//--------------------------------------------------------------------
+	//-----------------           Attachment             -----------------
+	//--------------------------------------------------------------------
+
+	RenderPass::Subpass::AttachmentsInfo::AttachmentsInfo(){}
+
+	RenderPass::Subpass::AttachmentsInfo::AttachmentsInfo(const std::size_t& index){
+		_indices.push_back(index);
+	}
+
+	RenderPass::Subpass::AttachmentsInfo::AttachmentsInfo(const std::initializer_list<std::size_t>& indices){
+		for (const auto& index : indices){
+			_indices.push_back(index);
+		}
+	}
+
+	const std::list<std::size_t>& RenderPass::Subpass::AttachmentsInfo::getIndices() const noexcept{
+		return _indices;
+	}
+
+	//--------------------------------------------------------------------
+	//-----------------          Render pass             -----------------
+	//--------------------------------------------------------------------
+
 	RenderPass RenderPass::Create(Context& context){
 		
 	}

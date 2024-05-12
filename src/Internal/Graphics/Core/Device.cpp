@@ -7,20 +7,20 @@
 
 namespace Raindrop::Internal::Graphics::Core{
 	Device::Device(Context& context) : _context{context}{
-		_context.getLogger().info("Constructing vulkan device ...");
+		_context.getLogger()->info("Constructing vulkan device ...");
 
 		findPhysicalDevice();
 		build();
 	}
 
 	Device::~Device(){
-		_context.getLogger().info("Destroying vulkan device ...");
+		_context.getLogger()->info("Destroying vulkan device ...");
 
 		vkDestroyDevice(_device, _context.getAllocationCallbacks());
 	}
 
 	void Device::findPhysicalDevice(){
-		_context.getLogger().trace("Looking fo suitable physical device ...");
+		_context.getLogger()->trace("Looking fo suitable physical device ...");
 
 		const auto& instance = _context.getInstance().get();
 
@@ -32,7 +32,7 @@ namespace Raindrop::Internal::Graphics::Core{
 		);
 
 		if (count == 0){
-			_context.getLogger().error("Failed to find a suitable physical device with vulkan support");
+			_context.getLogger()->error("Failed to find a suitable physical device with vulkan support");
 			throw std::runtime_error("Failed to find physical device with Vulkan support");
 		}
 
@@ -47,12 +47,12 @@ namespace Raindrop::Internal::Graphics::Core{
 			if (isPhysicalDeviceSuitable(device)){
 				_context.getPhysicalDevice() = device;
 
-				_context.getLogger().info("Found physical device : {}", _context.getPhysicalDevice().name());
+				_context.getLogger()->info("Found physical device : {}", _context.getPhysicalDevice().name());
 				return;
 			}
 		}
 
-		_context.getLogger().error("Failed to find a suitable physical device");
+		_context.getLogger()->error("Failed to find a suitable physical device");
 		throw std::runtime_error("Failed to find a suitable physical device");
 	}
 
@@ -84,12 +84,12 @@ namespace Raindrop::Internal::Graphics::Core{
 		auto& physicalDevice = _context.getPhysicalDevice();
 
 		if (!isExtensionsSupported()){
-			_context.getLogger().error("Failed to build a vulkan device, unsupported required extensions");
+			_context.getLogger()->error("Failed to build a vulkan device, unsupported required extensions");
 			throw std::runtime_error("unsupported extensions");
 		}
 
 		if (!isLayersSupported()){
-			_context.getLogger().error("Failed to build a vulkan device, unsupported required layers");
+			_context.getLogger()->error("Failed to build a vulkan device, unsupported required layers");
 			throw std::runtime_error("unsupported layers");
 		}
 
@@ -167,7 +167,7 @@ namespace Raindrop::Internal::Graphics::Core{
 			}
 		}
 
-		_context.getLogger().warn("Failed to find suitable memory type filter (filter : {}; properties: {})", typeFilter, properties);
+		_context.getLogger()->warn("Failed to find suitable memory type filter (filter : {}; properties: {})", typeFilter, properties);
 		throw std::runtime_error("failed to find suitable memory type");
 	}
 

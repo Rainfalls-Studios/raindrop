@@ -8,7 +8,9 @@ namespace Raindrop{
 	}
 
 	Context::Context() : _handle{nullptr}{}
-	Context::~Context(){
+	Context::Context(Handle handle) : _handle{handle}{}
+
+	Context::Context::~Context(){
 		if (_handle){
 			release();
 		}
@@ -18,7 +20,7 @@ namespace Raindrop{
 		spdlog::info("Initializing Context...");
 		
 		try{
-			_handle = new Internal::Context;
+			_handle = new Internal::Context(*this);
 		} catch (const std::bad_alloc& e){
 			spdlog::error("Failed to intialize Context : memory allocation failure | {}", e.what());
 			throw;

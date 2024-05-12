@@ -15,6 +15,7 @@ namespace Raindrop{
 			static Context Create();
 
 			~Context();
+			Context(Handle handle);
 
 			Context(const Context& other) = delete;
 			Context& operator=(const Context& other) = delete;
