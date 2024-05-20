@@ -229,13 +229,13 @@ int main(){
 		}
 	);
 
-	
+	// Create texture
 	auto texture = Raindrop::CreateTexture(context);
 	texture.setWidth(255);
 	texture.setHeight(255);
 	texture.setUsage(Raindrop::Texture::Usage::SAMPLED);
 	
-	Raindrop::Format a = texture.findBestFormat(
+	Raindrop::Format format = texture.findBestFormat(
 		{
 			Raindrop::Format::Properties::RED,
 			Raindrop::Format::Properties::GREEN,
@@ -244,19 +244,51 @@ int main(){
 		Raindrop::Format::Features::SAMPLED_IMAGE,
 		Raindrop::Format::Properties::PACKED
 	);
-	texture.setFormat(a);
-
+	texture.setFormat(format);
 	texture.initialize();
 	
 
 	auto textureSubset = Raindrop::CreateTextureSubset(context, texture);
 	textureSubset.initialize();
 	textureSubset.release();
-
+	
+	// create shader
 	auto shader = Raindrop::Asset::Load<Raindrop::Pipeline::Shader>(context, "Shader", "shaders/scene/fullscreenQuad/shader.glsl.vert.spv");
 
+	// create pipeline layout
 	Raindrop::Pipeline::Layout layout = Raindrop::CreatePipelineLayout(context);
 	layout.initialize();
+	
+	{
+		Raindrop::RenderPass renderPass = Raindrop::CreateRenderPass(context);
+
+		auto attachment = renderPass.addAttachment()
+			.setFormat(format)
+			.setLoadOperation(Raindrop::RenderPass::Attachment::Operation::CLEAR)
+			.setStoreOperation(Raindrop::RenderPass::Attachment::Operation::STORE)
+			.setStencilLoadOperation(Raindrop::RenderPass::Attachment::Operation::DONT_LOAD)
+			.setStencilStoreOperation(Raindrop::RenderPass::Attachment::Operation::DONT_STORE)
+			.setInitialLayout(Raindrop::Texture::Layout::UNDEFINED)
+			.setFinalLayout(Raindrop::Texture::Layout::SHADER_READ_ONLY_OPTIMAL);
+
+		auto subpass = renderPass.addSubpass()
+			.addColorAttachment(
+				{
+					.attachment = attachment,
+					.layout = Raindrop::Texture::Layout::COLOR_ATTACHMENT_OPTIMAL
+				}
+			);
+		
+		auto dependency = renderPass.addDependency()
+			.setSrcSubpass(Raindrop::RenderPass::Subpass::External)
+			.setDstSubpass(subpass)
+			.setSrcStage(Raindrop::Pipeline::Stage::COLOR_ATTACHMENT_OUTPUT)
+			.setSrcAccess(Raindrop::RenderPass::Access::NONE)
+			.setDstStage(Raindrop::Pipeline::Stage::COLOR_ATTACHMENT_OUTPUT)
+			.setDstAccess(Raindrop::RenderPass::Access::COLOR_ATTACHMENT_WRITE);
+
+		renderPass.initialize();
+	}
 	
 	Raindrop::Start(context);
 	

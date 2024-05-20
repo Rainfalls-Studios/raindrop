@@ -28,41 +28,6 @@ namespace Raindrop{
 					};
 			};
 
-			class Operation{
-				public:
-					enum Load{
-						LOAD,
-						CLEAR,
-						DONT_LOAD
-					};
-
-					enum Store{
-						STORE,
-						DONT_STORE
-					};
-
-					Operation(Load loadOp, Store storeOp, Load stencilLoadOp, Store stentilStorOp) noexcept;
-
-					const Load& getLoadOp() const noexcept;
-					const Store& getStoreOp() const noexcept;
-					const Load& getStencilLoadOp() const noexcept;
-					const Store& getStencilStoreOp() const noexcept;
-
-					void setLoadOp(const Load& op) noexcept;
-					void setStoreOp(const Store& op) noexcept;
-					void setStencilLoadOp(const Load& op) noexcept;
-					void setStencilStoreOp(const Store& op) noexcept;
-
-				private:
-					Load _loadOp;
-					Load _stencilLoadOp;
-					Store _storeOp;
-					Store _stencilStoreOp;
-
-				public:
-					static const Operation DEFAULT;
-			};
-
 			enum class Tiling{
 				OPTIMAL,
 				LINEAR

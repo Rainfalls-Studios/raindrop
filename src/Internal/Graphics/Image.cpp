@@ -86,7 +86,7 @@ namespace Raindrop::Internal::Graphics{
 	}
 
 	Image::~Image(){
-		_context.getLogger()->info("Destroying image");
+		_context.getLogger()->info("Destroying image...");
 		auto& device = _context.getDevice();
 		auto& allocationCallbacks = _context.getAllocationCallbacks();
 

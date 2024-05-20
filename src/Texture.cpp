@@ -14,51 +14,6 @@
 
 namespace Raindrop{
 
-	const Texture::Operation Texture::Operation::DEFAULT = Texture::Operation(
-		Texture::Operation::LOAD,
-		Texture::Operation::STORE,
-		Texture::Operation::DONT_LOAD,
-		Texture::Operation::DONT_STORE
-	);
-
-	Texture::Operation::Operation(Load loadOp, Store storeOp, Load stencilLoadOp, Store stentilStorOp) noexcept : 
-		_loadOp{loadOp},
-		_storeOp{storeOp},
-		_stencilLoadOp{stencilLoadOp},
-		_stencilStoreOp{stentilStorOp}
-	{}
-
-	const Texture::Operation::Load& Texture::Operation::getLoadOp() const noexcept{
-		return _loadOp;
-	}
-
-	const Texture::Operation::Store& Texture::Operation::getStoreOp() const noexcept{
-		return _storeOp;
-	}
-
-	const Texture::Operation::Load& Texture::Operation::getStencilLoadOp() const noexcept{
-		return _stencilLoadOp;
-	}
-
-	const Texture::Operation::Store& Texture::Operation::getStencilStoreOp() const noexcept{
-		return _stencilStoreOp;
-	}
-
-	void Texture::Operation::setLoadOp(const Load& op) noexcept{
-		_loadOp = op;;
-	}
-
-	void Texture::Operation::setStoreOp(const Store& op) noexcept{
-		_storeOp = op;;
-	}
-
-	void Texture::Operation::setStencilLoadOp(const Load& op) noexcept{
-		_stencilLoadOp = op;;
-	}
-
-	void Texture::Operation::setStencilStoreOp(const Store& op) noexcept{
-		_stencilStoreOp = op;;
-	}
 
 	//--------------------------------------------------------------------
 	//-----------------           TEXTURE                -----------------

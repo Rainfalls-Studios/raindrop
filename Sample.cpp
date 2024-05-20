@@ -99,3 +99,82 @@ event.trigger()
 
 auto stage = Raindrop::Asset::Load<Raindrop::Shader>(context, "path/to/shader.vert.glsl");
 
+
+
+
+Raindrop::RenderPass renderPass = Raindrop::CreateRenderPass();
+
+// Color
+auto colorAttachment = renderPass.addAttachment(
+	0,
+	format,
+	Raindrop::Texture::Operation(
+		Raindrop::Texture::Operation::CLEAR,
+		Raindrop::Texture::Operation::STORE,
+		Raindrop::Texture::Operation::DONT_LOAD,
+		Raindrop::Texture::Operation::DONT_STORE,
+	),
+	Raindrop::Texture::Layout::UNDEFINED,
+	Raindrop::Texture::Layout::SHADER_READ_ONLY_OPTIMAL
+);
+
+// Depth
+auto depthAttachment = renderPass.addAttachment(
+	1,
+	depthFormat,
+	Raindrop::Texture::Operation(
+		Raindrop::Texture::Operation::CLEAR,
+		Raindrop::Texture::Operation::DONT_STORE,
+		Raindrop::Texture::Operation::DONT_LOAD,
+		Raindrop::Texture::Operation::DONT_STORE,
+	),
+	Raindrop::Texture::Layout::UNDEFINED,
+	Raindrop::Texture::Layout::UNDEFINED
+);
+
+auto subpass = renderPass.addSubpass();
+subpass.setDepthAttachmen(depthAttachment);
+subpass.setColorAttachment(colorAttachment);
+
+auto dependency = renderPass.addDepencency(
+	Raindrop::Pipeline::Subpass::External,
+	subpass,
+	Raindrop::Pipeline::Stage::COLOR_ATTACHMENT_OUTPUT,
+	Raindrop::Pipeline::Access::NONE,
+	Raindrop::Pipeline::Stage::STAGE_FRAGMENT_SHADER,
+	Raindrop::Pipeline::Access::SHADER_READ,
+)
+
+Raindrop::RenderPass renderPass = Raindrop::CreateRenderPass(context);
+
+// Adding attachment
+auto attachment = renderPass.addAttachment()
+    .setFormat(colorFormat)
+    .setSamples(Raindrop::SampleCount::e1)
+    .setLoadOp(Raindrop::Attachment::LoadOp::CLEAR)
+    .setStoreOp(Raindrop::Attachment::StoreOp::STORE)
+    .setStencilLoadOp(Raindrop::Attachment::LoadOp::DONT_CARE)
+    .setStencilStoreOp(Raindrop::Attachment::StoreOp::DONT_CARE)
+    .setInitialLayout(Raindrop::Image::Layout::UNDEFINED)
+    .setFinalLayout(Raindrop::Image::Layout::PRESENT_SRC);
+
+// Adding subpass
+auto subpass = renderPass.addSubpass()
+    .setPipelineBindPoint(Raindrop::Pipeline::BindPoint::GRAPHICS)
+    .addColorAttachment({
+        .attachment = attachment,
+        .layout = Raindrop::ImageLayout::COLOR_ATTACHMENT_OPTIMAL
+    });
+
+// Adding dependency
+renderPass.addDependency()
+    .setSrcSubpass(Raindrop::RenderPass::Subpass::EXTERNAL)
+    .setDstSubpass(subpass)
+    .setSrcStageMask(Raindrop::Pipeline::Stage::COLOR_ATTACHMENT_OUTPUT)
+    .setDstStageMask(Raindrop::Pipeline::Stage::COLOR_ATTACHMENT_OUTPUT)
+    .setSrcAccessMask(Raindrop::Access::NONE)
+    .setDstAccessMask(Raindrop::Access::COLOR_ATTACHMENT_WRITE)
+    .setDependencyFlags(Raindrop::RenderPass::Dependency::BY_REGION);
+
+// Initialize render pass
+renderPass.initialize();
