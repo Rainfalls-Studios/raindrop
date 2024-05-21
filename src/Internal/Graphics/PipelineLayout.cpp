@@ -1,11 +1,11 @@
-#include <Raindrop_internal/Graphics/Pipelines/PipelineLayout.hpp>
+#include <Raindrop_internal/Graphics/PipelineLayout.hpp>
 #include <Raindrop_internal/Graphics/Context.hpp>
 
 #include <spdlog/spdlog.h>
 
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
 
-namespace Raindrop::Internal::Graphics::Pipelines{
+namespace Raindrop::Internal::Graphics{
 	PipelineLayout::PipelineLayout(Context& context, const PipelineLayoutConfigInfo& info) :
 			_context{context},
 			_layout{VK_NULL_HANDLE}{

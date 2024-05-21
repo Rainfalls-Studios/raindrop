@@ -15,6 +15,8 @@ namespace Raindrop::Internal::Graphics{
 	class RenderPass;
 	class Shader;
 	class ShaderLoader;
+	class PipelineLayout;
+	class GraphicsPipeline;
 }
 
 #endif

@@ -1,12 +1,12 @@
-#include <Raindrop_internal/Graphics/Pipelines/GraphicsPipeline.hpp>
-#include <Raindrop_internal/Graphics/Pipelines/PipelineLayout.hpp>
+#include <Raindrop_internal/Graphics/GraphicsPipeline.hpp>
+#include <Raindrop_internal/Graphics/PipelineLayout.hpp>
 #include <Raindrop_internal/Graphics/RenderPass.hpp>
 #include <Raindrop_internal/Graphics/Context.hpp>
 #include <spdlog/spdlog.h>
 
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
 
-namespace Raindrop::Internal::Graphics::Pipelines{
+namespace Raindrop::Internal::Graphics{
 	GraphicsPipelineConfigInfo::GraphicsPipelineConfigInfo() : 
 		vertexInfo{.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO},
 		viewportInfo{.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO},
@@ -102,11 +102,23 @@ namespace Raindrop::Internal::Graphics::Pipelines{
 		colorBlendInfo.pAttachments = colorAttachments.data();
 		colorBlendInfo.attachmentCount = static_cast<uint32_t>(colorAttachments.size());
 
-		vertexInfo.pVertexAttributeDescriptions = vertices.data();
-		vertexInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(vertices.size());
+		std::vector<VkVertexInputAttributeDescription> attributesDescriptions;
+		std::vector<VkVertexInputBindingDescription> bindingsDescriptions(bindings.size());
 
-		vertexInfo.pVertexBindingDescriptions = bindings.data();
-		vertexInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindings.size());
+		for (std::size_t i=0; i<bindings.size(); i++){
+			auto& dst = bindingsDescriptions[i];
+			const auto& src = bindings[i];
+
+			dst.binding = static_cast<uint32_t>(i);
+			dst.inputRate = src.description.inputRate;
+			
+		}
+
+		vertexInfo.pVertexAttributeDescriptions = attributesDescriptions.data();
+		vertexInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributesDescriptions.size());
+
+		vertexInfo.pVertexBindingDescriptions = bindingsDescriptions.data();
+		vertexInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingsDescriptions.size());
 	}
 
 	GraphicsPipeline::GraphicsPipeline(Context& context, const GraphicsPipelineConfigInfo& info) :

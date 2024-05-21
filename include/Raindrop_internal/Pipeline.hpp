@@ -3,16 +3,16 @@
 
 #include <Raindrop/Pipeline.hpp>
 #include <Raindrop/Context.hpp>
-#include <Raindrop_internal/Graphics/Pipelines/GraphicsPipeline.hpp>
-#include <Raindrop_internal/Graphics/Pipelines/PipelineLayout.hpp>
+#include <Raindrop_internal/Graphics/GraphicsPipeline.hpp>
+#include <Raindrop_internal/Graphics/PipelineLayout.hpp>
 #include <Raindrop_internal/Graphics/Shader.hpp>
 
 namespace Raindrop{
 	// TODO: make infos temporary -> destroy on resource initialization
 	
 	struct Pipeline::Layout::Impl{
-		std::shared_ptr<Internal::Graphics::Pipelines::PipelineLayout> layout;
-		Internal::Graphics::Pipelines::PipelineLayoutConfigInfo info;
+		std::shared_ptr<Internal::Graphics::PipelineLayout> layout;
+		Internal::Graphics::PipelineLayoutConfigInfo info;
 		Context* context;
 
 		Impl(Context& context) : context{&context}{}
@@ -27,8 +27,8 @@ namespace Raindrop{
 	};
 
 	struct Pipeline::Impl{
-		std::shared_ptr<Internal::Graphics::Pipelines::GraphicsPipeline> pipeline;
-		Internal::Graphics::Pipelines::GraphicsPipelineConfigInfo info;
+		std::shared_ptr<Internal::Graphics::GraphicsPipeline> pipeline;
+		Internal::Graphics::GraphicsPipelineConfigInfo info;
 		Context* context;
 
 		Impl(Context& context) : context{&context}{}

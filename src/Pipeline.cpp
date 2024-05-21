@@ -1,17 +1,25 @@
 #include <Raindrop/Pipeline.hpp>
-#include <Raindrop_internal/Graphics/Pipelines/PipelineLayout.hpp>
+#include <Raindrop_internal/Graphics/PipelineLayout.hpp>
 #include <Raindrop_internal/Pipeline.hpp>
 #include <Raindrop/Context.hpp>
 #include <Raindrop_internal/Graphics/Renderer.hpp>
 #include <Raindrop_internal/Graphics/Context.hpp>
 #include <Raindrop_internal/Context.hpp>
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
+#include <Raindrop/RenderPass.hpp>
+#include <Raindrop_internal/RenderPass.hpp>
 
 #include <fstream>
 
 #define LOGGER _impl->context->getInternalContext()->getLogger()
 #define INFO _impl->info
 #define GRAPHICS_CONTEXT _impl->context->getInternalContext()->getRenderer().getContext()
+#define VERTEX_ATTRIBUTE_INFO reinterpret_cast<VkVertexInputAttributeDescription*>(_data)
+#define VERTEX_BINDING_INFO reinterpret_cast<Raindrop::Internal::Graphics::GraphicsPipelineConfigInfo::Binding*>(_data)
+#define VIEWPORT_INFO reinterpret_cast<VkViewport*>(_data)
+#define SCISSOR_INFO reinterpret_cast<VkRect2D*>(_data)
+#define ATTACHMENT_INFO reinterpret_cast<VkPipelineColorBlendAttachmentState*>(_data)
+#define STENCIL_OP_STATE_INFO reinterpret_cast<VkStencilOpState*>(_data)
 
 namespace Raindrop{
 
@@ -44,7 +52,7 @@ namespace Raindrop{
 
 	void Pipeline::Layout::initialize(){
 		LOGGER->info("Initializing pipeline layout...");
-		_impl->layout = std::make_shared<Internal::Graphics::Pipelines::PipelineLayout>(GRAPHICS_CONTEXT, _impl->info);
+		_impl->layout = std::make_shared<Internal::Graphics::PipelineLayout>(GRAPHICS_CONTEXT, _impl->info);
 		LOGGER->info("Pipeline layout initialized with success !");
 	}
 
@@ -82,374 +90,208 @@ namespace Raindrop{
 	//--------------------------------------------------------------------
 
 
-	Pipeline::VertexBinding::VertexAttribute::VertexAttribute() noexcept :
-		_location{0},
-		_offset{0},
-		_format{Format::UNDEFINED}
-	{}
+	//! IF OFFSET IS EQUAL TO 'UINT32_MAX'. IT IS CALCULATED DURING PIPELINE INTIALIZATION
 
-	Pipeline::VertexBinding::VertexAttribute::VertexAttribute(const std::size_t& location, const std::size_t& offset, const Format& format) noexcept : 
-		_location{location},
-		_offset{offset},
-		_format{format}
-	{}
-
-	void Pipeline::VertexBinding::VertexAttribute::setLocation(const std::size_t& location) noexcept{
-		_location = location;
+	Pipeline::VertexBinding::VertexAttribute::VertexAttribute(VertexBinding& owner, void* data) noexcept : _owner{owner}, _data{data}{
+		assert(data);
+		VERTEX_ATTRIBUTE_INFO->binding = reinterpret_cast<VkVertexInputBindingDescription*>(owner._data)->binding;
+		VERTEX_ATTRIBUTE_INFO->offset = UINT32_MAX;
 	}
 
-	void Pipeline::VertexBinding::VertexAttribute::setOffset(const std::size_t& offset) noexcept{
-		_offset = offset;
+	Pipeline::VertexBinding::VertexAttribute& Pipeline::VertexBinding::VertexAttribute::setLocation(const std::size_t& location) noexcept{
+		VERTEX_ATTRIBUTE_INFO->location = static_cast<uint32_t>(location);
+		return *this;
 	}
 
-	void Pipeline::VertexBinding::VertexAttribute::setFormat(const Format& format) noexcept{
-		_format = format;
+	Pipeline::VertexBinding::VertexAttribute& Pipeline::VertexBinding::VertexAttribute::setOffset(const std::size_t& offset) noexcept{
+		VERTEX_ATTRIBUTE_INFO->offset = static_cast<uint32_t>(offset);
+		return *this;
 	}
 
-	const std::size_t& Pipeline::VertexBinding::VertexAttribute::getLocation() const noexcept{
-		return _location;
-	}
-
-	const std::size_t& Pipeline::VertexBinding::VertexAttribute::getOffset() const noexcept{
-		return _offset;
-	}
-
-	const Format& Pipeline::VertexBinding::VertexAttribute::getFormat() const noexcept{
-		return _format;
+	Pipeline::VertexBinding::VertexAttribute& Pipeline::VertexBinding::VertexAttribute::setFormat(const Format& format) noexcept{
+		VERTEX_ATTRIBUTE_INFO->format = static_cast<VkFormat>(format.get());
+		return *this;
 	}
 
 	//--------------------------------------------------------------------
 	//-----------------             Viewport             -----------------
 	//--------------------------------------------------------------------
 
-	Pipeline::Viewport::Viewport() noexcept : 
-		_x{0.f},
-		_y{0.f},
-		_width{255.f},
-		_height{255.f},
-		_minDepth{0.f},
-		_maxDepth{1.f}
-	{}
+	Pipeline::Viewport::Viewport(void* data) noexcept : _data{data}{}
 
-	void Pipeline::Viewport::setX(const float& x) noexcept{
-		_x = x;
+	Pipeline::Viewport& Pipeline::Viewport::setX(const float& x) noexcept{
+		VIEWPORT_INFO->x = x;
+		return *this;
 	}
 
-	void Pipeline::Viewport::setY(const float& y) noexcept{
-		_y = y;
+	Pipeline::Viewport& Pipeline::Viewport::setY(const float& y) noexcept{
+		VIEWPORT_INFO->y = y;
+		return *this;
 	}
 
-	void Pipeline::Viewport::setWidth(const float& width) noexcept{
-		_width = width;
+	Pipeline::Viewport& Pipeline::Viewport::setWidth(const float& width) noexcept{
+		VIEWPORT_INFO->width = width;
+		return *this;
 	}
 
-	void Pipeline::Viewport::setHeight(const float& height) noexcept{
-		_height = height;
+	Pipeline::Viewport& Pipeline::Viewport::setHeight(const float& height) noexcept{
+		VIEWPORT_INFO->height = height;
+		return *this;
 	}
 
-	void Pipeline::Viewport::setMinDepth(const float& minDepth) noexcept{
-		_minDepth = minDepth;
+	Pipeline::Viewport& Pipeline::Viewport::setMinDepth(const float& minDepth) noexcept{
+		VIEWPORT_INFO->minDepth = minDepth;
+		return *this;
 	}
 
-	void Pipeline::Viewport::setMaxDepth(const float& maxDepth) noexcept{
-		_maxDepth = maxDepth;
-	}
-
-	const float& Pipeline::Viewport::getX() const noexcept{
-		return _x;
-	}
-
-	const float& Pipeline::Viewport::getY() const noexcept{
-		return _y;
-	}
-
-	const float& Pipeline::Viewport::getWidth() const noexcept{
-		return _width;
-	}
-
-	const float& Pipeline::Viewport::getHeight() const noexcept{
-		return _height;
-	}
-
-	const float& Pipeline::Viewport::getMinDepth() const noexcept{
-		return _minDepth;
-	}
-
-	const float& Pipeline::Viewport::getMaxDepth() const noexcept{
-		return _maxDepth;
+	Pipeline::Viewport& Pipeline::Viewport::setMaxDepth(const float& maxDepth) noexcept{
+		VIEWPORT_INFO->maxDepth = maxDepth;
+		return *this;
 	}
 
 	//--------------------------------------------------------------------
 	//-----------------             Scissor              -----------------
 	//--------------------------------------------------------------------
 
-	Pipeline::Scissor::Scissor() noexcept : 
-		_x{0},
-		_y{0},
-		_width{255},
-		_height{255}
-	{}
-	
-	void Pipeline::Scissor::setX(const std::size_t& x) noexcept{
-		_x = x;
+	Pipeline::Scissor::Scissor(void* data) noexcept : _data{data}{}
+
+	Pipeline::Scissor& Pipeline::Scissor::setX(const std::size_t& x) noexcept{
+		SCISSOR_INFO->offset.x = static_cast<uint32_t>(x);
+		return *this;
 	}
 
-	void Pipeline::Scissor::setY(const std::size_t& y) noexcept{
-		_y = y;
+	Pipeline::Scissor& Pipeline::Scissor::setY(const std::size_t& y) noexcept{
+		SCISSOR_INFO->offset.y = static_cast<uint32_t>(y);
+		return *this;
 	}
 
-	void Pipeline::Scissor::setWidth(const std::size_t& width) noexcept{
-		_width = width;
+	Pipeline::Scissor& Pipeline::Scissor::setWidth(const std::size_t& width) noexcept{
+		SCISSOR_INFO->extent.width = static_cast<uint32_t>(width);
+		return *this;
 	}
 
-	void Pipeline::Scissor::setHeight(const std::size_t& height) noexcept{
-		_height = height;
-	}
-
-	const std::size_t& Pipeline::Scissor::getX() const noexcept{
-		return _x;
-	}
-
-	const std::size_t& Pipeline::Scissor::getY() const noexcept{
-		return _y;
-	}
-
-	const std::size_t& Pipeline::Scissor::getWidth() const noexcept{
-		return _width;
-	}
-
-	const std::size_t& Pipeline::Scissor::getHeight() const noexcept{
-		return _height;
+	Pipeline::Scissor& Pipeline::Scissor::setHeight(const std::size_t& height) noexcept{
+		SCISSOR_INFO->extent.height = static_cast<uint32_t>(height);
+		return *this;
 	}
 
 	//--------------------------------------------------------------------
 	//-----------------          Vertex binding          -----------------
 	//--------------------------------------------------------------------
 
-	Pipeline::VertexBinding::VertexBinding() noexcept : 
-		_attributes{},
-		_binding{0},
-		_stride{0}
-	{}
+	//! IF STRIDE IS EQUAL TO 'UINT32_MAX'. IT IS CALCULATED DURING PIPELINE INTIALIZATION
 
-	Pipeline::VertexBinding::VertexBinding(const std::size_t& binding, const std::initializer_list<VertexAttribute>& attributes) : 
-		_binding{binding},
-		_attributes(attributes.begin(), attributes.end())
-	{
-		checkLocations();
+	Pipeline::VertexBinding::VertexBinding(Pipeline& owner, void* data) noexcept : _owner{owner}, _data{data}{
+		setBinding(owner._impl->info.bindings.size()-1);
+		setStride(UINT32_MAX);
 	}
 
-	void Pipeline::VertexBinding::setBinding(const std::size_t& binding) noexcept{
-		_binding = binding;
+	Pipeline::VertexBinding& Pipeline::VertexBinding::setBinding(const std::size_t& binding) noexcept{
+		VERTEX_BINDING_INFO->description.binding = static_cast<uint32_t>(binding);
+		return *this;
 	}
 
-	void Pipeline::VertexBinding::setStride(const std::size_t stride) noexcept{
-		_stride = stride;
+	Pipeline::VertexBinding& Pipeline::VertexBinding::setStride(const std::size_t stride) noexcept{
+		VERTEX_BINDING_INFO->description.stride = static_cast<uint32_t>(stride);
+		return *this;
 	}
 
-	void Pipeline::VertexBinding::setInputRate(const InputRate& rate) noexcept{
-		_inputRate = rate;
+	Pipeline::VertexBinding& Pipeline::VertexBinding::setInputRate(const InputRate& rate) noexcept{
+		VERTEX_BINDING_INFO->description.inputRate = static_cast<VkVertexInputRate>(rate);
+		return *this;
 	}
 	
-	void Pipeline::VertexBinding::addAttribute(const VertexAttribute& attribute){
-		_attributes.push_back(attribute);
-		checkLocations();
+	Pipeline::VertexBinding::VertexAttribute Pipeline::VertexBinding::addAttribute(){
+		VERTEX_BINDING_INFO->vertices.push_back({});
+		return VertexAttribute(*this, &VERTEX_BINDING_INFO->vertices[VERTEX_BINDING_INFO->vertices.size() - 1]);
 	}
-	
-	void Pipeline::VertexBinding::setAttributes(const std::initializer_list<VertexAttribute>& attributes){
-		_attributes.assign(attributes.begin(), attributes.end());
-		checkLocations();
-	}
-	
-	const std::size_t& Pipeline::VertexBinding::getBinding() const noexcept{
-		return _binding;
-	}
-
-	const std::size_t& Pipeline::VertexBinding::getStride() const noexcept{
-		return _stride;
-	}
-
-	const Pipeline::InputRate& Pipeline::VertexBinding::getInputRate() const noexcept{
-		return _inputRate;
-	}
-
-	const std::vector<Pipeline::VertexBinding::VertexAttribute>& Pipeline::VertexBinding::getAttributes() const noexcept{
-		return _attributes;
-	}
-
-	void Pipeline::VertexBinding::checkLocations(){
-		if (_attributes.size() <= 1) return;
-
-		std::set<std::size_t> usedLocations;
-		for (auto& attribute : _attributes){
-			auto pair = usedLocations.emplace(attribute.getLocation());
-
-			// if pair.second if false, it means that the location has not actualy been emplaced, thus, this location is already used
-			if (!pair.second){
-				throw std::runtime_error("A location is used twice !");
-			}
-		}
-	}
-
-	void Pipeline::VertexBinding::deduceStride(){
-		_stride = 0;
-		for (auto& attribute : _attributes){
-			_stride += attribute.getFormat().getSize();
-		}
-	}
-
 
 	//--------------------------------------------------------------------
 	//-----------------         Color attachments        -----------------
 	//--------------------------------------------------------------------
 
-	Pipeline::ColorAttachment::ColorAttachment() noexcept : 
-		_blendEnable{false},
-		_srcColorBlendFactor{Color::BlendFactor::ONE},
-		_dstColorBlendFactor{Color::BlendFactor::ONE},
-		_colorBlendOp{Color::BlendOperation::ADD},
-		_srcAlphaBlendFactor{Color::BlendFactor::ONE},
-		_dstAlphaBlendFactor{Color::BlendFactor::ONE},
-		_alphaBlendOp{Color::BlendOperation::ADD},
-		_writeMask{0xFFFFFFFF}
-	{}
+	Pipeline::ColorAttachment::ColorAttachment(void* data) noexcept : _data{data}{}
 
-	void Pipeline::ColorAttachment::enableBlending(const bool& enable) noexcept{
-		_blendEnable = enable;
+	Pipeline::ColorAttachment& Pipeline::ColorAttachment::enableBlending(const bool& enable) noexcept{
+		ATTACHMENT_INFO->blendEnable = static_cast<VkBool32>(enable);
+		return *this;
 	}
 
-	void Pipeline::ColorAttachment::setSrcColorBlendFactor(const Color::BlendFactor& srcColorBlendFactor) noexcept{
-		_srcColorBlendFactor = srcColorBlendFactor;
+	Pipeline::ColorAttachment& Pipeline::ColorAttachment::setSrcColorBlendFactor(const Color::BlendFactor& srcColorBlendFactor) noexcept{
+		ATTACHMENT_INFO->srcColorBlendFactor = static_cast<VkBlendFactor>(srcColorBlendFactor);
+		return *this;
 	}
 
-	void Pipeline::ColorAttachment::setDstColorBlendFactor(const Color::BlendFactor& dstColorBlendFactor) noexcept{
-		_dstColorBlendFactor = dstColorBlendFactor;
+	Pipeline::ColorAttachment& Pipeline::ColorAttachment::setDstColorBlendFactor(const Color::BlendFactor& dstColorBlendFactor) noexcept{
+		ATTACHMENT_INFO->dstColorBlendFactor = static_cast<VkBlendFactor>(dstColorBlendFactor);
+		return *this;
 	}
 
-	void Pipeline::ColorAttachment::setColorBlendOp(const Color::BlendOperation& colorBlendOp) noexcept{
-		_colorBlendOp = colorBlendOp;
+	Pipeline::ColorAttachment& Pipeline::ColorAttachment::setColorBlendOp(const Color::BlendOperation& colorBlendOp) noexcept{
+		ATTACHMENT_INFO->colorBlendOp = static_cast<VkBlendOp>(colorBlendOp);
+		return *this;
 	}
 
-	void Pipeline::ColorAttachment::setSrcAlphaBlendFactor(const Color::BlendFactor& srcAlphaBlendFactor) noexcept{
-		_srcAlphaBlendFactor = srcAlphaBlendFactor;
+	Pipeline::ColorAttachment& Pipeline::ColorAttachment::setSrcAlphaBlendFactor(const Color::BlendFactor& srcAlphaBlendFactor) noexcept{
+		ATTACHMENT_INFO->srcAlphaBlendFactor = static_cast<VkBlendFactor>(srcAlphaBlendFactor);
+		return *this;
 	}
 
-	void Pipeline::ColorAttachment::setDstAlphaBlendFactor(const Color::BlendFactor& dstAlphaBlendFactor) noexcept{
-		_dstAlphaBlendFactor = dstAlphaBlendFactor;
+	Pipeline::ColorAttachment& Pipeline::ColorAttachment::setDstAlphaBlendFactor(const Color::BlendFactor& dstAlphaBlendFactor) noexcept{
+		ATTACHMENT_INFO->dstAlphaBlendFactor = static_cast<VkBlendFactor>(dstAlphaBlendFactor);
+		return *this;
 	}
 
-	void Pipeline::ColorAttachment::setAlphaBlendOp(const Color::BlendOperation& alphaBlendOp) noexcept{
-		_alphaBlendOp = alphaBlendOp;
+	Pipeline::ColorAttachment& Pipeline::ColorAttachment::setAlphaBlendOp(const Color::BlendOperation& alphaBlendOp) noexcept{
+		ATTACHMENT_INFO->alphaBlendOp = static_cast<VkBlendOp>(alphaBlendOp);
+		return *this;
 	}
 
-	void Pipeline::ColorAttachment::setWriteMask(const Color::Components& writeMask) noexcept{
-		_writeMask = writeMask;
+	Pipeline::ColorAttachment& Pipeline::ColorAttachment::setWriteMask(const Color::Components& writeMask) noexcept{
+		ATTACHMENT_INFO->colorWriteMask = static_cast<VkColorComponentFlags>(writeMask.get());
+		return *this;
 	}
-
-
-	bool Pipeline::ColorAttachment::isBlendingEnabled() const noexcept{
-		return _blendEnable;
-	}
-
-	const Color::BlendFactor& Pipeline::ColorAttachment::getSrcColorBlendFactor() const noexcept{
-		return _srcColorBlendFactor;
-	}
-
-	const Color::BlendFactor& Pipeline::ColorAttachment::getDstColorBlendFactor() const noexcept{
-		return _dstColorBlendFactor;
-	}
-
-	const Color::BlendOperation& Pipeline::ColorAttachment::getColorBlendOp() const noexcept{
-		return _colorBlendOp;
-	}
-
-	const Color::BlendFactor& Pipeline::ColorAttachment::getSrcAlphaBlendFactor() const noexcept{
-		return _srcAlphaBlendFactor;
-	}
-
-	const Color::BlendFactor& Pipeline::ColorAttachment::getDstAlphaBlendFactor() const noexcept{
-		return _dstAlphaBlendFactor;
-	}
-
-	const Color::BlendOperation& Pipeline::ColorAttachment::getAlphaBlendOp() const noexcept{
-		return _alphaBlendOp;
-	}
-
-	const Color::Components& Pipeline::ColorAttachment::getWriteMask() const noexcept{
-		return _writeMask;
-	}
-
 
 	//--------------------------------------------------------------------
 	//-----------------        Stencil Op state          -----------------
 	//--------------------------------------------------------------------
 
-	Pipeline::StencilOpState::StencilOpState() noexcept : 
-		_failOp{StencilOp::KEEP},
-		_passOp{StencilOp::KEEP},
-		_depthFailOp{StencilOp::KEEP},
-		_compareOp{CompareOp::ALWAYS},
-		_comparMask{0xFFFFFFFF},
-		_writeMask{0x0FFFFFFFF},
-		_reference{0}
-	{}
+	Pipeline::StencilOpState::StencilOpState(void* data) noexcept : _data{data}{}
 
-	void Pipeline::StencilOpState::setFailOp(const StencilOp& failOp) noexcept{
-		_failOp = failOp;
+	Pipeline::StencilOpState& Pipeline::StencilOpState::setFailOp(const StencilOp& failOp) noexcept{
+		STENCIL_OP_STATE_INFO->failOp = static_cast<VkStencilOp>(failOp);
+		return *this;
 	}
 
-	void Pipeline::StencilOpState::setPassOp(const StencilOp& passOp) noexcept{
-		_passOp = passOp;
+	Pipeline::StencilOpState& Pipeline::StencilOpState::setPassOp(const StencilOp& passOp) noexcept{
+		STENCIL_OP_STATE_INFO->passOp = static_cast<VkStencilOp>(passOp);
+		return *this;
 	}
 
-	void Pipeline::StencilOpState::setDepthFailOp(const StencilOp& depthFailOp) noexcept{
-		_depthFailOp = depthFailOp;
+	Pipeline::StencilOpState& Pipeline::StencilOpState::setDepthFailOp(const StencilOp& depthFailOp) noexcept{
+		STENCIL_OP_STATE_INFO->depthFailOp = static_cast<VkStencilOp>(depthFailOp);
+		return *this;
 	}
 
-	void Pipeline::StencilOpState::setCompareOp(const CompareOp& compareOp) noexcept{
-		_compareOp = compareOp;
+	Pipeline::StencilOpState& Pipeline::StencilOpState::setCompareOp(const CompareOp& compareOp) noexcept{
+		STENCIL_OP_STATE_INFO->compareOp = static_cast<VkCompareOp>(compareOp);
+		return *this;
 	}
 
-	void Pipeline::StencilOpState::setComparMask(const std::uint32_t& comparMask) noexcept{
-		_comparMask = comparMask;
+	Pipeline::StencilOpState& Pipeline::StencilOpState::setCompareMask(const std::uint32_t& compareMask) noexcept{
+		STENCIL_OP_STATE_INFO->compareMask = compareMask;
+		return *this;
 	}
 
-	void Pipeline::StencilOpState::setWriteMask(const std::uint32_t& writeMask) noexcept{
-		_writeMask = writeMask;
+	Pipeline::StencilOpState& Pipeline::StencilOpState::setWriteMask(const std::uint32_t& writeMask) noexcept{
+		STENCIL_OP_STATE_INFO->writeMask = writeMask;
+		return *this;
 	}
 
-	void Pipeline::StencilOpState::setReference(const std::size_t& reference) noexcept{
-		_reference = reference;
+	Pipeline::StencilOpState& Pipeline::StencilOpState::setReference(const std::size_t& reference) noexcept{
+		STENCIL_OP_STATE_INFO->reference = reference;
+		return *this;
 	}
-
-	const Pipeline::StencilOp& Pipeline::StencilOpState::getFailOp() const noexcept{
-		return _failOp;
-	}
-
-	const Pipeline::StencilOp& Pipeline::StencilOpState::getPassOp() const noexcept{
-		return _passOp;
-	}
-
-	const Pipeline::StencilOp& Pipeline::StencilOpState::getDepthFailOp() const noexcept{
-		return _depthFailOp;
-	}
-
-	const Pipeline::CompareOp& Pipeline::StencilOpState::getCompareOp() const noexcept{
-		return _compareOp;
-	}
-
-	const std::uint32_t& Pipeline::StencilOpState::getComparMask() const noexcept{
-		return _comparMask;
-	}
-
-	const std::uint32_t& Pipeline::StencilOpState::getWriteMask() const noexcept{
-		return _writeMask;
-	}
-
-	const std::size_t& Pipeline::StencilOpState::getReference() const noexcept{
-		return _reference;
-	}
-
 
 	//--------------------------------------------------------------------
 	//-----------------        Pipeline shader           -----------------
@@ -510,6 +352,10 @@ namespace Raindrop{
 	//-----------------            Pipeline              -----------------
 	//--------------------------------------------------------------------
 
+	Pipeline Pipeline::Create(Context& context){
+		return Pipeline(context);
+	}
+
 	Pipeline::Pipeline(Context& context){
 		_impl = new Impl(context);
 	}
@@ -531,7 +377,13 @@ namespace Raindrop{
 	
 	void Pipeline::initialize(){
 		LOGGER->info("Initializing pipeline...");
-		_impl->pipeline = std::make_shared<Internal::Graphics::Pipelines::GraphicsPipeline>(GRAPHICS_CONTEXT, _impl->info);
+		
+		for (std::size_t i=0; i<INFO.bindings.size(); i++){
+			
+		}
+
+
+		_impl->pipeline = std::make_shared<Internal::Graphics::GraphicsPipeline>(GRAPHICS_CONTEXT, _impl->info);
 		LOGGER->info("Pipeline initialized with success !");
 	}
 
@@ -539,6 +391,7 @@ namespace Raindrop{
 		_impl->pipeline.reset();
 		INFO.renderPass.reset();
 		INFO.pipelineLayout.reset();
+		INFO.shaders.clear();
 	}
 
 	bool Pipeline::isInitialized() const noexcept{
@@ -557,237 +410,137 @@ namespace Raindrop{
 
 	}
 
-	void Pipeline::setFlags(const Flags& flags){
+	Pipeline& Pipeline::setFlags(const Flags& flags){
 		INFO.flags = static_cast<VkPipelineCreateFlags>(flags.get());
+		return *this;
 	}
 
-	void Pipeline::addVertexBinding(const VertexBinding& binding){
-		VkVertexInputBindingDescription bindingDescription{
-			.binding = static_cast<uint32_t>(binding.getBinding()),
-			.stride = static_cast<uint32_t>(binding.getStride()),
-			.inputRate = static_cast<VkVertexInputRate>(binding.getInputRate())
-		};
-
-		INFO.bindings.push_back(bindingDescription);
-
-		for (const auto& vertex : binding.getAttributes()){
-			VkVertexInputAttributeDescription attributeDescription{
-				.location = static_cast<uint32_t>(vertex.getLocation()),
-				.binding = static_cast<uint32_t>(binding.getBinding()),
-				.format = static_cast<VkFormat>(vertex.getFormat().get()),
-				.offset = static_cast<uint32_t>(vertex.getOffset())
-			};
-
-			INFO.vertices.push_back(attributeDescription);
-		}
+	Pipeline& Pipeline::setRenderPass(const RenderPass& renderPass){
+		INFO.renderPass = renderPass.getImpl()->renderPass;
+		return *this;
 	}
 
-	void Pipeline::setVertexBindings(const std::vector<VertexBinding>& bindings){
-		INFO.bindings.clear();
-		INFO.vertices.clear();
-
-		for (const auto& binding : bindings){
-			VkVertexInputBindingDescription bindingDescription{
-				.binding = static_cast<uint32_t>(binding.getBinding()),
-				.stride = static_cast<uint32_t>(binding.getStride()),
-				.inputRate = static_cast<VkVertexInputRate>(binding.getInputRate())
-			};
-
-			INFO.bindings.push_back(bindingDescription);
-
-			for (const auto& vertex : binding.getAttributes()){
-				VkVertexInputAttributeDescription attributeDescription{
-					.location = static_cast<uint32_t>(vertex.getLocation()),
-					.binding = static_cast<uint32_t>(binding.getBinding()),
-					.format = static_cast<VkFormat>(vertex.getFormat().get()),
-					.offset = static_cast<uint32_t>(vertex.getOffset())
-				};
-
-				INFO.vertices.push_back(attributeDescription);
-			}
-		}
+	Pipeline::ColorAttachment Pipeline::addColorAttachment(){
+		INFO.colorAttachments.push_back({});
+		return ColorAttachment(&INFO.colorAttachments.back());
 	}
 
-	void Pipeline::addViewport(const Viewport& viewport){
-		INFO.viewports.push_back(VkViewport{
-			.x = viewport.getX(),
-			.y = viewport.getY(),
-			.width = viewport.getWidth(),
-			.height = viewport.getHeight(),
-			.minDepth = viewport.getMinDepth(),
-			.maxDepth = viewport.getMaxDepth()
-		});
+	Pipeline::VertexBinding Pipeline::addVertexBinding(){
+		INFO.bindings.push_back({});
+		return VertexBinding(*this, &INFO.bindings.back());
 	}
 
-	void Pipeline::setViewports(const std::vector<Viewport>& viewports){
-		INFO.viewports.clear();
-		std::transform(
-			viewports.begin(),
-			viewports.end(),
-			std::back_inserter(INFO.viewports),
-			[](const Viewport &viewport) -> VkViewport {
-				return VkViewport{
-					.x = viewport.getX(),
-					.y = viewport.getY(),
-					.width = viewport.getWidth(),
-					.height = viewport.getHeight(),
-					.minDepth = viewport.getMinDepth(),
-					.maxDepth = viewport.getMaxDepth()
-				};
-			}
-		);	
+	Pipeline::Viewport Pipeline::addViewport(){
+		INFO.viewports.push_back({});
+		return Viewport(&INFO.viewports.back());
 	}
 
-	void Pipeline::addScissor(const Scissor& scissor){
-		INFO.scissors.push_back(VkRect2D{
-			.offset = VkOffset2D{
-				.x = static_cast<std::int32_t>(scissor.getX()),
-				.y = static_cast<std::int32_t>(scissor.getY()),
-			},
-			.extent = VkExtent2D{
-				.width = static_cast<uint32_t>(scissor.getWidth()),
-				.height = static_cast<uint32_t>(scissor.getHeight())
-			}
-		});
+	Pipeline::Scissor Pipeline::addScissor(){
+		INFO.scissors.push_back({});
+		return Scissor(&INFO.scissors.back());
 	}
 
-	void Pipeline::setScissors(const std::vector<Scissor>& scissors){
-		INFO.scissors.clear();
-		std::transform(
-			scissors.begin(),
-			scissors.end(),
-			std::back_inserter(INFO.scissors),
-			[](const Scissor &scissor) -> VkRect2D {
-				return VkRect2D{
-					.offset = VkOffset2D{
-						.x = static_cast<std::int32_t>(scissor.getX()),
-						.y = static_cast<std::int32_t>(scissor.getY()),
-					},
-					.extent = VkExtent2D{
-						.width = static_cast<uint32_t>(scissor.getWidth()),
-						.height = static_cast<uint32_t>(scissor.getHeight())
-					}
-				};
-			}
-		);	
-	}
-
-	void Pipeline::setPrimitiveTopology(const Topology& topology){
+	Pipeline& Pipeline::setPrimitiveTopology(const Topology& topology){
 		INFO.inputAssemblyInfo.topology = static_cast<VkPrimitiveTopology>(topology);
+		return *this;
 	}
 
-	void Pipeline::enablePrimitiveRestart(const bool& enable){
+	Pipeline& Pipeline::enablePrimitiveRestart(const bool& enable){
 		INFO.inputAssemblyInfo.primitiveRestartEnable = static_cast<VkBool32>(enable);
+		return *this;
 	}
 
-	void Pipeline::enableDepthClamp(const bool& enable){
+	Pipeline& Pipeline::enableDepthClamp(const bool& enable){
 		INFO.rasterizationInfo.depthClampEnable = static_cast<VkBool32>(enable);
+		return *this;
 	}
 
-	void Pipeline::enableRasterizerDiscard(const bool& enable){
+	Pipeline& Pipeline::enableRasterizerDiscard(const bool& enable){
 		INFO.rasterizationInfo.rasterizerDiscardEnable = static_cast<VkBool32>(enable);
+		return *this;
 	}
 
-	void Pipeline::setPolygonMode(const PolygonMode& mode){
+	Pipeline& Pipeline::setPolygonMode(const PolygonMode& mode){
 		INFO.rasterizationInfo.polygonMode = static_cast<VkPolygonMode>(mode);
+		return *this;
 	}
 
-	void Pipeline::setCullMode(const CullMode& mode){
+	Pipeline& Pipeline::setCullMode(const CullMode& mode){
 		INFO.rasterizationInfo.cullMode = static_cast<VkCullModeFlags>(mode.get());
+		return *this;
 	}
 
-	void Pipeline::setFrontFace(const FrontFace& frontFace){
+	Pipeline& Pipeline::setFrontFace(const FrontFace& frontFace){
 		INFO.rasterizationInfo.frontFace = static_cast<VkFrontFace>(frontFace);
+		return *this;
 	}
 
-	void Pipeline::enableDepthBias(const bool& enable){
+	Pipeline& Pipeline::enableDepthBias(const bool& enable){
 		INFO.rasterizationInfo.depthBiasEnable = static_cast<VkBool32>(enable);
+		return *this;
 	}
 
-	void Pipeline::setDepthBiasConstant(const float& constant){
+	Pipeline& Pipeline::setDepthBiasConstant(const float& constant){
 		INFO.rasterizationInfo.depthBiasConstantFactor = constant;
+		return *this;
 	}
 
-	void Pipeline::setDepthBiasSlope(const float& slope){
+	Pipeline& Pipeline::setDepthBiasSlope(const float& slope){
 		INFO.rasterizationInfo.depthBiasSlopeFactor = slope;
+		return *this;
 	}
 
-	void Pipeline::setDepthBiasClamp(const float& clamp){
+	Pipeline& Pipeline::setDepthBiasClamp(const float& clamp){
 		INFO.rasterizationInfo.depthBiasClamp = clamp;
+		return *this;
 	}
 
-	void Pipeline::setLinceWidth(const float& width){
+	Pipeline& Pipeline::setLinceWidth(const float& width){
 		INFO.rasterizationInfo.lineWidth = width;
+		return *this;
 	}
 
-	void Pipeline::setSampleCount(const SampleCount& count){
+	Pipeline& Pipeline::setSampleCount(const SampleCount& count){
 		INFO.multisampleInfo.rasterizationSamples = static_cast<VkSampleCountFlagBits>(count);
+		return *this;
 	}
 
-	void Pipeline::enableSampleShading(const bool& enable){
+	Pipeline& Pipeline::enableSampleShading(const bool& enable){
 		INFO.multisampleInfo.sampleShadingEnable = static_cast<VkBool32>(enable);
+		return *this;
 	}
 
-	void Pipeline::setMinimumSampleShading(const float& min){
+	Pipeline& Pipeline::setMinimumSampleShading(const float& min){
 		INFO.multisampleInfo.minSampleShading = min;
+		return *this;
 	}
 
-	void Pipeline::enableAlphaToCoverage(const bool& enable){
+	Pipeline& Pipeline::enableAlphaToCoverage(const bool& enable){
 		INFO.multisampleInfo.alphaToCoverageEnable = static_cast<VkBool32>(enable);
+		return *this;
 	}
 
-	void Pipeline::enableAlphaToOne(const bool& enable){
+	Pipeline& Pipeline::enableAlphaToOne(const bool& enable){
 		INFO.multisampleInfo.alphaToOneEnable = static_cast<VkBool32>(enable);
+		return *this;
 	}
 
-	void Pipeline::setColorBlendFlags(const ColorBlendFlags& flags){
+	Pipeline& Pipeline::setColorBlendFlags(const ColorBlendFlags& flags){
 		INFO.colorBlendInfo.flags = static_cast<VkPipelineColorBlendStateCreateFlags>(flags.get());
+		return *this;
 	}
 
-	void Pipeline::enableBlendLogicOperation(const bool& enable){
+	Pipeline& Pipeline::enableBlendLogicOperation(const bool& enable){
 		INFO.colorBlendInfo.logicOpEnable = static_cast<VkBool32>(enable);
+		return *this;
 	}
 
-	void Pipeline::setBlendLogicOperation(const LogicOp& op){
+	Pipeline& Pipeline::setBlendLogicOperation(const LogicOp& op){
 		INFO.colorBlendInfo.logicOp = static_cast<VkLogicOp>(op);
+		return *this;
 	}
 
-	void Pipeline::addColorAttachment(const ColorAttachment& attachment){
-		INFO.colorAttachments.push_back(VkPipelineColorBlendAttachmentState{
-				.blendEnable = static_cast<VkBool32>(attachment.isBlendingEnabled()),
-				.srcColorBlendFactor = static_cast<VkBlendFactor>(attachment.getSrcColorBlendFactor()),
-				.dstColorBlendFactor = static_cast<VkBlendFactor>(attachment.getDstColorBlendFactor()),
-				.colorBlendOp = static_cast<VkBlendOp>(attachment.getColorBlendOp()),
-				.srcAlphaBlendFactor = static_cast<VkBlendFactor>(attachment.getSrcAlphaBlendFactor()),
-				.dstAlphaBlendFactor = static_cast<VkBlendFactor>(attachment.getDstAlphaBlendFactor()),
-				.alphaBlendOp = static_cast<VkBlendOp>(attachment.getAlphaBlendOp()),
-				.colorWriteMask = attachment.getWriteMask()
-			}
-		);
-	}
-
-	void Pipeline::setColorAttachments(const std::vector<ColorAttachment>& attachments){
-		INFO.colorAttachments.clear();
-		std::transform(
-			attachments.begin(),
-			attachments.end(),
-			std::back_inserter(INFO.colorAttachments),
-			[](const ColorAttachment &attachment) -> VkPipelineColorBlendAttachmentState {
-				return VkPipelineColorBlendAttachmentState{
-					.blendEnable = static_cast<VkBool32>(attachment.isBlendingEnabled()),
-					.srcColorBlendFactor = static_cast<VkBlendFactor>(attachment.getSrcColorBlendFactor()),
-					.dstColorBlendFactor = static_cast<VkBlendFactor>(attachment.getDstColorBlendFactor()),
-					.colorBlendOp = static_cast<VkBlendOp>(attachment.getColorBlendOp()),
-					.srcAlphaBlendFactor = static_cast<VkBlendFactor>(attachment.getSrcAlphaBlendFactor()),
-					.dstAlphaBlendFactor = static_cast<VkBlendFactor>(attachment.getDstAlphaBlendFactor()),
-					.alphaBlendOp = static_cast<VkBlendOp>(attachment.getAlphaBlendOp()),
-					.colorWriteMask = attachment.getWriteMask()
-				};
-			}
-		);	
-	}
-
-	void Pipeline::setBlendConstant(const Color::Components::Bits& component, const float& constant){
+	Pipeline& Pipeline::setBlendConstant(const Color::Components::Bits& component, const float& constant){
 		std::size_t id=0;
 		switch (component){
 			case Color::Components::RED: id = 0; break;
@@ -797,65 +550,50 @@ namespace Raindrop{
 		}
 
 		INFO.colorBlendInfo.blendConstants[id] = constant;
+		return *this;
 	}
 
-	void Pipeline::enableDepthTest(const bool& enable){
+	Pipeline& Pipeline::enableDepthTest(const bool& enable){
 		INFO.depthStencilInfo.depthTestEnable = static_cast<VkBool32>(enable);
+		return *this;
 	}
 
-	void Pipeline::enableDepthWrite(const bool& enable){
+	Pipeline& Pipeline::enableDepthWrite(const bool& enable){
 		INFO.depthStencilInfo.depthWriteEnable = static_cast<VkBool32>(enable);
+		return *this;
 	}
 
-	void Pipeline::setDepthCompareOp(const CompareOp& op){
+	Pipeline& Pipeline::setDepthCompareOp(const CompareOp& op){
 		INFO.depthStencilInfo.depthCompareOp = static_cast<VkCompareOp>(op);
+		return *this;
 	}
 
-	void Pipeline::enableDepthBoundsTest(const bool& enable){
+	Pipeline& Pipeline::enableDepthBoundsTest(const bool& enable){
 		INFO.depthStencilInfo.depthBoundsTestEnable = static_cast<VkBool32>(enable);
+		return *this;
 	}
 
-	void Pipeline::enableStencilTest(const bool& enable){
+	Pipeline& Pipeline::enableStencilTest(const bool& enable){
 		INFO.depthStencilInfo.stencilTestEnable = static_cast<VkBool32>(enable);
+		return *this;
 	}
 
-	void Pipeline::setFrontStencilOpertions(const StencilOpState& operations){
-		INFO.depthStencilInfo.front = VkStencilOpState{
-			.failOp = static_cast<VkStencilOp>(operations.getFailOp()),
-			.passOp = static_cast<VkStencilOp>(operations.getPassOp()),
-			.depthFailOp = static_cast<VkStencilOp>(operations.getDepthFailOp()),
-			.compareOp = static_cast<VkCompareOp>(operations.getCompareOp()),
-			.compareMask = operations.getComparMask(),
-			.writeMask = operations.getWriteMask(),
-			.reference = static_cast<uint32_t>(operations.getReference())
-		};
-	}
-
-	void Pipeline::setBackStencilOpertions(const StencilOpState& operations){
-		INFO.depthStencilInfo.back = VkStencilOpState{
-			.failOp = static_cast<VkStencilOp>(operations.getFailOp()),
-			.passOp = static_cast<VkStencilOp>(operations.getPassOp()),
-			.depthFailOp = static_cast<VkStencilOp>(operations.getDepthFailOp()),
-			.compareOp = static_cast<VkCompareOp>(operations.getCompareOp()),
-			.compareMask = operations.getComparMask(),
-			.writeMask = operations.getWriteMask(),
-			.reference = static_cast<uint32_t>(operations.getReference())
-		};
-	}
-
-	void Pipeline::setMaxDepthBounds(const float& max){
+	Pipeline& Pipeline::setMaxDepthBounds(const float& max){
 		INFO.depthStencilInfo.maxDepthBounds = max;
+		return *this;
 	}
 
-	void Pipeline::setMinDepthBounds(const float& min){
+	Pipeline& Pipeline::setMinDepthBounds(const float& min){
 		INFO.depthStencilInfo.maxDepthBounds = min;
+		return *this;
 	}
 
-	void Pipeline::addDynamicState(const DynamicState& state){
+	Pipeline& Pipeline::addDynamicState(const DynamicState& state){
 		INFO.dynamicStateEnables.push_back(static_cast<VkDynamicState>(state));
+		return *this;
 	}
 
-	void Pipeline::setDynamicStates(const std::vector<DynamicState>& states){
+	Pipeline& Pipeline::setDynamicStates(const std::vector<DynamicState>& states){
 		INFO.dynamicStateEnables.clear();
 		std::transform(
 			states.begin(),
@@ -865,9 +603,21 @@ namespace Raindrop{
 				return static_cast<VkDynamicState>(state);
 			}
 		);
+		return *this;
 	}
 
-	void Pipeline::setTellesationPatchControlPoints(const std::size_t& count){
+	Pipeline& Pipeline::setTellesationPatchControlPoints(const std::size_t& count){
 		INFO.tessellationInfo.patchControlPoints = static_cast<uint32_t>(count);
+		return *this;
+	}
+
+	Pipeline& Pipeline::addStage(const std::shared_ptr<Shader>& shader, const Shader::Stage& stage, const char* entryPoint){
+		INFO.shaders.push_back(
+			{
+				.shader = shader->getImpl()->module,
+				.stage = static_cast<VkShaderStageFlagBits>(stage),
+				.entryPoint = entryPoint
+			}
+		);
 	}
 }

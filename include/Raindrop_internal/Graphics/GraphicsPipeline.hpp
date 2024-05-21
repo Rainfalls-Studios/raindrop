@@ -1,12 +1,13 @@
-#ifndef __RAINDROP_INTERNAL_GRAPHICS_PIPELINES_GRAPHICS_PIPELINE_HPP__
-#define __RAINDROP_INTERNAL_GRAPHICS_PIPELINES_GRAPHICS_PIPELINE_HPP__
+#ifndef __RAINDROP_INTERNAL_GRAPHICS_GRAPHICS_PIPELINE_HPP__
+#define __RAINDROP_INTERNAL_GRAPHICS_GRAPHICS_PIPELINE_HPP__
 
 #include "common.hpp"
 
-namespace Raindrop::Internal::Graphics::Pipelines{
+namespace Raindrop::Internal::Graphics{
 	struct GraphicsPipelineConfigInfo{
 		GraphicsPipelineConfigInfo();
 
+		VkPipelineCreateFlags flags;
 		VkPipelineVertexInputStateCreateInfo vertexInfo;
 		VkPipelineViewportStateCreateInfo viewportInfo;
 		VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
@@ -16,20 +17,30 @@ namespace Raindrop::Internal::Graphics::Pipelines{
 		VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
 		VkPipelineDynamicStateCreateInfo dynamicStateInfo;
 		VkPipelineTessellationStateCreateInfo tessellationInfo;
-		std::shared_ptr<PipelineLayout> pipelineLayout;
-		std::shared_ptr<RenderPass> renderPass;
 		uint32_t subpass;
-
-		VkPipelineCreateFlags flags;
 		void* pNext;
+
+		struct Binding{
+			VkVertexInputBindingDescription description;
+			std::vector<VkVertexInputAttributeDescription> vertices;
+		};
 
 		std::vector<VkPipelineShaderStageCreateInfo> stages;
 		std::vector<VkDynamicState> dynamicStateEnables;
 		std::vector<VkPipelineColorBlendAttachmentState> colorAttachments;
-		std::vector<VkVertexInputAttributeDescription> vertices;
-		std::vector<VkVertexInputBindingDescription> bindings;
+		std::vector<Binding> bindings;
 		std::vector<VkViewport> viewports;
 		std::vector<VkRect2D> scissors;
+
+		struct shaderStage{
+			std::shared_ptr<Shader> shader;
+			VkShaderStageFlagBits stage;
+			std::string entryPoint;
+		};
+
+		std::list<shaderStage> shaders;
+		std::shared_ptr<PipelineLayout> pipelineLayout;
+		std::shared_ptr<RenderPass> renderPass;
 
 		void update();
 		void assertValidity() const noexcept;

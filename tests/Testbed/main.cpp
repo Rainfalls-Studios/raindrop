@@ -253,14 +253,13 @@ int main(){
 	textureSubset.release();
 	
 	// create shader
-	auto shader = Raindrop::Asset::Load<Raindrop::Pipeline::Shader>(context, "Shader", "shaders/scene/fullscreenQuad/shader.glsl.vert.spv");
 
 	// create pipeline layout
 	Raindrop::Pipeline::Layout layout = Raindrop::CreatePipelineLayout(context);
 	layout.initialize();
 	
+	Raindrop::RenderPass renderPass = Raindrop::CreateRenderPass(context);
 	{
-		Raindrop::RenderPass renderPass = Raindrop::CreateRenderPass(context);
 
 		auto attachment = renderPass.addAttachment()
 			.setFormat(format)
@@ -289,11 +288,44 @@ int main(){
 
 		renderPass.initialize();
 	}
+
+	Raindrop::Pipeline pipeline = Raindrop::CreatePipeline(context);
+
+	{
+		auto frag = Raindrop::Asset::Load<Raindrop::Pipeline::Shader>(context, "Shader", "shaders/scene/fullscreenQuad/shader.glsl.frag.spv");
+		auto vert = Raindrop::Asset::Load<Raindrop::Pipeline::Shader>(context, "Shader", "shaders/scene/fullscreenQuad/shader.glsl.vert.spv");
+
+		pipeline.addColorAttachment()
+			.enableBlending(false)
+			.setWriteMask({
+				Raindrop::Color::Components::RED,
+				Raindrop::Color::Components::GREEN,
+				Raindrop::Color::Components::BLUE,
+		});
+
+		pipeline.addStage(frag, Raindrop::Pipeline::Shader::Stage::FRAGMENT);
+		pipeline.addStage(vert, Raindrop::Pipeline::Shader::Stage::FRAGMENT);
+
+		pipeline.addViewport()
+			.setX(0.f)
+			.setY(0.f)
+			.setWidth(255.f)
+			.setHeight(255.f)
+			.setMaxDepth(1.f)
+			.setMinDepth(0.f);
+		
+		pipeline.addScissor()
+			.setX(0)
+			.setY(0)
+			.setWidth(255)
+			.setHeight(255);
+	}
 	
 	Raindrop::Start(context);
 	
+	pipeline.release();
+	renderPass.release();
 	layout.release();
-	shader.reset();
 	textureSubset.release();
 	texture.release();
 	

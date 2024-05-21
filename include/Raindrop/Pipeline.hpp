@@ -86,102 +86,41 @@ namespace Raindrop{
 					};
 			};
 
+			class ColorBlendFlags : public Utils::FlagsTemplate<ColorBlendFlags>{
+				public:
+					using FlagsTemplate<ColorBlendFlags>::FlagsTemplate;
+
+					enum Bits : Bitset{
+						NONE = 0,
+						RASTERIZATION_ORDER_ATTACHMENT_ACCESS = 1 << 0
+					};
+			};
+
+			class DepthStencilFlags : public Utils::FlagsTemplate<DepthStencilFlags>{
+				public:
+					using FlagsTemplate<DepthStencilFlags>::FlagsTemplate;
+
+					enum Bits : Bitset{
+						NONE = 0,
+						RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS = 1 << 0,
+						RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS = 1 << 1,
+					};
+			};
+
+			class CullMode : public Utils::FlagsTemplate<CullMode>{
+				public:
+					using FlagsTemplate<CullMode>::FlagsTemplate;
+
+					enum Bits : Bitset{
+						NONE = 0,
+						FRONT = 1 << 0,
+						BACK = 1 << 1,
+					};
+			};
+
 			enum class InputRate{
 				VERTEX,
 				INSTANCE
-			};
-
-			class VertexBinding{
-				public:
-					class VertexAttribute{
-						public:
-							VertexAttribute() noexcept;
-							VertexAttribute(const std::size_t& location, const std::size_t& offset, const Format& format) noexcept;
-
-							void setLocation(const std::size_t& location) noexcept;
-							void setOffset(const std::size_t& offset) noexcept;
-							void setFormat(const Format& format) noexcept;
-
-							const std::size_t& getLocation() const noexcept;
-							const std::size_t& getOffset() const noexcept;
-							const Format& getFormat() const noexcept;
-						private:
-							std::size_t _location;
-							std::size_t _offset;
-							Format _format;
-					};
-
-					VertexBinding() noexcept;
-					VertexBinding(const std::size_t& binding, const std::initializer_list<VertexAttribute>& atrtibutes = {});
-
-					void setBinding(const std::size_t& binding) noexcept;
-					void setInputRate(const InputRate& rate) noexcept;
-					void setStride(const std::size_t stride) noexcept;
-					void addAttribute(const VertexAttribute& attribute);
-					void setAttributes(const std::initializer_list<VertexAttribute>& attributes);
-
-					void deduceStride();
-
-					const std::size_t& getBinding() const noexcept;
-					const std::size_t& getStride() const noexcept;
-					const InputRate& getInputRate() const noexcept;
-					const std::vector<VertexAttribute>& getAttributes() const noexcept;
-
-				private:
-					std::vector<VertexAttribute> _attributes;
-					std::size_t _binding;
-					InputRate _inputRate;
-					std::size_t _stride;
-
-					void checkLocations();
-			};
-
-			class Viewport{
-				public:
-					Viewport() noexcept;
-
-					void setX(const float& x) noexcept;
-					void setY(const float& y) noexcept;
-					void setWidth(const float& width) noexcept;
-					void setHeight(const float& height) noexcept;
-					void setMinDepth(const float& minDepth) noexcept;
-					void setMaxDepth(const float& maxDepth) noexcept;
-
-					const float& getX() const noexcept;
-					const float& getY() const noexcept;
-					const float& getWidth() const noexcept;
-					const float& getHeight() const noexcept;
-					const float& getMinDepth() const noexcept;
-					const float& getMaxDepth() const noexcept;
-					
-				private:
-					float _x;
-					float _y;
-					float _width;
-					float _height;
-					float _minDepth;
-					float _maxDepth;
-			};
-
-			class Scissor{
-				public:
-					Scissor() noexcept;
-
-					void setX(const std::size_t& x) noexcept;
-					void setY(const std::size_t& y) noexcept;
-					void setWidth(const std::size_t& width) noexcept;
-					void setHeight(const std::size_t& height) noexcept;
-
-					const std::size_t& getX() const noexcept;
-					const std::size_t& getY() const noexcept;
-					const std::size_t& getWidth() const noexcept;
-					const std::size_t& getHeight() const noexcept;
-				
-				private:
-					std::size_t _x;
-					std::size_t _y;
-					std::size_t _width;
-					std::size_t _height;
 			};
 
 			enum class Topology{
@@ -205,18 +144,6 @@ namespace Raindrop{
 				FILL_RECTANGLE_NV = 1000153000
 			};
 
-			
-			class CullMode : public Utils::FlagsTemplate<CullMode>{
-				public:
-					using FlagsTemplate<CullMode>::FlagsTemplate;
-
-					enum Bits : Bitset{
-						NONE = 0,
-						FRONT = 1 << 0,
-						BACK = 1 << 1,
-					};
-			};
-
 			enum class FrontFace{
 				COUNTER_CLOCKWISE = 0,
 				CLOCKWISE = 1,
@@ -233,49 +160,6 @@ namespace Raindrop{
 				SIXTY_FOUR = 1 << 6,
 			};
 
-			class ColorAttachment{
-				public:
-					ColorAttachment() noexcept;
-
-					void enableBlending(const bool& enable = true) noexcept;
-					void setSrcColorBlendFactor(const Color::BlendFactor& srcColorBlendFactor) noexcept;
-					void setDstColorBlendFactor(const Color::BlendFactor& dstColorBlendFactor) noexcept;
-					void setColorBlendOp(const Color::BlendOperation& colorBlendOp) noexcept;
-					void setSrcAlphaBlendFactor(const Color::BlendFactor& srcAlphaBlendFactor) noexcept;
-					void setDstAlphaBlendFactor(const Color::BlendFactor& dstAlphaBlendFactor) noexcept;
-					void setAlphaBlendOp(const Color::BlendOperation& alphaBlendOp) noexcept;
-					void setWriteMask(const Color::Components& writeMask) noexcept;
-
-					bool isBlendingEnabled() const noexcept;
-					const Color::BlendFactor& getSrcColorBlendFactor() const noexcept;
-					const Color::BlendFactor& getDstColorBlendFactor() const noexcept;
-					const Color::BlendOperation& getColorBlendOp() const noexcept;
-					const Color::BlendFactor& getSrcAlphaBlendFactor() const noexcept;
-					const Color::BlendFactor& getDstAlphaBlendFactor() const noexcept;
-					const Color::BlendOperation& getAlphaBlendOp() const noexcept;
-					const Color::Components& getWriteMask() const noexcept;
-
-				private:
-					bool _blendEnable;
-					Color::BlendFactor _srcColorBlendFactor;
-					Color::BlendFactor _dstColorBlendFactor;
-					Color::BlendOperation _colorBlendOp;
-					Color::BlendFactor _srcAlphaBlendFactor;
-					Color::BlendFactor _dstAlphaBlendFactor;
-					Color::BlendOperation _alphaBlendOp;
-					Color::Components _writeMask;
-			};
-
-
-			class ColorBlendFlags : public Utils::FlagsTemplate<ColorBlendFlags>{
-				public:
-					using FlagsTemplate<ColorBlendFlags>::FlagsTemplate;
-
-					enum Bits : Bitset{
-						NONE = 0,
-						RASTERIZATION_ORDER_ATTACHMENT_ACCESS = 1 << 0
-					};
-			};
 
 			// TODO: move out
 			enum class LogicOp{
@@ -320,46 +204,6 @@ namespace Raindrop{
 				DECREMENT_AND_WRAP = 7,
 			};
 
-			class StencilOpState{
-				public:
-					StencilOpState() noexcept;
-
-					void setFailOp(const StencilOp& failOp) noexcept;
-					void setPassOp(const StencilOp& passOp) noexcept;
-					void setDepthFailOp(const StencilOp& depthFailOp) noexcept;
-					void setCompareOp(const CompareOp& compareOp) noexcept;
-					void setComparMask(const std::uint32_t& comparMask) noexcept;
-					void setWriteMask(const std::uint32_t& writeMask) noexcept;
-					void setReference(const std::size_t& reference) noexcept;
-
-					const StencilOp& getFailOp() const noexcept;
-					const StencilOp& getPassOp() const noexcept;
-					const StencilOp& getDepthFailOp() const noexcept;
-					const CompareOp& getCompareOp() const noexcept;
-					const std::uint32_t& getComparMask() const noexcept;
-					const std::uint32_t& getWriteMask() const noexcept;
-					const std::size_t& getReference() const noexcept;
-
-				private:
-					StencilOp _failOp;
-					StencilOp _passOp;
-					StencilOp _depthFailOp;
-					CompareOp _compareOp;
-					std::uint32_t _comparMask;
-					std::uint32_t _writeMask;
-					std::size_t _reference;
-			};
-
-			class DepthStencilFlags : public Utils::FlagsTemplate<DepthStencilFlags>{
-				public:
-					using FlagsTemplate<DepthStencilFlags>::FlagsTemplate;
-
-					enum Bits : Bitset{
-						NONE = 0,
-						RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS = 1 << 0,
-						RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS = 1 << 1,
-					};
-			};
 
 			enum class DynamicState{
 				VIEWPORT = 0,
@@ -436,6 +280,97 @@ namespace Raindrop{
 				LINE_STIPPLE = 1000259000,
 			};
 
+			class VertexBinding{
+				friend class Pipeline;
+				public:
+					class VertexAttribute{
+						friend class VertexBinding;
+						friend class Pipeline;
+						public:
+							VertexAttribute& setLocation(const std::size_t& location) noexcept;
+							VertexAttribute& setOffset(const std::size_t& offset) noexcept;
+							VertexAttribute& setFormat(const Format& format) noexcept;
+
+						private:
+							VertexAttribute(VertexBinding& owner, void* data) noexcept;
+							VertexBinding& _owner;
+							void* _data;
+					};
+
+					VertexBinding& setBinding(const std::size_t& binding) noexcept;
+					VertexBinding& setInputRate(const InputRate& rate) noexcept;
+					VertexBinding& setStride(const std::size_t stride) noexcept;
+					VertexAttribute addAttribute();
+
+				private:
+					VertexBinding(Pipeline& owner, void* data) noexcept;
+					Pipeline& _owner;
+					void* _data;
+			};
+
+			class Viewport{
+				friend class Pipeline;
+				public:
+					Viewport& setX(const float& x) noexcept;
+					Viewport& setY(const float& y) noexcept;
+					Viewport& setWidth(const float& width) noexcept;
+					Viewport& setHeight(const float& height) noexcept;
+					Viewport& setMinDepth(const float& minDepth) noexcept;
+					Viewport& setMaxDepth(const float& maxDepth) noexcept;
+					
+				private:
+					Viewport(void* data) noexcept;
+					void* _data;
+			};
+
+			class Scissor{
+				friend class Pipeline;
+				public:
+					Scissor& setX(const std::size_t& x) noexcept;
+					Scissor& setY(const std::size_t& y) noexcept;
+					Scissor& setWidth(const std::size_t& width) noexcept;
+					Scissor& setHeight(const std::size_t& height) noexcept;
+				
+				private:
+					Scissor(void* data) noexcept;
+					void* _data;
+			};
+
+			class ColorAttachment{
+				friend class Pipeline;
+				public:
+					ColorAttachment() noexcept;
+
+					ColorAttachment& enableBlending(const bool& enable = true) noexcept;
+					ColorAttachment& setSrcColorBlendFactor(const Color::BlendFactor& srcColorBlendFactor) noexcept;
+					ColorAttachment& setDstColorBlendFactor(const Color::BlendFactor& dstColorBlendFactor) noexcept;
+					ColorAttachment& setColorBlendOp(const Color::BlendOperation& colorBlendOp) noexcept;
+					ColorAttachment& setSrcAlphaBlendFactor(const Color::BlendFactor& srcAlphaBlendFactor) noexcept;
+					ColorAttachment& setDstAlphaBlendFactor(const Color::BlendFactor& dstAlphaBlendFactor) noexcept;
+					ColorAttachment& setAlphaBlendOp(const Color::BlendOperation& alphaBlendOp) noexcept;
+					ColorAttachment& setWriteMask(const Color::Components& writeMask) noexcept;
+
+				private:
+					ColorAttachment(void* data) noexcept;
+					void* _data;
+			};
+
+			class StencilOpState{
+				friend class Pipeline;
+				public:
+					StencilOpState& setFailOp(const StencilOp& failOp) noexcept;
+					StencilOpState& setPassOp(const StencilOp& passOp) noexcept;
+					StencilOpState& setDepthFailOp(const StencilOp& depthFailOp) noexcept;
+					StencilOpState& setCompareOp(const CompareOp& compareOp) noexcept;
+					StencilOpState& setCompareMask(const std::uint32_t& compareMask) noexcept;
+					StencilOpState& setWriteMask(const std::uint32_t& writeMask) noexcept;
+					StencilOpState& setReference(const std::size_t& reference) noexcept;
+
+				private:
+					StencilOpState(void* data) noexcept;
+					void* _data;
+			};
+
 			class Layout{
 				public:
 					class Flags : public Utils::FlagsTemplate<Flags>{
@@ -486,6 +421,27 @@ namespace Raindrop{
 				public:
 					struct Impl;
 
+					enum class Stage{
+						VERTEX = 0x00000001,
+						TESSELLATION_CONTROL = 0x00000002,
+						TESSELLATION_EVALUATION = 0x00000004,
+						GEOMETRY = 0x00000008,
+						FRAGMENT = 0x00000010,
+						COMPUTE = 0x00000020,
+						ALL_GRAPHICS = 0x0000001F,
+						ALL = 0x7FFFFFFF,
+						RAYGEN = 0x00000100,
+						ANY_HIT = 0x00000200,
+						CLOSEST_HIT = 0x00000400,
+						MISS = 0x00000800,
+						INTERSECTION = 0x00001000,
+						CALLABLE = 0x00002000,
+						TASK = 0x00000040,
+						MESH = 0x00000080,
+						SUBPASS_SHADING = 0x00004000,
+						CLUSTER_CULLING = 0x00080000,
+					};
+
 					static Shader Create(Context& context, const Path& path);
 					static std::shared_ptr<Shader> Load(Context& context, const Path& path);
 
@@ -513,58 +469,55 @@ namespace Raindrop{
 			void initialize();
 			void release();
 
-			void setFlags(const Flags& flags);
+			Pipeline& setFlags(const Flags& flags);
+			Pipeline& setRenderPass(const RenderPass& renderPass);
 
-			void addVertexBinding(const VertexBinding& binding);
-			void setVertexBindings(const std::vector<VertexBinding>& bindings);
+			Pipeline& setPrimitiveTopology(const Topology& topology);
+			Pipeline& enablePrimitiveRestart(const bool& enable = true);
 
-			void addViewport(const Viewport& viewport);
-			void setViewports(const std::vector<Viewport>& viewports);
-			void addScissor(const Scissor& scissor);
-			void setScissors(const std::vector<Scissor>& scissors);
+			Pipeline& enableDepthClamp(const bool& enable = true);
+			Pipeline& enableRasterizerDiscard(const bool& enable = true);
+			Pipeline& setPolygonMode(const PolygonMode& mode);
+			Pipeline& setCullMode(const CullMode& mode);
+			Pipeline& setFrontFace(const FrontFace& frontFace);
+			Pipeline& enableDepthBias(const bool& enable = true);
+			Pipeline& setDepthBiasConstant(const float& constant);
+			Pipeline& setDepthBiasSlope(const float& slope);
+			Pipeline& setDepthBiasClamp(const float& clamp);
+			Pipeline& setLinceWidth(const float& width);
 
-			void setPrimitiveTopology(const Topology& topology);
-			void enablePrimitiveRestart(const bool& enable = true);
-
-			void enableDepthClamp(const bool& enable = true);
-			void enableRasterizerDiscard(const bool& enable = true);
-			void setPolygonMode(const PolygonMode& mode);
-			void setCullMode(const CullMode& mode);
-			void setFrontFace(const FrontFace& frontFace);
-			void enableDepthBias(const bool& enable = true);
-			void setDepthBiasConstant(const float& constant);
-			void setDepthBiasSlope(const float& slope);
-			void setDepthBiasClamp(const float& clamp);
-			void setLinceWidth(const float& width);
-
-			void setSampleCount(const SampleCount& count);
-			void enableSampleShading(const bool& enable = true);
-			void setMinimumSampleShading(const float& min);
-			void enableAlphaToCoverage(const bool& enable = true);
-			void enableAlphaToOne(const bool& enable = true);
+			Pipeline& setSampleCount(const SampleCount& count);
+			Pipeline& enableSampleShading(const bool& enable = true);
+			Pipeline& setMinimumSampleShading(const float& min);
+			Pipeline& enableAlphaToCoverage(const bool& enable = true);
+			Pipeline& enableAlphaToOne(const bool& enable = true);
 			// TODO: sample mask
 
-			void setColorBlendFlags(const ColorBlendFlags& flags);
-			void enableBlendLogicOperation(const bool& enable = true);
-			void setBlendLogicOperation(const LogicOp& op);
-			void addColorAttachment(const ColorAttachment& attachment);
-			void setColorAttachments(const std::vector<ColorAttachment>& attachments);
-			void setBlendConstant(const Color::Components::Bits& component, const float& constant);
+			Pipeline& setColorBlendFlags(const ColorBlendFlags& flags);
+			Pipeline& enableBlendLogicOperation(const bool& enable = true);
+			Pipeline& setBlendLogicOperation(const LogicOp& op);
+			Pipeline& setBlendConstant(const Color::Components::Bits& component, const float& constant);
 
-			void enableDepthTest(const bool& enable = true);
-			void enableDepthWrite(const bool& enable = true);
-			void setDepthCompareOp(const CompareOp& op);
-			void enableDepthBoundsTest(const bool& enable);
-			void enableStencilTest(const bool& enable);
-			void setFrontStencilOpertions(const StencilOpState& operations);
-			void setBackStencilOpertions(const StencilOpState& operations);
-			void setMaxDepthBounds(const float& max);
-			void setMinDepthBounds(const float& min);
+			Pipeline& enableDepthTest(const bool& enable = true);
+			Pipeline& enableDepthWrite(const bool& enable = true);
+			Pipeline& setDepthCompareOp(const CompareOp& op);
+			Pipeline& enableDepthBoundsTest(const bool& enable);
+			Pipeline& enableStencilTest(const bool& enable);
+			Pipeline& setFrontStencilOpertions(const StencilOpState& operations);
+			Pipeline& setBackStencilOpertions(const StencilOpState& operations);
+			Pipeline& setMaxDepthBounds(const float& max);
+			Pipeline& setMinDepthBounds(const float& min);
 
-			void addDynamicState(const DynamicState& state);
-			void setDynamicStates(const std::vector<DynamicState>& states);
+			Pipeline& addDynamicState(const DynamicState& state);
+			Pipeline& setDynamicStates(const std::vector<DynamicState>& states);
 
-			void setTellesationPatchControlPoints(const std::size_t& count);
+			Pipeline& setTellesationPatchControlPoints(const std::size_t& count);
+
+			Pipeline& addStage(const std::shared_ptr<Shader>& shader, const Shader::Stage& stage, const char* entryPoint = "main");
+			ColorAttachment addColorAttachment();
+			VertexBinding addVertexBinding();
+			Viewport addViewport();
+			Scissor addScissor();
 
 			bool isInitialized() const noexcept;
 			void* getNativeHandle() const;
@@ -572,6 +525,7 @@ namespace Raindrop{
 			GUID getGUID() const noexcept;
 
 		private:
+			friend class VertexBinding;
 			Impl* _impl;
 						
 	};

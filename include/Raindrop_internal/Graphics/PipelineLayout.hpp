@@ -3,7 +3,7 @@
 
 #include "common.hpp"
 
-namespace Raindrop::Internal::Graphics::Pipelines{
+namespace Raindrop::Internal::Graphics{
 	struct PipelineLayoutConfigInfo{
 		std::vector<VkDescriptorSetLayout> setLayouts;
 		std::vector<VkPushConstantRange> pushConstants;
