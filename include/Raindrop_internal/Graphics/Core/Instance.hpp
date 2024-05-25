@@ -10,7 +10,7 @@ namespace Raindrop::Internal::Graphics::Core{
 			static constexpr const char* ENGINE_NAME = "Raindrop Engine";
 			static constexpr uint32_t APPLICATION_VERSION = VK_MAKE_API_VERSION(0, 0, 1, 0);
 			static constexpr uint32_t ENGINE_VERSION = VK_MAKE_API_VERSION(0, 0, 1, 0);
-			static constexpr uint32_t API_VERSION = VK_API_VERSION_1_2;
+			static constexpr uint32_t API_VERSION = VK_API_VERSION_1_3;
 
 			static constexpr const char* REQUIRED_LAYERS[] = {};
 			static constexpr const char* REQUIRED_EXTENSIONS[] = {

@@ -71,12 +71,16 @@ namespace Raindrop::Utils{
 			OPERATOR_HELPER_PAIR(&);
 			OPERATOR_HELPER_PAIR(^);
 
-			inline const Bitset& get() const noexcept {
+			inline constexpr const Bitset& get() const noexcept {
 				return _bitset;
 			}
 
-			inline bool has(const Bits& bit) const noexcept{
+			inline constexpr bool has(const Bits& bit) const noexcept{
 				return _bitset & bit;
+			}
+
+			inline constexpr bool has(const Bitset& bitset) const noexcept{
+				return (_bitset & bitset) == bitset;
 			}
 
 		private:

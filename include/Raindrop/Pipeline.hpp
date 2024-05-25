@@ -8,9 +8,12 @@
 #include "Texture.hpp"
 #include "Color.hpp"
 #include "Asset.hpp"
+#include "Operators.hpp"
+#include "Vertex.hpp"
 
 namespace Raindrop{
 	class Pipeline{
+		friend class VertexBinding;
 		public:
 			class Flags : public Utils::FlagsTemplate<Flags>{
 				public:
@@ -18,36 +21,36 @@ namespace Raindrop{
 
 					enum Bits : Bitset{
 						NONE = 0,
-						DISABLE_OPTIMIZATION = 0x00000001,
-						ALLOW_DERIVATIVES = 0x00000002,
-						DERIVATIVE = 0x00000004,
-						VIEW_INDEX_FROM_DEVICE_INDEX = 0x00000008,
-						DISPATCH_BASE = 0x00000010,
-						FAIL_ON_PIPELINE_COMPILE_REQUIRED = 0x00000100,
-						EARLY_RETURN_ON_FAILURE = 0x00000200,
-						RENDERING_FRAGMENT_SHADING_RATE_ATTACHMENT = 0x00200000,
-						RENDERING_FRAGMENT_DENSITY_MAP_ATTACHMENT = 0x00400000,
-						RAY_TRACING_NO_NULL_ANY_HIT_SHADERS = 0x00004000,
-						RAY_TRACING_NO_NULL_CLOSEST_HIT_SHADERS = 0x00008000,
-						RAY_TRACING_NO_NULL_MISS_SHADERS = 0x00010000,
-						RAY_TRACING_NO_NULL_INTERSECTION_SHADERS = 0x00020000,
-						RAY_TRACING_SKIP_TRIANGLES = 0x00001000,
-						RAY_TRACING_SKIP_AABBS = 0x00002000,
-						RAY_TRACING_SHADER_GROUP_HANDLE_CAPTURE_REPLAY = 0x00080000,
-						DEFER_COMPILE = 0x00000020,
-						CAPTURE_STATISTICS = 0x00000040,
-						CAPTURE_INTERNAL_REPRESENTATIONS = 0x00000080,
-						INDIRECT_BINDABLE = 0x00040000,
-						LIBRARY = 0x00000800,
-						DESCRIPTOR_BUFFER = 0x20000000,
-						RETAIN_LINK_TIME_OPTIMIZATION_INFO = 0x00800000,
-						LINK_TIME_OPTIMIZATION = 0x00000400,
-						RAY_TRACING_ALLOW_MOTION = 0x00100000,
-						COLOR_ATTACHMENT_FEEDBACK_LOOP = 0x02000000,
-						DEPTH_STENCIL_ATTACHMENT_FEEDBACK_LOOP = 0x04000000,
-						RAY_TRACING_OPACITY_MICROMAP = 0x01000000,
-						VK_PIPELINE_CREATE_NO_PROTECTED_ACCESS = 0x08000000,
-						VK_PIPELINE_CREATE_PROTECTED_ACCESS_ONLY_ = 0x40000000,
+						DISABLE_OPTIMIZATION = 1 << 0,
+						ALLOW_DERIVATIVES = 1 << 1,
+						DERIVATIVE = 1 << 2,
+						VIEW_INDEX_FROM_DEVICE_INDEX = 1 << 3,
+						DISPATCH_BASE = 1 << 4,
+						FAIL_ON_PIPELINE_COMPILE_REQUIRED = 1 << 5,
+						EARLY_RETURN_ON_FAILURE = 1 << 6,
+						RENDERING_FRAGMENT_SHADING_RATE_ATTACHMENT = 1 << 7,
+						RENDERING_FRAGMENT_DENSITY_MAP_ATTACHMENT = 1 << 8,
+						RAY_TRACING_NO_NULL_ANY_HIT_SHADERS = 1 << 9,
+						RAY_TRACING_NO_NULL_CLOSEST_HIT_SHADERS = 1 << 10,
+						RAY_TRACING_NO_NULL_MISS_SHADERS = 1 << 11,
+						RAY_TRACING_NO_NULL_INTERSECTION_SHADERS = 1 << 12,
+						RAY_TRACING_SKIP_TRIANGLES = 1 << 13,
+						RAY_TRACING_SKIP_AABBS = 1 << 14,
+						RAY_TRACING_SHADER_GROUP_HANDLE_CAPTURE_REPLAY = 1 << 15,
+						DEFER_COMPILE = 1 << 16,
+						CAPTURE_STATISTICS = 1 << 17,
+						CAPTURE_INTERNAL_REPRESENTATIONS = 1 << 18,
+						INDIRECT_BINDABLE = 1 << 19,
+						LIBRARY = 1 << 20,
+						DESCRIPTOR_BUFFER = 1 << 21,
+						RETAIN_LINK_TIME_OPTIMIZATION_INFO = 1 << 22,
+						LINK_TIME_OPTIMIZATION = 1 << 23,
+						RAY_TRACING_ALLOW_MOTION = 1 << 24,
+						COLOR_ATTACHMENT_FEEDBACK_LOOP = 1 << 25,
+						DEPTH_STENCIL_ATTACHMENT_FEEDBACK_LOOP = 1 << 26,
+						RAY_TRACING_OPACITY_MICROMAP = 1 << 27,
+						NO_PROTECTED_ACCESS = 1 << 28,
+						PROTECTED_ACCESS_ONLY = 1 << 29,
 					};
 			};
 
@@ -57,32 +60,32 @@ namespace Raindrop{
 
 					enum Bits : Bitset{
 						NONE = 0,
-						TOP_OF_PIPE = 0x00000001,
-						DRAW_INDIRECT = 0x00000002,
-						VERTEX_INPUT = 0x00000004,
-						VERTEX_SHADER = 0x00000008,
-						TESSELLATION_CONTROL_SHADER = 0x00000010,
-						TESSELLATION_EVALUATION_SHADER = 0x00000020,
-						GEOMETRY_SHADER = 0x00000040,
-						FRAGMENT_SHADER = 0x00000080,
-						EARLY_FRAGMENT_TESTS = 0x00000100,
-						LATE_FRAGMENT_TESTS = 0x00000200,
-						COLOR_ATTACHMENT_OUTPUT = 0x00000400,
-						COMPUTE_SHADER = 0x00000800,
-						TRANSFER = 0x00001000,
-						BOTTOM_OF_PIPE = 0x00002000,
-						HOST = 0x00004000,
-						ALL_GRAPHICS = 0x00008000,
-						ALL_COMMANDS = 0x00010000,
-						TRANSFORM_FEEDBACK = 0x01000000,
-						CONDITIONAL_RENDERING = 0x00040000,
-						ACCELERATION_STRUCTURE_BUILD = 0x02000000,
-						RAY_TRACING_SHADER = 0x00200000,
-						FRAGMENT_DENSITY_PROCESS = 0x00800000,
-						FRAGMENT_SHADING_RATE_ATTACHMENT = 0x00400000,
-						COMMAND_PREPROCES = 0x00020000,
-						TASK_SHADER = 0x00080000,
-						MESH_SHADER = 0x00100000,
+						TOP_OF_PIPE = 1 << 0,
+						DRAW_INDIRECT = 1 << 1,
+						VERTEX_INPUT = 1 << 2,
+						VERTEX_SHADER = 1 << 3,
+						TESSELLATION_CONTROL_SHADER = 1 << 4,
+						TESSELLATION_EVALUATION_SHADER = 1 << 5,
+						GEOMETRY_SHADER = 1 << 6,
+						FRAGMENT_SHADER = 1 << 7,
+						EARLY_FRAGMENT_TESTS = 1 << 8,
+						LATE_FRAGMENT_TESTS = 1 << 9,
+						COLOR_ATTACHMENT_OUTPUT = 1 << 10,
+						COMPUTE_SHADER = 1 << 11,
+						TRANSFER = 1 << 12,
+						BOTTOM_OF_PIPE = 1 << 13,
+						HOST = 1 << 14,
+						ALL_GRAPHICS = 1 << 15,
+						ALL_COMMANDS = 1 << 16,
+						TRANSFORM_FEEDBACK = 1 << 17,
+						CONDITIONAL_RENDERING = 1 << 18,
+						ACCELERATION_STRUCTURE_BUILD = 1 << 19,
+						RAY_TRACING_SHADER = 1 << 20,
+						FRAGMENT_DENSITY_PROCESS = 1 << 21,
+						FRAGMENT_SHADING_RATE_ATTACHMENT = 1 << 22,
+						COMMAND_PREPROCES = 1 << 23,
+						TASK_SHADER = 1 << 24,
+						MESH_SHADER = 1 << 26,
 					};
 			};
 
@@ -118,30 +121,40 @@ namespace Raindrop{
 					};
 			};
 
-			enum class InputRate{
-				VERTEX,
-				INSTANCE
+			class SampleCount : public Utils::FlagsTemplate<SampleCount>{
+				public:
+					using FlagsTemplate<SampleCount>::FlagsTemplate;
+
+					enum Bits : Bitset{
+						ONE = 1 << 0,
+						TWO = 1 << 1,
+						FOUR = 1 << 2,
+						HEIGHT = 1 << 3,
+						SIXTEEN = 1 << 4,
+						THIRTY_TWO = 1 << 5,
+						SIXTY_FOUR = 1 << 6,
+					};
 			};
 
 			enum class Topology{
-				POINT_LIST = 0,
-				LINE_LIST = 1,
-				LINE_STRIP = 2,
-				TRIANGLE_LIST = 3,
-				TRIANGLE_STRIP = 4,
-				TRIANGLE_FAN = 5,
-				LINE_LIST_WITH_ADJACENCY = 6,
-				LINE_STRIP_WITH_ADJACENCY = 7,
-				TRIANGLE_LIST_WITH_ADJACENCY = 8,
-				TRIANGLE_STRIP_WITH_ADJACENCY = 9,
-				PATCH_LIST = 10
+				POINT_LIST,
+				LINE_LIST,
+				LINE_STRIP,
+				TRIANGLE_LIST,
+				TRIANGLE_STRIP,
+				TRIANGLE_FAN,
+				LINE_LIST_WITH_ADJACENCY,
+				LINE_STRIP_WITH_ADJACENCY,
+				TRIANGLE_LIST_WITH_ADJACENCY,
+				TRIANGLE_STRIP_WITH_ADJACENCY,
+				PATCH_LIST
 			};
 
 			enum class PolygonMode{
-				FILL = 0,
-				LINE = 1,
-				POINT = 2,
-				FILL_RECTANGLE_NV = 1000153000
+				FILL,
+				LINE,
+				POINT,
+				FILL_RECTANGLE
 			};
 
 			enum class FrontFace{
@@ -149,163 +162,90 @@ namespace Raindrop{
 				CLOCKWISE = 1,
 			};
 
-			// TODO: move out
-			enum class SampleCount{
-				ONE = 1 << 0,
-				TWO = 1 << 1,
-				FOUR = 1 << 2,
-				HEIGHT = 1 << 3,
-				SIXTEEN = 1 << 4,
-				THIRTY_TWO = 1 << 5,
-				SIXTY_FOUR = 1 << 6,
+			enum class StencilOperation{
+				KEEP,
+				ZERO,
+				REPLACE,
+				INCREMENT_AND_CLAMP,
+				DECREMENT_AND_CLAMP,
+				INVERT,
+				INCREMENT_AND_WRAP,
+				DECREMENT_AND_WRAP,
 			};
-
-
-			// TODO: move out
-			enum class LogicOp{
-				CLEAR = 0,
-				AND = 1,
-				AND_REVERSE = 2,
-				COPY = 3,
-				AND_INVERTED = 4,
-				NO_OP = 5,
-				XOR = 6,
-				OR = 7,
-				NOR = 8,
-				EQUIVALENT = 9,
-				INVERT = 10,
-				OR_REVERSE = 11,
-				COPY_INVERTED = 12,
-				OR_INVERTED = 13,
-				NAND = 14,
-				SET = 15
-			};
-
-			// TODO: move out
-			enum class CompareOp{
-				NEVER = 0,
-				LESS = 1,
-				EQUAL = 2,
-				LESS_OR_EQUAL = 3,
-				GREATER = 4,
-				NOT_EQUAL = 5,
-				GREATER_OR_EQUAL = 6,
-				ALWAYS = 7,
-			};
-
-			enum class StencilOp{
-				KEEP = 0,
-				ZERO = 1,
-				REPLACE = 2,
-				INCREMENT_AND_CLAMP = 3,
-				DECREMENT_AND_CLAMP = 4,
-				INVERT = 5,
-				INCREMENT_AND_WRAP = 6,
-				DECREMENT_AND_WRAP = 7,
-			};
-
 
 			enum class DynamicState{
-				VIEWPORT = 0,
-				SCISSOR = 1,
-				LINE_WIDTH = 2,
-				DEPTH_BIAS = 3,
-				BLEND_CONSTANTS = 4,
-				DEPTH_BOUNDS = 5,
-				STENCIL_COMPARE_MASK = 6,
-				STENCIL_WRITE_MASK = 7,
-				STENCIL_REFERENCE = 8,
-				CULL_MODE = 1000267000,
-				FRONT_FACE = 1000267001,
-				PRIMITIVE_TOPOLOGY = 1000267002,
-				VIEWPORT_WITH_COUNT = 1000267003,
-				SCISSOR_WITH_COUNT = 1000267004,
-				VERTEX_INPUT_BINDING_STRIDE = 1000267005,
-				DEPTH_TEST_ENABLE = 1000267006,
-				DEPTH_WRITE_ENABLE = 1000267007,
-				DEPTH_COMPARE_OP = 1000267008,
-				DEPTH_BOUNDS_TEST_ENABLE = 1000267009,
-				STENCIL_TEST_ENABLE = 1000267010,
-				STENCIL_OP = 1000267011,
-				RASTERIZER_DISCARD_ENABLE = 1000377001,
-				DEPTH_BIAS_ENABLE = 1000377002,
-				PRIMITIVE_RESTART_ENABLE = 1000377004,
-				VIEWPORT_W_SCALING = 1000087000,
-				DISCARD_RECTANGLE = 1000099000,
-				DISCARD_RECTANGLE_ENABLE = 1000099001,
-				DISCARD_RECTANGLE_MODE = 1000099002,
-				SAMPLE_LOCATIONS = 1000143000,
-				RAY_TRACING_PIPELINE_STACK_SIZE = 1000347000,
-				VIEWPORT_SHADING_RATE_PALETTE = 1000164004,
-				VIEWPORT_COARSE_SAMPLE_ORDER = 1000164006,
-				EXCLUSIVE_SCISSOR_ENABLE = 1000205000,
-				EXCLUSIVE_SCISSOR = 1000205001,
-				FRAGMENT_SHADING_RATE = 1000226000,
-				VERTEX_INPUT = 1000352000,
-				PATCH_CONTROL_POINTS = 1000377000,
-				LOGIC_OP = 1000377003,
-				COLOR_WRITE_ENABLE = 1000381000,
-				DEPTH_CLAMP_ENABLE = 1000455003,
-				POLYGON_MODE = 1000455004,
-				RASTERIZATION_SAMPLES = 1000455005,
-				SAMPLE_MASK = 1000455006,
-				ALPHA_TO_COVERAGE_ENABLE = 1000455007,
-				ALPHA_TO_ONE_ENABLE = 1000455008,
-				LOGIC_OP_ENABLE = 1000455009,
-				COLOR_BLEND_ENABLE = 1000455010,
-				COLOR_BLEND_EQUATION = 1000455011,
-				COLOR_WRITE_MASK = 1000455012,
-				TESSELLATION_DOMAIN_ORIGIN = 1000455002,
-				RASTERIZATION_STREAM = 1000455013,
-				CONSERVATIVE_RASTERIZATION_MODE = 1000455014,
-				EXTRA_PRIMITIVE_OVERESTIMATION_SIZE = 1000455015,
-				DEPTH_CLIP_ENABLE = 1000455016,
-				SAMPLE_LOCATIONS_ENABLE = 1000455017,
-				COLOR_BLEND_ADVANCED = 1000455018,
-				PROVOKING_VERTEX_MODE = 1000455019,
-				LINE_RASTERIZATION_MODE = 1000455020,
-				LINE_STIPPLE_ENABLE = 1000455021,
-				DEPTH_CLIP_NEGATIVE_ONE_TO_ONE = 1000455022,
-				VIEWPORT_W_SCALING_ENABLE = 1000455023,
-				VIEWPORT_SWIZZLE = 1000455024,
-				COVERAGE_TO_COLOR_ENABLE = 1000455025,
-				COVERAGE_TO_COLOR_LOCATION = 1000455026,
-				COVERAGE_MODULATION_MODE = 1000455027,
-				COVERAGE_MODULATION_TABLE_ENABLE = 1000455028,
-				COVERAGE_MODULATION_TABLE = 1000455029,
-				SHADING_RATE_IMAGE_ENABLE = 1000455030,
-				REPRESENTATIVE_FRAGMENT_TEST_ENABLE = 1000455031,
-				COVERAGE_REDUCTION_MODE = 1000455032,
-				ATTACHMENT_FEEDBACK_LOOP_ENABLE = 1000524000,
-				LINE_STIPPLE = 1000259000,
-			};
-
-			class VertexBinding{
-				friend class Pipeline;
-				public:
-					class VertexAttribute{
-						friend class VertexBinding;
-						friend class Pipeline;
-						public:
-							VertexAttribute& setLocation(const std::size_t& location) noexcept;
-							VertexAttribute& setOffset(const std::size_t& offset) noexcept;
-							VertexAttribute& setFormat(const Format& format) noexcept;
-
-						private:
-							VertexAttribute(VertexBinding& owner, void* data) noexcept;
-							VertexBinding& _owner;
-							void* _data;
-					};
-
-					VertexBinding& setBinding(const std::size_t& binding) noexcept;
-					VertexBinding& setInputRate(const InputRate& rate) noexcept;
-					VertexBinding& setStride(const std::size_t stride) noexcept;
-					VertexAttribute addAttribute();
-
-				private:
-					VertexBinding(Pipeline& owner, void* data) noexcept;
-					Pipeline& _owner;
-					void* _data;
+				VIEWPORT,
+				SCISSOR,
+				LINE_WIDTH,
+				DEPTH_BIAS,
+				BLEND_CONSTANTS,
+				DEPTH_BOUNDS,
+				STENCIL_COMPARE_MASK,
+				STENCIL_WRITE_MASK,
+				STENCIL_REFERENCE,
+				CULL_MODE,
+				FRONT_FACE,
+				PRIMITIVE_TOPOLOGY,
+				VIEWPORT_WITH_COUNT,
+				SCISSOR_WITH_COUNT,
+				VERTEX_INPUT_BINDING_STRIDE,
+				DEPTH_TEST_ENABLE,
+				DEPTH_WRITE_ENABLE,
+				DEPTH_COMPARE_OP,
+				DEPTH_BOUNDS_TEST_ENABLE,
+				STENCIL_TEST_ENABLE,
+				STENCIL_OP,
+				RASTERIZER_DISCARD_ENABLE,
+				DEPTH_BIAS_ENABLE,
+				PRIMITIVE_RESTART_ENABLE,
+				VIEWPORT_W_SCALING,
+				DISCARD_RECTANGLE,
+				DISCARD_RECTANGLE_ENABLE,
+				DISCARD_RECTANGLE_MODE,
+				SAMPLE_LOCATIONS,
+				RAY_TRACING_PIPELINE_STACK_SIZE,
+				VIEWPORT_SHADING_RATE_PALETTE,
+				VIEWPORT_COARSE_SAMPLE_ORDER,
+				EXCLUSIVE_SCISSOR_ENABLE,
+				EXCLUSIVE_SCISSOR,
+				FRAGMENT_SHADING_RATE,
+				VERTEX_INPUT,
+				PATCH_CONTROL_POINTS,
+				LOGIC_OP,
+				COLOR_WRITE_ENABLE,
+				DEPTH_CLAMP_ENABLE,
+				POLYGON_MODE,
+				RASTERIZATION_SAMPLES,
+				SAMPLE_MASK,
+				ALPHA_TO_COVERAGE_ENABLE,
+				ALPHA_TO_ONE_ENABLE,
+				LOGIC_OP_ENABLE,
+				COLOR_BLEND_ENABLE,
+				COLOR_BLEND_EQUATION,
+				COLOR_WRITE_MASK,
+				TESSELLATION_DOMAIN_ORIGIN,
+				RASTERIZATION_STREAM,
+				CONSERVATIVE_RASTERIZATION_MODE,
+				EXTRA_PRIMITIVE_OVERESTIMATION_SIZE,
+				DEPTH_CLIP_ENABLE,
+				SAMPLE_LOCATIONS_ENABLE,
+				COLOR_BLEND_ADVANCED,
+				PROVOKING_VERTEX_MODE,
+				LINE_RASTERIZATION_MODE,
+				LINE_STIPPLE_ENABLE,
+				DEPTH_CLIP_NEGATIVE_ONE_TO_ONE,
+				VIEWPORT_W_SCALING_ENABLE,
+				VIEWPORT_SWIZZLE,
+				COVERAGE_TO_COLOR_ENABLE,
+				COVERAGE_TO_COLOR_LOCATION,
+				COVERAGE_MODULATION_MODE,
+				COVERAGE_MODULATION_TABLE_ENABLE,
+				COVERAGE_MODULATION_TABLE,
+				SHADING_RATE_IMAGE_ENABLE,
+				REPRESENTATIVE_FRAGMENT_TEST_ENABLE,
+				COVERAGE_REDUCTION_MODE,
+				ATTACHMENT_FEEDBACK_LOOP_ENABLE,
+				LINE_STIPPLE,
 			};
 
 			class Viewport{
@@ -317,23 +257,42 @@ namespace Raindrop{
 					Viewport& setHeight(const float& height) noexcept;
 					Viewport& setMinDepth(const float& minDepth) noexcept;
 					Viewport& setMaxDepth(const float& maxDepth) noexcept;
+
+					const float& getX() const noexcept;
+					const float& getY() const noexcept;
+					const float& getWidth() const noexcept;
+					const float& getHeight() const noexcept;
+					const float& getMinDepth() const noexcept;
+					const float& getMaxDepth() const noexcept;
 					
 				private:
-					Viewport(void* data) noexcept;
-					void* _data;
+					float _x;
+					float _y;
+					float _width;
+					float _height;
+					float _minDepth;
+					float _maxDepth;
+
 			};
 
 			class Scissor{
 				friend class Pipeline;
 				public:
-					Scissor& setX(const std::size_t& x) noexcept;
-					Scissor& setY(const std::size_t& y) noexcept;
-					Scissor& setWidth(const std::size_t& width) noexcept;
-					Scissor& setHeight(const std::size_t& height) noexcept;
+					Scissor& setX(const std::int32_t& x) noexcept;
+					Scissor& setY(const std::int32_t& y) noexcept;
+					Scissor& setWidth(const std::uint32_t& width) noexcept;
+					Scissor& setHeight(const std::uint32_t& height) noexcept;
+
+					const std::int32_t& getX() const noexcept;
+					const std::int32_t& getY() const noexcept;
+					const std::uint32_t& getWidth() const noexcept;
+					const std::uint32_t& getHeight() const noexcept;
 				
 				private:
-					Scissor(void* data) noexcept;
-					void* _data;
+					std::int32_t _x;
+					std::int32_t _y;
+					std::uint32_t _width;
+					std::uint32_t _height;
 			};
 
 			class ColorAttachment{
@@ -350,25 +309,55 @@ namespace Raindrop{
 					ColorAttachment& setAlphaBlendOp(const Color::BlendOperation& alphaBlendOp) noexcept;
 					ColorAttachment& setWriteMask(const Color::Components& writeMask) noexcept;
 
+
+					const bool& isBlendingEnable() const noexcept;
+					const Color::BlendFactor& getSrcColorBlendFactor() const noexcept;
+					const Color::BlendFactor& getDstColorBlendFactor() const noexcept;
+					const Color::BlendOperation& getColorBlendOp() const noexcept;
+					const Color::BlendFactor& getSrcAlphaBlendFactor() const noexcept;
+					const Color::BlendFactor& getDstAlphaBlendFactor() const noexcept;
+					const Color::BlendOperation& getAlphaBlendOp() const noexcept;
+					const Color::Components& getWriteMask() const noexcept;
+
 				private:
-					ColorAttachment(void* data) noexcept;
-					void* _data;
+					bool _blendEnabled;
+					Color::BlendFactor _srcColorBlendFactor;
+					Color::BlendFactor _dstColorBlendFactor;
+					Color::BlendOperation _colorBlendOp;
+					Color::BlendFactor _srcAlphaBlendFactor;
+					Color::BlendFactor _dstAlphaBlendFactor;
+					Color::BlendOperation _alphaBlendOp;
+					Color::Components _writeMask;
+
 			};
 
 			class StencilOpState{
 				friend class Pipeline;
 				public:
-					StencilOpState& setFailOp(const StencilOp& failOp) noexcept;
-					StencilOpState& setPassOp(const StencilOp& passOp) noexcept;
-					StencilOpState& setDepthFailOp(const StencilOp& depthFailOp) noexcept;
-					StencilOpState& setCompareOp(const CompareOp& compareOp) noexcept;
+					StencilOpState& setFailOp(const StencilOperation& failOp) noexcept;
+					StencilOpState& setPassOp(const StencilOperation& passOp) noexcept;
+					StencilOpState& setDepthFailOp(const StencilOperation& depthFailOp) noexcept;
+					StencilOpState& setCompareOp(const CompareOperator& compareOp) noexcept;
 					StencilOpState& setCompareMask(const std::uint32_t& compareMask) noexcept;
 					StencilOpState& setWriteMask(const std::uint32_t& writeMask) noexcept;
-					StencilOpState& setReference(const std::size_t& reference) noexcept;
+					StencilOpState& setReference(const std::uint32_t& reference) noexcept;
+
+					const StencilOperation& getFailOp() const noexcept;
+					const StencilOperation& getPassOp() const noexcept;
+					const StencilOperation& getDepthFailOp() const noexcept;
+					const CompareOperator& getCompareOp() const noexcept;
+					const std::uint32_t& getCompareMask() const noexcept;
+					const std::uint32_t& getWriteMask() const noexcept;
+					const std::uint32_t& getReference() const noexcept;
 
 				private:
-					StencilOpState(void* data) noexcept;
-					void* _data;
+					StencilOperation _failOp;
+					StencilOperation _passOp;
+					StencilOperation _depthFailOp;
+					CompareOperator _compareOp;
+					std::uint32_t _compareMask;
+					std::uint32_t _writeMask;
+					std::uint32_t _reference;
 			};
 
 			class Layout{
@@ -421,25 +410,35 @@ namespace Raindrop{
 				public:
 					struct Impl;
 
+					class Flags : public Utils::FlagsTemplate<Flags>{
+						public:
+							using FlagsTemplate<Flags>::FlagsTemplate;
+
+							enum Bits : Bitset{
+								NONE = 0,
+								ALLOW_VARYING_SUBGROUP_SIZE = 1 << 1,
+								REQUIRE_FULL_SUBGROUPS = 1 << 2,
+							};
+					};
+
 					enum class Stage{
-						VERTEX = 0x00000001,
-						TESSELLATION_CONTROL = 0x00000002,
-						TESSELLATION_EVALUATION = 0x00000004,
-						GEOMETRY = 0x00000008,
-						FRAGMENT = 0x00000010,
-						COMPUTE = 0x00000020,
-						ALL_GRAPHICS = 0x0000001F,
-						ALL = 0x7FFFFFFF,
-						RAYGEN = 0x00000100,
-						ANY_HIT = 0x00000200,
-						CLOSEST_HIT = 0x00000400,
-						MISS = 0x00000800,
-						INTERSECTION = 0x00001000,
-						CALLABLE = 0x00002000,
-						TASK = 0x00000040,
-						MESH = 0x00000080,
-						SUBPASS_SHADING = 0x00004000,
-						CLUSTER_CULLING = 0x00080000,
+						VERTEX,
+						TESSELLATION_CONTROL,
+						TESSELLATION_EVALUATION,
+						GEOMETRY,
+						FRAGMENT,
+						COMPUTE,
+						ALL_GRAPHICS,
+						RAYGEN,
+						ANY_HIT,
+						CLOSEST_HIT,
+						MISS,
+						INTERSECTION,
+						CALLABLE,
+						TASK,
+						MESH,
+						SUBPASS_SHADING,
+						CLUSTER_CULLING,
 					};
 
 					static Shader Create(Context& context, const Path& path);
@@ -469,8 +468,15 @@ namespace Raindrop{
 			void initialize();
 			void release();
 
+			bool isInitialized() const noexcept;
+			void* getNativeHandle() const;
+			Impl* getImpl() const noexcept;
+			GUID getGUID() const noexcept;
+
+
 			Pipeline& setFlags(const Flags& flags);
 			Pipeline& setRenderPass(const RenderPass& renderPass);
+			Pipeline& setLayout(const Layout& layout);
 
 			Pipeline& setPrimitiveTopology(const Topology& topology);
 			Pipeline& enablePrimitiveRestart(const bool& enable = true);
@@ -484,9 +490,9 @@ namespace Raindrop{
 			Pipeline& setDepthBiasConstant(const float& constant);
 			Pipeline& setDepthBiasSlope(const float& slope);
 			Pipeline& setDepthBiasClamp(const float& clamp);
-			Pipeline& setLinceWidth(const float& width);
+			Pipeline& setLineWidth(const float& width);
 
-			Pipeline& setSampleCount(const SampleCount& count);
+			Pipeline& setSampleCount(const SampleCount::Bits& count);
 			Pipeline& enableSampleShading(const bool& enable = true);
 			Pipeline& setMinimumSampleShading(const float& min);
 			Pipeline& enableAlphaToCoverage(const bool& enable = true);
@@ -495,12 +501,12 @@ namespace Raindrop{
 
 			Pipeline& setColorBlendFlags(const ColorBlendFlags& flags);
 			Pipeline& enableBlendLogicOperation(const bool& enable = true);
-			Pipeline& setBlendLogicOperation(const LogicOp& op);
+			Pipeline& setBlendLogicOperation(const LogicOperator& op);
 			Pipeline& setBlendConstant(const Color::Components::Bits& component, const float& constant);
 
 			Pipeline& enableDepthTest(const bool& enable = true);
 			Pipeline& enableDepthWrite(const bool& enable = true);
-			Pipeline& setDepthCompareOp(const CompareOp& op);
+			Pipeline& setDepthCompareOp(const CompareOperator& op);
 			Pipeline& enableDepthBoundsTest(const bool& enable);
 			Pipeline& enableStencilTest(const bool& enable);
 			Pipeline& setFrontStencilOpertions(const StencilOpState& operations);
@@ -509,25 +515,18 @@ namespace Raindrop{
 			Pipeline& setMinDepthBounds(const float& min);
 
 			Pipeline& addDynamicState(const DynamicState& state);
-			Pipeline& setDynamicStates(const std::vector<DynamicState>& states);
+			Pipeline& addDynamicStates(const std::initializer_list<DynamicState>& states);
 
-			Pipeline& setTellesationPatchControlPoints(const std::size_t& count);
+			Pipeline& setTellesationPatchControlPoints(const std::uint32_t& count);
 
-			Pipeline& addStage(const std::shared_ptr<Shader>& shader, const Shader::Stage& stage, const char* entryPoint = "main");
-			ColorAttachment addColorAttachment();
-			VertexBinding addVertexBinding();
-			Viewport addViewport();
-			Scissor addScissor();
-
-			bool isInitialized() const noexcept;
-			void* getNativeHandle() const;
-			Impl* getImpl() const noexcept;
-			GUID getGUID() const noexcept;
+			Pipeline& addStage(const std::shared_ptr<Shader>& shader, const Shader::Stage& stage, const char* entryPoint = "main", const Shader::Flags& flags = Shader::Flags::NONE);
+			ColorAttachment& addColorAttachment();
+			Vertex::Layout& addVertexBinding(const Vertex::InputRate& inputRate);
+			Viewport& addViewport();
+			Scissor& addScissor();
 
 		private:
-			friend class VertexBinding;
-			Impl* _impl;
-						
+			Impl* _impl;				
 	};
 
 	static inline Pipeline CreatePipeline(Context& context){

@@ -22,11 +22,8 @@ namespace Raindrop::Internal::Graphics{
 		subpass{0},
 		flags{0},
 		pNext{nullptr}
-	{}
-	
-	void GraphicsPipelineConfigInfo::assertValidity() const noexcept{
-		assert(pipelineLayout != nullptr && "The pipeline layout has not been set");
-		assert(renderPass != VK_NULL_HANDLE && "The render pass has not been set");
+	{
+		defaultInfo(*this);
 	}
 
 	void GraphicsPipelineConfigInfo::defaultInfo(GraphicsPipelineConfigInfo& info){
@@ -95,42 +92,16 @@ namespace Raindrop::Internal::Graphics{
 		info.tessellationInfo.patchControlPoints = 1;
 	}
 
-	void GraphicsPipelineConfigInfo::update(){
-		dynamicStateInfo.pDynamicStates = dynamicStateEnables.data();
-		dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(dynamicStateEnables.size());
-
-		colorBlendInfo.pAttachments = colorAttachments.data();
-		colorBlendInfo.attachmentCount = static_cast<uint32_t>(colorAttachments.size());
-
-		std::vector<VkVertexInputAttributeDescription> attributesDescriptions;
-		std::vector<VkVertexInputBindingDescription> bindingsDescriptions(bindings.size());
-
-		for (std::size_t i=0; i<bindings.size(); i++){
-			auto& dst = bindingsDescriptions[i];
-			const auto& src = bindings[i];
-
-			dst.binding = static_cast<uint32_t>(i);
-			dst.inputRate = src.description.inputRate;
-			
-		}
-
-		vertexInfo.pVertexAttributeDescriptions = attributesDescriptions.data();
-		vertexInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributesDescriptions.size());
-
-		vertexInfo.pVertexBindingDescriptions = bindingsDescriptions.data();
-		vertexInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingsDescriptions.size());
-	}
-
 	GraphicsPipeline::GraphicsPipeline(Context& context, const GraphicsPipelineConfigInfo& info) :
 			_context{context},
 			_pipeline{VK_NULL_HANDLE}{
-		info.assertValidity();
 
 		context.getLogger()->info("Constructing graphics pipeline...");
 		VkGraphicsPipelineCreateInfo createInfo{};
 
 		_layout = info.pipelineLayout;
 		_renderPass = info.renderPass;
+		_shaders = info.shaders;
 
 		createInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 		createInfo.pNext = info.pNext;

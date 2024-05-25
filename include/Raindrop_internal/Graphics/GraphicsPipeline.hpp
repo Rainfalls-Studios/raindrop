@@ -17,33 +17,13 @@ namespace Raindrop::Internal::Graphics{
 		VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
 		VkPipelineDynamicStateCreateInfo dynamicStateInfo;
 		VkPipelineTessellationStateCreateInfo tessellationInfo;
+		std::vector<VkPipelineShaderStageCreateInfo> stages;
 		uint32_t subpass;
 		void* pNext;
 
-		struct Binding{
-			VkVertexInputBindingDescription description;
-			std::vector<VkVertexInputAttributeDescription> vertices;
-		};
-
-		std::vector<VkPipelineShaderStageCreateInfo> stages;
-		std::vector<VkDynamicState> dynamicStateEnables;
-		std::vector<VkPipelineColorBlendAttachmentState> colorAttachments;
-		std::vector<Binding> bindings;
-		std::vector<VkViewport> viewports;
-		std::vector<VkRect2D> scissors;
-
-		struct shaderStage{
-			std::shared_ptr<Shader> shader;
-			VkShaderStageFlagBits stage;
-			std::string entryPoint;
-		};
-
-		std::list<shaderStage> shaders;
+		std::list<std::shared_ptr<Shader>> shaders;
 		std::shared_ptr<PipelineLayout> pipelineLayout;
 		std::shared_ptr<RenderPass> renderPass;
-
-		void update();
-		void assertValidity() const noexcept;
 
 		static void defaultInfo(GraphicsPipelineConfigInfo& info);
 	};
@@ -63,6 +43,7 @@ namespace Raindrop::Internal::Graphics{
 			VkPipeline _pipeline;
 			std::shared_ptr<PipelineLayout> _layout;
 			std::shared_ptr<RenderPass> _renderPass;
+			std::list<std::shared_ptr<Shader>> _shaders;
 	};
 }
 

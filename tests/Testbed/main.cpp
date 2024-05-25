@@ -255,8 +255,8 @@ int main(){
 	// create shader
 
 	// create pipeline layout
-	Raindrop::Pipeline::Layout layout = Raindrop::CreatePipelineLayout(context);
-	layout.initialize();
+	Raindrop::Pipeline::Layout pipelineLayout = Raindrop::CreatePipelineLayout(context);
+	pipelineLayout.initialize();
 	
 	Raindrop::RenderPass renderPass = Raindrop::CreateRenderPass(context);
 	{
@@ -304,7 +304,7 @@ int main(){
 		});
 
 		pipeline.addStage(frag, Raindrop::Pipeline::Shader::Stage::FRAGMENT);
-		pipeline.addStage(vert, Raindrop::Pipeline::Shader::Stage::FRAGMENT);
+		pipeline.addStage(vert, Raindrop::Pipeline::Shader::Stage::VERTEX);
 
 		pipeline.addViewport()
 			.setX(0.f)
@@ -319,13 +319,18 @@ int main(){
 			.setY(0)
 			.setWidth(255)
 			.setHeight(255);
+	
+		pipeline.setRenderPass(renderPass);
+		pipeline.setLayout(pipelineLayout);
+
+		pipeline.initialize();
 	}
 	
 	Raindrop::Start(context);
 	
 	pipeline.release();
 	renderPass.release();
-	layout.release();
+	pipelineLayout.release();
 	textureSubset.release();
 	texture.release();
 	
