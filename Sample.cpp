@@ -178,3 +178,11 @@ renderPass.addDependency()
 
 // Initialize render pass
 renderPass.initialize();
+
+
+
+
+
+
+Raindrop::CommandBuffer commandBuffer = Raindrop::CreateCommandBuffer(Raindrop::CommandBuffer::GRAPHICS, Raindrop::CommandBuffer::Flags::SINGLE_TIME);
+std::vector<Raindrop::CommandBuffer> commandBuffers = Raindrop::CreateCommandBuffers(5, Raindrop::CommandBuffer::GRAPHICS, Raindrop::CommandBuffer::Flags::SINGLE_TIME, Raindrop::CommandBuffer::BatchFlags::INDEPENDENT);

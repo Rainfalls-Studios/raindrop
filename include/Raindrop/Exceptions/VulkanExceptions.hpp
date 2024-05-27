@@ -26,6 +26,7 @@ namespace Raindrop::Exceptions{
 		WAIT,
 		RESET,
 		FLUSHING,
+		ALLOCATION,
 	};
 
 	template<typename T>

@@ -190,10 +190,6 @@ namespace Raindrop{
 			Subpass addSubpass();
 			Dependency addDependency();
 
-			// std::size_t addAttachment(const std::size_t& index, const Format& format, const Texture::Operation& operation, const Texture::Layout& initLayout, const Texture::Layout& finalLayout);
-			// std::size_t addSubpass(const AttachmentsInfo& colorAttachments, const std::size_t& depth = SIZE_MAX, const AttachmentsInfo& resolveAttachments, const AttachmentsInfo& preserveAttachments);
-			// void addDependency(const std::size_t& src, const std::size_t& dst, const Pipeline::Stage& srcStage, const Access& srcAccess, const Pipeline::Stage& dstStage, const Access& dstAccess);
-
 		private:
 			friend class Subpass;
 			friend class Attachment;

@@ -4,8 +4,8 @@
 #include "common.hpp"
 #include <iostream>
 
-#define OPERATOR_COPY_HELPER(op) inline FlagsTemplate& operator op(const FlagsTemplate& other) noexcept {_bitset op other._bitset; return *this;} inline FlagsTemplate& operator op(const Bitset& bitset) noexcept {_bitset op bitset; return *this;}
-#define OPERATOR_CONST_HELPER(op) inline FlagsTemplate operator op(const FlagsTemplate& other) const noexcept {return _bitset op other._bitset;} inline FlagsTemplate operator op(const Bitset& bitset) const noexcept {return _bitset op bitset;}
+#define OPERATOR_COPY_HELPER(op) inline FlagsTemplate& operator op(const FlagsTemplate& other) noexcept {_bitset op other._bitset; return *this;} inline FlagsTemplate& operator op(const Bitset& bitset) noexcept {_bitset op bitset; return *this;} inline FlagsTemplate& operator op(const Bits& bit) noexcept {_bitset op bit; return *this;}
+#define OPERATOR_CONST_HELPER(op) inline FlagsTemplate operator op(const FlagsTemplate& other) const noexcept {return _bitset op other._bitset;} inline FlagsTemplate operator op(const Bitset& bitset) const noexcept {return _bitset op bitset;} inline FlagsTemplate operator op(const Bits& bit) const noexcept {return _bitset op bit;}
 #define OPERATOR_HELPER_PAIR(op) OPERATOR_COPY_HELPER(op##=); OPERATOR_CONST_HELPER(op);
 
 #define OPERATOR_COMPAR_HELPER(op) inline bool operator op(const FlagsTemplate& other) const noexcept {return _bitset op other._bitset;} inline bool operator op(const Bitset& bitset) const noexcept {return _bitset op bitset;}

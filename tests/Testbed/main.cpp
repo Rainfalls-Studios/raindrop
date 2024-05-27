@@ -196,25 +196,6 @@
 #include "config.h"
 #include <iostream>
 
-class Asset : public ::Raindrop::Asset{
-	public:
-		Asset(){
-			std::cout << "new asset" << std::endl;
-		}
-};
-
-class Loader : public ::Raindrop::Asset::Loader{
-	public:
-		virtual std::shared_ptr<Raindrop::Asset> load(const Raindrop::Path& path) override{
-			std::cout << "load new asset" << std::endl;
-			return std::make_unique<Asset>();
-		}
-
-		void print(){
-			std::cout << "test" << std::endl;
-		}
-};
-
 int main(){
 	std::filesystem::current_path(PATH);
 
