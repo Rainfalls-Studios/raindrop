@@ -11,6 +11,34 @@
 #define GRAPHICS_CONTEXT _impl->context->getInternalContext()->getRenderer().getContext()
 
 namespace Raindrop{
+	VkImageViewCreateFlags toVulkan(const TextureSubset::Flags& flags){
+		VkImageViewCreateFlags out = 0;
+
+		// VK_EXT_fragment_density_map
+		if (flags.has(TextureSubset::Flags::FRAGMENT_DENSITY_MAP_DYNAMIC)) out |= VK_IMAGE_VIEW_CREATE_FRAGMENT_DENSITY_MAP_DYNAMIC_BIT_EXT;
+
+		// VK_EXT_fragment_density_map2
+		if (flags.has(TextureSubset::Flags::FRAGMENT_DENSITY_MAP_DEFERRED)) out |= VK_IMAGE_VIEW_CREATE_FRAGMENT_DENSITY_MAP_DEFERRED_BIT_EXT;
+
+		// VK_EXT_descriptor_buffer
+		if (flags.has(TextureSubset::Flags::DESCRIPTOR_BUFFER_CAPTURE_REPLAY)) out |= VK_IMAGE_VIEW_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT;
+
+		return out;
+	}
+
+	VkImageViewType toVulkan(const TextureSubset::Type& type){
+		switch (type){
+			case TextureSubset::Type::LINEAR: return VK_IMAGE_VIEW_TYPE_1D;
+			case TextureSubset::Type::PLANAR: return VK_IMAGE_VIEW_TYPE_2D;
+			case TextureSubset::Type::VOLUMETRIC: return VK_IMAGE_VIEW_TYPE_3D;
+			case TextureSubset::Type::CUBEMAP: return VK_IMAGE_VIEW_TYPE_CUBE;
+			case TextureSubset::Type::LINEAR_ARRAY: return VK_IMAGE_VIEW_TYPE_1D_ARRAY;
+			case TextureSubset::Type::PLANAR_ARRAY: return VK_IMAGE_VIEW_TYPE_2D_ARRAY;
+			case TextureSubset::Type::CUBEMAP_ARRAY: return VK_IMAGE_VIEW_TYPE_CUBE_ARRAY;
+		}
+		throw std::runtime_error("Invalid texture subset type");
+	}
+
 	TextureSubset TextureSubset::Create(Context& context, const Texture& source){
 		TextureSubset textureSubset(context);
 		textureSubset.setSource(source);

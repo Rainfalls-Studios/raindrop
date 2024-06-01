@@ -7,6 +7,10 @@
 #include "Assets/common.hpp"
 #include "Graphics/common.hpp"
 
+namespace Raindrop{
+	VkBool32 toVulkan(const bool& b);
+}
+
 namespace Raindrop::Internal{
 	class Context{
 		public:

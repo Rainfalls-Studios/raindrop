@@ -3,6 +3,10 @@
 #include <Raindrop/Exceptions/MemoryExceptions.hpp>
 
 namespace Raindrop{
+	VkBool32 toVulkan(const bool& b){
+		return static_cast<VkBool32>(b);
+	}
+
 	Context Context::Create(){
 		return Context();
 	}

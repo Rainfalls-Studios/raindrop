@@ -89,10 +89,16 @@ namespace Raindrop{
 
 			CommandBuffer(CommandBuffer&& other) noexcept;
 			CommandBuffer& operator=(CommandBuffer&& other) noexcept;
-			
+
+			bool isInitialized() const noexcept;
+			void* getNativeHandle() const;
+			Impl* getImpl() const noexcept;
+			GUID getGUID() const noexcept;
 
 			void begin(const Flags& flags = Flags::NONE);
 			void end();
+
+
 
 		private:
 			Impl* _impl;

@@ -525,6 +525,9 @@ namespace Raindrop{
 			Viewport& addViewport();
 			Scissor& addScissor();
 
+
+			void bind(CommandBuffer& commandbuffer);
+
 		private:
 			Impl* _impl;				
 	};

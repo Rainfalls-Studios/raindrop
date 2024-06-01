@@ -12,6 +12,10 @@ namespace Raindrop{
 
 		Impl(Context& context) : context{&context}{}
 	};
+
+	VkImageViewType toVulkan(const TextureSubset::Type& type);
+	VkImageViewCreateFlags toVulkan(const TextureSubset::Flags& flags);
+
 }
 
 #endif
