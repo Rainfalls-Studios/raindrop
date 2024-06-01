@@ -56,6 +56,8 @@ namespace Raindrop::Internal::Graphics{
 			Exceptions::VulkanOperationType::ALLOCATION,
 			_context.getLogger()
 		);
+
+		return out;
 	}
 
 	void CommandPool::free(const std::vector<VkCommandBuffer>& commandBuffers){

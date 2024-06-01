@@ -361,7 +361,7 @@ namespace Raindrop::Internal::Graphics::Core{
 		);
 
 		Exceptions::checkVkOperation<VkCommandBuffer>(
-			vkQueueSubmit(_context.getQueues().graphicsQueue(), 1, &submitInfo, _swapchain->_frames[_currentFrame].inFlightFence),
+			vkQueueSubmit(_context.frame.getQueue()->get(), 1, &submitInfo, _swapchain->_frames[_currentFrame].inFlightFence),
 			"Faile to submit graphics command buffer",
 			Exceptions::VulkanOperationType::SUBMIT
 		);
@@ -378,7 +378,7 @@ namespace Raindrop::Internal::Graphics::Core{
 
 		presentInfo.pImageIndices = &_currentFrame;
 
-		VkResult result = vkQueuePresentKHR(_context.getQueues().presentQueue(), &presentInfo);
+		VkResult result = vkQueuePresentKHR(_context.frame.getQueue()->get(), &presentInfo);
 
 		_currentFrame = (_currentFrame + 1) % _frameCount;
 		return result;

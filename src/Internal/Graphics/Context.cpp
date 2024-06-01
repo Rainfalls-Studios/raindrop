@@ -6,6 +6,11 @@
 #define USE_MAIN_LOGGER false
 
 namespace Raindrop::Internal::Graphics{
+	Context::Frame::Frame(Context& context):
+		_commandPool{nullptr},
+		_queue{nullptr}
+	{}	
+
 	Context::Context(Internal::Context& internal) :
 	#if USE_MAIN_LOGGER
 		logger{internal.getLogger()},
@@ -19,11 +24,12 @@ namespace Raindrop::Internal::Graphics{
 		physicalDevice(*this),
 		device(*this),
 		queues(*this),
-		commandPools(*this),
-		swapchain(*this)
-		// pipelineLayoutRegistry(*this),
-		// graphicsPipelineRegistry(*this)
+		swapchain(*this),
+
+		frame(*this)
 	{}
+
+	Context::~Context(){}
 
 	Internal::Context& Context::getInternalContext(){
 		return internal;
@@ -53,15 +59,19 @@ namespace Raindrop::Internal::Graphics{
 		return device;
 	}
 
-	Queues::Manager& Context::getQueues(){
+	Queues& Context::getQueues(){
 		return queues;
 	}
-
-	Queues::CommandPools& Context::getCommandPools(){
-		return commandPools;
-	}
-
+	
 	Core::Swapchain& Context::getSwapchain(){
 		return swapchain;
+	}
+
+	CommandPool*& Context::Frame::getCommandPool(){
+		return _commandPool;
+	}
+
+	Queue*& Context::Frame::getQueue(){
+		return _queue;
 	}
 }

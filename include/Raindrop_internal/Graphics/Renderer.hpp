@@ -22,19 +22,18 @@ namespace Raindrop::Internal::Graphics{
 			Context* _context;
 
 			void registerEvents();
-			void createRenderCommandPool();
+			void createFrameCommandPool();
 			void allocateFrameCommandBuffers();
 
 			void unregisterEvents();
 			void freeFrameCommandBuffers();
-			void destroyRenderCommandPool();
+			void destroyFrameCommandPool();
 
 			VkCommandBuffer beginFrame();
 			void endFrame();
 
 			void updateSwapchainSize();
 
-			VkCommandPool _renderCommandPool;
 			std::vector<VkCommandBuffer> _frameCommandBuffers;
 			std::size_t _currentFrameID;
 

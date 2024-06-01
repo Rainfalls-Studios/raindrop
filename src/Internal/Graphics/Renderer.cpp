@@ -28,7 +28,7 @@ namespace Raindrop::Internal::Graphics{
 			throw;
 		}
 
-		createRenderCommandPool();
+		createFrameCommandPool();
 		allocateFrameCommandBuffers();
 
 		_eventCache = new EventCache;
@@ -52,7 +52,7 @@ namespace Raindrop::Internal::Graphics{
 		}
 		
 		freeFrameCommandBuffers();
-		destroyRenderCommandPool();
+		destroyFrameCommandPool();
 
 		if (_context != nullptr){
 			delete _context;
@@ -93,44 +93,53 @@ namespace Raindrop::Internal::Graphics{
 		_context->getWindow().events();
 	}
 	
-	void Renderer::createRenderCommandPool(){
-		VkCommandPoolCreateInfo info{};
-		info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-		info.queueFamilyIndex = _context->getQueues().graphicsFamily();
-		info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+	void Renderer::createFrameCommandPool(){
+		CommandPoolConfigInfo info;
 
-		Exceptions::checkVkCreation<VkCommandPool>(
-			vkCreateCommandPool(_context->getDevice().get(), &info, _context->getAllocationCallbacks(), &_renderCommandPool),
-			"Failed to create frame command buffer pool"
-		);
+		auto families = _context->getQueues().findSuitable(VK_QUEUE_GRAPHICS_BIT, _context->getWindow().surface());
+
+		if (families.empty()){
+			_context->getLogger()->error("Couldd't find a suitable queue family that has both graphics and present capabilities");
+			throw std::runtime_error("Counld not find suitable queue families for frame command buffers");
+		}
+
+		QueueFamily& family = families.front().first;
+
+		// Since the command buffers are reset every frame
+		info.flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+		info.familyIndex = family.getIndex();
+
+		_context->frame.getCommandPool() = new CommandPool(*_context, info);
+
+		_context->frame.getQueue() = &family.getQueue(0);
 	}
 
 	void Renderer::allocateFrameCommandBuffers(){
-		std::size_t count = _context->getSwapchain().frameCount();
-		_frameCommandBuffers.reserve(count);
+		auto& pool = _context->frame.getCommandPool();
+		if (!pool){
+			_context->getLogger()->error("Cannot create frame command buffers without a valid command pool ! FrameCommandPool is nullptr");
+			throw std::runtime_error("The pool is invalid");
+		}
 
-		VkCommandBufferAllocateInfo info{};
-		info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-		info.commandPool = _renderCommandPool;
-		info.commandBufferCount = static_cast<uint32_t>(count);
-		info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-		
-		Exceptions::checkVkCreation<VkCommandBuffer>(
-			vkAllocateCommandBuffers(_context->getDevice().get(), &info, _frameCommandBuffers.data()),
-			"Failed to allocate frame command buffers"
-		);
+		std::size_t count = _context->getSwapchain().frameCount();
+		_frameCommandBuffers = pool->allocate(count, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
 	}
 
 	void Renderer::freeFrameCommandBuffers(){
-		if (!_frameCommandBuffers.empty()){
-			vkFreeCommandBuffers(_context->getDevice().get(), _renderCommandPool, static_cast<uint32_t>(_frameCommandBuffers.size()), _frameCommandBuffers.data());
-			_frameCommandBuffers.clear();
+		auto& pool = _context->frame.getCommandPool();
+		if (!pool){
+			_context->getLogger()->error("Cannot free frame command buffers without a valid command pool ! FrameCommandPool is nullptr");
+			throw std::runtime_error("The pool is invalid");
 		}
+
+		pool->free(_frameCommandBuffers);
 	}
 
-	void Renderer::destroyRenderCommandPool(){
-		if (_renderCommandPool != VK_NULL_HANDLE){
-			vkDestroyCommandPool(_context->getDevice().get(), _renderCommandPool, _context->getAllocationCallbacks());
+	void Renderer::destroyFrameCommandPool(){
+		auto& pool = _context->frame.getCommandPool();
+		if (pool){
+			delete pool;
+			pool = nullptr;
 		}
 	}
 

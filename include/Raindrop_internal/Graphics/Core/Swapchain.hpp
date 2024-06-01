@@ -3,6 +3,7 @@
 
 #include "common.hpp"
 #include "SwapchainSupport.hpp"
+#include "../Queues.hpp"
 
 namespace Raindrop::Internal::Graphics::Core{
 	class Swapchain{

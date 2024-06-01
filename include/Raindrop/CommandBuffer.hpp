@@ -30,7 +30,7 @@ namespace Raindrop{
 						NONE = 0,
 						GRAPHICS = 1 << 0,
 						COMPUTE = 1 << 1,
-						TRANSFERT = 1 << 2,
+						TRANSFER = 1 << 2,
 						SPARSE_BINDING = 1 << 3,
 						PROTECTED = 1 << 4,
 						VIDEO_DECODE = 1 << 5,

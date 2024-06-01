@@ -29,6 +29,37 @@ namespace Raindrop{
 
 		return out;
 	}
+
+	VkQueueFlags toVulkan(const CommandBuffer::Usage& usage){
+		VkQueueFlags out = 0;
+
+		if (usage.has(CommandBuffer::Usage::GRAPHICS)) out |= VK_QUEUE_GRAPHICS_BIT;
+		if (usage.has(CommandBuffer::Usage::COMPUTE)) out |= VK_QUEUE_COMPUTE_BIT;
+		if (usage.has(CommandBuffer::Usage::TRANSFER)) out |= VK_QUEUE_TRANSFER_BIT;
+		if (usage.has(CommandBuffer::Usage::SPARSE_BINDING)) out |= VK_QUEUE_SPARSE_BINDING_BIT;
+		if (usage.has(CommandBuffer::Usage::PROTECTED)) out |= VK_QUEUE_PROTECTED_BIT;
+
+		// VK_KHR_video_decode_queue
+		if (usage.has(CommandBuffer::Usage::VIDEO_DECODE)) out |= VK_QUEUE_VIDEO_DECODE_BIT_KHR;
+
+		// VK_KHR_video_encode_queue
+		if (usage.has(CommandBuffer::Usage::VIDEO_ENCODE)) out |= VK_QUEUE_VIDEO_ENCODE_BIT_KHR;
+
+		// VK_NV_optical_flow
+		if (usage.has(CommandBuffer::Usage::OPTICAL_FLOW)) out |= VK_QUEUE_OPTICAL_FLOW_BIT_NV;
+
+		return out;
+	}
+
+	VkCommandBufferUsageFlags toVulkan(const CommandBuffer::Flags& flags){
+		VkCommandBufferUsageFlags out = 0;
+
+		if (flags.has(CommandBuffer::Flags::SINGLE_SUBMIT)) out |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+		if (flags.has(CommandBuffer::Flags::RENDER_PASS_CONTINUE)) out |= VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT;
+		if (flags.has(CommandBuffer::Flags::SIMULTANEOUS_USE)) out |= VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+
+		return out;
+	}
 }
 
 #endif

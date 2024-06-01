@@ -6,6 +6,7 @@
 #include <Raindrop_internal/Graphics/Renderer.hpp>
 #include <Raindrop/GUID.hpp>
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
+#include <Raindrop/Context.hpp>
 
 #define LOGGER _impl->context->getInternalContext()->getLogger()
 #define INFO _impl->info
@@ -15,13 +16,22 @@ namespace Raindrop{
 	//--------------------------------------------------------------------
 	//-----------------          COMMAND POOL            -----------------
 	//--------------------------------------------------------------------
+
 	CommandBuffer::Pool::Pool(Context& context, const Usage& usage, const Flags& flags){
 		_impl = new Impl(context);
 
 		Internal::Graphics::CommandPoolConfigInfo info;
 		info.flags = toVulkan(flags);
 		
-		// info.familyIndex = 0; TODO
+		// info.familyIndex = 
+		auto families = GRAPHICS_CONTEXT.getQueues().findSuitable(toVulkan(usage));
+		
+		if (families.empty()){
+			context.getInternalContext()->getLogger()->error("Could not find a family queue that supports requirement (TODO: print required capabilities)");
+			throw std::runtime_error("Could not find a family that fulfills requirements");
+		}
+
+		info.familyIndex = families.front().first.getIndex();
 
 		_impl->commandPool = std::make_shared<Internal::Graphics::CommandPool>(GRAPHICS_CONTEXT, info);
 	}

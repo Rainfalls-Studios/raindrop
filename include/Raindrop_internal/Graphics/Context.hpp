@@ -6,18 +6,16 @@
 #include "Core/Device.hpp"
 #include "Core/PhysicalDevice.hpp"
 #include "Core/Window.hpp"
-#include "Queues/Manager.hpp"
 #include "Core/Swapchain.hpp"
-#include "Queues/CommandPools.hpp"
-// #include "Pipelines/LayoutRegistry.hpp"
-// #include "Pipelines/GraphicsPipelineRegistry.hpp"
+#include "Queues.hpp"
+#include "CommandPool.hpp"
 
 
 namespace Raindrop::Internal::Graphics{
 	class Context{
 		public:
 			Context(Internal::Context& internal);
-			~Context() = default;
+			~Context();
 
 			Internal::Context& getInternalContext();
 			VkAllocationCallbacks*& getAllocationCallbacks();
@@ -27,9 +25,20 @@ namespace Raindrop::Internal::Graphics{
 			Core::Instance& getInstance();
 			Core::PhysicalDevice& getPhysicalDevice();
 			Core::Device& getDevice();
-			Queues::Manager& getQueues();
-			Queues::CommandPools& getCommandPools();
+			Queues& getQueues();
 			Core::Swapchain& getSwapchain();
+
+			struct Frame{
+				public:
+					Frame(Context& context);
+
+					CommandPool*& getCommandPool();
+					Queue*& getQueue();
+				
+				private:
+					CommandPool* _commandPool;
+					Queue* _queue;
+			} frame;
 
 		private:
 			Internal::Context& internal;
@@ -40,11 +49,8 @@ namespace Raindrop::Internal::Graphics{
 			Core::Instance instance;
 			Core::PhysicalDevice physicalDevice;
 			Core::Device device;
-			Queues::Manager queues;
-			Queues::CommandPools commandPools;
+			Queues queues;
 			Core::Swapchain swapchain;
-		// Pipelines::LayoutRegistry pipelineLayoutRegistry;
-		// Pipelines::GraphicsPipelineRegistry graphicsPipelineRegistry;
 	};
 }
 
