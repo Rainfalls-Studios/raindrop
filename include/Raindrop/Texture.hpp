@@ -103,7 +103,6 @@ namespace Raindrop{
 					};
 			};
 
-
 			class Flags : public Utils::FlagsTemplate<Flags> {
 				public:
 					using FlagsTemplate<Flags>::FlagsTemplate;

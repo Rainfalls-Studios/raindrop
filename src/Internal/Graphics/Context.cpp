@@ -13,18 +13,19 @@ namespace Raindrop::Internal::Graphics{
 
 	Context::Context(Internal::Context& internal) :
 	#if USE_MAIN_LOGGER
-		logger{internal.getLogger()},
+		_logger{internal.getLogger()},
 	#else
-		logger{spdlog::stdout_color_mt("Raindrop::Graphics")},
+		_logger{spdlog::stdout_color_mt("Raindrop::Graphics")},
 	#endif
-		internal{internal},
-		allocationCallbacks{nullptr},
-		window(*this),
-		instance(*this),
-		physicalDevice(*this),
-		device(*this),
-		queues(*this),
-		swapchain(*this),
+		_internal{internal},
+		_allocationCallbacks{nullptr},
+		_window(*this),
+		_instance(*this),
+		_physicalDevice(*this),
+		_device(*this),
+		_queues(*this),
+		_swapchain(*this),
+		_memoryTypes(*this),
 
 		frame(*this)
 	{}
@@ -32,39 +33,39 @@ namespace Raindrop::Internal::Graphics{
 	Context::~Context(){}
 
 	Internal::Context& Context::getInternalContext(){
-		return internal;
+		return _internal;
 	}
 
 	VkAllocationCallbacks*& Context::getAllocationCallbacks(){
-		return allocationCallbacks;
+		return _allocationCallbacks;
 	}
 
 	std::shared_ptr<spdlog::logger> Context::getLogger(){
-		return logger;
+		return _logger;
 	}
 
 	Core::Window& Context::getWindow(){
-		return window;
+		return _window;
 	}
 
 	Core::Instance& Context::getInstance(){
-		return instance;
+		return _instance;
 	}
 
 	Core::PhysicalDevice& Context::getPhysicalDevice(){
-		return physicalDevice;
+		return _physicalDevice;
 	}
 
 	Core::Device& Context::getDevice(){
-		return device;
+		return _device;
 	}
 
 	Queues& Context::getQueues(){
-		return queues;
+		return _queues;
 	}
 	
 	Core::Swapchain& Context::getSwapchain(){
-		return swapchain;
+		return _swapchain;
 	}
 
 	CommandPool*& Context::Frame::getCommandPool(){
@@ -74,4 +75,9 @@ namespace Raindrop::Internal::Graphics{
 	Queue*& Context::Frame::getQueue(){
 		return _queue;
 	}
+
+	MemoryTypes& Context::getMemoryTypes(){
+		return _memoryTypes;
+	}
+
 }

@@ -17,6 +17,8 @@ namespace Raindrop::Internal::Graphics{
 	class ShaderLoader;
 	class PipelineLayout;
 	class GraphicsPipeline;
+	class MemoryRegion;
+	class MemoryType;
 }
 
 #endif

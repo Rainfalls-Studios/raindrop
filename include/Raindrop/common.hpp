@@ -25,6 +25,7 @@ namespace Raindrop{
 	class Asset;
 	class Pipeline;
 	class CommandBuffer;
+	class Buffer;
 }
 
 #endif

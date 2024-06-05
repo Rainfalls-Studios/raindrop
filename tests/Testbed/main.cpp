@@ -306,6 +306,17 @@ int main(){
 
 		pipeline.initialize();
 	}
+
+	{
+		Raindrop::GMemory::Type type = Raindrop::FindGetGMemoryType(
+			context,
+			Raindrop::GMemory::Type::Flags::CPU_VISIBLE
+		);
+
+		Raindrop::GMemory memory = Raindrop::AllocateGMemory(context, 4096, type);
+
+		memory.free();
+	}
 	
 	Raindrop::Start(context);
 	

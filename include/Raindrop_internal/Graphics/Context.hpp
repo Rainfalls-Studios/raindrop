@@ -9,7 +9,7 @@
 #include "Core/Swapchain.hpp"
 #include "Queues.hpp"
 #include "CommandPool.hpp"
-
+#include "Memory.hpp"
 
 namespace Raindrop::Internal::Graphics{
 	class Context{
@@ -27,6 +27,7 @@ namespace Raindrop::Internal::Graphics{
 			Core::Device& getDevice();
 			Queues& getQueues();
 			Core::Swapchain& getSwapchain();
+			MemoryTypes& getMemoryTypes();
 
 			struct Frame{
 				public:
@@ -41,16 +42,17 @@ namespace Raindrop::Internal::Graphics{
 			} frame;
 
 		private:
-			Internal::Context& internal;
-			VkAllocationCallbacks* allocationCallbacks;
-			std::shared_ptr<spdlog::logger> logger;
+			Internal::Context& _internal;
+			VkAllocationCallbacks* _allocationCallbacks;
+			std::shared_ptr<spdlog::logger> _logger;
 
-			Core::Window window;
-			Core::Instance instance;
-			Core::PhysicalDevice physicalDevice;
-			Core::Device device;
-			Queues queues;
-			Core::Swapchain swapchain;
+			Core::Window _window;
+			Core::Instance _instance;
+			Core::PhysicalDevice _physicalDevice;
+			Core::Device _device;
+			Queues _queues;
+			Core::Swapchain _swapchain;
+			MemoryTypes _memoryTypes;
 	};
 }
 

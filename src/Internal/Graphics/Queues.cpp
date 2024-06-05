@@ -62,7 +62,7 @@ namespace Raindrop::Internal::Graphics{
 				if (family.isPresentSupported(surface) == false) continue;
 			}
 
-			int score = (flags ^ requiredFlags) * (int((flags & requiredFlags) == requiredFlags) * 2 - 1);
+			int score = (flags ^ requiredFlags) * (2 * int((flags & requiredFlags) == requiredFlags) - 1);
 
 			if (score > 0){
 				out.push_back(std::make_pair(std::ref(family), score));

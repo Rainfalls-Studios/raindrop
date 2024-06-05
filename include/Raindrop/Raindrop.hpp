@@ -14,5 +14,6 @@
 #include "Scene.hpp"
 #include "Asset.hpp"
 #include "Pipeline.hpp"
+#include "GMemory.hpp"
 
 #endif
