@@ -12,10 +12,10 @@ namespace Raindrop{
 		public:
 			struct Range{
 				Texture::Aspect aspect = Texture::Aspect::NONE;
-				std::size_t mipmapLevel = 0;
-				std::size_t mipmapCount = 1;
-				std::size_t layer = 0;
-				std::size_t layerCount = 1;
+				std::uint32_t mipmapLevel = 0;
+				std::uint32_t mipmapCount = 1;
+				std::uint32_t layer = 0;
+				std::uint32_t layerCount = 1;
 			};
 			
 			enum class Type{
@@ -47,8 +47,8 @@ namespace Raindrop{
 			TextureSubset(Context& context);
 			~TextureSubset();
 
-			TextureSubset(const TextureSubset& other);
-			TextureSubset& operator=(const TextureSubset& other);
+			TextureSubset(TextureSubset&& other);
+			TextureSubset& operator=(TextureSubset&& other);
 
 			void initialize();
 			void release();
@@ -72,7 +72,7 @@ namespace Raindrop{
 			Flags getFlags() const noexcept;
 
 		private:
-			Impl* _impl;
+			std::unique_ptr<Impl> _impl;
 	};
 
 	static inline TextureSubset CreateTextureSubset(Context& context, const Texture& source){

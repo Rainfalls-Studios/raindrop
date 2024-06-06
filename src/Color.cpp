@@ -93,15 +93,6 @@ namespace Raindrop{
 	}
 
 	VkComponentSwizzle toVulkan(const Color::Swizzle& s){
-		switch (s){
-			case Color::Swizzle::RED: return VK_COMPONENT_SWIZZLE_R;
-			case Color::Swizzle::GREEN: return VK_COMPONENT_SWIZZLE_G;
-			case Color::Swizzle::BLUE: return VK_COMPONENT_SWIZZLE_B;
-			case Color::Swizzle::ALPHA: return VK_COMPONENT_SWIZZLE_A;
-			case Color::Swizzle::ONE: return VK_COMPONENT_SWIZZLE_ONE;
-			case Color::Swizzle::ZERO: return VK_COMPONENT_SWIZZLE_ZERO;
-			case Color::Swizzle::IDENTITY: return VK_COMPONENT_SWIZZLE_IDENTITY;
-		}
 		throw std::runtime_error("Invalid color component swizzle");
 	}
 }

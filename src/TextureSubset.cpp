@@ -6,40 +6,12 @@
 #include <Raindrop_internal/Graphics/ImageView.hpp>
 #include <Raindrop_internal/Graphics/Renderer.hpp>
 #include <Raindrop_internal/Color.hpp>
+#include <Raindrop_internal/Format.hpp>
 
 #define LOGGER _impl->context->getInternalContext()->getLogger()
-#define INFO _impl->info
 #define GRAPHICS_CONTEXT _impl->context->getInternalContext()->getRenderer().getContext()
 
 namespace Raindrop{
-	VkImageViewCreateFlags toVulkan(const TextureSubset::Flags& flags){
-		VkImageViewCreateFlags out = 0;
-
-		// VK_EXT_fragment_density_map
-		if (flags.has(TextureSubset::Flags::FRAGMENT_DENSITY_MAP_DYNAMIC)) out |= VK_IMAGE_VIEW_CREATE_FRAGMENT_DENSITY_MAP_DYNAMIC_BIT_EXT;
-
-		// VK_EXT_fragment_density_map2
-		if (flags.has(TextureSubset::Flags::FRAGMENT_DENSITY_MAP_DEFERRED)) out |= VK_IMAGE_VIEW_CREATE_FRAGMENT_DENSITY_MAP_DEFERRED_BIT_EXT;
-
-		// VK_EXT_descriptor_buffer
-		if (flags.has(TextureSubset::Flags::DESCRIPTOR_BUFFER_CAPTURE_REPLAY)) out |= VK_IMAGE_VIEW_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT;
-
-		return out;
-	}
-
-	VkImageViewType toVulkan(const TextureSubset::Type& type){
-		switch (type){
-			case TextureSubset::Type::LINEAR: return VK_IMAGE_VIEW_TYPE_1D;
-			case TextureSubset::Type::PLANAR: return VK_IMAGE_VIEW_TYPE_2D;
-			case TextureSubset::Type::VOLUMETRIC: return VK_IMAGE_VIEW_TYPE_3D;
-			case TextureSubset::Type::CUBEMAP: return VK_IMAGE_VIEW_TYPE_CUBE;
-			case TextureSubset::Type::LINEAR_ARRAY: return VK_IMAGE_VIEW_TYPE_1D_ARRAY;
-			case TextureSubset::Type::PLANAR_ARRAY: return VK_IMAGE_VIEW_TYPE_2D_ARRAY;
-			case TextureSubset::Type::CUBEMAP_ARRAY: return VK_IMAGE_VIEW_TYPE_CUBE_ARRAY;
-		}
-		throw std::runtime_error("Invalid texture subset type");
-	}
-
 	TextureSubset TextureSubset::Create(Context& context, const Texture& source){
 		TextureSubset textureSubset(context);
 		textureSubset.setSource(source);
@@ -59,36 +31,44 @@ namespace Raindrop{
 			.layerCount = 1
 		});
 
-		return textureSubset;
+		return std::move(textureSubset);
 	}
 
-	TextureSubset::TextureSubset(Context& context) : _impl{nullptr}{
-		_impl = new Impl(context);
+	TextureSubset::TextureSubset(Context& context) : _impl{std::make_unique<Impl>()}{
+		_impl->context = &context;
+		_impl->builder = std::make_unique<Impl::Builder>();
 	}
 
 	TextureSubset::~TextureSubset(){
-		delete _impl;
+		_impl.reset();
 	}
 
-	TextureSubset::TextureSubset(const TextureSubset& other) : _impl{nullptr}{
-		_impl = new Impl(*other._impl->context);
-		*_impl = *other._impl;
-	}
+	TextureSubset::TextureSubset(TextureSubset&& other) : _impl{std::move(other._impl)}{}
 
-	TextureSubset& TextureSubset::operator=(const TextureSubset& other){
-		*_impl = *other._impl;
-		return *this;
+	TextureSubset& TextureSubset::operator=(TextureSubset&& other){
+		_impl = std::move(other._impl);
+		return* this;
 	}
 
 	void TextureSubset::initialize(){
+		if (!_impl->builder){
+			// ERROR
+			return;
+		}
+
 		LOGGER->info("Initializing new texture subset...");
-		_impl->imageView = std::make_shared<Internal::Graphics::ImageView>(GRAPHICS_CONTEXT, _impl->info);
+
+		_impl->builder->info.update();
+
+		_impl->imageView = std::make_shared<Internal::Graphics::ImageView>(GRAPHICS_CONTEXT, _impl->builder->info);
+		_impl->builder.reset();
+
 		LOGGER->info("Texture subset initialized with success !");
 	}
 
 	void TextureSubset::release(){
 		_impl->imageView.reset();
-		INFO.image.reset();
+		_impl->builder = std::make_unique<Impl::Builder>();
 	}
 
 	bool TextureSubset::isInitialized() const noexcept{
@@ -100,11 +80,11 @@ namespace Raindrop{
 	}
 
 	void TextureSubset::setSource(const Texture& source){
-		INFO.image = source.getImpl()->image;
+		_impl->builder->info.image = source.getImpl()->image;
 	}
 
 	void TextureSubset::setRange(const Range& range){
-		INFO.subResource = VkImageSubresourceRange{
+		_impl->builder->info.subresourceRange = VkImageSubresourceRange{
 			.aspectMask = TextureAspectToVulkan(range.aspect),
 			.baseMipLevel = static_cast<uint32_t>(range.mipmapLevel),
 			.levelCount = static_cast<uint32_t>(range.mipmapCount),
@@ -114,86 +94,73 @@ namespace Raindrop{
 	}
 
 	void TextureSubset::swizzleComponent(const Color::Components::Bits& component, const Color::Swizzle& swizzle){
-		VkComponentSwizzle vkSwizzle = toVulkan(swizzle);
+		VkComponentSwizzle vkSwizzle = ComponentSwizzleToVulkan(swizzle);
 
 		switch (component){
-			case Color::Components::RED: INFO.componentMapping.r = vkSwizzle; break;
-			case Color::Components::GREEN: INFO.componentMapping.g = vkSwizzle; break;
-			case Color::Components::BLUE: INFO.componentMapping.b = vkSwizzle; break;
-			case Color::Components::ALPHA: INFO.componentMapping.a = vkSwizzle; break;
+			case Color::Components::RED: _impl->builder->info.components.r = vkSwizzle; break;
+			case Color::Components::GREEN: _impl->builder->info.components.g = vkSwizzle; break;
+			case Color::Components::BLUE: _impl->builder->info.components.b = vkSwizzle; break;
+			case Color::Components::ALPHA: _impl->builder->info.components.a = vkSwizzle; break;
 		}
 	}
 
 	void TextureSubset::setType(const Type& type){
-		INFO.viewType = toVulkan(type);
+		_impl->builder->info.viewType = TextureSubsetTypeToVulkan(type);
 	}
 
 	void TextureSubset::setFormat(const Format& format){
-		INFO.format = static_cast<VkFormat>(format.get());
+		_impl->builder->info.format = FormatToVulkan(format);
 	}
 
 	void TextureSubset::setFlags(const Flags& flags){
-		INFO.flags = static_cast<VkImageViewCreateFlags>(flags.get());
+		_impl->builder->info.flags = TextureSubsetFlagsToVulkan(flags);
 	}
 
 	Texture TextureSubset::getSource() const noexcept{
-		// TODO
+		std::unique_ptr<Texture::Impl> temp = std::make_unique<Texture::Impl>();
+
+		temp->context = _impl->context;
+		temp->image = _impl->imageView->getImage();
+
+		return Texture(std::move(temp));
 	}
 
 	TextureSubset::Range TextureSubset::getRange() const noexcept{
+		const auto& range = _impl->imageView->getSubresourceRange();
 		return TextureSubset::Range{
-			.aspect = static_cast<Texture::Aspect>(INFO.subResource.aspectMask),
-			.mipmapLevel = static_cast<std::size_t>(INFO.subResource.baseMipLevel),
-			.mipmapCount = static_cast<std::size_t>(INFO.subResource.levelCount),
-			.layer = static_cast<std::size_t>(INFO.subResource.baseArrayLayer),
-			.layerCount = static_cast<std::size_t>(INFO.subResource.layerCount)
+			.aspect = TextureAspectToRaindrop(range.aspectMask),
+			.mipmapLevel = range.baseMipLevel,
+			.mipmapCount = range.levelCount,
+			.layer = range.baseArrayLayer,
+			.layerCount = range.layerCount
 		};
 	}
 
 	Color::Swizzle TextureSubset::getComponentSwizzle(const Color::Components::Bits& component) const noexcept{
 		VkComponentSwizzle swizzle = VK_COMPONENT_SWIZZLE_IDENTITY;
 		switch (component){
-			case Color::Components::RED: swizzle = INFO.componentMapping.r; break;
-			case Color::Components::GREEN: swizzle = INFO.componentMapping.g; break;
-			case Color::Components::BLUE: swizzle = INFO.componentMapping.b; break;
-			case Color::Components::ALPHA: swizzle = INFO.componentMapping.a; break;
+			case Color::Components::RED: swizzle = _impl->builder->info.components.r; break;
+			case Color::Components::GREEN: swizzle = _impl->builder->info.components.g; break;
+			case Color::Components::BLUE: swizzle = _impl->builder->info.components.b; break;
+			case Color::Components::ALPHA: swizzle = _impl->builder->info.components.a; break;
 		}
 
-		switch (swizzle){
-			case VK_COMPONENT_SWIZZLE_R: return Color::Swizzle::RED; 
-			case VK_COMPONENT_SWIZZLE_G: return Color::Swizzle::GREEN; 
-			case VK_COMPONENT_SWIZZLE_B: return Color::Swizzle::BLUE; 
-			case VK_COMPONENT_SWIZZLE_A: return Color::Swizzle::ALPHA; 
-			case VK_COMPONENT_SWIZZLE_ONE: return Color::Swizzle::ONE; 
-			case VK_COMPONENT_SWIZZLE_ZERO: return Color::Swizzle::ZERO; 
-			case VK_COMPONENT_SWIZZLE_IDENTITY: return Color::Swizzle::IDENTITY; 
-		}
-		
-		return Color::Swizzle::IDENTITY;
+		return ComponentSwizzleToRaindrop(swizzle);
 	}
 
 	TextureSubset::Type TextureSubset::getType() const noexcept{
-		switch (INFO.viewType){
-			case VK_IMAGE_VIEW_TYPE_1D: return Type::LINEAR;
-			case VK_IMAGE_VIEW_TYPE_2D: return Type::PLANAR;
-			case VK_IMAGE_VIEW_TYPE_3D: return Type::VOLUMETRIC;
-			case VK_IMAGE_VIEW_TYPE_CUBE: return Type::CUBEMAP;
-			case VK_IMAGE_VIEW_TYPE_1D_ARRAY: return Type::LINEAR_ARRAY;
-			case VK_IMAGE_VIEW_TYPE_2D_ARRAY: return Type::PLANAR_ARRAY;
-			case VK_IMAGE_VIEW_TYPE_CUBE_ARRAY: return Type::CUBEMAP_ARRAY;
-		}
-		return Type::PLANAR;
+		return TextureSubsetTypeToRaindrop(_impl->imageView->getViewType());
 	}
 
 	Format TextureSubset::getFormat() const noexcept{
-		return static_cast<Format::Type>(INFO.format);
+		return FormatToRaindrop(_impl->imageView->getFormat());
 	}
 
 	TextureSubset::Flags TextureSubset::getFlags() const noexcept{
-		return static_cast<Flags::Bitset>(INFO.flags);
+		return TextureFlagsToRaindrop(_impl->imageView->getFlags());
 	}
 
 	TextureSubset::Impl* TextureSubset::getImpl() const noexcept{
-		return _impl;
+		return _impl.get();
 	}
 }

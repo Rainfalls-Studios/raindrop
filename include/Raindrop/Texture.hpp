@@ -150,6 +150,7 @@ namespace Raindrop{
 			static Texture Create(Context& context);
 			
 			Texture(Context& context);
+			Texture(std::unique_ptr<Impl>&& impl);
 			~Texture();
 
 			void initialize();

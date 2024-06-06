@@ -4,38 +4,37 @@
 #include "common.hpp"
 
 namespace Raindrop::Internal::Graphics{
-	struct ImageViewConfigInfo{
+	struct ImageViewConfigInfo : public VkImageViewCreateInfo{
 		std::shared_ptr<Image> image;
-		VkImageViewType viewType;
-		VkFormat format;
-		VkComponentMapping componentMapping;
-		VkImageSubresourceRange subResource;
-		VkImageViewCreateFlags flags;
 
+		void update();
 		ImageViewConfigInfo();
 	};
 
 	class ImageView{
 		public:
-			ImageView(Context& context, const ImageViewConfigInfo& configInfo);
+			ImageView(Context& context, const ImageViewConfigInfo& info);
 			~ImageView();
 
 			VkImageView get() const;
-			const Image& image() const;
-			VkImageSubresourceRange subResource() const;
-			VkImageViewType viewType() const;
-			VkFormat format() const;
-			VkComponentMapping componentMapping() const;
+
+			const VkImageViewCreateFlags& getFlags() const noexcept;
+			const std::shared_ptr<Image>& getImage() const noexcept;
+			const VkImageViewType& getViewType() const noexcept;
+			const VkFormat& getFormat() const noexcept;
+			const VkComponentMapping& getComponents() const noexcept;
+			const VkImageSubresourceRange& getSubresourceRange() const noexcept;
 			
 		private:
 			Context& _context;
-			std::shared_ptr<Image> _image;
-
 			VkImageView _imageView;
-			VkImageSubresourceRange _subResource;
+
+			VkImageViewCreateFlags _flags;
+			std::shared_ptr<Image> _image;
 			VkImageViewType _viewType;
 			VkFormat _format;
-			VkComponentMapping _componentMapping;
+			VkComponentMapping _components;
+			VkImageSubresourceRange _subresourceRange;
 	};
 }
 

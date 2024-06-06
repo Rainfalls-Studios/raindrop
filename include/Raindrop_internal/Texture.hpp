@@ -8,31 +8,12 @@ namespace Raindrop{
 	struct Texture::Impl{
 		struct Builder{
 			VkImageCreateInfo info;
-
 			Builder();
-		};
-
-		// Cached immutable info stored after initialization
-		struct Info{
-			Format format;
-			std::uint32_t width;
-			std::uint32_t height;
-			std::uint32_t depth;
-			Usage usage;
-			Layout layout;
-			Tiling tiling;
-			Type type;
-			std::uint32_t mipCount;
-			std::uint32_t arrLayers;
-			Flags flags;
 		};
 
 		std::shared_ptr<Internal::Graphics::Image> image;
 		std::unique_ptr<Builder> builder;
-		Info info;
 		Context* context;
-
-		void transfertBuildDataToInfo();
 
 		Impl() : 
 			image{nullptr},

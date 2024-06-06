@@ -41,22 +41,6 @@ namespace Raindrop{
 			.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
 		}
 	{}
-	
-	void Texture::Impl::transfertBuildDataToInfo(){
-		info = Info{
-			.format = FormatToRaindrop(builder->info.format),
-			.width = builder->info.extent.width,
-			.height = builder->info.extent.height,
-			.depth = builder->info.extent.depth,
-			.usage = TextureUsageToRaindrop(builder->info.usage),
-			.layout = TextureLayoutToRaindrop(builder->info.initialLayout),
-			.tiling = TextureTilingToRaindrop(builder->info.tiling),
-			.type = TextureTypeToRaindrop(builder->info.imageType),
-			.mipCount = builder->info.mipLevels,
-			.arrLayers = builder->info.arrayLayers,
-			.flags = TextureFlagsToRaindrop(builder->info.flags)
-		};
-	}
 
 	static inline std::runtime_error access_error(){
 		spdlog::error("Cannot access data of a non initialized texture");
@@ -68,6 +52,8 @@ namespace Raindrop{
 	Texture Texture::Create(Context& context){
 		return Texture(context);
 	}
+
+	Texture::Texture(std::unique_ptr<Impl>&& impl) : _impl{std::move(impl)}{}
 
 	Texture::Texture(Context& context) : _impl{std::make_unique<Impl>()}{
 		_impl->builder = std::make_unique<Impl::Builder>();
@@ -86,8 +72,6 @@ namespace Raindrop{
 
 		LOGGER->info("Initializing texture...");
 		_impl->image = std::make_shared<Internal::Graphics::Image>(GRAPHICS_CONTEXT, _impl->builder->info);
-
-		_impl->transfertBuildDataToInfo();
 		_impl->builder.reset();
 
 		LOGGER->info("Texture initialized with success !");
@@ -143,47 +127,47 @@ namespace Raindrop{
 	}
 
 	Format Texture::getFormat() const noexcept{
-		return _impl->info.format;
+		return FormatToRaindrop(_impl->image->getFormat());
 	}
 
 	std::uint32_t Texture::getWidth() const noexcept{
-		return _impl->info.width;
+		return _impl->image->getWidth();
 	}
 
 	std::uint32_t Texture::getHeight() const noexcept{
-		return _impl->info.height;
+		return _impl->image->getHeight();
 	}
 
 	std::uint32_t Texture::getDepth() const noexcept{
-		return _impl->info.depth;
+		return _impl->image->getDepth();
 	}
 
 	Texture::Usage Texture::getUsage() const noexcept{
-		return _impl->info.usage;
+		return TextureUsageToRaindrop(_impl->image->getUsage());
 	}
 
 	Texture::Layout Texture::getLayout() const noexcept{
-		return _impl->info.layout;
+		return TextureLayoutToRaindrop(_impl->image->getLayout());
 	}
 
 	Texture::Tiling Texture::getTiling() const noexcept{
-		return _impl->info.tiling;
+		return TextureTilingToRaindrop(_impl->image->getTiling());
 	}
 
 	Texture::Type Texture::getType() const noexcept{
-		return _impl->info.type;
+		return TextureTypeToRaindrop(_impl->image->getType());
 	}
 
 	std::uint32_t Texture::getMipmapCount() const noexcept{
-		return _impl->info.mipCount;
+		return _impl->image->getMipCount();
 	}
 
 	std::uint32_t Texture::getArrayLayers() const noexcept{
-		return _impl->info.arrLayers;
+		return _impl->image->getArrLayers();
 	}
 
 	Texture::Flags Texture::getFlags() const noexcept{
-		return _impl->info.flags;
+		return TextureFlagsToRaindrop(_impl->image->getFlags());
 	}
 
 	bool Texture::isInitialized() const noexcept{

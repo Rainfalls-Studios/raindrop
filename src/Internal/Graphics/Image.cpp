@@ -6,7 +6,19 @@ namespace Raindrop::Internal::Graphics{
 	Image::Image(Context& context, const VkImageCreateInfo& info) :
 			_context{context},
 			_image{VK_NULL_HANDLE},
-			_memory{VK_NULL_HANDLE}
+			_memory{VK_NULL_HANDLE},
+
+			_format{info.format},
+			_width{info.extent.width},
+			_height{info.extent.height},
+			_depth{info.extent.depth},
+			_usage{info.usage},
+			_layout{info.initialLayout},
+			_tiling{info.tiling},
+			_type{info.imageType},
+			_mipCount{info.mipLevels},
+			_arrLayers{info.arrayLayers},
+			_flags{info.flags}
 		{
 
 		_context.getLogger()->info("Creating new image...");
@@ -67,5 +79,49 @@ namespace Raindrop::Internal::Graphics{
 
 	VkDeviceMemory Image::memory() const{
 		return _memory;
+	}
+
+	const VkFormat& Image::getFormat() const noexcept{
+		return _format;
+	}
+
+	const std::uint32_t& Image::getWidth() const noexcept{
+		return _width;
+	}
+
+	const std::uint32_t& Image::getHeight() const noexcept{
+		return _height;
+	}
+
+	const std::uint32_t& Image::getDepth() const noexcept{
+		return _depth;
+	}
+
+	const VkImageUsageFlags& Image::getUsage() const noexcept{
+		return _usage;
+	}
+
+	const VkImageLayout& Image::getLayout() const noexcept{
+		return _layout;
+	}
+
+	const VkImageTiling& Image::getTiling() const noexcept{
+		return _tiling;
+	}
+
+	const VkImageType& Image::getType() const noexcept{
+		return _type;
+	}
+
+	const std::uint32_t& Image::getMipCount() const noexcept{
+		return _mipCount;
+	}
+
+	const std::uint32_t& Image::getArrLayers() const noexcept{
+		return _arrLayers;
+	}
+
+	const VkImageCreateFlags& Image::getFlags() const noexcept{
+		return _flags;
 	}
 }
