@@ -17,9 +17,10 @@ namespace Raindrop::Utils{
 			using Bitset = Bitset_t;
 			enum Bits : Bitset;
 
-			inline FlagsTemplate() noexcept : _bitset(0) {}
-			inline FlagsTemplate(const Bitset& flags) noexcept : _bitset(flags) {}
-			inline FlagsTemplate(const FlagsTemplate& other) noexcept : _bitset(other._bitset) {}
+			constexpr inline FlagsTemplate() noexcept : _bitset(0) {}
+			constexpr inline FlagsTemplate(const Bitset& flags) noexcept : _bitset(flags) {}
+			constexpr inline FlagsTemplate(const Bits& bit) noexcept : _bitset(bit) {}
+			constexpr inline FlagsTemplate(const FlagsTemplate& other) noexcept : _bitset(other._bitset) {}
 
 
 			inline FlagsTemplate(const std::initializer_list<Bits>& bits) noexcept {
@@ -30,7 +31,7 @@ namespace Raindrop::Utils{
 			}
 
 			template<typename... Args>
-			FlagsTemplate(Args&&... args) {
+			constexpr FlagsTemplate(Args&&... args) {
 				_bitset = 0;
 				int i = 0;
 				([&]

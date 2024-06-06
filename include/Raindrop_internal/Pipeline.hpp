@@ -33,7 +33,7 @@ namespace Raindrop{
 			struct Stage{
 				std::shared_ptr<Shader> shader;
 				std::string entryPoint;
-				Shader::Stage stage;
+				Shader::Stage::Bits stage;
 				Shader::Flags flags;
 			};
 
@@ -67,7 +67,8 @@ namespace Raindrop{
 	VkStencilOp toVulkan(const Pipeline::StencilOperation& op);
 	VkDynamicState toVulkan(const Pipeline::DynamicState& s);
 	VkPipelineShaderStageCreateFlags toVulkan(const Pipeline::Shader::Flags& f);
-	VkShaderStageFlagBits toVulkan(const Pipeline::Shader::Stage& s);
+	VkShaderStageFlags toVulkan(const Pipeline::Shader::Stage& s);
+	VkShaderStageFlagBits toVulkan(const Pipeline::Shader::Stage::Bits& s);
 }
 
 #endif

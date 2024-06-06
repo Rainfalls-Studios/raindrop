@@ -98,7 +98,7 @@ namespace Raindrop{
 			void begin(const Flags& flags = Flags::NONE);
 			void end();
 
-
+			void reset(const bool& realeaseResources = true);
 
 		private:
 			Impl* _impl;

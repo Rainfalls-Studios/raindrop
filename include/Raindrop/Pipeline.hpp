@@ -387,8 +387,14 @@ namespace Raindrop{
 					void release();
 
 					void setFlags(const Flags& flags);
-					// void setPushConstants();
-					// void addPushConstant();
+
+					void setPushConstant(const Stage& stage, const std::size_t size);
+
+					template<typename T>
+					inline void setPushConstant(const Stage& stage){
+						setPushConstant(stage, sizeof(T));
+					}
+
 					// void setSetLayouts();
 					// void addSetLayout();
 
@@ -421,24 +427,30 @@ namespace Raindrop{
 							};
 					};
 
-					enum class Stage{
-						VERTEX,
-						TESSELLATION_CONTROL,
-						TESSELLATION_EVALUATION,
-						GEOMETRY,
-						FRAGMENT,
-						COMPUTE,
-						ALL_GRAPHICS,
-						RAYGEN,
-						ANY_HIT,
-						CLOSEST_HIT,
-						MISS,
-						INTERSECTION,
-						CALLABLE,
-						TASK,
-						MESH,
-						SUBPASS_SHADING,
-						CLUSTER_CULLING,
+					class Stage : public Utils::FlagsTemplate<Stage>{
+						public:
+							using FlagsTemplate<Stage>::FlagsTemplate;
+
+							enum Bits : Bitset{
+								NONE = 0,
+								VERTEX = 1 << 0,
+								TESSELLATION_CONTROL = 1 << 1,
+								TESSELLATION_EVALUATION = 1 << 2,
+								GEOMETRY = 1 << 3,
+								FRAGMENT = 1 << 4,
+								COMPUTE = 1 << 5,
+								ALL_GRAPHICS = 1 << 6,
+								RAYGEN = 1 << 7,
+								ANY_HIT = 1 << 8,
+								CLOSEST_HIT = 1 << 9,
+								MISS = 1 << 10,
+								INTERSECTION = 1 << 11,
+								CALLABLE = 1 << 12,
+								TASK = 1 << 13,
+								MESH = 1 << 14,
+								SUBPASS_SHADING = 1 << 15,
+								CLUSTER_CULLING = 1 << 16,
+							};
 					};
 
 					static Shader Create(Context& context, const Path& path);
@@ -519,7 +531,7 @@ namespace Raindrop{
 
 			Pipeline& setTellesationPatchControlPoints(const std::uint32_t& count);
 
-			Pipeline& addStage(const std::shared_ptr<Shader>& shader, const Shader::Stage& stage, const char* entryPoint = "main", const Shader::Flags& flags = Shader::Flags::NONE);
+			Pipeline& addStage(const std::shared_ptr<Shader>& shader, const Shader::Stage::Bits& stage, const char* entryPoint = "main", const Shader::Flags& flags = Shader::Flags::NONE);
 			ColorAttachment& addColorAttachment();
 			Vertex::Layout& addVertexBinding(const Vertex::InputRate& inputRate);
 			Viewport& addViewport();

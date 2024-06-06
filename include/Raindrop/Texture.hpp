@@ -134,13 +134,13 @@ namespace Raindrop{
 
 			struct FormatProperties{
 				bool supported;
-				std::size_t maxWidth;
-				std::size_t maxHeight;
-				std::size_t maxDepth;
-				std::size_t maxMipmapLevels;
-				std::size_t maxArrayLayers;
+				std::uint32_t maxWidth;
+				std::uint32_t maxHeight;
+				std::uint32_t maxDepth;
+				std::uint32_t maxMipmapLevels;
+				std::uint32_t maxArrayLayers;
 				// Texture::Sample supportedSampleCount;
-				std::size_t maxResourcesSize;
+				std::uint32_t maxResourcesSize;
 
 				static const FormatProperties UNSUPPORTED;
 			};
@@ -152,34 +152,31 @@ namespace Raindrop{
 			Texture(Context& context);
 			~Texture();
 
-			Texture(const Texture& other);
-			Texture& operator=(const Texture& other);
-
 			void initialize();
 			void release();
 
 			void setFormat(const Format& format);
-			void setWidth(const std::size_t& width);
-			void setHeight(const std::size_t& height);
-			void setDepth(const std::size_t& depth);
+			void setWidth(const std::uint32_t& width);
+			void setHeight(const std::uint32_t& height);
+			void setDepth(const std::uint32_t& depth);
 			void setUsage(const Usage& usage);
 			void setLayout(const Layout& layout);
 			void setTiling(const Tiling& tiling);
 			void setType(const Type& type);
-			void setMipmapCount(const std::size_t mip);
-			void setArrayLayers(const std::size_t layers);
+			void setMipmapCount(const std::uint32_t mip);
+			void setArrayLayers(const std::uint32_t layers);
 			void setFlags(const Flags& flags);
 
 			Format getFormat() const noexcept;
-			std::size_t getWidth() const noexcept;
-			std::size_t getHeight() const noexcept;
-			std::size_t getDepth() const noexcept;
+			std::uint32_t getWidth() const noexcept;
+			std::uint32_t getHeight() const noexcept;
+			std::uint32_t getDepth() const noexcept;
 			Usage getUsage() const noexcept;
 			Layout getLayout() const noexcept;
 			Tiling getTiling() const noexcept;
 			Type getType() const noexcept;
-			std::size_t getMipmapCount() const noexcept;
-			std::size_t getArrayLayers() const noexcept;
+			std::uint32_t getMipmapCount() const noexcept;
+			std::uint32_t getArrayLayers() const noexcept;
 			Flags getFlags() const noexcept;
 
 			bool isInitialized() const noexcept;
@@ -192,7 +189,7 @@ namespace Raindrop{
 			Format findBestFormat(const Format::Properties& requiredProperties, const Format::Features& requiredFeatures, const Format::Properties& except = Format::Properties::NONE) const;
 
 		private:
-			Impl* _impl;
+			std::unique_ptr<Impl> _impl;
 	};
 
 	inline static Texture CreateTexture(Context& context){

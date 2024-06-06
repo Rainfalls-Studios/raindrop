@@ -25,8 +25,12 @@ namespace Raindrop::Internal::Graphics{
 		VkPipelineLayoutCreateInfo createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 
-		createInfo.pushConstantRangeCount = static_cast<uint32_t>(info.pushConstants.size());
-		createInfo.pPushConstantRanges = info.pushConstants.data();
+		if (info.pushConstant.has_value()){
+			createInfo.pushConstantRangeCount = 1;
+			createInfo.pPushConstantRanges = &info.pushConstant.value();
+		} else {
+			createInfo.pushConstantRangeCount = 0;
+		}
 
 		createInfo.setLayoutCount = static_cast<uint32_t>(info.setLayouts.size());
 		createInfo.pSetLayouts = info.setLayouts.data();

@@ -2,11 +2,12 @@
 #define __RAINDROP_INTERNAL_GRAPHICS_PIPELINES_PIPELINE_LAYOUT_HPP__
 
 #include "common.hpp"
+#include <optional>
 
 namespace Raindrop::Internal::Graphics{
 	struct PipelineLayoutConfigInfo{
 		std::vector<VkDescriptorSetLayout> setLayouts;
-		std::vector<VkPushConstantRange> pushConstants;
+		std::optional<VkPushConstantRange> pushConstant;
 		VkPipelineLayoutCreateFlags flags;
 	};
 

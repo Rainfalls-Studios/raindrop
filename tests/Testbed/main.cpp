@@ -196,6 +196,10 @@
 #include "config.h"
 #include <iostream>
 
+struct PushConstant{
+	Raindrop::Maths::mat4 transform;
+};
+
 int main(){
 	std::filesystem::current_path(PATH);
 
@@ -237,6 +241,8 @@ int main(){
 
 	// create pipeline layout
 	Raindrop::Pipeline::Layout pipelineLayout = Raindrop::CreatePipelineLayout(context);
+	pipelineLayout.setPushConstant<PushConstant>(Raindrop::Pipeline::Stage::VERTEX_SHADER);
+
 	pipelineLayout.initialize();
 	
 	Raindrop::RenderPass renderPass = Raindrop::CreateRenderPass(context);
@@ -307,16 +313,16 @@ int main(){
 		pipeline.initialize();
 	}
 
-	{
-		Raindrop::GMemory::Type type = Raindrop::FindGetGMemoryType(
-			context,
-			Raindrop::GMemory::Type::Flags::CPU_VISIBLE
-		);
+	// {
+	// 	Raindrop::GMemory::Type type = Raindrop::FindGetGMemoryType(
+	// 		context,
+	// 		Raindrop::GMemory::Type::Flags::CPU_VISIBLE
+	// 	);
 
-		Raindrop::GMemory memory = Raindrop::AllocateGMemory(context, 4096, type);
+	// 	Raindrop::GMemory memory = Raindrop::AllocateGMemory(context, 4096, type);
 
-		memory.free();
-	}
+	// 	memory.free();
+	// }
 	
 	Raindrop::Start(context);
 	

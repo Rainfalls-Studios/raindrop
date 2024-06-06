@@ -11,6 +11,7 @@
 #include <Raindrop_internal/Vertex.hpp>
 #include <Raindrop/CommandBuffer.hpp>
 #include <Raindrop_internal/CommandBuffer.hpp>
+#include <Raindrop_internal/Operators.hpp>
 
 #include <fstream>
 
@@ -26,7 +27,37 @@
 
 namespace Raindrop{
 
-	VkShaderStageFlagBits toVulkan(const Pipeline::Shader::Stage& s){
+	VkShaderStageFlags toVulkan(const Pipeline::Shader::Stage& s){
+		VkShaderStageFlags out = 0;
+		if (s.has(Pipeline::Shader::Stage::VERTEX)) out |= VK_SHADER_STAGE_VERTEX_BIT;
+		if (s.has(Pipeline::Shader::Stage::TESSELLATION_CONTROL)) out |= VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
+		if (s.has(Pipeline::Shader::Stage::TESSELLATION_EVALUATION)) out |= VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+		if (s.has(Pipeline::Shader::Stage::GEOMETRY)) out |= VK_SHADER_STAGE_GEOMETRY_BIT;
+		if (s.has(Pipeline::Shader::Stage::FRAGMENT)) out |= VK_SHADER_STAGE_FRAGMENT_BIT;
+		if (s.has(Pipeline::Shader::Stage::COMPUTE)) out |= VK_SHADER_STAGE_COMPUTE_BIT;
+			
+			// VK_KHR_ray_tracing_pipeline
+		if (s.has(Pipeline::Shader::Stage::RAYGEN)) out |= VK_SHADER_STAGE_RAYGEN_BIT_KHR;
+		if (s.has(Pipeline::Shader::Stage::ANY_HIT)) out |= VK_SHADER_STAGE_ANY_HIT_BIT_KHR;
+		if (s.has(Pipeline::Shader::Stage::CLOSEST_HIT)) out |= VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
+		if (s.has(Pipeline::Shader::Stage::MISS)) out |= VK_SHADER_STAGE_MISS_BIT_KHR;
+		if (s.has(Pipeline::Shader::Stage::INTERSECTION)) out |= VK_SHADER_STAGE_INTERSECTION_BIT_KHR;
+		if (s.has(Pipeline::Shader::Stage::CALLABLE)) out |= VK_SHADER_STAGE_CALLABLE_BIT_KHR;
+
+			// VK_EXT_mesh_shader
+		if (s.has(Pipeline::Shader::Stage::TASK)) out |= VK_SHADER_STAGE_TASK_BIT_EXT;
+		if (s.has(Pipeline::Shader::Stage::MESH)) out |= VK_SHADER_STAGE_MESH_BIT_EXT;
+			
+			// VK_HUAWEI_subpass_shading
+		if (s.has(Pipeline::Shader::Stage::SUBPASS_SHADING)) out |= VK_SHADER_STAGE_SUBPASS_SHADING_BIT_HUAWEI;
+
+			// VK_HUAWEI_cluster_culling_shader
+		if (s.has(Pipeline::Shader::Stage::CLUSTER_CULLING)) out |= VK_SHADER_STAGE_CLUSTER_CULLING_BIT_HUAWEI;
+		
+		return out;
+	}
+
+	VkShaderStageFlagBits toVulkan(const Pipeline::Shader::Stage::Bits& s){
 		switch (s){
 			case Pipeline::Shader::Stage::VERTEX: return VK_SHADER_STAGE_VERTEX_BIT;
 			case Pipeline::Shader::Stage::TESSELLATION_CONTROL: return VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
@@ -34,8 +65,8 @@ namespace Raindrop{
 			case Pipeline::Shader::Stage::GEOMETRY: return VK_SHADER_STAGE_GEOMETRY_BIT;
 			case Pipeline::Shader::Stage::FRAGMENT: return VK_SHADER_STAGE_FRAGMENT_BIT;
 			case Pipeline::Shader::Stage::COMPUTE: return VK_SHADER_STAGE_COMPUTE_BIT;
-			
-			// VK_KHR_ray_tracing_pipeline
+				
+				// VK_KHR_ray_tracing_pipeline
 			case Pipeline::Shader::Stage::RAYGEN: return VK_SHADER_STAGE_RAYGEN_BIT_KHR;
 			case Pipeline::Shader::Stage::ANY_HIT: return VK_SHADER_STAGE_ANY_HIT_BIT_KHR;
 			case Pipeline::Shader::Stage::CLOSEST_HIT: return VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
@@ -43,16 +74,17 @@ namespace Raindrop{
 			case Pipeline::Shader::Stage::INTERSECTION: return VK_SHADER_STAGE_INTERSECTION_BIT_KHR;
 			case Pipeline::Shader::Stage::CALLABLE: return VK_SHADER_STAGE_CALLABLE_BIT_KHR;
 
-			// VK_EXT_mesh_shader
+				// VK_EXT_mesh_shader
 			case Pipeline::Shader::Stage::TASK: return VK_SHADER_STAGE_TASK_BIT_EXT;
 			case Pipeline::Shader::Stage::MESH: return VK_SHADER_STAGE_MESH_BIT_EXT;
-			
-			// VK_HUAWEI_subpass_shading
+				
+				// VK_HUAWEI_subpass_shading
 			case Pipeline::Shader::Stage::SUBPASS_SHADING: return VK_SHADER_STAGE_SUBPASS_SHADING_BIT_HUAWEI;
 
-			// VK_HUAWEI_cluster_culling_shader
+				// VK_HUAWEI_cluster_culling_shader
 			case Pipeline::Shader::Stage::CLUSTER_CULLING: return VK_SHADER_STAGE_CLUSTER_CULLING_BIT_HUAWEI;
 		}
+
 		throw std::runtime_error("Invalid stage flag");
 	}
 
@@ -496,6 +528,14 @@ namespace Raindrop{
 
 	GUID Pipeline::Layout::getGUID() const noexcept{
 		// TODO
+	}
+
+	void Pipeline::Layout::setPushConstant(const Stage& stage, const std::size_t size){
+		LAYOUT_INFO.pushConstant = VkPushConstantRange{
+			.stageFlags = toVulkan(stage),
+			.offset = 0,
+			.size = static_cast<uint32_t>(size)
+		};
 	}
 
 	//--------------------------------------------------------------------
@@ -991,8 +1031,8 @@ namespace Raindrop{
 
 	Pipeline& Pipeline::setLayout(const Layout& layout){
 		_impl->info.internal.pipelineLayout = layout.getImpl()->layout;
+		return *this;
 	}
-
 
 	Pipeline::ColorAttachment& Pipeline::addColorAttachment(){
 		_impl->info.attachments.push_back({});
@@ -1015,42 +1055,42 @@ namespace Raindrop{
 	}
 
 	Pipeline& Pipeline::setPrimitiveTopology(const Topology& topology){
-		INFO.inputAssemblyInfo.topology = static_cast<VkPrimitiveTopology>(topology);
+		INFO.inputAssemblyInfo.topology = toVulkan(topology);
 		return *this;
 	}
 
 	Pipeline& Pipeline::enablePrimitiveRestart(const bool& enable){
-		INFO.inputAssemblyInfo.primitiveRestartEnable = static_cast<VkBool32>(enable);
+		INFO.inputAssemblyInfo.primitiveRestartEnable = toVulkan(enable);
 		return *this;
 	}
 
 	Pipeline& Pipeline::enableDepthClamp(const bool& enable){
-		INFO.rasterizationInfo.depthClampEnable = static_cast<VkBool32>(enable);
+		INFO.rasterizationInfo.depthClampEnable = toVulkan(enable);
 		return *this;
 	}
 
 	Pipeline& Pipeline::enableRasterizerDiscard(const bool& enable){
-		INFO.rasterizationInfo.rasterizerDiscardEnable = static_cast<VkBool32>(enable);
+		INFO.rasterizationInfo.rasterizerDiscardEnable = toVulkan(enable);
 		return *this;
 	}
 
 	Pipeline& Pipeline::setPolygonMode(const PolygonMode& mode){
-		INFO.rasterizationInfo.polygonMode = static_cast<VkPolygonMode>(mode);
+		INFO.rasterizationInfo.polygonMode = toVulkan(mode);
 		return *this;
 	}
 
 	Pipeline& Pipeline::setCullMode(const CullMode& mode){
-		INFO.rasterizationInfo.cullMode = static_cast<VkCullModeFlags>(mode.get());
+		INFO.rasterizationInfo.cullMode = toVulkan(mode.get());
 		return *this;
 	}
 
 	Pipeline& Pipeline::setFrontFace(const FrontFace& frontFace){
-		INFO.rasterizationInfo.frontFace = static_cast<VkFrontFace>(frontFace);
+		INFO.rasterizationInfo.frontFace = toVulkan(frontFace);
 		return *this;
 	}
 
 	Pipeline& Pipeline::enableDepthBias(const bool& enable){
-		INFO.rasterizationInfo.depthBiasEnable = static_cast<VkBool32>(enable);
+		INFO.rasterizationInfo.depthBiasEnable = toVulkan(enable);
 		return *this;
 	}
 
@@ -1080,7 +1120,7 @@ namespace Raindrop{
 	}
 
 	Pipeline& Pipeline::enableSampleShading(const bool& enable){
-		INFO.multisampleInfo.sampleShadingEnable = static_cast<VkBool32>(enable);
+		INFO.multisampleInfo.sampleShadingEnable = toVulkan(enable);
 		return *this;
 	}
 
@@ -1090,27 +1130,27 @@ namespace Raindrop{
 	}
 
 	Pipeline& Pipeline::enableAlphaToCoverage(const bool& enable){
-		INFO.multisampleInfo.alphaToCoverageEnable = static_cast<VkBool32>(enable);
+		INFO.multisampleInfo.alphaToCoverageEnable = toVulkan(enable);
 		return *this;
 	}
 
 	Pipeline& Pipeline::enableAlphaToOne(const bool& enable){
-		INFO.multisampleInfo.alphaToOneEnable = static_cast<VkBool32>(enable);
+		INFO.multisampleInfo.alphaToOneEnable = toVulkan(enable);
 		return *this;
 	}
 
 	Pipeline& Pipeline::setColorBlendFlags(const ColorBlendFlags& flags){
-		INFO.colorBlendInfo.flags = static_cast<VkPipelineColorBlendStateCreateFlags>(flags.get());
+		INFO.colorBlendInfo.flags = toVulkan(flags);
 		return *this;
 	}
 
 	Pipeline& Pipeline::enableBlendLogicOperation(const bool& enable){
-		INFO.colorBlendInfo.logicOpEnable = static_cast<VkBool32>(enable);
+		INFO.colorBlendInfo.logicOpEnable = toVulkan(enable);
 		return *this;
 	}
 
 	Pipeline& Pipeline::setBlendLogicOperation(const LogicOperator& op){
-		INFO.colorBlendInfo.logicOp = static_cast<VkLogicOp>(op);
+		INFO.colorBlendInfo.logicOp = toVulkan(op);
 		return *this;
 	}
 
@@ -1128,27 +1168,27 @@ namespace Raindrop{
 	}
 
 	Pipeline& Pipeline::enableDepthTest(const bool& enable){
-		INFO.depthStencilInfo.depthTestEnable = static_cast<VkBool32>(enable);
+		INFO.depthStencilInfo.depthTestEnable = toVulkan(enable);
 		return *this;
 	}
 
 	Pipeline& Pipeline::enableDepthWrite(const bool& enable){
-		INFO.depthStencilInfo.depthWriteEnable = static_cast<VkBool32>(enable);
+		INFO.depthStencilInfo.depthWriteEnable = toVulkan(enable);
 		return *this;
 	}
 
 	Pipeline& Pipeline::setDepthCompareOp(const CompareOperator& op){
-		INFO.depthStencilInfo.depthCompareOp = static_cast<VkCompareOp>(op);
+		INFO.depthStencilInfo.depthCompareOp = toVulkan(op);
 		return *this;
 	}
 
 	Pipeline& Pipeline::enableDepthBoundsTest(const bool& enable){
-		INFO.depthStencilInfo.depthBoundsTestEnable = static_cast<VkBool32>(enable);
+		INFO.depthStencilInfo.depthBoundsTestEnable = toVulkan(enable);
 		return *this;
 	}
 
 	Pipeline& Pipeline::enableStencilTest(const bool& enable){
-		INFO.depthStencilInfo.stencilTestEnable = static_cast<VkBool32>(enable);
+		INFO.depthStencilInfo.stencilTestEnable = toVulkan(enable);
 		return *this;
 	}
 
@@ -1179,7 +1219,7 @@ namespace Raindrop{
 		return *this;
 	}
 
-	Pipeline& Pipeline::addStage(const std::shared_ptr<Shader>& shader, const Shader::Stage& stage, const char* entryPoint, const Shader::Flags& flags){
+	Pipeline& Pipeline::addStage(const std::shared_ptr<Shader>& shader, const Shader::Stage::Bits& stage, const char* entryPoint, const Shader::Flags& flags){
 		_impl->info.stages.push_back({shader, entryPoint, stage, flags});
 		return *this;
 	}

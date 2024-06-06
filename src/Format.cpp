@@ -15,7 +15,6 @@ namespace Raindrop{
 	}
 
 	Format::Format() noexcept : _type{UNDEFINED}{}
-	Format::Format(Type type) noexcept : _type{type}{}
 	Format::Format(const Format& other) noexcept : _type{other._type}{}
 
 	Format& Format::operator=(const Format& other) noexcept{
@@ -42,10 +41,6 @@ namespace Raindrop{
 
 	bool Format::operator!=(const Format::Type& type) const noexcept{
 		return _type != type;
-	}
-
-	Format::Type Format::get() const noexcept{
-		return _type;
 	}
 
 	bool Format::isSFloat() const noexcept{

@@ -10,6 +10,8 @@ namespace Raindrop::Internal::Graphics{
 			_type{type}
 		{
 
+		_context.getLogger()->info("Allocating Graphics memory... ({} bytes)", size);
+
 		auto& device = context.getDevice();
 		auto& allocationCallbacks = context.getAllocationCallbacks();
 
@@ -39,8 +41,9 @@ namespace Raindrop::Internal::Graphics{
 		auto& device = _context.getDevice();
 		auto& allocationCallbacks = _context.getAllocationCallbacks();
 
-		vkFreeMemory(device.get(), _memory, allocationCallbacks);
+		_context.getLogger()->info("Freeing Graphics memory... ({} bytes)", _size);
 
+		vkFreeMemory(device.get(), _memory, allocationCallbacks);
 		_type.notifyFree(_size);
 	}
 
@@ -81,7 +84,6 @@ namespace Raindrop::Internal::Graphics{
 	// Could be used for debug checks, ...
 	void MemoryType::notifyAllocation(const std::size_t& size) noexcept{}
 	void MemoryType::notifyFree(const std::size_t& size) noexcept{}
-
 
 
 	MemoryTypes::MemoryTypes(Context& context) : _context{context}{
@@ -129,7 +131,6 @@ namespace Raindrop::Internal::Graphics{
 
 		return *bestCandidat;
 	}
-
 
 	MemoryType& MemoryTypes::get(const std::size_t& index){
 		return _types.at(index);

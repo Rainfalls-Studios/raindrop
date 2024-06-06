@@ -198,4 +198,8 @@ namespace Raindrop{
 			LOGGER
 		);
 	}
+
+	void CommandBuffer::reset(const bool& releaseResources){
+		vkResetCommandBuffer(_impl->commandBuffer, releaseResources ? VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT : 0);
+	}
 }

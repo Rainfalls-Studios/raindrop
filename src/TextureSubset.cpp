@@ -5,6 +5,7 @@
 #include <Raindrop_internal/Texture.hpp>
 #include <Raindrop_internal/Graphics/ImageView.hpp>
 #include <Raindrop_internal/Graphics/Renderer.hpp>
+#include <Raindrop_internal/Color.hpp>
 
 #define LOGGER _impl->context->getInternalContext()->getLogger()
 #define INFO _impl->info
@@ -104,7 +105,7 @@ namespace Raindrop{
 
 	void TextureSubset::setRange(const Range& range){
 		INFO.subResource = VkImageSubresourceRange{
-			.aspectMask = static_cast<VkImageAspectFlags>(range.aspect.get()),
+			.aspectMask = TextureAspectToVulkan(range.aspect),
 			.baseMipLevel = static_cast<uint32_t>(range.mipmapLevel),
 			.levelCount = static_cast<uint32_t>(range.mipmapCount),
 			.baseArrayLayer = static_cast<uint32_t>(range.layer),
@@ -113,16 +114,7 @@ namespace Raindrop{
 	}
 
 	void TextureSubset::swizzleComponent(const Color::Components::Bits& component, const Color::Swizzle& swizzle){
-		VkComponentSwizzle vkSwizzle = VK_COMPONENT_SWIZZLE_IDENTITY;
-		switch (swizzle){
-			case Color::Swizzle::RED: vkSwizzle = VK_COMPONENT_SWIZZLE_R; break;
-			case Color::Swizzle::GREEN: vkSwizzle = VK_COMPONENT_SWIZZLE_G; break;
-			case Color::Swizzle::BLUE: vkSwizzle = VK_COMPONENT_SWIZZLE_B; break;
-			case Color::Swizzle::ALPHA: vkSwizzle = VK_COMPONENT_SWIZZLE_A; break;
-			case Color::Swizzle::ONE: vkSwizzle = VK_COMPONENT_SWIZZLE_ONE; break;
-			case Color::Swizzle::ZERO: vkSwizzle = VK_COMPONENT_SWIZZLE_ZERO; break;
-			case Color::Swizzle::IDENTITY: vkSwizzle = VK_COMPONENT_SWIZZLE_IDENTITY; break;
-		}
+		VkComponentSwizzle vkSwizzle = toVulkan(swizzle);
 
 		switch (component){
 			case Color::Components::RED: INFO.componentMapping.r = vkSwizzle; break;
@@ -133,15 +125,7 @@ namespace Raindrop{
 	}
 
 	void TextureSubset::setType(const Type& type){
-		switch (type){
-			case Type::LINEAR: INFO.viewType = VK_IMAGE_VIEW_TYPE_1D; break;
-			case Type::PLANAR: INFO.viewType = VK_IMAGE_VIEW_TYPE_2D; break;
-			case Type::VOLUMETRIC: INFO.viewType = VK_IMAGE_VIEW_TYPE_3D; break;
-			case Type::CUBEMAP: INFO.viewType = VK_IMAGE_VIEW_TYPE_CUBE; break;
-			case Type::LINEAR_ARRAY: INFO.viewType = VK_IMAGE_VIEW_TYPE_1D_ARRAY; break;
-			case Type::PLANAR_ARRAY: INFO.viewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY; break;
-			case Type::CUBEMAP_ARRAY: INFO.viewType = VK_IMAGE_VIEW_TYPE_CUBE_ARRAY; break;
-		}
+		INFO.viewType = toVulkan(type);
 	}
 
 	void TextureSubset::setFormat(const Format& format){
@@ -184,6 +168,7 @@ namespace Raindrop{
 			case VK_COMPONENT_SWIZZLE_ZERO: return Color::Swizzle::ZERO; 
 			case VK_COMPONENT_SWIZZLE_IDENTITY: return Color::Swizzle::IDENTITY; 
 		}
+		
 		return Color::Swizzle::IDENTITY;
 	}
 
