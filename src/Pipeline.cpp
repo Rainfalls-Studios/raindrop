@@ -922,13 +922,13 @@ namespace Raindrop{
 			const auto& dst = _impl->info.attachments[i];
 			attachments[i] = VkPipelineColorBlendAttachmentState{
 				.blendEnable = toVulkan(dst.isBlendingEnable()),
-				.srcColorBlendFactor = toVulkan(dst.getSrcColorBlendFactor()),
-				.dstColorBlendFactor = toVulkan(dst.getDstColorBlendFactor()),
-				.colorBlendOp = toVulkan(dst.getColorBlendOp()),
-				.srcAlphaBlendFactor = toVulkan(dst.getSrcAlphaBlendFactor()),
-				.dstAlphaBlendFactor = toVulkan(dst.getDstAlphaBlendFactor()),
-				.alphaBlendOp = toVulkan(dst.getAlphaBlendOp()),
-				.colorWriteMask = toVulkan(dst.getWriteMask())
+				.srcColorBlendFactor = BlendFactorToVulkan(dst.getSrcColorBlendFactor()),
+				.dstColorBlendFactor = BlendFactorToVulkan(dst.getDstColorBlendFactor()),
+				.colorBlendOp = BlendOperationToVulkan(dst.getColorBlendOp()),
+				.srcAlphaBlendFactor = BlendFactorToVulkan(dst.getSrcAlphaBlendFactor()),
+				.dstAlphaBlendFactor = BlendFactorToVulkan(dst.getDstAlphaBlendFactor()),
+				.alphaBlendOp = BlendOperationToVulkan(dst.getAlphaBlendOp()),
+				.colorWriteMask = ColorComponentsFlagsToVulkan(dst.getWriteMask())
 			};
 		}
 
