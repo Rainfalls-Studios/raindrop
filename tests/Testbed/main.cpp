@@ -248,7 +248,7 @@ int main(){
 	Raindrop::RenderPass renderPass = Raindrop::CreateRenderPass(context);
 	{
 
-		auto attachment = renderPass.addAttachment()
+		auto& attachment = renderPass.addAttachment()
 			.setFormat(format)
 			.setLoadOperation(Raindrop::RenderPass::Attachment::Operation::CLEAR)
 			.setStoreOperation(Raindrop::RenderPass::Attachment::Operation::STORE)
@@ -257,7 +257,7 @@ int main(){
 			.setInitialLayout(Raindrop::Texture::Layout::UNDEFINED)
 			.setFinalLayout(Raindrop::Texture::Layout::SHADER_READ_ONLY_OPTIMAL);
 
-		auto subpass = renderPass.addSubpass()
+		auto& subpass = renderPass.addSubpass()
 			.addColorAttachment(
 				{
 					.attachment = attachment,
@@ -265,7 +265,7 @@ int main(){
 				}
 			);
 		
-		auto dependency = renderPass.addDependency()
+		auto& dependency = renderPass.addDependency()
 			.setSrcSubpass(Raindrop::RenderPass::Subpass::External)
 			.setDstSubpass(subpass)
 			.setSrcStage(Raindrop::Pipeline::Stage::COLOR_ATTACHMENT_OUTPUT)

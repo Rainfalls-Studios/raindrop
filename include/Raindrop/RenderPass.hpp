@@ -17,34 +17,34 @@ namespace Raindrop{
 
 					enum Bits : Bitset {
 						NONE = 0,
-						INDIRECT_COMMAND_READ = 0x00000001,
-						INDEX_READ = 0x00000002,
-						VERTEX_ATTRIBUTE_READ = 0x00000004,
-						UNIFORM_READ = 0x00000008,
-						INPUT_ATTACHMENT_READ = 0x00000010,
-						SHADER_READ = 0x00000020,
-						SHADER_WRITE = 0x00000040,
-						COLOR_ATTACHMENT_READ = 0x00000080,
-						COLOR_ATTACHMENT_WRITE = 0x00000100,
-						DEPTH_STENCIL_ATTACHMENT_READ = 0x00000200,
-						DEPTH_STENCIL_ATTACHMENT_WRITE = 0x00000400,
-						TRANSFER_READ = 0x00000800,
-						TRANSFER_WRITE = 0x00001000,
-						HOST_READ = 0x00002000,
-						HOST_WRITE = 0x00004000,
-						MEMORY_READ = 0x00008000,
-						MEMORY_WRITE = 0x00010000,
-						TRANSFORM_FEEDBACK_WRITE = 0x02000000,
-						TRANSFORM_FEEDBACK_COUNTER_READ = 0x04000000,
-						TRANSFORM_FEEDBACK_COUNTER_WRITE = 0x08000000,
-						CONDITIONAL_RENDERING_READ = 0x00100000,
-						COLOR_ATTACHMENT_READ_NONCOHERENT = 0x00080000,
-						ACCELERATION_STRUCTURE_READ = 0x00200000,
-						ACCELERATION_STRUCTURE_WRITE = 0x00400000,
-						FRAGMENT_DENSITY_MAP_READ = 0x01000000,
-						FRAGMENT_SHADING_RATE_ATTACHMENT_READ = 0x00800000,
-						COMMAND_PREPROCESS_READ = 0x00020000,
-						COMMAND_PREPROCESS_WRITE = 0x00040000
+						INDIRECT_COMMAND_READ = 1 << 0,
+						INDEX_READ = 1 << 1,
+						VERTEX_ATTRIBUTE_READ = 1 << 2,
+						UNIFORM_READ = 1 << 3,
+						INPUT_ATTACHMENT_READ = 1 << 4,
+						SHADER_READ = 1 << 5,
+						SHADER_WRITE = 1 << 6,
+						COLOR_ATTACHMENT_READ = 1 << 7,
+						COLOR_ATTACHMENT_WRITE = 1 << 8,
+						DEPTH_STENCIL_ATTACHMENT_READ = 1 << 9,
+						DEPTH_STENCIL_ATTACHMENT_WRITE = 1 << 10,
+						TRANSFER_READ = 1 << 11,
+						TRANSFER_WRITE = 1 << 12,
+						HOST_READ = 1 << 13,
+						HOST_WRITE = 1 << 14,
+						MEMORY_READ = 1 << 15,
+						MEMORY_WRITE = 1 << 16,
+						TRANSFORM_FEEDBACK_WRITE = 1 << 17,
+						TRANSFORM_FEEDBACK_COUNTER_READ = 1 << 18,
+						TRANSFORM_FEEDBACK_COUNTER_WRITE = 1 << 19,
+						CONDITIONAL_RENDERING_READ = 1 << 20,
+						COLOR_ATTACHMENT_READ_NONCOHERENT = 1 << 21,
+						ACCELERATION_STRUCTURE_READ = 1 << 22,
+						ACCELERATION_STRUCTURE_WRITE = 1 << 23,
+						FRAGMENT_DENSITY_MAP_READ = 1 << 24,
+						FRAGMENT_SHADING_RATE_ATTACHMENT_READ = 1 << 25,
+						COMMAND_PREPROCESS_READ = 1 << 26,
+						COMMAND_PREPROCESS_WRITE = 1 << 27
 					};
 			};
 
@@ -54,7 +54,6 @@ namespace Raindrop{
 
 					enum Bits{
 						NONE = 0,
-						CREATE_TRANSFORM = 2
 					};
 			};
 
@@ -67,7 +66,7 @@ namespace Raindrop{
 
 							enum Bits{
 								NONE = 0,
-								MAY_ALIAS = 1
+								MAY_ALIAS = 1 << 0
 							};
 					};
 
@@ -76,29 +75,51 @@ namespace Raindrop{
 							enum Load{
 								LOAD,
 								CLEAR,
-								DONT_LOAD
+								DONT_LOAD,
+								LOAD_NONE,
 							};
 
 							enum Store{
 								STORE,
-								DONT_STORE
+								DONT_STORE,
+								STORE_NONE,
 							};
 					};
 
-					Attachment& setFlags(const Flags& flags);
-					Attachment& setFormat(const Format& format);
 					// Attachment& setSamples(const )
-					Attachment& setLoadOperation(const Operation::Load& operation);
-					Attachment& setStoreOperation(const Operation::Store& operation);
-					Attachment& setStencilLoadOperation(const Operation::Load& operation);
-					Attachment& setStencilStoreOperation(const Operation::Store& operation);
-					Attachment& setInitialLayout(const Texture::Layout& layout);
-					Attachment& setFinalLayout(const Texture::Layout& layout);
+
+					Attachment() noexcept;
+
+					// Attachment(const Attachment&) = delete;
+					// Attachment& operator=(const Attachment&) = delete;
+
+					Attachment& setFlags(const Flags& flags) noexcept;
+					Attachment& setFormat(const Format& format) noexcept;
+					Attachment& setLoadOperation(const Operation::Load& operation) noexcept;
+					Attachment& setStoreOperation(const Operation::Store& operation) noexcept;
+					Attachment& setStencilLoadOperation(const Operation::Load& operation) noexcept;
+					Attachment& setStencilStoreOperation(const Operation::Store& operation) noexcept;
+					Attachment& setInitialLayout(const Texture::Layout& layout) noexcept;
+					Attachment& setFinalLayout(const Texture::Layout& layout) noexcept;
+
+					const Flags& getFlags() const noexcept;
+					const Format& getFormat() const noexcept;
+					const Operation::Load& getLoadOperation() const noexcept;
+					const Operation::Store& getStoreOperation() const noexcept;
+					const Operation::Load& getStencilLoadOperation() const noexcept;
+					const Operation::Store& getStencilStoreOperation() const noexcept;
+					const Texture::Layout& getInitialLayout() const noexcept;
+					const Texture::Layout& getFinalLayout() const noexcept;
 
 				private:
-					Attachment(RenderPass& owner, void* _data);
-					void* _data;
-					RenderPass& _owner;
+					Flags _flags;
+					Format _format;
+					Operation::Load _loadOperation;
+					Operation::Store _storeOperation;
+					Operation::Load _stencilLoadOperation;
+					Operation::Store _stencilStoreOperation;
+					Texture::Layout _initialLayout;
+					Texture::Layout _finalLayout;
 			};
 
 			class Subpass{
@@ -110,35 +131,46 @@ namespace Raindrop{
 
 							enum Bits{
 								NONE = 0,
-								PER_VIEW_ATTRIBUTES = 0x00000001,
-								PER_VIEW_POSITION_X_ONLY = 0x00000002,
-								FRAGMENT_REGION = 0x00000004,
-								SHADER_RESOLVE = 0x00000008,
-								RASTERIZATION_ORDER_ATTACHMENT_COLOR_ACCESS = 0x00000010,
-								RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS = 0x00000020,
-								RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS = 0x00000040,
-								ENABLE_LEGACY_DITHERING = 0x00000080,
+								PER_VIEW_ATTRIBUTES = 1 << 0,
+								PER_VIEW_POSITION_X_ONLY = 1 << 1,
+								FRAGMENT_REGION = 1 << 2,
+								SHADER_RESOLVE = 1 << 3,
+								RASTERIZATION_ORDER_ATTACHMENT_COLOR_ACCESS = 1 << 4,
+								RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS = 1 << 5,
+								RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS = 1 << 6,
+								ENABLE_LEGACY_DITHERING = 1 << 7,
 							};
 					};
 
 					struct AttachmentReference{
-						Attachment attachment;
+						Attachment& attachment;
 						Texture::Layout layout;
 					};
 
-					Subpass& setFlags(const Flags& flags);
 					// Subpass& setBindPoint(const Pipeline::BindPoint& bindPoint);
+
+					Subpass();
+
+					Subpass& setFlags(const Flags& flags) noexcept;
 					Subpass& setDepthAttachment(const AttachmentReference& attachment);
 					Subpass& addColorAttachment(const AttachmentReference& attachment);
 					Subpass& addInputAttachment(const AttachmentReference& attachment);
 					Subpass& addPreserveAttachment(const Attachment& attachment);
 
+					const Flags& getFlags() const noexcept;
+					const std::optional<AttachmentReference>& getDepthAttachment() const noexcept;
+					const std::list<AttachmentReference>& getColorAttachments() const noexcept;
+					const std::list<AttachmentReference>& getInputAttachments() const noexcept;
+					const std::list<std::reference_wrapper<const Attachment>>& getPreserveAttachments() const noexcept;
+
 					static const Subpass External;
 
 				private:
-					Subpass(RenderPass* owner, void* data);
-					void* _data;
-					RenderPass* _owner;
+					Flags _flags;
+					std::optional<AttachmentReference> _depthAttachment;
+					std::list<AttachmentReference> _colorAttachments;
+					std::list<AttachmentReference> _inputAttachments;
+					std::list<std::reference_wrapper<const Attachment>> _preserveAttachments;
 			};
 
 			class Dependency{
@@ -150,12 +182,14 @@ namespace Raindrop{
 
 							enum Bits{
 								NONE = 0,
-								BY_REGION = 0x00000001,
-								DEVICE_GROUP = 0x00000004,
-								VIEW_LOCAL = 0x00000002,
-								FEEDBACK_LOOP = 0x00000008,
+								BY_REGION = 1 << 0,
+								DEVICE_GROUP = 1 << 1,
+								VIEW_LOCAL = 1 << 2,
+								FEEDBACK_LOOP = 1 << 3,
 							};
 					};
+
+					Dependency();
 
 					Dependency& setFlags(const Flags& flags);
 					Dependency& setSrcSubpass(const Subpass& subpass);
@@ -165,17 +199,27 @@ namespace Raindrop{
 					Dependency& setSrcAccess(const Access& access);
 					Dependency& setDstAccess(const Access& access);
 
+					const Flags& getFlags() const noexcept;
+					const Subpass& getSrcSubpass() const noexcept;
+					const Subpass& getDstSubpass() const noexcept;
+					const Pipeline::Stage& getSrcStage() const noexcept;
+					const Pipeline::Stage& getDstStage() const noexcept;
+					const Access& getSrcAccess() const noexcept;
+					const Access& getDstAccess() const noexcept;
+
 				private:
-					Dependency(RenderPass& owner, void* data);
-					void* _data;
-					RenderPass& _owner;
+					Flags _flags;
+					const Subpass* _srcSubpass;
+					const Subpass* _dstSubpass;
+					Pipeline::Stage _srcStage;
+					Pipeline::Stage _dstStage;
+					Access _srcAccess;
+					Access _dstAccess;
 			};
 
 			static RenderPass Create(Context& context);
 			
 			RenderPass(Context& context);
-			RenderPass(const RenderPass& other);
-			RenderPass& operator=(const RenderPass& other);
 			~RenderPass();
 
 			void initialize();
@@ -186,14 +230,14 @@ namespace Raindrop{
 			Impl* getImpl() const noexcept;
 			GUID getGUID() const noexcept;
 
-			Attachment addAttachment();
-			Subpass addSubpass();
-			Dependency addDependency();
+			Attachment& addAttachment();
+			Subpass& addSubpass();
+			Dependency& addDependency();
 
 		private:
 			friend class Subpass;
 			friend class Attachment;
-			Impl* _impl;
+			std::unique_ptr<Impl> _impl;
 	};
 
 	static RenderPass CreateRenderPass(Context& context){

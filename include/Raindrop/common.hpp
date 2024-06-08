@@ -10,6 +10,7 @@
 #include <functional>
 #include <memory>
 #include <filesystem>
+#include <optional>
 
 namespace Raindrop{
 	using Path = std::filesystem::path;

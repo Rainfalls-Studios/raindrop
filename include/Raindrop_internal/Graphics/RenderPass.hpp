@@ -5,21 +5,7 @@
 #include <optional>
 
 namespace Raindrop::Internal::Graphics{
-	struct RenderPassConfigInfo{
-		std::vector<VkAttachmentDescription> attachments;
-
-		struct SubpassInfo{
-			VkSubpassDescription description;
-			std::optional<VkAttachmentReference> depth;
-			std::vector<VkAttachmentReference> color;
-			std::vector<uint32_t> preserve;
-			std::vector<VkAttachmentReference> input;
-		};
-
-		std::vector<SubpassInfo> subpasses;
-		std::vector<VkSubpassDependency> dependencies;
-		VkRenderPassCreateFlags flags;
-	};
+	using RenderPassConfigInfo = VkRenderPassCreateInfo;
 
 	class RenderPass{
 		public:
