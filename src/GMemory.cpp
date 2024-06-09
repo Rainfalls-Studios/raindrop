@@ -8,24 +8,6 @@
 #define GRAPHICS_CONTEXT context.getInternalContext()->getRenderer().getContext()
 
 namespace Raindrop{
-	VkMemoryPropertyFlags toVulkan(const GMemory::Type::Flags& flags){
-		VkMemoryPropertyFlags out = 0;
-
-		if (flags.has(GMemory::Type::Flags::GPU_LOCAL)) out |= VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-		if (flags.has(GMemory::Type::Flags::CPU_VISIBLE)) out |= VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
-		if (flags.has(GMemory::Type::Flags::CPU_COHERENT)) out |= VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-		if (flags.has(GMemory::Type::Flags::CPU_CACHED)) out |= VK_MEMORY_PROPERTY_HOST_CACHED_BIT;
-		if (flags.has(GMemory::Type::Flags::LAZY_ALLOCATION)) out |= VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT;
-		if (flags.has(GMemory::Type::Flags::PROTECTED)) out |= VK_MEMORY_PROPERTY_PROTECTED_BIT;
-
-		// VK_AMD_device_coherent_memory
-		if (flags.has(GMemory::Type::Flags::GPU_COHERENT)) out |= VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD;
-		if (flags.has(GMemory::Type::Flags::GPU_UNCACHED)) out |= VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD;
-
-		return out;
-	}
-
-
 	//--------------------------------------------------------------------
 	//-----------------         GMEMORY TYPE             -----------------
 	//--------------------------------------------------------------------

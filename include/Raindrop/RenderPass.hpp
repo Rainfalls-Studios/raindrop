@@ -90,8 +90,11 @@ namespace Raindrop{
 
 					Attachment() noexcept;
 
-					// Attachment(const Attachment&) = delete;
-					// Attachment& operator=(const Attachment&) = delete;
+					Attachment(const Attachment&) = delete;
+					Attachment& operator=(const Attachment&) = delete;
+
+					Attachment(Attachment&&) = default;
+					Attachment& operator=(Attachment&&) = default;
 
 					Attachment& setFlags(const Flags& flags) noexcept;
 					Attachment& setFormat(const Format& format) noexcept;
@@ -151,6 +154,12 @@ namespace Raindrop{
 
 					Subpass();
 
+					Subpass(const Subpass&) = delete;
+					Subpass& operator=(const Subpass&) = delete;
+
+					Subpass(Subpass&&) = default;
+					Subpass& operator=(Subpass&&) = default;
+
 					Subpass& setFlags(const Flags& flags) noexcept;
 					Subpass& setDepthAttachment(const AttachmentReference& attachment);
 					Subpass& addColorAttachment(const AttachmentReference& attachment);
@@ -190,6 +199,12 @@ namespace Raindrop{
 					};
 
 					Dependency();
+
+					Dependency(const Dependency&) = delete;
+					Dependency& operator=(const Dependency&) = delete;
+
+					Dependency(Dependency&&) = default;
+					Dependency& operator=(Dependency&&) = default;
 
 					Dependency& setFlags(const Flags& flags);
 					Dependency& setSrcSubpass(const Subpass& subpass);

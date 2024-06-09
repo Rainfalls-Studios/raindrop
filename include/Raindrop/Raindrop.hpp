@@ -15,5 +15,6 @@
 #include "Asset.hpp"
 #include "Pipeline.hpp"
 #include "GMemory.hpp"
+#include "GBuffer.hpp"
 
 #endif

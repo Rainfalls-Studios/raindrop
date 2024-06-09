@@ -105,7 +105,7 @@ namespace Raindrop{
 
 	static constexpr RenderPass::Subpass::Flags::Bits SUBPASS_EXTERNAL_FLAG_BIT = RenderPass::Subpass::Flags::Bits(1 << 31);
 
-	const RenderPass::Subpass RenderPass::Subpass::External = RenderPass::Subpass().setFlags(SUBPASS_EXTERNAL_FLAG_BIT);
+	const RenderPass::Subpass RenderPass::Subpass::External = std::move(RenderPass::Subpass().setFlags(SUBPASS_EXTERNAL_FLAG_BIT));
 
 
 	RenderPass::Subpass::Subpass() : 

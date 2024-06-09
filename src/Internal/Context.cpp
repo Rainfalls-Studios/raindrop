@@ -5,6 +5,8 @@
 
 #include <spdlog/sinks/stdout_color_sinks.h>
 
+#include <chrono>
+
 namespace Raindrop::Internal{
 	Context::Context(Raindrop::Context& interface) : _interface{interface}{
 		_logger = spdlog::stdout_color_mt("Raindrop");
@@ -47,9 +49,25 @@ namespace Raindrop::Internal{
 	void Context::start(){
 		_state = State::RUNNING;
 
+		std::uint32_t frameCount = 0;
+		auto t = std::chrono::steady_clock::duration();
+
 		while (_state == State::RUNNING){
+			auto begin = std::chrono::steady_clock::now();
+
 			_renderer->render();
 			_renderer->events();
+
+			frameCount++;
+
+			if (t > std::chrono::milliseconds(500)){
+				t = std::chrono::milliseconds(0);
+				spdlog::info("fps : {}", frameCount * 2);
+				frameCount = 0;
+			}
+
+			auto end = std::chrono::steady_clock::now();
+			t += (end - begin);
 		};
 	}
 

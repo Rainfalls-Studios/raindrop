@@ -36,6 +36,9 @@ namespace Raindrop::Internal::Graphics{
 
 		_shaderLoader = std::make_shared<ShaderLoader>(*_context);
 		_context->getInternalContext().getAssetManager().registerLoader("Shader", _shaderLoader);
+
+		// _context->getSwapchain().setPresentMode(VK_PRESENT_MODE_FIFO_RELAXED_KHR);
+		// _context->getSwapchain().rebuildSwapchain();
 	}
 
 	Renderer::~Renderer(){

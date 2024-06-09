@@ -277,12 +277,11 @@ int main(){
 	}
 
 	Raindrop::Pipeline pipeline = Raindrop::CreatePipeline(context);
-
 	{
 		auto frag = Raindrop::Asset::Load<Raindrop::Pipeline::Shader>(context, "Shader", "shaders/scene/fullscreenQuad/shader.glsl.frag.spv");
 		auto vert = Raindrop::Asset::Load<Raindrop::Pipeline::Shader>(context, "Shader", "shaders/scene/fullscreenQuad/shader.glsl.vert.spv");
 
-		pipeline.addColorAttachment()
+		auto& colorAttachment = pipeline.addColorAttachment()
 			.enableBlending(false)
 			.setWriteMask({
 				Raindrop::Color::Components::RED,
@@ -293,7 +292,7 @@ int main(){
 		pipeline.addStage(frag, Raindrop::Pipeline::Shader::Stage::FRAGMENT);
 		pipeline.addStage(vert, Raindrop::Pipeline::Shader::Stage::VERTEX);
 
-		pipeline.addViewport()
+		auto& viewport = pipeline.addViewport()
 			.setX(0.f)
 			.setY(0.f)
 			.setWidth(255.f)
@@ -301,7 +300,7 @@ int main(){
 			.setMaxDepth(1.f)
 			.setMinDepth(0.f);
 		
-		pipeline.addScissor()
+		auto& scissor = pipeline.addScissor()
 			.setX(0)
 			.setY(0)
 			.setWidth(255)
@@ -311,6 +310,17 @@ int main(){
 		pipeline.setLayout(pipelineLayout);
 
 		pipeline.initialize();
+	}
+
+	{
+		Raindrop::GBuffer buffer = Raindrop::CreateGBuffer(context);
+
+		buffer.allocate(
+			1024,
+			Raindrop::GBuffer::Usage::TRANSFER_SRC,
+			Raindrop::GBuffer::Flags::NONE,
+			Raindrop::GMemory::Type::Flags::CPU_VISIBLE
+		);
 	}
 
 	// {

@@ -552,11 +552,11 @@ namespace Raindrop{
 		return Pipeline::Layout::Create(context);
 	}
 
-	static inline Pipeline::Shader Create(Context& context, const Path& path){
+	static inline Pipeline::Shader CreateShader(Context& context, const Path& path){
 		return Pipeline::Shader::Create(context, path);
 	}
 
-	static inline std::shared_ptr<Pipeline::Shader> Load(Context& context, const Path& path){
+	static inline std::shared_ptr<Pipeline::Shader> LoadShader(Context& context, const Path& path){
 		return Pipeline::Shader::Load(context, path);
 	}
 }
