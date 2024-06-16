@@ -157,7 +157,7 @@ namespace Raindrop{
 	}
 
 	TextureSubset::Flags TextureSubset::getFlags() const noexcept{
-		return TextureFlagsToRaindrop(_impl->imageView->getFlags());
+		return TextureSubsetFlagsToRaindrop(_impl->imageView->getFlags());
 	}
 
 	TextureSubset::Impl* TextureSubset::getImpl() const noexcept{

@@ -170,10 +170,10 @@ namespace Raindrop{
 		_flags{RenderPass::Dependency::Flags::NONE},
 		_srcSubpass{&RenderPass::Subpass::External},
 		_dstSubpass{&RenderPass::Subpass::External},
-		_srcStage{Pipeline::Stage::NONE},
-		_dstStage{Pipeline::Stage::NONE},
-		_srcAccess{RenderPass::Access::NONE},
-		_dstAccess{RenderPass::Access::NONE}
+		_srcStage{Pipeline::StageBits::NONE},
+		_dstStage{Pipeline::StageBits::NONE},
+		_srcAccess{RenderPass::AccessBits::NONE},
+		_dstAccess{RenderPass::AccessBits::NONE}
 	{}
 
 	RenderPass::Dependency& RenderPass::Dependency::setFlags(const Flags& flags){

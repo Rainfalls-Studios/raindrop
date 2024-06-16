@@ -3,6 +3,7 @@
 
 #include "common.hpp"
 #include "Format.hpp"
+#include "GBuffer.hpp"
 
 namespace Raindrop{
 	namespace Vertex{
@@ -40,8 +41,25 @@ namespace Raindrop{
 				bool _isStrideCustom;
 		};
 
-		// TODO maybe
-		// class Buffer;
+		class Buffer : public GBuffer{
+			public:
+				Buffer(Context& context);
+
+				const Layout& getLayout(const Layout& layout);
+
+				void* getMappedPointer();
+
+				void allocate(const Layout& layout, const std::size_t& vertexCount, const Usage& usage, const Flags& flags, const GMemory::Type::Flags& memoryFlags, const std::size_t& alignement = 1);
+
+				void map(const std::size_t& vertexCount = WHOLE_SIZE, const std::size_t& vertexOffset = 0);
+				void flush(const std::size_t& vertexCount = WHOLE_SIZE, const std::size_t& vertexOffset = 0);
+				void invalidate(const std::size_t& vertexCount = WHOLE_SIZE, const std::size_t& vertexOffset = 0);
+
+				const std::size_t getVertexCount() const;
+
+			private:
+				Layout _layout;
+		};
 	}
 }
 

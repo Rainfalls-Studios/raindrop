@@ -20,6 +20,8 @@ set_target_properties(
 	Raindrop-Testbed
 	PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin"
+	CXX_STANDARD 20
+	CXX_STANDARD_REQUIRED true
 )
 
 target_include_directories(

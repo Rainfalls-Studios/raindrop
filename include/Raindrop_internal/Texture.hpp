@@ -45,17 +45,17 @@ namespace Raindrop{
 	constexpr Texture::Aspect TextureAspectToRaindrop(const VkImageAspectFlags& flags){
 		Texture::Aspect out = Texture::Aspect::NONE;
 
-		if (flags & VK_IMAGE_ASPECT_COLOR_BIT) out |= Texture::Aspect::COLOR;
-		if (flags & VK_IMAGE_ASPECT_DEPTH_BIT) out |= Texture::Aspect::DEPTH;
-		if (flags & VK_IMAGE_ASPECT_STENCIL_BIT) out |= Texture::Aspect::STENCIL;
-		if (flags & VK_IMAGE_ASPECT_METADATA_BIT) out |= Texture::Aspect::METADATA;
-		if (flags & VK_IMAGE_ASPECT_PLANE_0_BIT) out |= Texture::Aspect::PLANE_0;
-		if (flags & VK_IMAGE_ASPECT_PLANE_1_BIT) out |= Texture::Aspect::PLANE_1;
-		if (flags & VK_IMAGE_ASPECT_PLANE_2_BIT) out |= Texture::Aspect::PLANE_2;
-		if (flags & VK_IMAGE_ASPECT_MEMORY_PLANE_0_BIT_EXT) out |= Texture::Aspect::MEMORY_PLANE_0;
-		if (flags & VK_IMAGE_ASPECT_MEMORY_PLANE_1_BIT_EXT) out |= Texture::Aspect::MEMORY_PLANE_1;
-		if (flags & VK_IMAGE_ASPECT_MEMORY_PLANE_2_BIT_EXT) out |= Texture::Aspect::MEMORY_PLANE_2;
-		if (flags & VK_IMAGE_ASPECT_MEMORY_PLANE_3_BIT_EXT) out |= Texture::Aspect::MEMORY_PLANE_3;
+		if (flags & VK_IMAGE_ASPECT_COLOR_BIT) out.set(Texture::Aspect::COLOR);
+		if (flags & VK_IMAGE_ASPECT_DEPTH_BIT) out.set(Texture::Aspect::DEPTH);
+		if (flags & VK_IMAGE_ASPECT_STENCIL_BIT) out.set(Texture::Aspect::STENCIL);
+		if (flags & VK_IMAGE_ASPECT_METADATA_BIT) out.set(Texture::Aspect::METADATA);
+		if (flags & VK_IMAGE_ASPECT_PLANE_0_BIT) out.set(Texture::Aspect::PLANE_0);
+		if (flags & VK_IMAGE_ASPECT_PLANE_1_BIT) out.set(Texture::Aspect::PLANE_1);
+		if (flags & VK_IMAGE_ASPECT_PLANE_2_BIT) out.set(Texture::Aspect::PLANE_2);
+		if (flags & VK_IMAGE_ASPECT_MEMORY_PLANE_0_BIT_EXT) out.set(Texture::Aspect::MEMORY_PLANE_0);
+		if (flags & VK_IMAGE_ASPECT_MEMORY_PLANE_1_BIT_EXT) out.set(Texture::Aspect::MEMORY_PLANE_1);
+		if (flags & VK_IMAGE_ASPECT_MEMORY_PLANE_2_BIT_EXT) out.set(Texture::Aspect::MEMORY_PLANE_2);
+		if (flags & VK_IMAGE_ASPECT_MEMORY_PLANE_3_BIT_EXT) out.set(Texture::Aspect::MEMORY_PLANE_3);
 
 		return out;
 	}
@@ -140,26 +140,26 @@ namespace Raindrop{
 	constexpr Texture::Flags TextureFlagsToRaindrop(const VkImageCreateFlags& flags){
 		Texture::Flags out = Texture::Flags::NONE;
 
-		if (flags & VK_IMAGE_CREATE_SPARSE_BINDING_BIT) out |= Texture::Flags::SPARSE_BINDING;
-		if (flags & VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT) out |= Texture::Flags::SPARSE_RESIDENCY;
-		if (flags & VK_IMAGE_CREATE_SPARSE_ALIASED_BIT) out |= Texture::Flags::SPARSE_ALIASED;
-		if (flags & VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT) out |= Texture::Flags::MUTABLE_FORMAT;
-		if (flags & VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT) out |= Texture::Flags::CUBE_COMPATIBLE;
-		if (flags & VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT) out |= Texture::Flags::PLANAR_ARRAY_COMPATIBLE;
-		if (flags & VK_IMAGE_CREATE_ALIAS_BIT) out |= Texture::Flags::ALIAS;
-		if (flags & VK_IMAGE_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT) out |= Texture::Flags::SPLIT_INSTANCE_BIND_REGIONS;
-		if (flags & VK_IMAGE_CREATE_BLOCK_TEXEL_VIEW_COMPATIBLE_BIT) out |= Texture::Flags::BLOCK_TEXEL_VIEW_COMPATIBLE;
-		if (flags & VK_IMAGE_CREATE_EXTENDED_USAGE_BIT) out |= Texture::Flags::EXTENDED_USAGE;
-		if (flags & VK_IMAGE_CREATE_PROTECTED_BIT) out |= Texture::Flags::PROTECTED;
-		if (flags & VK_IMAGE_CREATE_DISJOINT_BIT) out |= Texture::Flags::DISJOINT;
-		if (flags & VK_IMAGE_CREATE_CORNER_SAMPLED_BIT_NV) out |= Texture::Flags::CORNER_SAMPLED;
-		if (flags & VK_IMAGE_CREATE_SAMPLE_LOCATIONS_COMPATIBLE_DEPTH_BIT_EXT) out |= Texture::Flags::SAMPLE_LOCATIONS_COMPATIBLE_DEPTH;
-		if (flags & VK_IMAGE_CREATE_SUBSAMPLED_BIT_EXT) out |= Texture::Flags::SUBSAMPLED;
-		if (flags & VK_IMAGE_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT) out |= Texture::Flags::DESCRIPTOR_BUFFER_CAPTURE_REPLAY;
-		if (flags & VK_IMAGE_CREATE_MULTISAMPLED_RENDER_TO_SINGLE_SAMPLED_BIT_EXT) out |= Texture::Flags::MULTISAMPLED_RENDER_TO_SINGLE_SAMPLED;
-		if (flags & VK_IMAGE_CREATE_2D_VIEW_COMPATIBLE_BIT_EXT) out |= Texture::Flags::PLANAR_VIEW_COMPATIBLE;
-		if (flags & VK_IMAGE_CREATE_FRAGMENT_DENSITY_MAP_OFFSET_BIT_QCOM) out |= Texture::Flags::FRAGMENT_DENSITY_MAP_OFFSET;
-		if (flags & VK_IMAGE_CREATE_VIDEO_PROFILE_INDEPENDENT_BIT_KHR) out |= Texture::Flags::VIDEO_PROFILE_INDEPENDENT;
+		if (flags & VK_IMAGE_CREATE_SPARSE_BINDING_BIT) out.set(Texture::Flags::SPARSE_BINDING);
+		if (flags & VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT) out.set(Texture::Flags::SPARSE_RESIDENCY);
+		if (flags & VK_IMAGE_CREATE_SPARSE_ALIASED_BIT) out.set(Texture::Flags::SPARSE_ALIASED);
+		if (flags & VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT) out.set(Texture::Flags::MUTABLE_FORMAT);
+		if (flags & VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT) out.set(Texture::Flags::CUBE_COMPATIBLE);
+		if (flags & VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT) out.set(Texture::Flags::PLANAR_ARRAY_COMPATIBLE);
+		if (flags & VK_IMAGE_CREATE_ALIAS_BIT) out.set(Texture::Flags::ALIAS);
+		if (flags & VK_IMAGE_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT) out.set(Texture::Flags::SPLIT_INSTANCE_BIND_REGIONS);
+		if (flags & VK_IMAGE_CREATE_BLOCK_TEXEL_VIEW_COMPATIBLE_BIT) out.set(Texture::Flags::BLOCK_TEXEL_VIEW_COMPATIBLE);
+		if (flags & VK_IMAGE_CREATE_EXTENDED_USAGE_BIT) out.set(Texture::Flags::EXTENDED_USAGE);
+		if (flags & VK_IMAGE_CREATE_PROTECTED_BIT) out.set(Texture::Flags::PROTECTED);
+		if (flags & VK_IMAGE_CREATE_DISJOINT_BIT) out.set(Texture::Flags::DISJOINT);
+		if (flags & VK_IMAGE_CREATE_CORNER_SAMPLED_BIT_NV) out.set(Texture::Flags::CORNER_SAMPLED);
+		if (flags & VK_IMAGE_CREATE_SAMPLE_LOCATIONS_COMPATIBLE_DEPTH_BIT_EXT) out.set(Texture::Flags::SAMPLE_LOCATIONS_COMPATIBLE_DEPTH);
+		if (flags & VK_IMAGE_CREATE_SUBSAMPLED_BIT_EXT) out.set(Texture::Flags::SUBSAMPLED);
+		if (flags & VK_IMAGE_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT) out.set(Texture::Flags::DESCRIPTOR_BUFFER_CAPTURE_REPLAY);
+		if (flags & VK_IMAGE_CREATE_MULTISAMPLED_RENDER_TO_SINGLE_SAMPLED_BIT_EXT) out.set(Texture::Flags::MULTISAMPLED_RENDER_TO_SINGLE_SAMPLED);
+		if (flags & VK_IMAGE_CREATE_2D_VIEW_COMPATIBLE_BIT_EXT) out.set(Texture::Flags::PLANAR_VIEW_COMPATIBLE);
+		if (flags & VK_IMAGE_CREATE_FRAGMENT_DENSITY_MAP_OFFSET_BIT_QCOM) out.set(Texture::Flags::FRAGMENT_DENSITY_MAP_OFFSET);
+		if (flags & VK_IMAGE_CREATE_VIDEO_PROFILE_INDEPENDENT_BIT_KHR) out.set(Texture::Flags::VIDEO_PROFILE_INDEPENDENT);
 
 		return out;
 	}
@@ -263,27 +263,27 @@ namespace Raindrop{
 	constexpr Texture::Usage TextureUsageToRaindrop(const VkImageUsageFlags& flags){
 		Texture::Usage out = Texture::Usage::NONE;
 		
-		if (flags & VK_IMAGE_USAGE_TRANSFER_SRC_BIT) out |= Texture::Usage::TRANSFER_SRC;
-		if (flags & VK_IMAGE_USAGE_TRANSFER_DST_BIT) out |= Texture::Usage::TRANSFER_DST;
-		if (flags & VK_IMAGE_USAGE_SAMPLED_BIT) out |= Texture::Usage::SAMPLED;
-		if (flags & VK_IMAGE_USAGE_STORAGE_BIT) out |= Texture::Usage::STORAGE;
-		if (flags & VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT) out |= Texture::Usage::COLOR_ATTACHMENT;
-		if (flags & VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT) out |= Texture::Usage::DEPTH_STENCIL_ATTACHMENT;
-		if (flags & VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT) out |= Texture::Usage::TRANSIENT_ATTACHMENT;
-		if (flags & VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT) out |= Texture::Usage::INPUT_ATTACHMENT;
-		if (flags & VK_IMAGE_USAGE_VIDEO_DECODE_DST_BIT_KHR) out |= Texture::Usage::VIDEO_DECODE_DST;
-		if (flags & VK_IMAGE_USAGE_VIDEO_DECODE_SRC_BIT_KHR) out |= Texture::Usage::VIDEO_DECODE_SRC;
-		if (flags & VK_IMAGE_USAGE_VIDEO_DECODE_DPB_BIT_KHR) out |= Texture::Usage::VIDEO_DECODE_DPB;
-		if (flags & VK_IMAGE_USAGE_VIDEO_ENCODE_DST_BIT_KHR) out |= Texture::Usage::VIDEO_ENCODE_DST;
-		if (flags & VK_IMAGE_USAGE_VIDEO_ENCODE_SRC_BIT_KHR) out |= Texture::Usage::VIDEO_ENCODE_SRC;
-		if (flags & VK_IMAGE_USAGE_VIDEO_ENCODE_DPB_BIT_KHR) out |= Texture::Usage::VIDEO_ENCODE_DPB;
-		if (flags & VK_IMAGE_USAGE_FRAGMENT_DENSITY_MAP_BIT_EXT) out |= Texture::Usage::FRAGMENT_DENSITY_MAP;
-		if (flags & VK_IMAGE_USAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR) out |= Texture::Usage::FRAGMENT_SHADING_RATE_ATTACHMENT;
-		if (flags & VK_IMAGE_USAGE_HOST_TRANSFER_BIT_EXT) out |= Texture::Usage::HOST_TRANSFER;
-		if (flags & VK_IMAGE_USAGE_ATTACHMENT_FEEDBACK_LOOP_BIT_EXT) out |= Texture::Usage::ATTACHMENT_FEEDBACK_LOOP;
-		if (flags & VK_IMAGE_USAGE_INVOCATION_MASK_BIT_HUAWEI) out |= Texture::Usage::INVOCATION_MASK;
-		if (flags & VK_IMAGE_USAGE_SAMPLE_WEIGHT_BIT_QCOM) out |= Texture::Usage::SAMPLE_WEIGHT;
-		if (flags & VK_IMAGE_USAGE_SAMPLE_BLOCK_MATCH_BIT_QCOM) out |= Texture::Usage::SAMPLE_BLOCK_MATCH;
+		if (flags & VK_IMAGE_USAGE_TRANSFER_SRC_BIT) out.set(Texture::Usage::TRANSFER_SRC);
+		if (flags & VK_IMAGE_USAGE_TRANSFER_DST_BIT) out.set(Texture::Usage::TRANSFER_DST);
+		if (flags & VK_IMAGE_USAGE_SAMPLED_BIT) out.set(Texture::Usage::SAMPLED);
+		if (flags & VK_IMAGE_USAGE_STORAGE_BIT) out.set(Texture::Usage::STORAGE);
+		if (flags & VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT) out.set(Texture::Usage::COLOR_ATTACHMENT);
+		if (flags & VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT) out.set(Texture::Usage::DEPTH_STENCIL_ATTACHMENT);
+		if (flags & VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT) out.set(Texture::Usage::TRANSIENT_ATTACHMENT);
+		if (flags & VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT) out.set(Texture::Usage::INPUT_ATTACHMENT);
+		if (flags & VK_IMAGE_USAGE_VIDEO_DECODE_DST_BIT_KHR) out.set(Texture::Usage::VIDEO_DECODE_DST);
+		if (flags & VK_IMAGE_USAGE_VIDEO_DECODE_SRC_BIT_KHR) out.set(Texture::Usage::VIDEO_DECODE_SRC);
+		if (flags & VK_IMAGE_USAGE_VIDEO_DECODE_DPB_BIT_KHR) out.set(Texture::Usage::VIDEO_DECODE_DPB);
+		if (flags & VK_IMAGE_USAGE_VIDEO_ENCODE_DST_BIT_KHR) out.set(Texture::Usage::VIDEO_ENCODE_DST);
+		if (flags & VK_IMAGE_USAGE_VIDEO_ENCODE_SRC_BIT_KHR) out.set(Texture::Usage::VIDEO_ENCODE_SRC);
+		if (flags & VK_IMAGE_USAGE_VIDEO_ENCODE_DPB_BIT_KHR) out.set(Texture::Usage::VIDEO_ENCODE_DPB);
+		if (flags & VK_IMAGE_USAGE_FRAGMENT_DENSITY_MAP_BIT_EXT) out.set(Texture::Usage::FRAGMENT_DENSITY_MAP);
+		if (flags & VK_IMAGE_USAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR) out.set(Texture::Usage::FRAGMENT_SHADING_RATE_ATTACHMENT);
+		if (flags & VK_IMAGE_USAGE_HOST_TRANSFER_BIT_EXT) out.set(Texture::Usage::HOST_TRANSFER);
+		if (flags & VK_IMAGE_USAGE_ATTACHMENT_FEEDBACK_LOOP_BIT_EXT) out.set(Texture::Usage::ATTACHMENT_FEEDBACK_LOOP);
+		if (flags & VK_IMAGE_USAGE_INVOCATION_MASK_BIT_HUAWEI) out.set(Texture::Usage::INVOCATION_MASK);
+		if (flags & VK_IMAGE_USAGE_SAMPLE_WEIGHT_BIT_QCOM) out.set(Texture::Usage::SAMPLE_WEIGHT);
+		if (flags & VK_IMAGE_USAGE_SAMPLE_BLOCK_MATCH_BIT_QCOM) out.set(Texture::Usage::SAMPLE_BLOCK_MATCH);
 
 		return out;
 	}
@@ -418,9 +418,6 @@ namespace Raindrop{
 			// VK_KHR_fragment_shading_rate
 			case Texture::Layout::FRAGMENT_SHADING_RATE_ATTACHMENT_OPTIMAL: return VK_IMAGE_LAYOUT_FRAGMENT_SHADING_RATE_ATTACHMENT_OPTIMAL_KHR;
 
-			// VK_KHR_dynamic_rendering_local_read
-			case Texture::Layout::RENDERING_LOCAL_READ: return VK_IMAGE_LAYOUT_RENDERING_LOCAL_READ_KHR;
-
 			// VK_EXT_attachment_feedback_loop_layout
 			case Texture::Layout::ATTACHMENT_FEEDBACK_LOOP_OPTIMAL: return VK_IMAGE_LAYOUT_ATTACHMENT_FEEDBACK_LOOP_OPTIMAL_EXT;
 
@@ -457,7 +454,6 @@ namespace Raindrop{
 			case VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR: return Texture::Layout::SHARED_PRESENT;
 			case VK_IMAGE_LAYOUT_FRAGMENT_DENSITY_MAP_OPTIMAL_EXT: return Texture::Layout::FRAGMENT_DENSITY_MAP_OPTIMAL;
 			case VK_IMAGE_LAYOUT_FRAGMENT_SHADING_RATE_ATTACHMENT_OPTIMAL_KHR: return Texture::Layout::FRAGMENT_SHADING_RATE_ATTACHMENT_OPTIMAL;
-			case VK_IMAGE_LAYOUT_RENDERING_LOCAL_READ_KHR: return Texture::Layout::RENDERING_LOCAL_READ;
 			case VK_IMAGE_LAYOUT_ATTACHMENT_FEEDBACK_LOOP_OPTIMAL_EXT: return Texture::Layout::ATTACHMENT_FEEDBACK_LOOP_OPTIMAL;
 			default: return Texture::Layout::UNDEFINED;
 		}

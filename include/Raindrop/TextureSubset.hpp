@@ -28,17 +28,13 @@ namespace Raindrop{
 				CUBEMAP_ARRAY
 			};
 
-			class Flags : public Utils::FlagsTemplate<Flags> {
-				public:
-					using FlagsTemplate<Flags>::FlagsTemplate;
-
-					enum Bits : Bitset {
-						NONE = 0,
-						FRAGMENT_DENSITY_MAP_DYNAMIC = 1 << 1,
-						FRAGMENT_DENSITY_MAP_DEFERRED = 1 << 2,
-						DESCRIPTOR_BUFFER_CAPTURE_REPLAY = 1 << 3
-					};
+			enum class FlagsBits{
+				NONE = 0,
+				FRAGMENT_DENSITY_MAP_DYNAMIC = 1 << 1,
+				FRAGMENT_DENSITY_MAP_DEFERRED = 1 << 2,
+				DESCRIPTOR_BUFFER_CAPTURE_REPLAY = 1 << 3
 			};
+			RAINDROP_FLAGS_CLASS(Flags, FlagsBits);
 
 			struct Impl;
 

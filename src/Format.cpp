@@ -261,10 +261,10 @@ namespace Raindrop{
 		const auto& properties = format.getProperties();
 
 		// If the format does not support ALL required properties, we skip this format
-		if ((properties & required) != required) return false;
+		if (!properties.has(required)) return false;
 
 		// If the format supports at least one non wanted property, we also skip the format
-		if (properties & except) return false;
+		if (properties.overlap(except)) return false;
 
 		VkFormat vkFormat = typeToVkFormat(format.get());
 		VkFormatProperties formatProps;

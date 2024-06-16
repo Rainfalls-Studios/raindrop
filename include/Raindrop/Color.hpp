@@ -7,27 +7,23 @@
 namespace Raindrop{
 	class Color{
 		public:
-			class Components : public Utils::FlagsTemplate<Components>{
-				public:
-					using FlagsTemplate<Components>::FlagsTemplate;
+			enum class ComponentsBits{
+				NONE = 0,
+				RED = 1 << 0,
+				GREEN = 1 << 1,
+				BLUE = 1 << 2,
+				ALPHA = 1 << 3,
 
-					enum Bits : Bitset{
-						NONE = 0,
-						RED = 1 << 0,
-						GREEN = 1 << 1,
-						BLUE = 1 << 2,
-						ALPHA = 1 << 3,
+				R = RED,
+				G = GREEN,
+				B = BLUE,
+				A = ALPHA,
 
-						R = RED,
-						G = GREEN,
-						B = BLUE,
-						A = ALPHA,
-
-						RG = RED | GREEN,
-						RGB = RED | GREEN | BLUE,
-						RGBA = RED | GREEN | BLUE | ALPHA
-					};
+				RG = RED | GREEN,
+				RGB = RED | GREEN | BLUE,
+				RGBA = RED | GREEN | BLUE | ALPHA
 			};
+			RAINDROP_FLAGS_CLASS(Components, ComponentsBits);
 
 			enum class Swizzle{
 				RED,

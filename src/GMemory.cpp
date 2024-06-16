@@ -24,7 +24,7 @@ namespace Raindrop{
 
 
 	GMemory::Type GMemory::Type::Find(Context& context, const Flags& required){
-		auto& type = GRAPHICS_CONTEXT.getMemoryTypes().findBest(toVulkan(required));
+		auto& type = GRAPHICS_CONTEXT.getMemoryTypes().findBest(toVulkan(static_cast<VkMemoryPropertyFlags>(required.get())));
 		return Type(context, type.getIndex());
 	}
 

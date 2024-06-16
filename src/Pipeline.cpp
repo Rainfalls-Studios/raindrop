@@ -226,9 +226,6 @@ namespace Raindrop{
 
 			// VK_EXT_attachment_feedback_loop_dynamic_state
 			case Pipeline::DynamicState::ATTACHMENT_FEEDBACK_LOOP_ENABLE: return VK_DYNAMIC_STATE_ATTACHMENT_FEEDBACK_LOOP_ENABLE_EXT;
-
-			// VK_KHR_line_rasterization
-			case Pipeline::DynamicState::LINE_STIPPLE: return VK_DYNAMIC_STATE_LINE_STIPPLE_KHR;
 		}
 		throw std::runtime_error("Invalid dynamic state");
 	}
@@ -511,7 +508,7 @@ namespace Raindrop{
 	}
 
 	Pipeline::Layout::Flags Pipeline::Layout::getFlags() const noexcept{
-		return static_cast<Flags::Bitset>(LAYOUT_INFO.flags);
+		return Flags(LAYOUT_INFO.flags);
 	}
 
 	bool Pipeline::Layout::isInitialized() const noexcept{

@@ -11,64 +11,52 @@ namespace Raindrop{
 		public:
 			struct Impl;
 
-			class Access : public Utils::FlagsTemplate<Access> {
-				public:
-					using FlagsTemplate<Access>::FlagsTemplate;
-
-					enum Bits : Bitset {
-						NONE = 0,
-						INDIRECT_COMMAND_READ = 1 << 0,
-						INDEX_READ = 1 << 1,
-						VERTEX_ATTRIBUTE_READ = 1 << 2,
-						UNIFORM_READ = 1 << 3,
-						INPUT_ATTACHMENT_READ = 1 << 4,
-						SHADER_READ = 1 << 5,
-						SHADER_WRITE = 1 << 6,
-						COLOR_ATTACHMENT_READ = 1 << 7,
-						COLOR_ATTACHMENT_WRITE = 1 << 8,
-						DEPTH_STENCIL_ATTACHMENT_READ = 1 << 9,
-						DEPTH_STENCIL_ATTACHMENT_WRITE = 1 << 10,
-						TRANSFER_READ = 1 << 11,
-						TRANSFER_WRITE = 1 << 12,
-						HOST_READ = 1 << 13,
-						HOST_WRITE = 1 << 14,
-						MEMORY_READ = 1 << 15,
-						MEMORY_WRITE = 1 << 16,
-						TRANSFORM_FEEDBACK_WRITE = 1 << 17,
-						TRANSFORM_FEEDBACK_COUNTER_READ = 1 << 18,
-						TRANSFORM_FEEDBACK_COUNTER_WRITE = 1 << 19,
-						CONDITIONAL_RENDERING_READ = 1 << 20,
-						COLOR_ATTACHMENT_READ_NONCOHERENT = 1 << 21,
-						ACCELERATION_STRUCTURE_READ = 1 << 22,
-						ACCELERATION_STRUCTURE_WRITE = 1 << 23,
-						FRAGMENT_DENSITY_MAP_READ = 1 << 24,
-						FRAGMENT_SHADING_RATE_ATTACHMENT_READ = 1 << 25,
-						COMMAND_PREPROCESS_READ = 1 << 26,
-						COMMAND_PREPROCESS_WRITE = 1 << 27
-					};
+			enum class AccessBits{
+				NONE = 0,
+				INDIRECT_COMMAND_READ = 1 << 0,
+				INDEX_READ = 1 << 1,
+				VERTEX_ATTRIBUTE_READ = 1 << 2,
+				UNIFORM_READ = 1 << 3,
+				INPUT_ATTACHMENT_READ = 1 << 4,
+				SHADER_READ = 1 << 5,
+				SHADER_WRITE = 1 << 6,
+				COLOR_ATTACHMENT_READ = 1 << 7,
+				COLOR_ATTACHMENT_WRITE = 1 << 8,
+				DEPTH_STENCIL_ATTACHMENT_READ = 1 << 9,
+				DEPTH_STENCIL_ATTACHMENT_WRITE = 1 << 10,
+				TRANSFER_READ = 1 << 11,
+				TRANSFER_WRITE = 1 << 12,
+				HOST_READ = 1 << 13,
+				HOST_WRITE = 1 << 14,
+				MEMORY_READ = 1 << 15,
+				MEMORY_WRITE = 1 << 16,
+				TRANSFORM_FEEDBACK_WRITE = 1 << 17,
+				TRANSFORM_FEEDBACK_COUNTER_READ = 1 << 18,
+				TRANSFORM_FEEDBACK_COUNTER_WRITE = 1 << 19,
+				CONDITIONAL_RENDERING_READ = 1 << 20,
+				COLOR_ATTACHMENT_READ_NONCOHERENT = 1 << 21,
+				ACCELERATION_STRUCTURE_READ = 1 << 22,
+				ACCELERATION_STRUCTURE_WRITE = 1 << 23,
+				FRAGMENT_DENSITY_MAP_READ = 1 << 24,
+				FRAGMENT_SHADING_RATE_ATTACHMENT_READ = 1 << 25,
+				COMMAND_PREPROCESS_READ = 1 << 26,
+				COMMAND_PREPROCESS_WRITE = 1 << 27
 			};
+			RAINDROP_FLAGS_CLASS(Access, AccessBits);
 
-			class Flags : public Utils::FlagsTemplate<Flags> {
-				public:
-					using FlagsTemplate<Flags>::FlagsTemplate;
-
-					enum Bits{
-						NONE = 0,
-					};
+			enum class FlagsBits{
+				NONE = 0,
 			};
+			RAINDROP_FLAGS_CLASS(Flags, FlagsBits);
 
 			class Attachment{
 				friend class RenderPass;
 				public:
-					class Flags : public Utils::FlagsTemplate<Flags> {
-						public:
-							using FlagsTemplate<Flags>::FlagsTemplate;
-
-							enum Bits{
-								NONE = 0,
-								MAY_ALIAS = 1 << 0
-							};
+					enum class FlagsBits{
+						NONE = 0,
+						MAY_ALIAS = 1 << 0
 					};
+					RAINDROP_FLAGS_CLASS(Flags, FlagsBits);
 
 					class Operation{
 						public:
@@ -128,22 +116,18 @@ namespace Raindrop{
 			class Subpass{
 				friend class RenderPass;
 				public:
-					class Flags : public Utils::FlagsTemplate<Flags> {
-						public:
-							using FlagsTemplate<Flags>::FlagsTemplate;
-
-							enum Bits{
-								NONE = 0,
-								PER_VIEW_ATTRIBUTES = 1 << 0,
-								PER_VIEW_POSITION_X_ONLY = 1 << 1,
-								FRAGMENT_REGION = 1 << 2,
-								SHADER_RESOLVE = 1 << 3,
-								RASTERIZATION_ORDER_ATTACHMENT_COLOR_ACCESS = 1 << 4,
-								RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS = 1 << 5,
-								RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS = 1 << 6,
-								ENABLE_LEGACY_DITHERING = 1 << 7,
-							};
+					enum class FlagsBits{
+						NONE = 0,
+						PER_VIEW_ATTRIBUTES = 1 << 0,
+						PER_VIEW_POSITION_X_ONLY = 1 << 1,
+						FRAGMENT_REGION = 1 << 2,
+						SHADER_RESOLVE = 1 << 3,
+						RASTERIZATION_ORDER_ATTACHMENT_COLOR_ACCESS = 1 << 4,
+						RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS = 1 << 5,
+						RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS = 1 << 6,
+						ENABLE_LEGACY_DITHERING = 1 << 7,
 					};
+					RAINDROP_FLAGS_CLASS(Flags, FlagsBits);
 
 					struct AttachmentReference{
 						Attachment& attachment;
@@ -185,18 +169,14 @@ namespace Raindrop{
 			class Dependency{
 				friend class RenderPass;
 				public:
-					class Flags : public Utils::FlagsTemplate<Flags> {
-						public:
-							using FlagsTemplate<Flags>::FlagsTemplate;
-
-							enum Bits{
-								NONE = 0,
-								BY_REGION = 1 << 0,
-								DEVICE_GROUP = 1 << 1,
-								VIEW_LOCAL = 1 << 2,
-								FEEDBACK_LOOP = 1 << 3,
-							};
+					enum class FlagsBits{
+						NONE = 0,
+						BY_REGION = 1 << 0,
+						DEVICE_GROUP = 1 << 1,
+						VIEW_LOCAL = 1 << 2,
+						FEEDBACK_LOOP = 1 << 3,
 					};
+					RAINDROP_FLAGS_CLASS(Flags, FlagsBits);
 
 					Dependency();
 

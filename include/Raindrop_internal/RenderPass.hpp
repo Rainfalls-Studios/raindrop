@@ -41,48 +41,48 @@ namespace Raindrop{
 	constexpr VkAccessFlags AccessFlagsToVulkan(const RenderPass::Access& access){
 		VkAccessFlags out = 0;
 
-		if (access.has(RenderPass::Access::INDIRECT_COMMAND_READ)) out |= VK_ACCESS_INDIRECT_COMMAND_READ_BIT;
-		if (access.has(RenderPass::Access::INDEX_READ)) out |= VK_ACCESS_INDEX_READ_BIT;
-		if (access.has(RenderPass::Access::VERTEX_ATTRIBUTE_READ)) out |= VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT;
-		if (access.has(RenderPass::Access::UNIFORM_READ)) out |= VK_ACCESS_UNIFORM_READ_BIT;
-		if (access.has(RenderPass::Access::INPUT_ATTACHMENT_READ)) out |= VK_ACCESS_INPUT_ATTACHMENT_READ_BIT;
-		if (access.has(RenderPass::Access::SHADER_READ)) out |= VK_ACCESS_SHADER_READ_BIT;
-		if (access.has(RenderPass::Access::SHADER_WRITE)) out |= VK_ACCESS_SHADER_WRITE_BIT;
-		if (access.has(RenderPass::Access::COLOR_ATTACHMENT_READ)) out |= VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
-		if (access.has(RenderPass::Access::COLOR_ATTACHMENT_WRITE)) out |= VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-		if (access.has(RenderPass::Access::DEPTH_STENCIL_ATTACHMENT_READ)) out |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
-		if (access.has(RenderPass::Access::DEPTH_STENCIL_ATTACHMENT_WRITE)) out |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-		if (access.has(RenderPass::Access::TRANSFER_READ)) out |= VK_ACCESS_TRANSFER_READ_BIT;
-		if (access.has(RenderPass::Access::TRANSFER_WRITE)) out |= VK_ACCESS_TRANSFER_WRITE_BIT;
-		if (access.has(RenderPass::Access::HOST_READ)) out |= VK_ACCESS_HOST_READ_BIT;
-		if (access.has(RenderPass::Access::HOST_WRITE)) out |= VK_ACCESS_HOST_WRITE_BIT;
-		if (access.has(RenderPass::Access::MEMORY_READ)) out |= VK_ACCESS_MEMORY_READ_BIT;
-		if (access.has(RenderPass::Access::MEMORY_WRITE)) out |= VK_ACCESS_MEMORY_WRITE_BIT;
+		if (access & RenderPass::AccessBits::INDIRECT_COMMAND_READ) out |= VK_ACCESS_INDIRECT_COMMAND_READ_BIT;
+		if (access & RenderPass::AccessBits::INDEX_READ) out |= VK_ACCESS_INDEX_READ_BIT;
+		if (access & RenderPass::AccessBits::VERTEX_ATTRIBUTE_READ) out |= VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT;
+		if (access & RenderPass::AccessBits::UNIFORM_READ) out |= VK_ACCESS_UNIFORM_READ_BIT;
+		if (access & RenderPass::AccessBits::INPUT_ATTACHMENT_READ) out |= VK_ACCESS_INPUT_ATTACHMENT_READ_BIT;
+		if (access & RenderPass::AccessBits::SHADER_READ) out |= VK_ACCESS_SHADER_READ_BIT;
+		if (access & RenderPass::AccessBits::SHADER_WRITE) out |= VK_ACCESS_SHADER_WRITE_BIT;
+		if (access & RenderPass::AccessBits::COLOR_ATTACHMENT_READ) out |= VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
+		if (access & RenderPass::AccessBits::COLOR_ATTACHMENT_WRITE) out |= VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		if (access & RenderPass::AccessBits::DEPTH_STENCIL_ATTACHMENT_READ) out |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
+		if (access & RenderPass::AccessBits::DEPTH_STENCIL_ATTACHMENT_WRITE) out |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+		if (access & RenderPass::AccessBits::TRANSFER_READ) out |= VK_ACCESS_TRANSFER_READ_BIT;
+		if (access & RenderPass::AccessBits::TRANSFER_WRITE) out |= VK_ACCESS_TRANSFER_WRITE_BIT;
+		if (access & RenderPass::AccessBits::HOST_READ) out |= VK_ACCESS_HOST_READ_BIT;
+		if (access & RenderPass::AccessBits::HOST_WRITE) out |= VK_ACCESS_HOST_WRITE_BIT;
+		if (access & RenderPass::AccessBits::MEMORY_READ) out |= VK_ACCESS_MEMORY_READ_BIT;
+		if (access & RenderPass::AccessBits::MEMORY_WRITE) out |= VK_ACCESS_MEMORY_WRITE_BIT;
 		
 		// VK_EXT_transform_feedback
-		if (access.has(RenderPass::Access::TRANSFORM_FEEDBACK_WRITE)) out |= VK_ACCESS_TRANSFORM_FEEDBACK_WRITE_BIT_EXT;
-		if (access.has(RenderPass::Access::TRANSFORM_FEEDBACK_COUNTER_READ)) out |= VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_READ_BIT_EXT;
-		if (access.has(RenderPass::Access::TRANSFORM_FEEDBACK_COUNTER_WRITE)) out |= VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_WRITE_BIT_EXT;
+		if (access & RenderPass::AccessBits::TRANSFORM_FEEDBACK_WRITE) out |= VK_ACCESS_TRANSFORM_FEEDBACK_WRITE_BIT_EXT;
+		if (access & RenderPass::AccessBits::TRANSFORM_FEEDBACK_COUNTER_READ) out |= VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_READ_BIT_EXT;
+		if (access & RenderPass::AccessBits::TRANSFORM_FEEDBACK_COUNTER_WRITE) out |= VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_WRITE_BIT_EXT;
 
 		// VK_EXT_conditional_rendering
-		if (access.has(RenderPass::Access::CONDITIONAL_RENDERING_READ)) out |= VK_ACCESS_CONDITIONAL_RENDERING_READ_BIT_EXT;
+		if (access & RenderPass::AccessBits::CONDITIONAL_RENDERING_READ) out |= VK_ACCESS_CONDITIONAL_RENDERING_READ_BIT_EXT;
 
 		// VK_EXT_blend_operation_advanced
-		if (access.has(RenderPass::Access::COLOR_ATTACHMENT_READ_NONCOHERENT)) out |= VK_ACCESS_COLOR_ATTACHMENT_READ_NONCOHERENT_BIT_EXT;
+		if (access & RenderPass::AccessBits::COLOR_ATTACHMENT_READ_NONCOHERENT) out |= VK_ACCESS_COLOR_ATTACHMENT_READ_NONCOHERENT_BIT_EXT;
 
 		// VK_KHR_acceleration_structure
-		if (access.has(RenderPass::Access::ACCELERATION_STRUCTURE_READ)) out |= VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR;
-		if (access.has(RenderPass::Access::ACCELERATION_STRUCTURE_WRITE)) out |= VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR;
+		if (access & RenderPass::AccessBits::ACCELERATION_STRUCTURE_READ) out |= VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR;
+		if (access & RenderPass::AccessBits::ACCELERATION_STRUCTURE_WRITE) out |= VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR;
 
 		// VK_EXT_fragment_density_map
-		if (access.has(RenderPass::Access::FRAGMENT_DENSITY_MAP_READ)) out |= VK_ACCESS_FRAGMENT_DENSITY_MAP_READ_BIT_EXT;
+		if (access & RenderPass::AccessBits::FRAGMENT_DENSITY_MAP_READ) out |= VK_ACCESS_FRAGMENT_DENSITY_MAP_READ_BIT_EXT;
 
 		// VK_KHR_fragment_shading_rate
-		if (access.has(RenderPass::Access::FRAGMENT_SHADING_RATE_ATTACHMENT_READ)) out |= VK_ACCESS_FRAGMENT_SHADING_RATE_ATTACHMENT_READ_BIT_KHR;
+		if (access & RenderPass::AccessBits::FRAGMENT_SHADING_RATE_ATTACHMENT_READ) out |= VK_ACCESS_FRAGMENT_SHADING_RATE_ATTACHMENT_READ_BIT_KHR;
 
 		// VK_NV_device_generated_commands
-		if (access.has(RenderPass::Access::COMMAND_PREPROCESS_READ)) out |= VK_ACCESS_COMMAND_PREPROCESS_READ_BIT_NV;
-		if (access.has(RenderPass::Access::COMMAND_PREPROCESS_WRITE)) out |= VK_ACCESS_COMMAND_PREPROCESS_WRITE_BIT_NV;
+		if (access & RenderPass::AccessBits::COMMAND_PREPROCESS_READ) out |= VK_ACCESS_COMMAND_PREPROCESS_READ_BIT_NV;
+		if (access & RenderPass::AccessBits::COMMAND_PREPROCESS_WRITE) out |= VK_ACCESS_COMMAND_PREPROCESS_WRITE_BIT_NV;
 
 		return out;
 	}
@@ -124,69 +124,69 @@ namespace Raindrop{
 
 	constexpr VkAccessFlagBits AccessFlagsBitsToVulkan(const RenderPass::Access::Bits& access){
 		switch (access){
-			case RenderPass::Access::INDIRECT_COMMAND_READ: return VK_ACCESS_INDIRECT_COMMAND_READ_BIT;
-			case RenderPass::Access::INDEX_READ: return VK_ACCESS_INDEX_READ_BIT;
-			case RenderPass::Access::VERTEX_ATTRIBUTE_READ: return VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT;
-			case RenderPass::Access::UNIFORM_READ: return VK_ACCESS_UNIFORM_READ_BIT;
-			case RenderPass::Access::INPUT_ATTACHMENT_READ: return VK_ACCESS_INPUT_ATTACHMENT_READ_BIT;
-			case RenderPass::Access::SHADER_READ: return VK_ACCESS_SHADER_READ_BIT;
-			case RenderPass::Access::SHADER_WRITE: return VK_ACCESS_SHADER_WRITE_BIT;
-			case RenderPass::Access::COLOR_ATTACHMENT_READ: return VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
-			case RenderPass::Access::COLOR_ATTACHMENT_WRITE: return VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-			case RenderPass::Access::DEPTH_STENCIL_ATTACHMENT_READ: return VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
-			case RenderPass::Access::DEPTH_STENCIL_ATTACHMENT_WRITE: return VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-			case RenderPass::Access::TRANSFER_READ: return VK_ACCESS_TRANSFER_READ_BIT;
-			case RenderPass::Access::TRANSFER_WRITE: return VK_ACCESS_TRANSFER_WRITE_BIT;
-			case RenderPass::Access::HOST_READ: return VK_ACCESS_HOST_READ_BIT;
-			case RenderPass::Access::HOST_WRITE: return VK_ACCESS_HOST_WRITE_BIT;
-			case RenderPass::Access::MEMORY_READ: return VK_ACCESS_MEMORY_READ_BIT;
-			case RenderPass::Access::MEMORY_WRITE: return VK_ACCESS_MEMORY_WRITE_BIT;
-			case RenderPass::Access::TRANSFORM_FEEDBACK_WRITE: return VK_ACCESS_TRANSFORM_FEEDBACK_WRITE_BIT_EXT;
-			case RenderPass::Access::TRANSFORM_FEEDBACK_COUNTER_READ: return VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_READ_BIT_EXT;
-			case RenderPass::Access::TRANSFORM_FEEDBACK_COUNTER_WRITE: return VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_WRITE_BIT_EXT;
-			case RenderPass::Access::CONDITIONAL_RENDERING_READ: return VK_ACCESS_CONDITIONAL_RENDERING_READ_BIT_EXT;
-			case RenderPass::Access::COLOR_ATTACHMENT_READ_NONCOHERENT: return VK_ACCESS_COLOR_ATTACHMENT_READ_NONCOHERENT_BIT_EXT;
-			case RenderPass::Access::ACCELERATION_STRUCTURE_READ: return VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR;
-			case RenderPass::Access::ACCELERATION_STRUCTURE_WRITE: return VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR;
-			case RenderPass::Access::FRAGMENT_DENSITY_MAP_READ: return VK_ACCESS_FRAGMENT_DENSITY_MAP_READ_BIT_EXT;
-			case RenderPass::Access::FRAGMENT_SHADING_RATE_ATTACHMENT_READ: return VK_ACCESS_FRAGMENT_SHADING_RATE_ATTACHMENT_READ_BIT_KHR;
-			case RenderPass::Access::COMMAND_PREPROCESS_READ: return VK_ACCESS_COMMAND_PREPROCESS_READ_BIT_NV;
-			case RenderPass::Access::COMMAND_PREPROCESS_WRITE: return VK_ACCESS_COMMAND_PREPROCESS_WRITE_BIT_NV;
+			case RenderPass::AccessBits::INDIRECT_COMMAND_READ: return VK_ACCESS_INDIRECT_COMMAND_READ_BIT;
+			case RenderPass::AccessBits::INDEX_READ: return VK_ACCESS_INDEX_READ_BIT;
+			case RenderPass::AccessBits::VERTEX_ATTRIBUTE_READ: return VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT;
+			case RenderPass::AccessBits::UNIFORM_READ: return VK_ACCESS_UNIFORM_READ_BIT;
+			case RenderPass::AccessBits::INPUT_ATTACHMENT_READ: return VK_ACCESS_INPUT_ATTACHMENT_READ_BIT;
+			case RenderPass::AccessBits::SHADER_READ: return VK_ACCESS_SHADER_READ_BIT;
+			case RenderPass::AccessBits::SHADER_WRITE: return VK_ACCESS_SHADER_WRITE_BIT;
+			case RenderPass::AccessBits::COLOR_ATTACHMENT_READ: return VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
+			case RenderPass::AccessBits::COLOR_ATTACHMENT_WRITE: return VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+			case RenderPass::AccessBits::DEPTH_STENCIL_ATTACHMENT_READ: return VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
+			case RenderPass::AccessBits::DEPTH_STENCIL_ATTACHMENT_WRITE: return VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+			case RenderPass::AccessBits::TRANSFER_READ: return VK_ACCESS_TRANSFER_READ_BIT;
+			case RenderPass::AccessBits::TRANSFER_WRITE: return VK_ACCESS_TRANSFER_WRITE_BIT;
+			case RenderPass::AccessBits::HOST_READ: return VK_ACCESS_HOST_READ_BIT;
+			case RenderPass::AccessBits::HOST_WRITE: return VK_ACCESS_HOST_WRITE_BIT;
+			case RenderPass::AccessBits::MEMORY_READ: return VK_ACCESS_MEMORY_READ_BIT;
+			case RenderPass::AccessBits::MEMORY_WRITE: return VK_ACCESS_MEMORY_WRITE_BIT;
+			case RenderPass::AccessBits::TRANSFORM_FEEDBACK_WRITE: return VK_ACCESS_TRANSFORM_FEEDBACK_WRITE_BIT_EXT;
+			case RenderPass::AccessBits::TRANSFORM_FEEDBACK_COUNTER_READ: return VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_READ_BIT_EXT;
+			case RenderPass::AccessBits::TRANSFORM_FEEDBACK_COUNTER_WRITE: return VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_WRITE_BIT_EXT;
+			case RenderPass::AccessBits::CONDITIONAL_RENDERING_READ: return VK_ACCESS_CONDITIONAL_RENDERING_READ_BIT_EXT;
+			case RenderPass::AccessBits::COLOR_ATTACHMENT_READ_NONCOHERENT: return VK_ACCESS_COLOR_ATTACHMENT_READ_NONCOHERENT_BIT_EXT;
+			case RenderPass::AccessBits::ACCELERATION_STRUCTURE_READ: return VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR;
+			case RenderPass::AccessBits::ACCELERATION_STRUCTURE_WRITE: return VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR;
+			case RenderPass::AccessBits::FRAGMENT_DENSITY_MAP_READ: return VK_ACCESS_FRAGMENT_DENSITY_MAP_READ_BIT_EXT;
+			case RenderPass::AccessBits::FRAGMENT_SHADING_RATE_ATTACHMENT_READ: return VK_ACCESS_FRAGMENT_SHADING_RATE_ATTACHMENT_READ_BIT_KHR;
+			case RenderPass::AccessBits::COMMAND_PREPROCESS_READ: return VK_ACCESS_COMMAND_PREPROCESS_READ_BIT_NV;
+			case RenderPass::AccessBits::COMMAND_PREPROCESS_WRITE: return VK_ACCESS_COMMAND_PREPROCESS_WRITE_BIT_NV;
 			default: return VkAccessFlagBits(0);
 		}
 	}
 
 	constexpr RenderPass::Access::Bits AccessFlagsBitsToVulkan(const VkAccessFlagBits& access){
 		switch (access){
-			case VK_ACCESS_INDIRECT_COMMAND_READ_BIT: return RenderPass::Access::INDIRECT_COMMAND_READ;
-			case VK_ACCESS_INDEX_READ_BIT: return RenderPass::Access::INDEX_READ;
-			case VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT: return RenderPass::Access::VERTEX_ATTRIBUTE_READ;
-			case VK_ACCESS_UNIFORM_READ_BIT: return RenderPass::Access::UNIFORM_READ;
-			case VK_ACCESS_INPUT_ATTACHMENT_READ_BIT: return RenderPass::Access::INPUT_ATTACHMENT_READ;
-			case VK_ACCESS_SHADER_READ_BIT: return RenderPass::Access::SHADER_READ;
-			case VK_ACCESS_SHADER_WRITE_BIT: return RenderPass::Access::SHADER_WRITE;
-			case VK_ACCESS_COLOR_ATTACHMENT_READ_BIT: return RenderPass::Access::COLOR_ATTACHMENT_READ;
-			case VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT: return RenderPass::Access::COLOR_ATTACHMENT_WRITE;
-			case VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT: return RenderPass::Access::DEPTH_STENCIL_ATTACHMENT_READ;
-			case VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT: return RenderPass::Access::DEPTH_STENCIL_ATTACHMENT_WRITE;
-			case VK_ACCESS_TRANSFER_READ_BIT: return RenderPass::Access::TRANSFER_READ;
-			case VK_ACCESS_TRANSFER_WRITE_BIT: return RenderPass::Access::TRANSFER_WRITE;
-			case VK_ACCESS_HOST_READ_BIT: return RenderPass::Access::HOST_READ;
-			case VK_ACCESS_HOST_WRITE_BIT: return RenderPass::Access::HOST_WRITE;
-			case VK_ACCESS_MEMORY_READ_BIT: return RenderPass::Access::MEMORY_READ;
-			case VK_ACCESS_MEMORY_WRITE_BIT: return RenderPass::Access::MEMORY_WRITE;
-			case VK_ACCESS_TRANSFORM_FEEDBACK_WRITE_BIT_EXT: return RenderPass::Access::TRANSFORM_FEEDBACK_WRITE;
-			case VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_READ_BIT_EXT: return RenderPass::Access::TRANSFORM_FEEDBACK_COUNTER_READ;
-			case VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_WRITE_BIT_EXT: return RenderPass::Access::TRANSFORM_FEEDBACK_COUNTER_WRITE;
-			case VK_ACCESS_CONDITIONAL_RENDERING_READ_BIT_EXT: return RenderPass::Access::CONDITIONAL_RENDERING_READ;
-			case VK_ACCESS_COLOR_ATTACHMENT_READ_NONCOHERENT_BIT_EXT: return RenderPass::Access::COLOR_ATTACHMENT_READ_NONCOHERENT;
-			case VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR: return RenderPass::Access::ACCELERATION_STRUCTURE_READ;
-			case VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR: return RenderPass::Access::ACCELERATION_STRUCTURE_WRITE;
-			case VK_ACCESS_FRAGMENT_DENSITY_MAP_READ_BIT_EXT: return RenderPass::Access::FRAGMENT_DENSITY_MAP_READ;
-			case VK_ACCESS_FRAGMENT_SHADING_RATE_ATTACHMENT_READ_BIT_KHR: return RenderPass::Access::FRAGMENT_SHADING_RATE_ATTACHMENT_READ;
-			case VK_ACCESS_COMMAND_PREPROCESS_READ_BIT_NV: return RenderPass::Access::COMMAND_PREPROCESS_READ;
-			case VK_ACCESS_COMMAND_PREPROCESS_WRITE_BIT_NV: return RenderPass::Access::COMMAND_PREPROCESS_WRITE;
-			default: return RenderPass::Access::NONE;
+			case VK_ACCESS_INDIRECT_COMMAND_READ_BIT: return RenderPass::AccessBits::INDIRECT_COMMAND_READ;
+			case VK_ACCESS_INDEX_READ_BIT: return RenderPass::AccessBits::INDEX_READ;
+			case VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT: return RenderPass::AccessBits::VERTEX_ATTRIBUTE_READ;
+			case VK_ACCESS_UNIFORM_READ_BIT: return RenderPass::AccessBits::UNIFORM_READ;
+			case VK_ACCESS_INPUT_ATTACHMENT_READ_BIT: return RenderPass::AccessBits::INPUT_ATTACHMENT_READ;
+			case VK_ACCESS_SHADER_READ_BIT: return RenderPass::AccessBits::SHADER_READ;
+			case VK_ACCESS_SHADER_WRITE_BIT: return RenderPass::AccessBits::SHADER_WRITE;
+			case VK_ACCESS_COLOR_ATTACHMENT_READ_BIT: return RenderPass::AccessBits::COLOR_ATTACHMENT_READ;
+			case VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT: return RenderPass::AccessBits::COLOR_ATTACHMENT_WRITE;
+			case VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT: return RenderPass::AccessBits::DEPTH_STENCIL_ATTACHMENT_READ;
+			case VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT: return RenderPass::AccessBits::DEPTH_STENCIL_ATTACHMENT_WRITE;
+			case VK_ACCESS_TRANSFER_READ_BIT: return RenderPass::AccessBits::TRANSFER_READ;
+			case VK_ACCESS_TRANSFER_WRITE_BIT: return RenderPass::AccessBits::TRANSFER_WRITE;
+			case VK_ACCESS_HOST_READ_BIT: return RenderPass::AccessBits::HOST_READ;
+			case VK_ACCESS_HOST_WRITE_BIT: return RenderPass::AccessBits::HOST_WRITE;
+			case VK_ACCESS_MEMORY_READ_BIT: return RenderPass::AccessBits::MEMORY_READ;
+			case VK_ACCESS_MEMORY_WRITE_BIT: return RenderPass::AccessBits::MEMORY_WRITE;
+			case VK_ACCESS_TRANSFORM_FEEDBACK_WRITE_BIT_EXT: return RenderPass::AccessBits::TRANSFORM_FEEDBACK_WRITE;
+			case VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_READ_BIT_EXT: return RenderPass::AccessBits::TRANSFORM_FEEDBACK_COUNTER_READ;
+			case VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_WRITE_BIT_EXT: return RenderPass::AccessBits::TRANSFORM_FEEDBACK_COUNTER_WRITE;
+			case VK_ACCESS_CONDITIONAL_RENDERING_READ_BIT_EXT: return RenderPass::AccessBits::CONDITIONAL_RENDERING_READ;
+			case VK_ACCESS_COLOR_ATTACHMENT_READ_NONCOHERENT_BIT_EXT: return RenderPass::AccessBits::COLOR_ATTACHMENT_READ_NONCOHERENT;
+			case VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR: return RenderPass::AccessBits::ACCELERATION_STRUCTURE_READ;
+			case VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR: return RenderPass::AccessBits::ACCELERATION_STRUCTURE_WRITE;
+			case VK_ACCESS_FRAGMENT_DENSITY_MAP_READ_BIT_EXT: return RenderPass::AccessBits::FRAGMENT_DENSITY_MAP_READ;
+			case VK_ACCESS_FRAGMENT_SHADING_RATE_ATTACHMENT_READ_BIT_KHR: return RenderPass::AccessBits::FRAGMENT_SHADING_RATE_ATTACHMENT_READ;
+			case VK_ACCESS_COMMAND_PREPROCESS_READ_BIT_NV: return RenderPass::AccessBits::COMMAND_PREPROCESS_READ;
+			case VK_ACCESS_COMMAND_PREPROCESS_WRITE_BIT_NV: return RenderPass::AccessBits::COMMAND_PREPROCESS_WRITE;
+			default: return RenderPass::AccessBits::NONE;
 		}
 	}
 
@@ -243,7 +243,7 @@ namespace Raindrop{
 			case RenderPass::Attachment::Operation::DONT_LOAD: return VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 
 			// VK_KHR_load_store_op_none
-			case RenderPass::Attachment::Operation::LOAD_NONE: return VK_ATTACHMENT_LOAD_OP_NONE_KHR;
+			case RenderPass::Attachment::Operation::LOAD_NONE: return VK_ATTACHMENT_LOAD_OP_NONE_EXT;
 			default: return VkAttachmentLoadOp(0);
 		}
 	}
@@ -253,7 +253,7 @@ namespace Raindrop{
 			case VK_ATTACHMENT_LOAD_OP_LOAD: return RenderPass::Attachment::Operation::LOAD;
 			case VK_ATTACHMENT_LOAD_OP_CLEAR: return RenderPass::Attachment::Operation::CLEAR;
 			case VK_ATTACHMENT_LOAD_OP_DONT_CARE: return RenderPass::Attachment::Operation::DONT_LOAD;
-			case VK_ATTACHMENT_LOAD_OP_NONE_KHR: return RenderPass::Attachment::Operation::LOAD_NONE;
+			case VK_ATTACHMENT_LOAD_OP_NONE_EXT: return RenderPass::Attachment::Operation::LOAD_NONE;
 			default: return RenderPass::Attachment::Operation::Load(0);
 		}
 	}

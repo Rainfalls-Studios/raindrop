@@ -229,6 +229,9 @@ int main(){
 		Raindrop::Format::Features::SAMPLED_IMAGE,
 		Raindrop::Format::Properties::PACKED
 	);
+
+	// Raindrop::Format::Properties::FlagsTemplate()
+	
 	texture.setFormat(format);
 	texture.initialize();
 	

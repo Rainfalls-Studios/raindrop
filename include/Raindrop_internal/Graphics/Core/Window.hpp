@@ -1,7 +1,7 @@
 #ifndef __RAINDROP_INTERNAL_GRAPHICS_CORE_WINDOW_HPP__
 #define __RAINDROP_INTERNAL_GRAPHICS_CORE_WINDOW_HPP__
 
-#include <SDL3/SDL.h>
+#include <SDL.h>
 #include "common.hpp"
 
 namespace Raindrop::Internal::Graphics::Core{

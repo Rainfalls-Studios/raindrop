@@ -15,126 +15,102 @@ namespace Raindrop{
 	class Pipeline{
 		friend class VertexBinding;
 		public:
-			class Flags : public Utils::FlagsTemplate<Flags>{
-				public:
-					using FlagsTemplate<Flags>::FlagsTemplate;
-
-					enum Bits : Bitset{
-						NONE = 0,
-						DISABLE_OPTIMIZATION = 1 << 0,
-						ALLOW_DERIVATIVES = 1 << 1,
-						DERIVATIVE = 1 << 2,
-						VIEW_INDEX_FROM_DEVICE_INDEX = 1 << 3,
-						DISPATCH_BASE = 1 << 4,
-						FAIL_ON_PIPELINE_COMPILE_REQUIRED = 1 << 5,
-						EARLY_RETURN_ON_FAILURE = 1 << 6,
-						RENDERING_FRAGMENT_SHADING_RATE_ATTACHMENT = 1 << 7,
-						RENDERING_FRAGMENT_DENSITY_MAP_ATTACHMENT = 1 << 8,
-						RAY_TRACING_NO_NULL_ANY_HIT_SHADERS = 1 << 9,
-						RAY_TRACING_NO_NULL_CLOSEST_HIT_SHADERS = 1 << 10,
-						RAY_TRACING_NO_NULL_MISS_SHADERS = 1 << 11,
-						RAY_TRACING_NO_NULL_INTERSECTION_SHADERS = 1 << 12,
-						RAY_TRACING_SKIP_TRIANGLES = 1 << 13,
-						RAY_TRACING_SKIP_AABBS = 1 << 14,
-						RAY_TRACING_SHADER_GROUP_HANDLE_CAPTURE_REPLAY = 1 << 15,
-						DEFER_COMPILE = 1 << 16,
-						CAPTURE_STATISTICS = 1 << 17,
-						CAPTURE_INTERNAL_REPRESENTATIONS = 1 << 18,
-						INDIRECT_BINDABLE = 1 << 19,
-						LIBRARY = 1 << 20,
-						DESCRIPTOR_BUFFER = 1 << 21,
-						RETAIN_LINK_TIME_OPTIMIZATION_INFO = 1 << 22,
-						LINK_TIME_OPTIMIZATION = 1 << 23,
-						RAY_TRACING_ALLOW_MOTION = 1 << 24,
-						COLOR_ATTACHMENT_FEEDBACK_LOOP = 1 << 25,
-						DEPTH_STENCIL_ATTACHMENT_FEEDBACK_LOOP = 1 << 26,
-						RAY_TRACING_OPACITY_MICROMAP = 1 << 27,
-						NO_PROTECTED_ACCESS = 1 << 28,
-						PROTECTED_ACCESS_ONLY = 1 << 29,
-					};
+			enum class FlagsBits{
+				NONE = 0,
+				DISABLE_OPTIMIZATION = 1 << 0,
+				ALLOW_DERIVATIVES = 1 << 1,
+				DERIVATIVE = 1 << 2,
+				VIEW_INDEX_FROM_DEVICE_INDEX = 1 << 3,
+				DISPATCH_BASE = 1 << 4,
+				FAIL_ON_PIPELINE_COMPILE_REQUIRED = 1 << 5,
+				EARLY_RETURN_ON_FAILURE = 1 << 6,
+				RENDERING_FRAGMENT_SHADING_RATE_ATTACHMENT = 1 << 7,
+				RENDERING_FRAGMENT_DENSITY_MAP_ATTACHMENT = 1 << 8,
+				RAY_TRACING_NO_NULL_ANY_HIT_SHADERS = 1 << 9,
+				RAY_TRACING_NO_NULL_CLOSEST_HIT_SHADERS = 1 << 10,
+				RAY_TRACING_NO_NULL_MISS_SHADERS = 1 << 11,
+				RAY_TRACING_NO_NULL_INTERSECTION_SHADERS = 1 << 12,
+				RAY_TRACING_SKIP_TRIANGLES = 1 << 13,
+				RAY_TRACING_SKIP_AABBS = 1 << 14,
+				RAY_TRACING_SHADER_GROUP_HANDLE_CAPTURE_REPLAY = 1 << 15,
+				DEFER_COMPILE = 1 << 16,
+				CAPTURE_STATISTICS = 1 << 17,
+				CAPTURE_INTERNAL_REPRESENTATIONS = 1 << 18,
+				INDIRECT_BINDABLE = 1 << 19,
+				LIBRARY = 1 << 20,
+				DESCRIPTOR_BUFFER = 1 << 21,
+				RETAIN_LINK_TIME_OPTIMIZATION_INFO = 1 << 22,
+				LINK_TIME_OPTIMIZATION = 1 << 23,
+				RAY_TRACING_ALLOW_MOTION = 1 << 24,
+				COLOR_ATTACHMENT_FEEDBACK_LOOP = 1 << 25,
+				DEPTH_STENCIL_ATTACHMENT_FEEDBACK_LOOP = 1 << 26,
+				RAY_TRACING_OPACITY_MICROMAP = 1 << 27,
+				NO_PROTECTED_ACCESS = 1 << 28,
+				PROTECTED_ACCESS_ONLY = 1 << 29,
 			};
+			RAINDROP_FLAGS_CLASS(Flags, FlagsBits);
 
-			class Stage : public Utils::FlagsTemplate<Stage>{
-				public:
-					using FlagsTemplate<Stage>::FlagsTemplate;
-
-					enum Bits : Bitset{
-						NONE = 0,
-						TOP_OF_PIPE = 1 << 0,
-						DRAW_INDIRECT = 1 << 1,
-						VERTEX_INPUT = 1 << 2,
-						VERTEX_SHADER = 1 << 3,
-						TESSELLATION_CONTROL_SHADER = 1 << 4,
-						TESSELLATION_EVALUATION_SHADER = 1 << 5,
-						GEOMETRY_SHADER = 1 << 6,
-						FRAGMENT_SHADER = 1 << 7,
-						EARLY_FRAGMENT_TESTS = 1 << 8,
-						LATE_FRAGMENT_TESTS = 1 << 9,
-						COLOR_ATTACHMENT_OUTPUT = 1 << 10,
-						COMPUTE_SHADER = 1 << 11,
-						TRANSFER = 1 << 12,
-						BOTTOM_OF_PIPE = 1 << 13,
-						HOST = 1 << 14,
-						ALL_GRAPHICS = 1 << 15,
-						ALL_COMMANDS = 1 << 16,
-						TRANSFORM_FEEDBACK = 1 << 17,
-						CONDITIONAL_RENDERING = 1 << 18,
-						ACCELERATION_STRUCTURE_BUILD = 1 << 19,
-						RAY_TRACING_SHADER = 1 << 20,
-						FRAGMENT_DENSITY_PROCESS = 1 << 21,
-						FRAGMENT_SHADING_RATE_ATTACHMENT = 1 << 22,
-						COMMAND_PREPROCES = 1 << 23,
-						TASK_SHADER = 1 << 24,
-						MESH_SHADER = 1 << 26,
-					};
+			enum class StageBits{
+				NONE = 0,
+				TOP_OF_PIPE = 1 << 0,
+				DRAW_INDIRECT = 1 << 1,
+				VERTEX_INPUT = 1 << 2,
+				VERTEX_SHADER = 1 << 3,
+				TESSELLATION_CONTROL_SHADER = 1 << 4,
+				TESSELLATION_EVALUATION_SHADER = 1 << 5,
+				GEOMETRY_SHADER = 1 << 6,
+				FRAGMENT_SHADER = 1 << 7,
+				EARLY_FRAGMENT_TESTS = 1 << 8,
+				LATE_FRAGMENT_TESTS = 1 << 9,
+				COLOR_ATTACHMENT_OUTPUT = 1 << 10,
+				COMPUTE_SHADER = 1 << 11,
+				TRANSFER = 1 << 12,
+				BOTTOM_OF_PIPE = 1 << 13,
+				HOST = 1 << 14,
+				ALL_GRAPHICS = 1 << 15,
+				ALL_COMMANDS = 1 << 16,
+				TRANSFORM_FEEDBACK = 1 << 17,
+				CONDITIONAL_RENDERING = 1 << 18,
+				ACCELERATION_STRUCTURE_BUILD = 1 << 19,
+				RAY_TRACING_SHADER = 1 << 20,
+				FRAGMENT_DENSITY_PROCESS = 1 << 21,
+				FRAGMENT_SHADING_RATE_ATTACHMENT = 1 << 22,
+				COMMAND_PREPROCES = 1 << 23,
+				TASK_SHADER = 1 << 24,
+				MESH_SHADER = 1 << 26,
 			};
+			RAINDROP_FLAGS_CLASS(Stage, StageBits);
 
-			class ColorBlendFlags : public Utils::FlagsTemplate<ColorBlendFlags>{
-				public:
-					using FlagsTemplate<ColorBlendFlags>::FlagsTemplate;
-
-					enum Bits : Bitset{
-						NONE = 0,
-						RASTERIZATION_ORDER_ATTACHMENT_ACCESS = 1 << 0
-					};
+			enum class ColorBlendFlagsBits{
+				NONE = 0,
+				RASTERIZATION_ORDER_ATTACHMENT_ACCESS = 1 << 0
 			};
+			RAINDROP_FLAGS_CLASS(ColorBlendFlags, ColorBlendFlagsBits);
 
-			class DepthStencilFlags : public Utils::FlagsTemplate<DepthStencilFlags>{
-				public:
-					using FlagsTemplate<DepthStencilFlags>::FlagsTemplate;
-
-					enum Bits : Bitset{
-						NONE = 0,
-						RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS = 1 << 0,
-						RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS = 1 << 1,
-					};
+			enum class DepthStencilFlagsBits{
+				NONE = 0,
+				RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS = 1 << 0,
+				RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS = 1 << 1,
 			};
+			RAINDROP_FLAGS_CLASS(DepthStencilFlags, DepthStencilFlagsBits);
 
-			class CullMode : public Utils::FlagsTemplate<CullMode>{
-				public:
-					using FlagsTemplate<CullMode>::FlagsTemplate;
-
-					enum Bits : Bitset{
-						NONE = 0,
-						FRONT = 1 << 0,
-						BACK = 1 << 1,
-					};
+			enum class CullModeBits{
+				NONE = 0,
+				FRONT = 1 << 0,
+				BACK = 1 << 1,
 			};
+			RAINDROP_FLAGS_CLASS(CullMode, CullModeBits);
 
-			class SampleCount : public Utils::FlagsTemplate<SampleCount>{
-				public:
-					using FlagsTemplate<SampleCount>::FlagsTemplate;
-
-					enum Bits : Bitset{
-						ONE = 1 << 0,
-						TWO = 1 << 1,
-						FOUR = 1 << 2,
-						HEIGHT = 1 << 3,
-						SIXTEEN = 1 << 4,
-						THIRTY_TWO = 1 << 5,
-						SIXTY_FOUR = 1 << 6,
-					};
+			enum class SampleCountBits{
+				ONE = 1 << 0,
+				TWO = 1 << 1,
+				FOUR = 1 << 2,
+				HEIGHT = 1 << 3,
+				SIXTEEN = 1 << 4,
+				THIRTY_TWO = 1 << 5,
+				SIXTY_FOUR = 1 << 6,
 			};
+			RAINDROP_FLAGS_CLASS(SampleCount, SampleCountBits);
 
 			enum class Topology{
 				POINT_LIST,
@@ -245,7 +221,6 @@ namespace Raindrop{
 				REPRESENTATIVE_FRAGMENT_TEST_ENABLE,
 				COVERAGE_REDUCTION_MODE,
 				ATTACHMENT_FEEDBACK_LOOP_ENABLE,
-				LINE_STIPPLE,
 			};
 
 			class Viewport{
@@ -362,17 +337,14 @@ namespace Raindrop{
 
 			class Layout{
 				public:
-					class Flags : public Utils::FlagsTemplate<Flags>{
-						public:
-							using FlagsTemplate<Flags>::FlagsTemplate;
-
-							enum Bits : Bitset{
-								NONE = 0,
-								INDEPENDENT_SETS = 1 << 1
-							};
+					enum class FlagsBits{
+						NONE = 0,
+						INDEPENDENT_SETS = 1 << 1
 					};
-
+					RAINDROP_FLAGS_CLASS(Flags, FlagsBits);
+					
 					struct Impl;
+
 
 					static Layout Create(Context& context);
 
@@ -416,42 +388,34 @@ namespace Raindrop{
 				public:
 					struct Impl;
 
-					class Flags : public Utils::FlagsTemplate<Flags>{
-						public:
-							using FlagsTemplate<Flags>::FlagsTemplate;
-
-							enum Bits : Bitset{
-								NONE = 0,
-								ALLOW_VARYING_SUBGROUP_SIZE = 1 << 1,
-								REQUIRE_FULL_SUBGROUPS = 1 << 2,
-							};
+					enum class FlagsBits{
+						NONE = 0,
+						ALLOW_VARYING_SUBGROUP_SIZE = 1 << 1,
+						REQUIRE_FULL_SUBGROUPS = 1 << 2,
 					};
+					RAINDROP_FLAGS_CLASS(Flags, FlagsBits);
 
-					class Stage : public Utils::FlagsTemplate<Stage>{
-						public:
-							using FlagsTemplate<Stage>::FlagsTemplate;
-
-							enum Bits : Bitset{
-								NONE = 0,
-								VERTEX = 1 << 0,
-								TESSELLATION_CONTROL = 1 << 1,
-								TESSELLATION_EVALUATION = 1 << 2,
-								GEOMETRY = 1 << 3,
-								FRAGMENT = 1 << 4,
-								COMPUTE = 1 << 5,
-								ALL_GRAPHICS = 1 << 6,
-								RAYGEN = 1 << 7,
-								ANY_HIT = 1 << 8,
-								CLOSEST_HIT = 1 << 9,
-								MISS = 1 << 10,
-								INTERSECTION = 1 << 11,
-								CALLABLE = 1 << 12,
-								TASK = 1 << 13,
-								MESH = 1 << 14,
-								SUBPASS_SHADING = 1 << 15,
-								CLUSTER_CULLING = 1 << 16,
-							};
+					enum class StageBits{
+						NONE = 0,
+						VERTEX = 1 << 0,
+						TESSELLATION_CONTROL = 1 << 1,
+						TESSELLATION_EVALUATION = 1 << 2,
+						GEOMETRY = 1 << 3,
+						FRAGMENT = 1 << 4,
+						COMPUTE = 1 << 5,
+						ALL_GRAPHICS = 1 << 6,
+						RAYGEN = 1 << 7,
+						ANY_HIT = 1 << 8,
+						CLOSEST_HIT = 1 << 9,
+						MISS = 1 << 10,
+						INTERSECTION = 1 << 11,
+						CALLABLE = 1 << 12,
+						TASK = 1 << 13,
+						MESH = 1 << 14,
+						SUBPASS_SHADING = 1 << 15,
+						CLUSTER_CULLING = 1 << 16,
 					};
+					RAINDROP_FLAGS_CLASS(Stage, StageBits);
 
 					static Shader Create(Context& context, const Path& path);
 					static std::shared_ptr<Shader> Load(Context& context, const Path& path);

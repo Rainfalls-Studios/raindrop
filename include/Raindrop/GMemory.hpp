@@ -11,22 +11,18 @@ namespace Raindrop{
 				public:
 					struct Impl;
 
-					class Flags : public Utils::FlagsTemplate<Flags> {
-						public:
-							using FlagsTemplate<Flags>::FlagsTemplate;
-
-							enum Bits{
-								NONE = 0,
-								GPU_LOCAL = 1 << 0,
-								CPU_VISIBLE = 1 << 1,
-								CPU_COHERENT = 1 << 2,
-								CPU_CACHED = 1 << 3,
-								LAZY_ALLOCATION = 1 << 4,
-								PROTECTED = 1 << 5,
-								GPU_COHERENT = 1 << 6,
-								GPU_UNCACHED = 1 << 7,
-							};
+					enum class FlagsBits{
+						NONE = 0,
+						GPU_LOCAL = 1 << 0,
+						CPU_VISIBLE = 1 << 1,
+						CPU_COHERENT = 1 << 2,
+						CPU_CACHED = 1 << 3,
+						LAZY_ALLOCATION = 1 << 4,
+						PROTECTED = 1 << 5,
+						GPU_COHERENT = 1 << 6,
+						GPU_UNCACHED = 1 << 7,
 					};
+					RAINDROP_FLAGS_CLASS(Flags, FlagsBits);
 
 					static Type Find(Context& context, const Flags& required);
 

@@ -5,6 +5,7 @@
 #include <Raindrop/Context.hpp>
 #include <Raindrop/Event.hpp>
 
+#include <SDL3/SDL.h>
 #include <SDL3/SDL_vulkan.h>
 #include <spdlog/spdlog.h>
 
@@ -30,23 +31,23 @@ namespace Raindrop::Internal::Graphics::Core{
 
 	Window::Window(Context& context) : _context{context}{
 		_context.getLogger()->info("Constructing window ...");
-		_context.getLogger()->info("Initializing SDL3 API...");
+		_context.getLogger()->info("Initializing SDL API...");
 		if (SDL_Init(SDL_INIT_VIDEO) != 0){
-			_context.getLogger()->error("Failed to initialize SDL3 API : {}", SDL_GetError());
-			throw std::runtime_error("Failed initialize SDL3 API");
+			_context.getLogger()->error("Failed to initialize SDL API : {}", SDL_GetError());
+			throw std::runtime_error("Failed initialize SDL API");
 		}
-		_context.getLogger()->info("SDL3 API initialized successfully");
+		_context.getLogger()->info("SDL API initialized successfully");
 
-		_context.getLogger()->info("Initializing SDL3 Window...");
+		_context.getLogger()->info("Initializing SDL Window...");
 		_window = SDL_CreateWindow("Raindrop::Internal::Graphics window", DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE);
 		if (!_window){
-			_context.getLogger()->error("Failed to initialize SDL3 Window : {}", SDL_GetError());
-			throw std::runtime_error("Failed to create SDL3 Window");
+			_context.getLogger()->error("Failed to initialize SDL Window : {}", SDL_GetError());
+			throw std::runtime_error("Failed to create SDL Window");
 		}
 
 		registerEvents();
 
-		_context.getLogger()->info("SDL3 Window initialized successfully");
+		_context.getLogger()->info("SDL Window initialized successfully");
 	}
 
 	bool Window::resized() const{
@@ -249,11 +250,11 @@ namespace Raindrop::Internal::Graphics::Core{
 	Window::~Window(){
 		_context.getLogger()->info("Destroying window ...");
 		if (_window){
-			_context.getLogger()->info("Termintating SDL3 Window...");
+			_context.getLogger()->info("Termintating SDL Window...");
 			SDL_DestroyWindow(_window);
 		}
 
-		_context.getLogger()->info("Terminating SDL3 API...");
+		_context.getLogger()->info("Terminating SDL API...");
 		SDL_Quit();
 	}
 
@@ -261,7 +262,7 @@ namespace Raindrop::Internal::Graphics::Core{
 		uint32_t extensionCount = 0;
 		const auto& exts = SDL_Vulkan_GetInstanceExtensions(&extensionCount);
 		if (exts == nullptr){
-			throw std::runtime_error("Failed to querry SDL3 vulkan instance extensions");
+			throw std::runtime_error("Failed to querry SDL vulkan instance extensions");
 		}
 
 		std::vector<const char*> extensions(&exts[0], &exts[extensionCount]);
@@ -270,19 +271,19 @@ namespace Raindrop::Internal::Graphics::Core{
 	}
 
 	void Window::createSurface(){
-		_context.getLogger()->debug("Constructing SDL3 Vulkan surface");
+		_context.getLogger()->debug("Constructing SDL Vulkan surface");
 		if (SDL_Vulkan_CreateSurface(_window, _context.getInstance().get(), _context.getAllocationCallbacks(), &_surface) == SDL_FALSE){
-			_context.getLogger()->error("Failed to create SDL3 Vulkan surface : {}", SDL_GetError());
-			throw std::runtime_error("Failed to create SDL3 Vulkan surface");
+			_context.getLogger()->error("Failed to create SDL Vulkan surface : {}", SDL_GetError());
+			throw std::runtime_error("Failed to create SDL Vulkan surface");
 		}
-		_context.getLogger()->debug("SDL3 Vulkan surface created without any critical error");
+		_context.getLogger()->debug("SDL Vulkan surface created without any critical error");
 	}
 
 	void Window::destroySurface(){
 		if (_surface){
-			_context.getLogger()->debug("Destroying SDL3 Vulkan surface");
+			_context.getLogger()->debug("Destroying SDL Vulkan surface");
 			vkDestroySurfaceKHR(_context.getInstance().get(), _surface, _context.getAllocationCallbacks());
-			_context.getLogger()->debug("SDL3 Vulkan surface destroyed without any critical error");
+			_context.getLogger()->debug("SDL Vulkan surface destroyed without any critical error");
 		}
 	}
 
@@ -485,7 +486,7 @@ namespace Raindrop::Internal::Graphics::Core{
 	}
 
 	::Raindrop::Event::Keymod SDL_KeyModeToKeyMode(Uint16 code){
-		return static_cast<::Raindrop::Event::Keymod::Bitset>(code);
+		return Raindrop::Event::Keymod(code);
 	}
 
 	void Window::quitEvent(SDL_Event &e){

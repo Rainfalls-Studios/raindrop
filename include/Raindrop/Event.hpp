@@ -266,32 +266,27 @@ namespace Raindrop{
 				RELEASED
 			};
 
-			// Base of SDL_Keymod
-			class Keymod : public Utils::FlagsTemplate<Keymod> {
-				public:
-					using FlagsTemplate<Keymod>::FlagsTemplate;
+			enum class KeymodBits{
+				NONE = 		0,
+				LSHIFT = 	1 << 0,
+				RSHIFT = 	1 << 1,
+				LCTRL = 	1 << 2,
+				RCTRL = 	1 << 3,
+				LALT = 		1 << 4,
+				RALT = 		1 << 5,
+				LGUI = 		1 << 6,
+				RGUI = 		1 << 7,
+				NUM = 		1 << 8,
+				CAPS = 		1 << 9,
+				MODE = 		1 << 10,
+				SCROLL = 	1 << 11,
 
-					enum Bits : Bitset {
-						NONE = 		0,
-						LSHIFT = 	1 << 0,
-						RSHIFT = 	1 << 1,
-						LCTRL = 	1 << 2,
-						RCTRL = 	1 << 3,
-						LALT = 		1 << 4,
-						RALT = 		1 << 5,
-						LGUI = 		1 << 6,
-						RGUI = 		1 << 7,
-						NUM = 		1 << 8,
-						CAPS = 		1 << 9,
-						MODE = 		1 << 10,
-						SCROLL = 	1 << 11,
-
-						CTRL = LCTRL | RCTRL,
-						SHIFT = LSHIFT | RSHIFT,
-						ALT = LALT | RALT,
-						GUI = LGUI | RGUI,
-					};
+				CTRL = LCTRL | RCTRL,
+				SHIFT = LSHIFT | RSHIFT,
+				ALT = LALT | RALT,
+				GUI = LGUI | RGUI,
 			};
+			RAINDROP_FLAGS_CLASS(Keymod, KeymodBits);
 
 			enum class MouseButton{
 				LEFT,
