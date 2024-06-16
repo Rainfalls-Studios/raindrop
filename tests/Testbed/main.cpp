@@ -1,6 +1,6 @@
 // #include <iostream>
 // #include <Raindrop/Raindrop.hpp>
-// #include <Raindrop_internal/Graphics/Renderer.hpp>
+// #include <Raindrop_internal/Graphics/Engine.hpp>
 // #include <Raindrop/Components/Transformation.hpp>
 // #include <Raindrop/Components/Model.hpp>
 
@@ -17,7 +17,7 @@
 
 // 	current_path(PATH);
 // 	RD::Raindrop engine;
-// 	auto& renderer = engine.renderer();
+// 	auto& engine = engine.engine();
 
 // 	engine.subscribeEvent(
 // 		"quit",
@@ -41,7 +41,7 @@
 
 // 	auto scene = engine.createScene();
 
-// 	auto renderSystem = engine.renderer().createRenderSystem<ForwardRenderSystem>(engine);
+// 	auto renderSystem = engine.engine().createRenderSystem<ForwardRenderSystem>(engine);
 // 	renderSystem->bind(scene);
 	
 // 	{
@@ -55,7 +55,7 @@
 // 	Raindrop::Camera camera;
 
 // 	engine.subscribeEvent(
-// 		"Renderer.swapchain.resized",
+// 		"Engine.swapchain.resized",
 // 		[&camera](RD::Maths::uvec2 size) -> void {
 // 			camera.setAspectRatio(static_cast<float>(size.x) / static_cast<float>(size.y));
 // 			camera.updateProjection();
@@ -129,7 +129,7 @@
 // 	);
 
 // 	engine.subscribeEvent(
-// 		"Renderer.frame",
+// 		"Engine.frame",
 // 		[&](VkCommandBuffer commandBuffer) -> void {
 // 			auto properties = scene.getProperty<ForwardRenderSceneProperties>();
 // 			auto& data = properties->data;
@@ -143,7 +143,7 @@
 // 	);
 
 // 	engine.subscribeEvent(
-// 		"Renderer.baseFramebuffer.renderPass",
+// 		"Engine.baseFramebuffer.renderPass",
 // 		[&](VkCommandBuffer commandBuffer) -> void {
 // 			renderSystem->render(commandBuffer, scene);
 // 		}
@@ -161,7 +161,7 @@
 
 // 	current_path(PATH);
 // 	RD::Raindrop engine;
-// 	auto& renderer = engine.renderer();
+// 	auto& engine = engine.engine();
 
 // 	auto module = engine.loadModule(RD::Path(PROGRAD_PATH) / "Prograd");
 

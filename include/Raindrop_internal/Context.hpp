@@ -22,7 +22,7 @@ namespace Raindrop::Internal{
 
 			Events::Manager& getEventManager();
 			Assets::Manager& getAssetManager();
-			Graphics::Renderer& getRenderer();
+			Graphics::Engine& getEngine();
 
 			Raindrop::Context& getInterface();
 			
@@ -35,7 +35,7 @@ namespace Raindrop::Internal{
 			std::shared_ptr<spdlog::logger> _logger;
 			std::unique_ptr<Events::Manager> _eventManager;
 			std::unique_ptr<Assets::Manager> _assetManager;
-			std::unique_ptr<Graphics::Renderer> _renderer;
+			std::unique_ptr<Graphics::Engine> _engine;
 
 			enum class State{
 				RUNNING,

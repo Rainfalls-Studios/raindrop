@@ -6,7 +6,7 @@
 
 namespace Raindrop::Internal::Graphics{
 	class Context;
-	class Renderer;
+	class Engine;
 	class Buffer;
 	class Image;
 	class ImageView;

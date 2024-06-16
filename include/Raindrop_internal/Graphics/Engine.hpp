@@ -1,13 +1,13 @@
-#ifndef __RAINDROP_INTERNAL_GRAPHICS_RENDERER_HPP__
-#define __RAINDROP_INTERNAL_GRAPHICS_RENDERER_HPP__
+#ifndef __RAINDROP_INTERNAL_GRAPHICS_ENGINE_HPP__
+#define __RAINDROP_INTERNAL_GRAPHICS_ENGINE_HPP__
 
 #include "common.hpp"
 
 namespace Raindrop::Internal::Graphics{
-	class Renderer{
+	class Engine{
 		public:
-			Renderer(Internal::Context& internal);
-			~Renderer();
+			Engine(Internal::Context& internal);
+			~Engine();
 			
 			void render();
 			void events();

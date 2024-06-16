@@ -2,7 +2,7 @@
 #include <Raindrop_internal/Graphics/PipelineLayout.hpp>
 #include <Raindrop_internal/Pipeline.hpp>
 #include <Raindrop/Context.hpp>
-#include <Raindrop_internal/Graphics/Renderer.hpp>
+#include <Raindrop_internal/Graphics/Engine.hpp>
 #include <Raindrop_internal/Graphics/Context.hpp>
 #include <Raindrop_internal/Context.hpp>
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
@@ -19,7 +19,7 @@
 #define LAYOUT_INFO _impl->info
 #define SHADER_INFO _impl->info
 #define INFO _impl->info.internal
-#define GRAPHICS_CONTEXT _impl->context->getInternalContext()->getRenderer().getContext()
+#define GRAPHICS_CONTEXT _impl->context->getInternalContext()->getEngine().getContext()
 #define VIEWPORT_INFO reinterpret_cast<VkViewport*>(_data)
 #define SCISSOR_INFO reinterpret_cast<VkRect2D*>(_data)
 #define ATTACHMENT_INFO reinterpret_cast<VkPipelineColorBlendAttachmentState*>(_data)
@@ -838,7 +838,7 @@ namespace Raindrop{
 
 		std::vector<char> code = readFile(path);
 		SHADER_INFO.code = code;
-		_impl->module = std::make_shared<Internal::Graphics::Shader>(_impl->context.getInternalContext()->getRenderer().getContext(), SHADER_INFO);
+		_impl->module = std::make_shared<Internal::Graphics::Shader>(_impl->context.getInternalContext()->getEngine().getContext(), SHADER_INFO);
 	}
 	
 	Pipeline::Shader::~Shader(){

@@ -3,14 +3,14 @@
 #include <Raindrop/GUID.hpp>
 #include <Raindrop_internal/Graphics/Image.hpp>
 #include <Raindrop_internal/Context.hpp>
-#include <Raindrop_internal/Graphics/Renderer.hpp>
+#include <Raindrop_internal/Graphics/Engine.hpp>
 #include <Raindrop/Context.hpp>
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
 #include <Raindrop_internal/Format.hpp>
 #include <vulkan/vk_enum_string_helper.h>
 
 #define LOGGER _impl->context->getInternalContext()->getLogger()
-#define GRAPHICS_CONTEXT _impl->context->getInternalContext()->getRenderer().getContext()
+#define GRAPHICS_CONTEXT _impl->context->getInternalContext()->getEngine().getContext()
 
 namespace Raindrop{
 	//--------------------------------------------------------------------
@@ -193,7 +193,7 @@ namespace Raindrop{
 
 
 	Texture::FormatProperties Texture::getFormatProperties(const Format& format) const{
-		const auto& physicalDevice = _impl->context->getInternalContext()->getRenderer().getContext().getPhysicalDevice();
+		const auto& physicalDevice = _impl->context->getInternalContext()->getEngine().getContext().getPhysicalDevice();
 		VkFormat vkFormat = static_cast<VkFormat>(format.get());
 
 		VkImageFormatProperties vkProperties;

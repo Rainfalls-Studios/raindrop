@@ -15,10 +15,10 @@
 
 namespace Raindrop::Internal::Graphics::Materials{
 	struct Context{
-		using Renderer = ::Raindrop::Internal::Graphics::Context;
-		Context(Renderer& renderer);
+		using Engine = ::Raindrop::Internal::Graphics::Context;
+		Context(Engine& engine);
 
-		Renderer& renderer;
+		Engine& engine;
 		std::size_t instanceCount;
 		
 		SetLayout layout;

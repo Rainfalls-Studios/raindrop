@@ -1,7 +1,7 @@
 #include <Raindrop_internal/Context.hpp>
 #include <Raindrop_internal/Events/Manager.hpp>
 #include <Raindrop_internal/Assets/Manager.hpp>
-#include <Raindrop_internal/Graphics/Renderer.hpp>
+#include <Raindrop_internal/Graphics/Engine.hpp>
 
 #include <spdlog/sinks/stdout_color_sinks.h>
 
@@ -12,11 +12,11 @@ namespace Raindrop::Internal{
 		_logger = spdlog::stdout_color_mt("Raindrop");
 		_eventManager = std::make_unique<Events::Manager>(*this);
 		_assetManager = std::make_unique<Assets::Manager>(*this); 
-		_renderer = std::make_unique<Graphics::Renderer>(*this);
+		_engine = std::make_unique<Graphics::Engine>(*this);
 	}
 
 	Context::~Context(){
-		_renderer.reset();
+		_engine.reset();
 		_assetManager.reset();
 		_eventManager.reset();
 		_logger.reset();
@@ -38,8 +38,8 @@ namespace Raindrop::Internal{
 		return *_assetManager;
 	}
 
-	Graphics::Renderer& Context::getRenderer(){
-		return *_renderer;
+	Graphics::Engine& Context::getEngine(){
+		return *_engine;
 	}
 
 	Raindrop::Context& Context::getInterface(){
@@ -55,8 +55,8 @@ namespace Raindrop::Internal{
 		while (_state == State::RUNNING){
 			auto begin = std::chrono::steady_clock::now();
 
-			_renderer->render();
-			_renderer->events();
+			_engine->render();
+			_engine->events();
 
 			frameCount++;
 

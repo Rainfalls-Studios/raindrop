@@ -2,10 +2,10 @@
 #include <Raindrop_internal/GMemory.hpp>
 #include <Raindrop_internal/Graphics/Context.hpp>
 #include <Raindrop_internal/Context.hpp>
-#include <Raindrop_internal/Graphics/Renderer.hpp>
+#include <Raindrop_internal/Graphics/Engine.hpp>
 #include <Raindrop/GUID.hpp>
 
-#define GRAPHICS_CONTEXT context.getInternalContext()->getRenderer().getContext()
+#define GRAPHICS_CONTEXT context.getInternalContext()->getEngine().getContext()
 
 namespace Raindrop{
 	//--------------------------------------------------------------------
@@ -197,7 +197,7 @@ namespace Raindrop{
 
 	void GMemory::allocate(const std::size_t& size, const Type& memoryType){
 		_impl->memory = std::make_shared<Internal::Graphics::Memory>(
-			_impl->context->getInternalContext()->getRenderer().getContext(),
+			_impl->context->getInternalContext()->getEngine().getContext(),
 			memoryType.getImpl()->get(),
 			size
 		);

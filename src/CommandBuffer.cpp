@@ -3,14 +3,14 @@
 #include <Raindrop/Context.hpp>
 #include <Raindrop_internal/Context.hpp>
 #include <Raindrop_internal/Graphics/Context.hpp>
-#include <Raindrop_internal/Graphics/Renderer.hpp>
+#include <Raindrop_internal/Graphics/Engine.hpp>
 #include <Raindrop/GUID.hpp>
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
 #include <Raindrop/Context.hpp>
 
 #define LOGGER _impl->context->getInternalContext()->getLogger()
 #define INFO _impl->info
-#define GRAPHICS_CONTEXT _impl->context->getInternalContext()->getRenderer().getContext()
+#define GRAPHICS_CONTEXT _impl->context->getInternalContext()->getEngine().getContext()
 
 namespace Raindrop{
 	VkCommandBufferUsageFlags toVulkan(const CommandBuffer::Flags& flags){

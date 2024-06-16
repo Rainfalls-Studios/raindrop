@@ -78,8 +78,8 @@
 // }
 
 // void ForwardRenderSystem::createDescriptorSetLayout(){
-// 	spdlog::info("Constructing Forward renderer system descriptor scene properties set layout ...");
-// 	auto& context = _engine.renderer().context();
+// 	spdlog::info("Constructing Forward engine system descriptor scene properties set layout ...");
+// 	auto& context = _engine.engine().context();
 // 	auto& device = context.getDevice();
 // 	auto& allocationCallbacks = context.getAllocationCallbacks();
 
@@ -104,7 +104,7 @@
 // }
 
 // void ForwardRenderSystem::destroyDescriptorSetLayout(){
-// 	auto& context = _engine.renderer().context();
+// 	auto& context = _engine.engine().context();
 // 	auto& device = context.getDevice();
 // 	auto& allocationCallbacks = context.getAllocationCallbacks();
 
@@ -115,8 +115,8 @@
 // }
 
 // void ForwardRenderSystem::createDescriptorPool(){
-// 	spdlog::info("Constructing Forward renderer system descriptor scene properties descriptor pool ...");
-// 	auto& context = _engine.renderer().context();
+// 	spdlog::info("Constructing Forward engine system descriptor scene properties descriptor pool ...");
+// 	auto& context = _engine.engine().context();
 // 	auto& device = context.getDevice();
 // 	auto& allocationCallbacks = context.getAllocationCallbacks();
 
@@ -134,13 +134,13 @@
 // 	info.poolSizeCount = sizeof(sizes) / sizeof(sizes[0]);
 
 // 	if (vkCreateDescriptorPool(device.get(), &info, allocationCallbacks, &_descriptorPool) != VK_SUCCESS){
-// 		spdlog::error("Failed to create forward renderer descriptor pool (size : {})", MAX_BOUND_SCENE_COUNT);
+// 		spdlog::error("Failed to create forward engine descriptor pool (size : {})", MAX_BOUND_SCENE_COUNT);
 // 		throw std::runtime_error("Failed to create descriptor pool");
 // 	}
 // }
 
 // void ForwardRenderSystem::destroyDescriptorPool(){
-// 	auto& context = _engine.renderer().context();
+// 	auto& context = _engine.engine().context();
 // 	auto& device = context.getDevice();
 // 	auto& allocationCallbacks = context.getAllocationCallbacks();
 	
@@ -151,7 +151,7 @@
 // }
 
 // void ForwardRenderSystem::createDescriptorBuffer(){
-// 	auto& context = _engine.renderer().context();
+// 	auto& context = _engine.engine().context();
 // 	auto& device = context.getDevice();
 // 	auto& allocationCallbacks = context.getAllocationCallbacks();
 
@@ -161,7 +161,7 @@
 // 		_alignedDescriptorSize = rest != 0 ? sizeof(ForwardRenderSceneProperties::data) + (alignement - rest) : sizeof(ForwardRenderSceneProperties::data);
 // 	}
 
-// 	spdlog::info("Constructing Forward renderer system descriptor scene properties buffer and memory ... (count : {} | instance size : {} | aligned instance size : {})", MAX_BOUND_SCENE_COUNT, sizeof(ForwardRenderSceneProperties::data), _alignedDescriptorSize);
+// 	spdlog::info("Constructing Forward engine system descriptor scene properties buffer and memory ... (count : {} | instance size : {} | aligned instance size : {})", MAX_BOUND_SCENE_COUNT, sizeof(ForwardRenderSceneProperties::data), _alignedDescriptorSize);
 
 // 	{
 // 		std::size_t size = _alignedDescriptorSize * MAX_BOUND_SCENE_COUNT;
@@ -173,7 +173,7 @@
 // 		info.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 
 // 		if (vkCreateBuffer(device.get(), &info, allocationCallbacks, &_descriptorsBuffer) != VK_SUCCESS){
-// 			spdlog::error("Failed to create forward renderer uniform buffer ! (size : {})", size);
+// 			spdlog::error("Failed to create forward engine uniform buffer ! (size : {})", size);
 // 			throw std::runtime_error("Failed to create buffer !");
 // 		}
 // 	}
@@ -188,19 +188,19 @@
 // 		info.memoryTypeIndex = device.findMemoryType(requirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 		
 // 		if (vkAllocateMemory(device.get(), &info, allocationCallbacks, &_descriptorsMemory) != VK_SUCCESS){
-// 			spdlog::error("Failed to allocate forward renderer uniform buffer memory !");
+// 			spdlog::error("Failed to allocate forward engine uniform buffer memory !");
 // 			throw std::runtime_error("Failed to allocate memory !");
 // 		}
 
 // 		if (vkBindBufferMemory(device.get(), _descriptorsBuffer, _descriptorsMemory, 0) != VK_SUCCESS){
-// 			spdlog::error("Failed to bind forward renderer uniform buffer memory !");
+// 			spdlog::error("Failed to bind forward engine uniform buffer memory !");
 // 			throw std::runtime_error("Failed to bind buffer memory !");
 // 		}
 // 	}
 // }
 
 // void ForwardRenderSystem::destroyDescriptorBuffer(){
-// 	auto& context = _engine.renderer().context();
+// 	auto& context = _engine.engine().context();
 // 	auto& device = context.getDevice();
 // 	auto& allocationCallbacks = context.getAllocationCallbacks();
 
@@ -216,7 +216,7 @@
 // }
 
 // void ForwardRenderSystem::allocateDescriptorSets(){
-// 	auto& context = _engine.renderer().context();
+// 	auto& context = _engine.engine().context();
 // 	auto& device = context.getDevice();
 // 	auto& allocationCallbacks = context.getAllocationCallbacks();
 
@@ -231,7 +231,7 @@
 // 	info.pSetLayouts = setLayouts.data();
 
 // 	if (vkAllocateDescriptorSets(device.get(), &info, _sets.data()) != VK_SUCCESS){
-// 		spdlog::error("Failed to allocate forward renderer descriptor sets (count : {})", MAX_BOUND_SCENE_COUNT);
+// 		spdlog::error("Failed to allocate forward engine descriptor sets (count : {})", MAX_BOUND_SCENE_COUNT);
 // 		throw std::runtime_error("Failed to allocate descriptor sets !");
 // 	}
 
@@ -241,7 +241,7 @@
 // }
 
 // void ForwardRenderSystem::updateDescriptorSets(){
-// 	auto& context = _engine.renderer().context();
+// 	auto& context = _engine.engine().context();
 // 	auto& device = context.getDevice();
 // 	auto& allocationCallbacks = context.getAllocationCallbacks();
 
@@ -275,7 +275,7 @@
 // }
 
 // void ForwardRenderSystem::populateInternProperty(ForwardRenderSceneProperties& prop){
-// 	auto& context = _engine.renderer().context();
+// 	auto& context = _engine.engine().context();
 // 	auto& device = context.getDevice();
 // 	auto& allocationCallbacks = context.getAllocationCallbacks();
 
@@ -290,7 +290,7 @@
 
 
 // void ForwardRenderSystem::createPipelineLayout(){
-// 	auto& context = _engine.renderer().context();
+// 	auto& context = _engine.engine().context();
 
 // 	Raindrop::Internal::Graphics::Pipelines::PipelineLayoutConfigInfo info;
 // 	info.setLayouts = {
@@ -302,15 +302,15 @@
 // 		PushConstant::range()
 // 	};
 
-// 	_pipelineLayout = _engine.renderer().createPipelineLayout(info);
+// 	_pipelineLayout = _engine.engine().createPipelineLayout(info);
 // }
 
 // void ForwardRenderSystem::destroyPipelineLayout(){
-// 	_engine.renderer().destroyPipelineLayout(_pipelineLayout);	
+// 	_engine.engine().destroyPipelineLayout(_pipelineLayout);	
 // }
 
 // void ForwardRenderSystem::createShaderModule(const std::vector<char>& code, VkShaderModule& module){
-// 	auto& context = _engine.renderer().context();
+// 	auto& context = _engine.engine().context();
 // 	auto& device = context.getDevice();
 // 	auto& allocationCallbacks = context.getAllocationCallbacks();
 
@@ -326,19 +326,19 @@
 // }
 
 // void ForwardRenderSystem::createShaderModules(){
-// 	auto& context = _engine.renderer().context();
+// 	auto& context = _engine.engine().context();
 // 	auto& device = context.getDevice();
 // 	auto& allocationCallbacks = context.getAllocationCallbacks();
 
-// 	auto code = readFile((std::filesystem::current_path() / "shaders/forwardRenderer/shader.glsl.vert.spv").string());
+// 	auto code = readFile((std::filesystem::current_path() / "shaders/forwardEngine/shader.glsl.vert.spv").string());
 // 	createShaderModule(code, _vertexShader);
 
-// 	code = readFile((std::filesystem::current_path() / "shaders/forwardRenderer/shader.glsl.frag.spv").string());
+// 	code = readFile((std::filesystem::current_path() / "shaders/forwardEngine/shader.glsl.frag.spv").string());
 // 	createShaderModule(code, _fragmentShader);
 // }
 
 // void ForwardRenderSystem::destroyShaderModules(){
-// 	auto& context = _engine.renderer().context();
+// 	auto& context = _engine.engine().context();
 // 	auto& device = context.getDevice();
 // 	auto& allocationCallbacks = context.getAllocationCallbacks();
 
@@ -356,7 +356,7 @@
 // void ForwardRenderSystem::createPipeline(){
 // 	Raindrop::Internal::Graphics::Pipelines::GraphicsPipelineConfigInfo info;
 // 	info.defaultInfo(info);
-// 	auto& context = _engine.renderer().context();
+// 	auto& context = _engine.engine().context();
 
 // 	info.pipelineLayoutID = _pipelineLayout.ID();
 // 	info.renderPass = context.baseFramebuffer.renderPass();
@@ -441,11 +441,11 @@
 
 // 	info.update();
 
-// 	_pipeline = _engine.renderer().createGraphicsPipeline(info);
+// 	_pipeline = _engine.engine().createGraphicsPipeline(info);
 // }
 
 // void ForwardRenderSystem::destroyPipeline(){
-// 	_engine.renderer().destroyGraphicsPipeline(_pipeline);
+// 	_engine.engine().destroyGraphicsPipeline(_pipeline);
 // }
 
 // void ForwardRenderSystem::bind(Raindrop::SceneWrapper scene){
@@ -463,7 +463,7 @@
 // }
 
 // void ForwardRenderSystem::release(Raindrop::SceneWrapper scene){
-// 	auto& context = _engine.renderer().context();
+// 	auto& context = _engine.engine().context();
 // 	auto& device = context.getDevice();
 // 	auto& allocationCallbacks = context.getAllocationCallbacks();
 
@@ -513,7 +513,7 @@
 // 	// We added the dynamic viewprot and scissor to the pipeline to support multiple size of framebuffer
 // 	// And so, we need to update it
 // 	{
-// 		auto& context = _engine.renderer().context();
+// 		auto& context = _engine.engine().context();
 // 		auto size = context.baseFramebuffer.size();
 
 // 		VkViewport viewport{
@@ -584,7 +584,7 @@
 // 			for (auto& mesh : *modelRef){
 // 				// We need to query the correct material ID to bind the proper material descriptor set
 // 				const auto materialID = mesh->materialID();
-// 				const auto& materialDescriptorSet = _engine.renderer().materials().getDescriptorSet(materialID);
+// 				const auto& materialDescriptorSet = _engine.engine().materials().getDescriptorSet(materialID);
 
 // 				VkDescriptorSet sets[] = {
 // 					materialDescriptorSet,

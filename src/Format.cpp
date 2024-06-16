@@ -1,7 +1,7 @@
 #include <Raindrop/Format.hpp>
 #include <Raindrop/Context.hpp>
 #include <Raindrop_internal/Context.hpp>
-#include <Raindrop_internal/Graphics/Renderer.hpp>
+#include <Raindrop_internal/Graphics/Engine.hpp>
 #include <Raindrop_internal/Graphics/Context.hpp>
 #include <vulkan/utility/vk_format_utils.h>
 
@@ -257,7 +257,7 @@ namespace Raindrop{
 	};
 
 	bool isFormatSupported(Context& context, const Format& format, const Format::Properties& required, const Format::Features& features, const Format::Properties& except, const FormatUsage& usage){
-		const auto& physicalDevice = context.getInternalContext()->getRenderer().getContext().getPhysicalDevice();
+		const auto& physicalDevice = context.getInternalContext()->getEngine().getContext().getPhysicalDevice();
 		const auto& properties = format.getProperties();
 
 		// If the format does not support ALL required properties, we skip this format

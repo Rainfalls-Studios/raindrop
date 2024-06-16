@@ -3,14 +3,14 @@
 #include <Raindrop_internal/RenderPass.hpp>
 #include <Raindrop_internal/Graphics/Context.hpp>
 #include <Raindrop_internal/Context.hpp>
-#include <Raindrop_internal/Graphics/Renderer.hpp>
+#include <Raindrop_internal/Graphics/Engine.hpp>
 #include <Raindrop_internal/Texture.hpp>
 #include <Raindrop_internal/Format.hpp>
 #include <Raindrop_internal/Pipeline.hpp>
 
 
 #define LOGGER _impl->context->getInternalContext()->getLogger()
-#define GRAPHICS_CONTEXT _impl->context->getInternalContext()->getRenderer().getContext()
+#define GRAPHICS_CONTEXT _impl->context->getInternalContext()->getEngine().getContext()
 #define ATTACHMENT_DATA reinterpret_cast<VkAttachmentDescription*>(_data)
 #define SUBPASS_DATA reinterpret_cast<Raindrop::Internal::Graphics::RenderPassConfigInfo::SubpassInfo*>(_data)
 #define DEPENDENCY_DATA reinterpret_cast<VkSubpassDependency*>(_data)

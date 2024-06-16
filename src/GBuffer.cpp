@@ -1,7 +1,7 @@
 #include <Raindrop/GBuffer.hpp>
 #include <Raindrop_internal/GBuffer.hpp>
 #include <Raindrop_internal/GMemory.hpp>
-#include <Raindrop_internal/Graphics/Renderer.hpp>
+#include <Raindrop_internal/Graphics/Engine.hpp>
 #include <Raindrop/GUID.hpp>
 
 namespace Raindrop{
@@ -11,7 +11,7 @@ namespace Raindrop{
 
 	GBuffer::GBuffer(Context& context){
 		_impl = std::make_unique<Impl>();
-		_impl->buffer = std::make_shared<Internal::Graphics::Buffer>(context.getInternalContext()->getRenderer().getContext());
+		_impl->buffer = std::make_shared<Internal::Graphics::Buffer>(context.getInternalContext()->getEngine().getContext());
 		_impl->context = &context;
 	}
 

@@ -1,4 +1,4 @@
-#include <Raindrop_internal/Graphics/Renderer.hpp>
+#include <Raindrop_internal/Graphics/Engine.hpp>
 #include <Raindrop_internal/Graphics/Context.hpp>
 #include <Raindrop_internal/Context.hpp>
 #include <Raindrop_internal/Events/Manager.hpp>
@@ -7,16 +7,16 @@
 #include <Raindrop_internal/Graphics/ShaderLoader.hpp>
 
 namespace Raindrop::Internal::Graphics{
-	struct Renderer::EventCache{
+	struct Engine::EventCache{
 		Events::EventID swapchainResized;
 	};
 
-	Renderer::Renderer(Internal::Context& internal) :
+	Engine::Engine(Internal::Context& internal) :
 			_internal{internal},
 			_context{nullptr},
 			_eventCache{nullptr}{
 			
-		_internal.getLogger()->info("Constructing graphics renderer...");
+		_internal.getLogger()->info("Constructing graphics engine...");
 
 		try{
 			_context = new Context(internal);
@@ -41,8 +41,8 @@ namespace Raindrop::Internal::Graphics{
 		// _context->getSwapchain().rebuildSwapchain();
 	}
 
-	Renderer::~Renderer(){
-		_internal.getLogger()->info("Destroying graphics renderer...");
+	Engine::~Engine(){
+		_internal.getLogger()->info("Destroying graphics engine...");
 		_context->getDevice().waitIdle();
 
 		_shaderLoader.reset();
@@ -63,19 +63,19 @@ namespace Raindrop::Internal::Graphics{
 		}
 	}
 
-	void Renderer::registerEvents(){
+	void Engine::registerEvents(){
 		auto& eventManager = _context->getInternalContext().getEventManager();
 
 		_eventCache->swapchainResized = eventManager.registerEvent("Swapchain.Resized");
 	}
 
-	void Renderer::unregisterEvents(){
+	void Engine::unregisterEvents(){
 		auto& eventManager = _context->getInternalContext().getEventManager();
 
 		eventManager.unregisterEvent(_eventCache->swapchainResized);
 	}
 	
-	void Renderer::render(){
+	void Engine::render(){
 		auto& swapchain = _context->getSwapchain();	
 		auto& events = _context->getInternalContext().getEventManager();
 		
@@ -92,11 +92,11 @@ namespace Raindrop::Internal::Graphics{
 		_currentFrameID = (_currentFrameID + 1) % swapchain.frameCount();
 	}
 
-	void Renderer::events(){
+	void Engine::events(){
 		_context->getWindow().events();
 	}
 	
-	void Renderer::createFrameCommandPool(){
+	void Engine::createFrameCommandPool(){
 		CommandPoolConfigInfo info;
 
 		auto families = _context->getQueues().findSuitable(VK_QUEUE_GRAPHICS_BIT, _context->getWindow().surface());
@@ -117,7 +117,7 @@ namespace Raindrop::Internal::Graphics{
 		_context->frame.getQueue() = &family.getQueue(0);
 	}
 
-	void Renderer::allocateFrameCommandBuffers(){
+	void Engine::allocateFrameCommandBuffers(){
 		auto& pool = _context->frame.getCommandPool();
 		if (!pool){
 			_context->getLogger()->error("Cannot create frame command buffers without a valid command pool ! FrameCommandPool is nullptr");
@@ -128,7 +128,7 @@ namespace Raindrop::Internal::Graphics{
 		_frameCommandBuffers = pool->allocate(count, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
 	}
 
-	void Renderer::freeFrameCommandBuffers(){
+	void Engine::freeFrameCommandBuffers(){
 		auto& pool = _context->frame.getCommandPool();
 		if (!pool){
 			_context->getLogger()->error("Cannot free frame command buffers without a valid command pool ! FrameCommandPool is nullptr");
@@ -138,7 +138,7 @@ namespace Raindrop::Internal::Graphics{
 		pool->free(_frameCommandBuffers);
 	}
 
-	void Renderer::destroyFrameCommandPool(){
+	void Engine::destroyFrameCommandPool(){
 		auto& pool = _context->frame.getCommandPool();
 		if (pool){
 			delete pool;
@@ -146,7 +146,7 @@ namespace Raindrop::Internal::Graphics{
 		}
 	}
 
-	VkCommandBuffer Renderer::beginFrame(){
+	VkCommandBuffer Engine::beginFrame(){
 		auto& window = _context->getWindow();
 		auto& swapchain = _context->getSwapchain();
 
@@ -173,7 +173,7 @@ namespace Raindrop::Internal::Graphics{
 		return commandBuffer;
 	}
 
-	void Renderer::endFrame(){
+	void Engine::endFrame(){
 		auto& window = _context->getWindow();
 		auto& swapchain = _context->getSwapchain();
 
@@ -194,7 +194,7 @@ namespace Raindrop::Internal::Graphics{
 		}
 	}
 
-	void Renderer::updateSwapchainSize(){
+	void Engine::updateSwapchainSize(){
 		auto& window = _context->getWindow();
 		auto& swapchain = _context->getSwapchain();
 		
@@ -209,7 +209,7 @@ namespace Raindrop::Internal::Graphics{
 		}
 	}
 
-	Context& Renderer::getContext(){
+	Context& Engine::getContext(){
 		return *_context;
 	}
 }

@@ -4,12 +4,12 @@
 #include <Raindrop_internal/TextureSubset.hpp>
 #include <Raindrop_internal/Texture.hpp>
 #include <Raindrop_internal/Graphics/ImageView.hpp>
-#include <Raindrop_internal/Graphics/Renderer.hpp>
+#include <Raindrop_internal/Graphics/Engine.hpp>
 #include <Raindrop_internal/Color.hpp>
 #include <Raindrop_internal/Format.hpp>
 
 #define LOGGER _impl->context->getInternalContext()->getLogger()
-#define GRAPHICS_CONTEXT _impl->context->getInternalContext()->getRenderer().getContext()
+#define GRAPHICS_CONTEXT _impl->context->getInternalContext()->getEngine().getContext()
 
 namespace Raindrop{
 	TextureSubset TextureSubset::Create(Context& context, const Texture& source){
