@@ -27,13 +27,7 @@ namespace Raindrop{
 					static Type Find(Context& context, const Flags& required);
 
 					Type(Context& context, const std::size_t& index);
-					Type(const Type& other);
-					Type(Type&& other);
-
 					~Type();
-
-					Type& operator=(const Type& other);
-					Type& operator=(Type&& other);
 
 					bool isInitialized() const noexcept;
 					Impl* getImpl() const noexcept;
@@ -42,7 +36,7 @@ namespace Raindrop{
 					Flags getFlags() const noexcept;
 
 				private:
-					Impl* _impl;
+					std::unique_ptr<Impl> _impl;
 			};
 
 			struct Impl;
@@ -50,11 +44,9 @@ namespace Raindrop{
 			static GMemory Allocate(Context& context, const std::size_t& size, const Type& memoryType);
 
 			GMemory(Context& context);
-			GMemory(const GMemory& other);
 			GMemory(GMemory&& other);
 			~GMemory();
 
-			GMemory& operator=(const GMemory& other);
 			GMemory& operator=(GMemory&& other);
 
 			bool isInitialized() const noexcept;
@@ -66,7 +58,7 @@ namespace Raindrop{
 			void free();
 
 		private:
-			Impl* _impl;
+			std::unique_ptr<Impl> _impl;
 	};
 
 	inline static GMemory::Type FindGetGMemoryType(Context& context, const GMemory::Type::Flags& flags){

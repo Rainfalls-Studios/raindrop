@@ -62,15 +62,12 @@ namespace Raindrop{
 					void reset(const bool& release = false);
 
 				private:
-					Impl* _impl;
+					std::unique_ptr<Impl> _impl;
 
 			};
 
 			~CommandBuffer();
-			CommandBuffer(Impl* impl);
-
-			CommandBuffer(const CommandBuffer& other) = delete;
-			CommandBuffer& operator=(const CommandBuffer& other) = delete;
+			explicit CommandBuffer(std::unique_ptr<Impl> impl);
 
 			CommandBuffer(CommandBuffer&& other) noexcept;
 			CommandBuffer& operator=(CommandBuffer&& other) noexcept;
@@ -85,8 +82,10 @@ namespace Raindrop{
 
 			void reset(const bool& realeaseResources = true);
 
+			void bindPipeline(const Pipeline& pipeline);
+
 		private:
-			Impl* _impl;
+			std::unique_ptr<Impl> _impl;
 
 	};
 }

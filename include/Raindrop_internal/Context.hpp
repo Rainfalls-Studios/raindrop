@@ -20,11 +20,12 @@ namespace Raindrop::Internal{
 			std::shared_ptr<spdlog::logger>& getLogger() noexcept;
 			const std::shared_ptr<spdlog::logger>& getLogger() const noexcept;
 
-			Events::Manager& getEventManager();
-			Assets::Manager& getAssetManager();
-			Graphics::Engine& getEngine();
+			Events::Manager& getEventManager() noexcept;
+			Assets::Manager& getAssetManager() noexcept;
+			Graphics::Engine& getEngine() noexcept;
+			const Graphics::Engine& getEngine() const noexcept;
 
-			Raindrop::Context& getInterface();
+			Raindrop::Context& getInterface() noexcept;
 			
 			void start();
 			void stop();
@@ -36,6 +37,8 @@ namespace Raindrop::Internal{
 			std::unique_ptr<Events::Manager> _eventManager;
 			std::unique_ptr<Assets::Manager> _assetManager;
 			std::unique_ptr<Graphics::Engine> _engine;
+
+			Events::EventID _onTick;
 
 			enum class State{
 				RUNNING,

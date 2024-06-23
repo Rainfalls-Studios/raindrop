@@ -26,7 +26,8 @@ namespace Raindrop{
 			bool isInitialized() const noexcept;
 			Handle getHandle() const noexcept;
 
-			Internal::Context* getInternalContext();
+			Internal::Context* getInternalContext() noexcept;
+			const Internal::Context* getInternalContext() const noexcept;
 
 			void start();
 			void stop();
@@ -43,6 +44,10 @@ namespace Raindrop{
 
 	inline void Start(Context& context){
 		context.start();
+	}
+
+	inline void Stop(Context& context){
+		context.stop();
 	}
 }
 

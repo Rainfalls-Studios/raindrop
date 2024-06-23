@@ -5,8 +5,6 @@
 
 namespace Raindrop::Internal::Graphics{
 	struct GraphicsPipelineConfigInfo{
-		GraphicsPipelineConfigInfo();
-
 		VkPipelineCreateFlags flags;
 		VkPipelineVertexInputStateCreateInfo vertexInfo;
 		VkPipelineViewportStateCreateInfo viewportInfo;

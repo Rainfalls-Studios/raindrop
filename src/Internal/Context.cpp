@@ -13,6 +13,8 @@ namespace Raindrop::Internal{
 		_eventManager = std::make_unique<Events::Manager>(*this);
 		_assetManager = std::make_unique<Assets::Manager>(*this); 
 		_engine = std::make_unique<Graphics::Engine>(*this);
+
+		_onTick = _eventManager->registerEvent("OnTick");
 	}
 
 	Context::~Context(){
@@ -30,19 +32,23 @@ namespace Raindrop::Internal{
 		return _logger;
 	}
 
-	Events::Manager& Context::getEventManager(){
+	Events::Manager& Context::getEventManager() noexcept{
 		return *_eventManager;	
 	}
 
-	Assets::Manager& Context::getAssetManager(){
+	Assets::Manager& Context::getAssetManager() noexcept{
 		return *_assetManager;
 	}
 
-	Graphics::Engine& Context::getEngine(){
+	Graphics::Engine& Context::getEngine() noexcept{
 		return *_engine;
 	}
 
-	Raindrop::Context& Context::getInterface(){
+	const Graphics::Engine& Context::getEngine() const noexcept{
+		return *_engine;
+	}
+
+	Raindrop::Context& Context::getInterface() noexcept{
 		return _interface;
 	}
 
@@ -54,6 +60,8 @@ namespace Raindrop::Internal{
 
 		while (_state == State::RUNNING){
 			auto begin = std::chrono::steady_clock::now();
+
+			this->_eventManager->trigger(_onTick);
 
 			_engine->render();
 			_engine->events();

@@ -351,6 +351,16 @@ namespace Raindrop{
 			static void _Trigger(Context& context, const ID& event, const std::vector<void*>& arguments);
 
 	};
+
+	template<typename F>
+	inline void Subscribe(Context& context, const Event& event, F callback){
+		Event::Subscribe(context, event, callback);
+	}
+
+	template<typename F>
+	inline void Subscribe(Context& context, const std::string& eventName, F callback){
+		Event::Subscribe(context, eventName, callback);
+	}
 }
 
 #include "Inline/Event.inl"

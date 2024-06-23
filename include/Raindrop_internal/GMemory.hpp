@@ -7,18 +7,21 @@
 
 namespace Raindrop{
 	struct GMemory::Impl{
-		std::shared_ptr<Internal::Graphics::Memory> memory;
-		Context* context;
+		Internal::Context* context;
+
+		std::size_t size;
+		std::size_t typeIndex;
+		std::shared_ptr<Internal::Graphics::Memory> internal;
 
 		Impl() : 
 			context{nullptr},
-			memory{nullptr}
+			internal{nullptr}
 		{}
 	};
 
 	struct GMemory::Type::Impl{
+		Internal::Context* context;
 		std::size_t index;
-		Internal::Graphics::Context* context;
 
 		Internal::Graphics::MemoryType& get();
 		const Internal::Graphics::MemoryType& get() const;

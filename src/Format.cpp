@@ -256,7 +256,7 @@ namespace Raindrop{
 		OPTIMAL
 	};
 
-	bool isFormatSupported(Context& context, const Format& format, const Format::Properties& required, const Format::Features& features, const Format::Properties& except, const FormatUsage& usage){
+	bool isFormatSupported(const Context& context, const Format& format, const Format::Properties& required, const Format::Features& features, const Format::Properties& except, const FormatUsage& usage){
 		const auto& physicalDevice = context.getInternalContext()->getEngine().getContext().getPhysicalDevice();
 		const auto& properties = format.getProperties();
 
@@ -283,7 +283,7 @@ namespace Raindrop{
 		return true;
 	}
 
-	Format findFormat(Context& context, const Format::Properties& required, const Format::Features& features, const Format::Properties& except, const FormatUsage& usage){
+	Format findFormat(const Context& context, const Format::Properties& required, const Format::Features& features, const Format::Properties& except, const FormatUsage& usage){
 		for (std::size_t i=0; i<static_cast<std::size_t>(Format::ASTC_12x12_SRGB_BLOCK); i++){
 			Format format(static_cast<Format::Type>(i));
 			if (isFormatSupported(context, format ,required, features, except, usage)) return format;
@@ -291,19 +291,19 @@ namespace Raindrop{
 		return Format::UNDEFINED;
 	}
 
-	Format Format::FindTilingOptimal(Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except){
+	Format Format::FindTilingOptimal(const Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except){
 		return findFormat(context, requiredProperties, requiredFeatures, except, OPTIMAL);
 	}
 
-	Format Format::FindTilingLinear(Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except){
+	Format Format::FindTilingLinear(const Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except){
 		return findFormat(context, requiredProperties, requiredFeatures, except, LINEAR);
 	}
 
-	Format Format::FindBuffer(Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except){
+	Format Format::FindBuffer(const Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except){
 		return findFormat(context, requiredProperties, requiredFeatures, except, BUFFER);
 	}
 
-	std::list<Format> findAllFormats(Context& context, const Format::Properties& required, const Format::Features& features, const Format::Properties& except, const FormatUsage& usage){
+	std::list<Format> findAllFormats(const Context& context, const Format::Properties& required, const Format::Features& features, const Format::Properties& except, const FormatUsage& usage){
 		std::list<Format> formats;
 
 		for (std::size_t i=0; i<static_cast<std::size_t>(Format::ASTC_12x12_SRGB_BLOCK); i++){
@@ -316,15 +316,15 @@ namespace Raindrop{
 		return formats;
 	}
 
-	std::list<Format> Format::FindAllTilingOptimal(Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except){
+	std::list<Format> Format::FindAllTilingOptimal(const Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except){
 		return findAllFormats(context, requiredProperties, requiredFeatures, except, OPTIMAL);
 	}
 	
-	std::list<Format> Format::FindAllTilingLinear(Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except){
+	std::list<Format> Format::FindAllTilingLinear(const Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except){
 		return findAllFormats(context, requiredProperties, requiredFeatures, except, LINEAR);
 	}
 
-	std::list<Format> Format::FindAllBuffer(Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except){
+	std::list<Format> Format::FindAllBuffer(const Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except){
 		return findAllFormats(context, requiredProperties, requiredFeatures, except, BUFFER);
 	}
 }

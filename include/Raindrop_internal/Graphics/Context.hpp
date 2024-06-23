@@ -17,24 +17,25 @@ namespace Raindrop::Internal::Graphics{
 			Context(Internal::Context& internal);
 			~Context();
 
-			Internal::Context& getInternalContext();
-			VkAllocationCallbacks*& getAllocationCallbacks();
-			std::shared_ptr<spdlog::logger> getLogger();
+			Internal::Context& getInternalContext() noexcept;
+			VkAllocationCallbacks*& getAllocationCallbacks() noexcept;
+			std::shared_ptr<spdlog::logger> getLogger() noexcept;
 
-			Core::Window& getWindow();
-			Core::Instance& getInstance();
-			Core::PhysicalDevice& getPhysicalDevice();
-			Core::Device& getDevice();
-			Queues& getQueues();
-			Core::Swapchain& getSwapchain();
-			MemoryTypes& getMemoryTypes();
+			Core::Window& getWindow() noexcept;
+			Core::Instance& getInstance() noexcept;
+			Core::PhysicalDevice& getPhysicalDevice() noexcept;
+			const Core::PhysicalDevice& getPhysicalDevice() const noexcept;
+			Core::Device& getDevice() noexcept;
+			Queues& getQueues() noexcept;
+			Core::Swapchain& getSwapchain() noexcept;
+			MemoryTypes& getMemoryTypes() noexcept;
 
 			struct Frame{
 				public:
 					Frame(Context& context);
 
-					CommandPool*& getCommandPool();
-					Queue*& getQueue();
+					CommandPool*& getCommandPool() noexcept;
+					Queue*& getQueue() noexcept;
 				
 				private:
 					CommandPool* _commandPool;

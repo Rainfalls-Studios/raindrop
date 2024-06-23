@@ -7,25 +7,6 @@
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
 
 namespace Raindrop::Internal::Graphics{
-	GraphicsPipelineConfigInfo::GraphicsPipelineConfigInfo() : 
-		vertexInfo{.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO},
-		viewportInfo{.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO},
-		inputAssemblyInfo{.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO},
-		rasterizationInfo{.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO},
-		multisampleInfo{.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO},
-		colorBlendInfo{.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO},
-		depthStencilInfo{.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO},
-		dynamicStateInfo{.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO},
-		tessellationInfo{.sType = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO},
-		pipelineLayout{nullptr},
-		renderPass{VK_NULL_HANDLE},
-		subpass{0},
-		flags{0},
-		pNext{nullptr}
-	{
-		defaultInfo(*this);
-	}
-
 	void GraphicsPipelineConfigInfo::defaultInfo(GraphicsPipelineConfigInfo& info){
 		
 		info.vertexInfo.vertexAttributeDescriptionCount = 0;

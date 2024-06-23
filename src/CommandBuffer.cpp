@@ -7,10 +7,12 @@
 #include <Raindrop/GUID.hpp>
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
 #include <Raindrop/Context.hpp>
+#include <Raindrop_internal/Texture.hpp>
+#include <Raindrop_internal/Pipeline.hpp>
 
-#define LOGGER _impl->context->getInternalContext()->getLogger()
+#define LOGGER _impl->context->getLogger()
 #define INFO _impl->info
-#define GRAPHICS_CONTEXT _impl->context->getInternalContext()->getEngine().getContext()
+#define GRAPHICS_CONTEXT _impl->context->getEngine().getContext()
 
 namespace Raindrop{
 	VkCommandBufferUsageFlags toVulkan(const CommandBuffer::Flags& flags){
@@ -59,7 +61,8 @@ namespace Raindrop{
 	//--------------------------------------------------------------------
 
 	CommandBuffer::Pool::Pool(Context& context, const Usage& usage, const Flags& flags){
-		_impl = new Impl(context);
+		_impl = std::make_unique<Impl>();
+		_impl->context = context.getInternalContext();
 
 		Internal::Graphics::CommandPoolConfigInfo info;
 		info.flags = toVulkan(flags);
@@ -68,7 +71,7 @@ namespace Raindrop{
 		auto families = GRAPHICS_CONTEXT.getQueues().findSuitable(toVulkan(usage));
 		
 		if (families.empty()){
-			context.getInternalContext()->getLogger()->error("Could not find a family queue that supports requirement (TODO: print required capabilities)");
+			_impl->context->getLogger()->error("Could not find a family queue that supports requirement (TODO: print required capabilities)");
 			throw std::runtime_error("Could not find a family that fulfills requirements");
 		}
 
@@ -78,8 +81,7 @@ namespace Raindrop{
 	}
 
 	CommandBuffer::Pool::~Pool(){
-		delete _impl;
-		_impl = nullptr;
+		_impl.reset();
 	}
 
 	CommandBuffer CommandBuffer::Pool::allocate(const CommandBuffer::AllocationFlags& flags){
@@ -87,11 +89,12 @@ namespace Raindrop{
 
 		auto commandBuffer = _impl->commandPool->allocate(1, level);
 
-		CommandBuffer::Impl* impl = new CommandBuffer::Impl(*_impl->context);
+		std::unique_ptr<CommandBuffer::Impl> impl = std::unique_ptr<CommandBuffer::Impl>();
+		impl->context = _impl->context;
 		impl->commandBuffer = commandBuffer[0];
 
 		// The pointer ownership is transfered to the command buffer
-		return CommandBuffer(impl);
+		return CommandBuffer(std::move(impl));
 	}
 
 	std::vector<CommandBuffer> CommandBuffer::Pool::allocate(const uint32_t& count, const CommandBuffer::AllocationFlags& flags){
@@ -101,11 +104,12 @@ namespace Raindrop{
 		std::vector<CommandBuffer> out;
 
 		for (const auto& commandBuffer : commandBuffers){
-			CommandBuffer::Impl* impl = new CommandBuffer::Impl(*_impl->context);
+			std::unique_ptr<CommandBuffer::Impl> impl = std::make_unique<CommandBuffer::Impl>();
+			impl->context = _impl->context;
 			impl->commandBuffer = commandBuffer;
 
 			// The pointer ownership is transfered to the command buffer
-			out.emplace_back(impl);
+			out.emplace_back(std::move(impl));
 		}
 
 		return out;
@@ -134,6 +138,15 @@ namespace Raindrop{
 	//-----------------        COMMAND BUFFER            -----------------
 	//--------------------------------------------------------------------
 
+	
+	CommandBuffer::CommandBuffer(CommandBuffer&& other) noexcept : _impl(std::move(other._impl)) {}
+
+	CommandBuffer& CommandBuffer::operator=(CommandBuffer&& other) noexcept{
+        if (this != &other) {
+            _impl = std::move(other._impl);
+        }
+        return *this;
+	}
 
 	bool CommandBuffer::isInitialized() const noexcept{
 		return _impl != nullptr;
@@ -144,35 +157,19 @@ namespace Raindrop{
 	}
 
 	CommandBuffer::Impl* CommandBuffer::getImpl() const noexcept{
-		return _impl;
+		return _impl.get();
 	}
 
 	GUID CommandBuffer::getGUID() const noexcept{
 
 	}
 
-	CommandBuffer::CommandBuffer(Impl* impl) : _impl{impl}{}
-
-	// CommandBuffer::CommandBuffer(const CommandBuffer& other) : _impl{nullptr}{
-	// 	_impl = new Impl(*other._impl);
-	// }
-
-	CommandBuffer::CommandBuffer(CommandBuffer&& other) noexcept : _impl(other._impl) {
-		other._impl = nullptr;
-	}
-
-	CommandBuffer& CommandBuffer::operator=(CommandBuffer&& other) noexcept {
-		if (this != &other) {
-			delete _impl;
-			_impl = other._impl;
-			other._impl = nullptr;
-		}
-		return *this;
+	CommandBuffer::CommandBuffer(std::unique_ptr<Impl> impl){
+		_impl = std::move(impl);
 	}
 
 	CommandBuffer::~CommandBuffer(){
-		delete _impl;
-		_impl = nullptr;
+		_impl.reset();
 	}
 
 	void CommandBuffer::begin(const Flags& flags){

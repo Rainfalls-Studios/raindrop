@@ -7,17 +7,23 @@
 
 namespace Raindrop{
 	struct CommandBuffer::Pool::Impl{
+		Internal::Context* context;
 		std::shared_ptr<Internal::Graphics::CommandPool> commandPool;
-		Context* context;
 
-		Impl(Context& context) : context{&context}{}
+		Impl() : 
+			context{nullptr},
+			commandPool{nullptr}
+		{}
 	};
 
 	struct CommandBuffer::Impl{
+		Internal::Context* context;
 		VkCommandBuffer commandBuffer;
-		Context* context;
 
-		Impl(Context& context) : context{&context}{}
+		Impl() : 
+			context{nullptr},
+			commandBuffer{nullptr}
+		{}
 	};
 
 	VkCommandPoolCreateFlags toVulkan(const CommandBuffer::Pool::Flags& flags);

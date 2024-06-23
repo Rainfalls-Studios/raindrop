@@ -7,12 +7,31 @@
 
 namespace Raindrop{
 	struct GBuffer::Impl{
-		std::shared_ptr<Internal::Graphics::Buffer> buffer;
-		Context* context;
+		Internal::Context* context;
+
+		std::size_t size;
+		Usage usage;
+		Flags flags;
+		GMemory::Type::Flags memoryFlags;
+		std::size_t alignement;
+
+		std::size_t mappedSize;
+		std::size_t mappedOffset;
+		void* mappedPointer;
+
+		std::shared_ptr<Internal::Graphics::Buffer> internal;
 
 		Impl() : 
-			buffer{nullptr},
-			context{nullptr}
+			context{nullptr},
+			size{0},
+			usage{Usage::NONE},
+			flags{Flags::NONE},
+			memoryFlags{GMemory::Type::Flags::NONE},
+			alignement{0},
+			mappedSize{0},
+			mappedOffset{0},
+			mappedPointer{nullptr},
+			internal{nullptr}
 		{}
 	};
 

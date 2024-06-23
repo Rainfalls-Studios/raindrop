@@ -68,16 +68,22 @@ namespace Raindrop{
 
 			void map(const std::size_t& size = WHOLE_SIZE, const std::size_t& offset = 0);
 			void unmap();
-			void* getMappedPointer();
+
+			bool isMapped() const noexcept;
+			void* getMappedPointer() noexcept;
+			const std::size_t& mappedSize() const noexcept;
+			const std::size_t& mappedOffset() const noexcept;
 
 			void flush(const std::size_t& size = WHOLE_SIZE, const std::size_t& offset = 0);
 			void invalidate(const std::size_t& size = WHOLE_SIZE, const std::size_t& offset = 0);
 
 			const std::size_t& getSize() const noexcept;
 			const std::size_t& getAllignement() const noexcept;
-			Usage getUsage() const noexcept;
-			Flags getFlags() const noexcept;
-			GMemory::Type::Flags getMemoryFlags() const noexcept;
+			const Usage& getUsage() const noexcept;
+			const Flags& getFlags() const noexcept;
+			const GMemory::Type::Flags& getMemoryFlags() const noexcept;
+
+
 
 		private:
 			std::unique_ptr<Impl> _impl;

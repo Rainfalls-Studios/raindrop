@@ -6,9 +6,6 @@
 namespace Raindrop::Internal::Graphics{
 	struct ImageViewConfigInfo : public VkImageViewCreateInfo{
 		std::shared_ptr<Image> image;
-
-		void update();
-		ImageViewConfigInfo();
 	};
 
 	class ImageView{

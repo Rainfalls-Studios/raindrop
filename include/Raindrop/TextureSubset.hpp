@@ -60,12 +60,12 @@ namespace Raindrop{
 			void setFormat(const Format& format);
 			void setFlags(const Flags& info);
 
-			Texture getSource() const noexcept;
-			Range getRange() const noexcept;
-			Color::Swizzle getComponentSwizzle(const Color::Components::Bits& component) const noexcept;
-			Type getType() const noexcept;
-			Format getFormat() const noexcept;
-			Flags getFlags() const noexcept;
+			const Texture& getSource() const noexcept;
+			const Range& getRange() const noexcept;
+			const Color::Swizzle& getComponentSwizzle(const Color::Components::Bits& component) const;
+			const Type& getType() const noexcept;
+			const Format& getFormat() const noexcept;
+			const Flags& getFlags() const noexcept;
 
 		private:
 			std::unique_ptr<Impl> _impl;

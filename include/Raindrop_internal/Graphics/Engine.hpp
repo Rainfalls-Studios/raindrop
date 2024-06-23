@@ -2,6 +2,7 @@
 #define __RAINDROP_INTERNAL_GRAPHICS_ENGINE_HPP__
 
 #include "common.hpp"
+#include <Raindrop_internal/Events/common.hpp>
 
 namespace Raindrop::Internal::Graphics{
 	class Engine{
@@ -12,7 +13,8 @@ namespace Raindrop::Internal::Graphics{
 			void render();
 			void events();
 
-			Context& getContext();
+			Context& getContext() noexcept;
+			const Context& getContext() const noexcept;
 
 		private:
 			struct EventCache;
@@ -38,6 +40,9 @@ namespace Raindrop::Internal::Graphics{
 			std::size_t _currentFrameID;
 
 			std::shared_ptr<ShaderLoader> _shaderLoader;
+
+			Events::EventID _OnFrame;
+			Events::EventID _OnSwapchainPass;
 	};
 }
 

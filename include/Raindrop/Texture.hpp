@@ -148,27 +148,28 @@ namespace Raindrop{
 			void setHeight(const std::uint32_t& height);
 			void setDepth(const std::uint32_t& depth);
 			void setUsage(const Usage& usage);
-			void setLayout(const Layout& layout);
+			void setInitialLayout(const Layout& layout);
 			void setTiling(const Tiling& tiling);
 			void setType(const Type& type);
 			void setMipmapCount(const std::uint32_t mip);
 			void setArrayLayers(const std::uint32_t layers);
 			void setFlags(const Flags& flags);
 
-			Format getFormat() const noexcept;
-			std::uint32_t getWidth() const noexcept;
-			std::uint32_t getHeight() const noexcept;
-			std::uint32_t getDepth() const noexcept;
-			Usage getUsage() const noexcept;
-			Layout getLayout() const noexcept;
-			Tiling getTiling() const noexcept;
-			Type getType() const noexcept;
-			std::uint32_t getMipmapCount() const noexcept;
-			std::uint32_t getArrayLayers() const noexcept;
-			Flags getFlags() const noexcept;
+			const Format& getFormat() const noexcept;
+			const std::uint32_t& getWidth() const noexcept;
+			const std::uint32_t& getHeight() const noexcept;
+			const std::uint32_t& getDepth() const noexcept;
+			const Usage& getUsage() const noexcept;
+			const Layout& getInitialLayout() const noexcept;
+			const Layout& getCurrentLayout() const noexcept;
+			const Tiling& getTiling() const noexcept;
+			const Type& getType() const noexcept;
+			const std::uint32_t& getMipmapCount() const noexcept;
+			const std::uint32_t& getArrayLayers() const noexcept;
+			const Flags& getFlags() const noexcept;
 
 			bool isInitialized() const noexcept;
-			void* getNativeHandle() const;
+			void* getNativeHandle() const noexcept;
 			Impl* getImpl() const noexcept;
 			GUID getGUID() const noexcept;
 

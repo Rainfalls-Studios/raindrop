@@ -6,18 +6,33 @@
 
 namespace Raindrop{
 	struct TextureSubset::Impl{
-		struct Builder{
-			Internal::Graphics::ImageViewConfigInfo info;
+
+		struct ComponentSwizzle{
+			Color::Swizzle r = Color::Swizzle::RED;
+			Color::Swizzle g = Color::Swizzle::GREEN;
+			Color::Swizzle b = Color::Swizzle::BLUE;
+			Color::Swizzle a = Color::Swizzle::ALPHA;
 		};
 
-		std::shared_ptr<Internal::Graphics::ImageView> imageView;
-		std::unique_ptr<Builder> builder;
-		Context* context;
+		Internal::Context* context;
+		const Texture* source;
+		Range range;
+		ComponentSwizzle componentSwizzle;
+		Type type;
+		Format format;
+		Flags flags;
+
+		std::shared_ptr<Internal::Graphics::ImageView> internal;
 
 		Impl() :
-			imageView{nullptr},
-			builder{nullptr},
-			context{nullptr}
+			context{nullptr},
+			source{nullptr},
+			range{},
+			componentSwizzle{},
+			type{Type::PLANAR},
+			format{Format::UNDEFINED},
+			flags{Flags::NONE},
+			internal{nullptr}
 		{}
 	};
 

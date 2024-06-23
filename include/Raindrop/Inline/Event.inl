@@ -14,7 +14,7 @@ namespace Raindrop{
 		_Subscribe(context, event.getID(),
 			[=](const std::vector<void*>& args){
 				std::size_t i = args.size()-1;
-				callback(*reinterpret_cast<Args*>(args[i--])...);
+				callback(*(Args*)(args[i--])...);
 			});
 	}
 

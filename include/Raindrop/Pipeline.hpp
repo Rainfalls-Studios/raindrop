@@ -226,6 +226,8 @@ namespace Raindrop{
 			class Viewport{
 				friend class Pipeline;
 				public:
+					Viewport();
+
 					Viewport& setX(const float& x) noexcept;
 					Viewport& setY(const float& y) noexcept;
 					Viewport& setWidth(const float& width) noexcept;
@@ -253,6 +255,8 @@ namespace Raindrop{
 			class Scissor{
 				friend class Pipeline;
 				public:
+					Scissor();
+
 					Scissor& setX(const std::int32_t& x) noexcept;
 					Scissor& setY(const std::int32_t& y) noexcept;
 					Scissor& setWidth(const std::uint32_t& width) noexcept;
@@ -309,6 +313,8 @@ namespace Raindrop{
 			class StencilOpState{
 				friend class Pipeline;
 				public:
+					StencilOpState();
+
 					StencilOpState& setFailOp(const StencilOperation& failOp) noexcept;
 					StencilOpState& setPassOp(const StencilOperation& passOp) noexcept;
 					StencilOpState& setDepthFailOp(const StencilOperation& depthFailOp) noexcept;
@@ -339,39 +345,38 @@ namespace Raindrop{
 				public:
 					enum class FlagsBits{
 						NONE = 0,
-						INDEPENDENT_SETS = 1 << 1
+						INDEPENDENT_SETS = 1 << 0
 					};
 					RAINDROP_FLAGS_CLASS(Flags, FlagsBits);
+
+					struct PushConstantDescription{
+						Stage stage;
+						std::size_t size;
+					};
 					
 					struct Impl;
-
 
 					static Layout Create(Context& context);
 
 					Layout(Context& context);
 					~Layout();
 
-					Layout(const Layout& other);
-					Layout& operator=(const Layout& other);
-
-
 					void initialize();
 					void release();
 
-					void setFlags(const Flags& flags);
-
-					void setPushConstant(const Stage& stage, const std::size_t size);
+					Layout& setFlags(const Flags& flags);
+					Layout& setPushConstant(const Stage& stage, const std::size_t& size);
 
 					template<typename T>
-					inline void setPushConstant(const Stage& stage){
-						setPushConstant(stage, sizeof(T));
+					inline Layout& setPushConstant(const Stage& stage){
+						return setPushConstant(stage, sizeof(T));
 					}
 
 					// void setSetLayouts();
 					// void addSetLayout();
 
-					Flags getFlags() const noexcept;
-					// void getPushConstants();
+					const Flags& getFlags() const noexcept;
+					// const PushConstantDescription& getPushConstantDescription();
 					// void getSetLayouts();
 
 
@@ -381,7 +386,7 @@ namespace Raindrop{
 					GUID getGUID() const noexcept;
 
 				private:
-					Impl* _impl;
+					std::unique_ptr<Impl> _impl;
 			};
 
 			class Shader : public Asset{
@@ -390,8 +395,8 @@ namespace Raindrop{
 
 					enum class FlagsBits{
 						NONE = 0,
-						ALLOW_VARYING_SUBGROUP_SIZE = 1 << 1,
-						REQUIRE_FULL_SUBGROUPS = 1 << 2,
+						ALLOW_VARYING_SUBGROUP_SIZE = 1 << 0,
+						REQUIRE_FULL_SUBGROUPS = 1 << 1,
 					};
 					RAINDROP_FLAGS_CLASS(Flags, FlagsBits);
 
@@ -428,7 +433,7 @@ namespace Raindrop{
 					bool isInitialized() const noexcept;
 
 				private:
-					Impl* _impl;
+					std::unique_ptr<Impl> _impl;
 			};
 
 			struct Impl;
@@ -437,9 +442,6 @@ namespace Raindrop{
 
 			Pipeline(Context& context);
 			~Pipeline();
-
-			Pipeline(const Pipeline& other);
-			Pipeline& operator=(const Pipeline& other);
 
 			void initialize();
 			void release();
@@ -453,6 +455,7 @@ namespace Raindrop{
 			Pipeline& setFlags(const Flags& flags);
 			Pipeline& setRenderPass(const RenderPass& renderPass);
 			Pipeline& setLayout(const Layout& layout);
+			Pipeline& setSubpass(const uint32_t& subpass);
 
 			Pipeline& setPrimitiveTopology(const Topology& topology);
 			Pipeline& enablePrimitiveRestart(const bool& enable = true);
@@ -493,7 +496,7 @@ namespace Raindrop{
 			Pipeline& addDynamicState(const DynamicState& state);
 			Pipeline& addDynamicStates(const std::initializer_list<DynamicState>& states);
 
-			Pipeline& setTellesationPatchControlPoints(const std::uint32_t& count);
+			Pipeline& setTessellationPatchControlPoints(const std::uint32_t& count);
 
 			Pipeline& addStage(const std::shared_ptr<Shader>& shader, const Shader::Stage::Bits& stage, const char* entryPoint = "main", const Shader::Flags& flags = Shader::Flags::NONE);
 			ColorAttachment& addColorAttachment();
@@ -501,11 +504,10 @@ namespace Raindrop{
 			Viewport& addViewport();
 			Scissor& addScissor();
 
-
 			void bind(CommandBuffer& commandbuffer);
 
 		private:
-			Impl* _impl;				
+			std::unique_ptr<Impl> _impl;				
 	};
 
 	static inline Pipeline CreatePipeline(Context& context){

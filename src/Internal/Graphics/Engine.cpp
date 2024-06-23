@@ -5,6 +5,7 @@
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
 #include <Raindrop_internal/Assets/Manager.hpp>
 #include <Raindrop_internal/Graphics/ShaderLoader.hpp>
+#include <Raindrop_internal/CommandBuffer.hpp>
 
 namespace Raindrop::Internal::Graphics{
 	struct Engine::EventCache{
@@ -16,6 +17,7 @@ namespace Raindrop::Internal::Graphics{
 			_context{nullptr},
 			_eventCache{nullptr}{
 			
+		
 		_internal.getLogger()->info("Constructing graphics engine...");
 
 		try{
@@ -39,6 +41,9 @@ namespace Raindrop::Internal::Graphics{
 
 		// _context->getSwapchain().setPresentMode(VK_PRESENT_MODE_FIFO_RELAXED_KHR);
 		// _context->getSwapchain().rebuildSwapchain();
+
+		_OnFrame = _context->getInternalContext().getEventManager().registerEvent("OnFrame");
+		_OnSwapchainPass = _context->getInternalContext().getEventManager().registerEvent<CommandBuffer&>("OnSwapchainPass");
 	}
 
 	Engine::~Engine(){
@@ -81,8 +86,20 @@ namespace Raindrop::Internal::Graphics{
 		
 		VkCommandBuffer commandBuffer = beginFrame();
 		if (commandBuffer != nullptr){
+			_context->getInternalContext().getEventManager().trigger(_OnFrame);
 
 			swapchain.beginRenderPass(commandBuffer);
+
+			{
+				// I know it is awful, but, it's only once a frame
+				// if it works, it's not stupid
+				std::unique_ptr<Raindrop::CommandBuffer::Impl> impl = std::make_unique<Raindrop::CommandBuffer::Impl>();
+				
+				impl->context = &_context->getInternalContext();
+				impl->commandBuffer = commandBuffer;
+
+				_context->getInternalContext().getEventManager().trigger(_OnSwapchainPass, CommandBuffer(std::move(impl)));
+			}
 
 			swapchain.endRenderPass(commandBuffer);
 
@@ -209,7 +226,12 @@ namespace Raindrop::Internal::Graphics{
 		}
 	}
 
-	Context& Engine::getContext(){
+	Context& Engine::getContext() noexcept{
 		return *_context;
 	}
+
+	const Context& Engine::getContext() const noexcept{
+		return *_context;
+	}
+
 }

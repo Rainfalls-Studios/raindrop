@@ -58,9 +58,14 @@ namespace Raindrop{
 		return _handle;
 	}
 
-	Internal::Context* Context::getInternalContext(){
+	Internal::Context* Context::getInternalContext() noexcept{
 		return static_cast<Internal::Context*>(_handle);
 	}
+
+	const Internal::Context* Context::getInternalContext() const noexcept{
+		return static_cast<const Internal::Context*>(_handle);
+	}
+
 
 	void Context::start(){
 		if (_handle != nullptr){
@@ -79,5 +84,4 @@ namespace Raindrop{
 			throw std::runtime_error("Cannot start a non initialized context");
 		}
 	}
-
 }

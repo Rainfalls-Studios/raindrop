@@ -11,7 +11,7 @@
 
 // void testbed(){
 // 	namespace RD = Raindrop;
-// 	namespace fs = std::filesystem;
+// 	namespace fs = std::filesystem;f
 
 // 	using fs::current_path;
 
@@ -253,10 +253,10 @@ int main(){
 
 		auto& attachment = renderPass.addAttachment()
 			.setFormat(format)
-			.setLoadOperation(Raindrop::RenderPass::Attachment::Operation::CLEAR)
-			.setStoreOperation(Raindrop::RenderPass::Attachment::Operation::STORE)
-			.setStencilLoadOperation(Raindrop::RenderPass::Attachment::Operation::DONT_LOAD)
-			.setStencilStoreOperation(Raindrop::RenderPass::Attachment::Operation::DONT_STORE)
+			.setLoadOperation(Raindrop::RenderPass::AttachmentDescription::Operation::CLEAR)
+			.setStoreOperation(Raindrop::RenderPass::AttachmentDescription::Operation::STORE)
+			.setStencilLoadOperation(Raindrop::RenderPass::AttachmentDescription::Operation::DONT_LOAD)
+			.setStencilStoreOperation(Raindrop::RenderPass::AttachmentDescription::Operation::DONT_STORE)
 			.setInitialLayout(Raindrop::Texture::Layout::UNDEFINED)
 			.setFinalLayout(Raindrop::Texture::Layout::SHADER_READ_ONLY_OPTIMAL);
 
@@ -336,6 +336,12 @@ int main(){
 
 	// 	memory.free();
 	// }
+
+	// Raindrop::Subscribe(context, "OnSwapchainPass",
+	// 	[](Raindrop::CommandBuffer& cmd){
+			
+	// 	}
+	// );
 	
 	Raindrop::Start(context);
 	

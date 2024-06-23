@@ -49,7 +49,7 @@ namespace Raindrop{
 			};
 			RAINDROP_FLAGS_CLASS(Flags, FlagsBits);
 
-			class Attachment{
+			class AttachmentDescription{
 				friend class RenderPass;
 				public:
 					enum class FlagsBits{
@@ -74,24 +74,24 @@ namespace Raindrop{
 							};
 					};
 
-					// Attachment& setSamples(const )
+					// AttachmentDescription& setSamples(const )
 
-					Attachment() noexcept;
+					AttachmentDescription() noexcept;
 
-					Attachment(const Attachment&) = delete;
-					Attachment& operator=(const Attachment&) = delete;
+					AttachmentDescription(const AttachmentDescription&) = delete;
+					AttachmentDescription& operator=(const AttachmentDescription&) = delete;
 
-					Attachment(Attachment&&) = default;
-					Attachment& operator=(Attachment&&) = default;
+					AttachmentDescription(AttachmentDescription&&) = default;
+					AttachmentDescription& operator=(AttachmentDescription&&) = default;
 
-					Attachment& setFlags(const Flags& flags) noexcept;
-					Attachment& setFormat(const Format& format) noexcept;
-					Attachment& setLoadOperation(const Operation::Load& operation) noexcept;
-					Attachment& setStoreOperation(const Operation::Store& operation) noexcept;
-					Attachment& setStencilLoadOperation(const Operation::Load& operation) noexcept;
-					Attachment& setStencilStoreOperation(const Operation::Store& operation) noexcept;
-					Attachment& setInitialLayout(const Texture::Layout& layout) noexcept;
-					Attachment& setFinalLayout(const Texture::Layout& layout) noexcept;
+					AttachmentDescription& setFlags(const Flags& flags) noexcept;
+					AttachmentDescription& setFormat(const Format& format) noexcept;
+					AttachmentDescription& setLoadOperation(const Operation::Load& operation) noexcept;
+					AttachmentDescription& setStoreOperation(const Operation::Store& operation) noexcept;
+					AttachmentDescription& setStencilLoadOperation(const Operation::Load& operation) noexcept;
+					AttachmentDescription& setStencilStoreOperation(const Operation::Store& operation) noexcept;
+					AttachmentDescription& setInitialLayout(const Texture::Layout& layout) noexcept;
+					AttachmentDescription& setFinalLayout(const Texture::Layout& layout) noexcept;
 
 					const Flags& getFlags() const noexcept;
 					const Format& getFormat() const noexcept;
@@ -130,7 +130,7 @@ namespace Raindrop{
 					RAINDROP_FLAGS_CLASS(Flags, FlagsBits);
 
 					struct AttachmentReference{
-						Attachment& attachment;
+						AttachmentDescription& attachment;
 						Texture::Layout layout;
 					};
 
@@ -148,13 +148,13 @@ namespace Raindrop{
 					Subpass& setDepthAttachment(const AttachmentReference& attachment);
 					Subpass& addColorAttachment(const AttachmentReference& attachment);
 					Subpass& addInputAttachment(const AttachmentReference& attachment);
-					Subpass& addPreserveAttachment(const Attachment& attachment);
+					Subpass& addPreserveAttachment(const AttachmentDescription& attachment);
 
 					const Flags& getFlags() const noexcept;
 					const std::optional<AttachmentReference>& getDepthAttachment() const noexcept;
 					const std::list<AttachmentReference>& getColorAttachments() const noexcept;
 					const std::list<AttachmentReference>& getInputAttachments() const noexcept;
-					const std::list<std::reference_wrapper<const Attachment>>& getPreserveAttachments() const noexcept;
+					const std::list<std::reference_wrapper<const AttachmentDescription>>& getPreserveAttachments() const noexcept;
 
 					static const Subpass External;
 
@@ -163,7 +163,7 @@ namespace Raindrop{
 					std::optional<AttachmentReference> _depthAttachment;
 					std::list<AttachmentReference> _colorAttachments;
 					std::list<AttachmentReference> _inputAttachments;
-					std::list<std::reference_wrapper<const Attachment>> _preserveAttachments;
+					std::list<std::reference_wrapper<const AttachmentDescription>> _preserveAttachments;
 			};
 
 			class Dependency{
@@ -225,13 +225,13 @@ namespace Raindrop{
 			Impl* getImpl() const noexcept;
 			GUID getGUID() const noexcept;
 
-			Attachment& addAttachment();
+			AttachmentDescription& addAttachment();
 			Subpass& addSubpass();
 			Dependency& addDependency();
 
+			void begin(CommandBuffer& commandBuffer);
+
 		private:
-			friend class Subpass;
-			friend class Attachment;
 			std::unique_ptr<Impl> _impl;
 	};
 

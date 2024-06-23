@@ -6,34 +6,18 @@
 
 namespace Raindrop{
 	struct RenderPass::Impl{
-		struct Builder{
-			Internal::Graphics::RenderPassConfigInfo info;
+		Internal::Context* context;
+		std::vector<AttachmentDescription> attachmentsDescriptions;
+		std::vector<Subpass> subpasses;
+		std::vector<Dependency> dependencies;
 
-			struct {
-				std::vector<VkAttachmentDescription> attachments;
-				std::vector<VkSubpassDescription> subpasses;
-				std::vector<VkSubpassDependency> dependencies;
-				
-				std::vector<uint32_t> preserveAttachments;
-				std::vector<VkAttachmentReference> references;
-				std::list<VkAttachmentReference> depthStencils;
-			} translation;
-
-			std::vector<Attachment> attachments;
-			std::vector<Subpass> subpasses;
-			std::vector<Dependency> dependencies;
-
-			void update();
-			Builder();
-		};
-
-		std::shared_ptr<Internal::Graphics::RenderPass> renderPass;
-		std::unique_ptr<Builder> builder;
-		Context* context;
+		std::shared_ptr<Internal::Graphics::RenderPass> internal;
 
 		Impl() : 
-			renderPass{nullptr},
-			builder{nullptr},
+			internal{nullptr},
+			attachmentsDescriptions{},
+			subpasses{},
+			dependencies{},
 			context{nullptr}
 		{}
 	};
@@ -206,73 +190,73 @@ namespace Raindrop{
 		return RenderPass::Flags::NONE;
 	}
 
-	constexpr VkAttachmentDescriptionFlags AttachmentFlagsToVulkan(const RenderPass::Attachment::Flags& flags){
+	constexpr VkAttachmentDescriptionFlags AttachmentFlagsToVulkan(const RenderPass::AttachmentDescription::Flags& flags){
 		VkAttachmentDescriptionFlags out = 0;
 
-		if (flags.has(RenderPass::Attachment::Flags::MAY_ALIAS)) out |= VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT;
+		if (flags.has(RenderPass::AttachmentDescription::Flags::MAY_ALIAS)) out |= VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT;
 
 		return out;
 	}
 
-	constexpr RenderPass::Attachment::Flags AttachmentFlagsToRaindrop(const VkAttachmentDescriptionFlags& flags){
-		RenderPass::Attachment::Flags out = RenderPass::Attachment::Flags::NONE;
+	constexpr RenderPass::AttachmentDescription::Flags AttachmentFlagsToRaindrop(const VkAttachmentDescriptionFlags& flags){
+		RenderPass::AttachmentDescription::Flags out = RenderPass::AttachmentDescription::Flags::NONE;
 
-		if (flags & VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT) out |= RenderPass::Attachment::Flags::MAY_ALIAS;
+		if (flags & VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT) out |= RenderPass::AttachmentDescription::Flags::MAY_ALIAS;
 
 		return out;
 	}
 
-	constexpr VkAttachmentDescriptionFlagBits AttachmentFlagsBitsToVulkan(const RenderPass::Attachment::Flags::Bits& flags){
+	constexpr VkAttachmentDescriptionFlagBits AttachmentFlagsBitsToVulkan(const RenderPass::AttachmentDescription::Flags::Bits& flags){
 		switch (flags){
-			case RenderPass::Attachment::Flags::MAY_ALIAS: return VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT;
+			case RenderPass::AttachmentDescription::Flags::MAY_ALIAS: return VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT;
 			default: return VkAttachmentDescriptionFlagBits(0);
 		}
 	}
 
-	constexpr RenderPass::Attachment::Flags::Bits AttachmentFlagsBitsToVulkan(const VkAttachmentDescriptionFlagBits& flags){
+	constexpr RenderPass::AttachmentDescription::Flags::Bits AttachmentFlagsBitsToVulkan(const VkAttachmentDescriptionFlagBits& flags){
 		switch (flags){
-			case VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT: return RenderPass::Attachment::Flags::MAY_ALIAS;
-			default: return RenderPass::Attachment::Flags::NONE;
+			case VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT: return RenderPass::AttachmentDescription::Flags::MAY_ALIAS;
+			default: return RenderPass::AttachmentDescription::Flags::NONE;
 		}
 	}
 
-	constexpr VkAttachmentLoadOp AttachmentLoadOperationToVulkan(const RenderPass::Attachment::Operation::Load& op){
+	constexpr VkAttachmentLoadOp AttachmentLoadOperationToVulkan(const RenderPass::AttachmentDescription::Operation::Load& op){
 		switch (op){
-			case RenderPass::Attachment::Operation::LOAD: return VK_ATTACHMENT_LOAD_OP_LOAD;
-			case RenderPass::Attachment::Operation::CLEAR: return VK_ATTACHMENT_LOAD_OP_CLEAR;
-			case RenderPass::Attachment::Operation::DONT_LOAD: return VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+			case RenderPass::AttachmentDescription::Operation::LOAD: return VK_ATTACHMENT_LOAD_OP_LOAD;
+			case RenderPass::AttachmentDescription::Operation::CLEAR: return VK_ATTACHMENT_LOAD_OP_CLEAR;
+			case RenderPass::AttachmentDescription::Operation::DONT_LOAD: return VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 
 			// VK_KHR_load_store_op_none
-			case RenderPass::Attachment::Operation::LOAD_NONE: return VK_ATTACHMENT_LOAD_OP_NONE_EXT;
+			case RenderPass::AttachmentDescription::Operation::LOAD_NONE: return VK_ATTACHMENT_LOAD_OP_NONE_EXT;
 			default: return VkAttachmentLoadOp(0);
 		}
 	}
 
-	constexpr RenderPass::Attachment::Operation::Load AttachmentLoadOperationToRaindrop(const VkAttachmentLoadOp& op){
+	constexpr RenderPass::AttachmentDescription::Operation::Load AttachmentLoadOperationToRaindrop(const VkAttachmentLoadOp& op){
 		switch (op){
-			case VK_ATTACHMENT_LOAD_OP_LOAD: return RenderPass::Attachment::Operation::LOAD;
-			case VK_ATTACHMENT_LOAD_OP_CLEAR: return RenderPass::Attachment::Operation::CLEAR;
-			case VK_ATTACHMENT_LOAD_OP_DONT_CARE: return RenderPass::Attachment::Operation::DONT_LOAD;
-			case VK_ATTACHMENT_LOAD_OP_NONE_EXT: return RenderPass::Attachment::Operation::LOAD_NONE;
-			default: return RenderPass::Attachment::Operation::Load(0);
+			case VK_ATTACHMENT_LOAD_OP_LOAD: return RenderPass::AttachmentDescription::Operation::LOAD;
+			case VK_ATTACHMENT_LOAD_OP_CLEAR: return RenderPass::AttachmentDescription::Operation::CLEAR;
+			case VK_ATTACHMENT_LOAD_OP_DONT_CARE: return RenderPass::AttachmentDescription::Operation::DONT_LOAD;
+			case VK_ATTACHMENT_LOAD_OP_NONE_EXT: return RenderPass::AttachmentDescription::Operation::LOAD_NONE;
+			default: return RenderPass::AttachmentDescription::Operation::Load(0);
 		}
 	}
 
-	constexpr VkAttachmentStoreOp AttachmentStoreOperationToVulkan(const RenderPass::Attachment::Operation::Store& op){
+	constexpr VkAttachmentStoreOp AttachmentStoreOperationToVulkan(const RenderPass::AttachmentDescription::Operation::Store& op){
 		switch (op){
-			case RenderPass::Attachment::Operation::STORE: return VK_ATTACHMENT_STORE_OP_STORE;
-			case RenderPass::Attachment::Operation::DONT_STORE: return VK_ATTACHMENT_STORE_OP_DONT_CARE;
-			case RenderPass::Attachment::Operation::STORE_NONE: return VK_ATTACHMENT_STORE_OP_NONE;
+			case RenderPass::AttachmentDescription::Operation::STORE: return VK_ATTACHMENT_STORE_OP_STORE;
+			case RenderPass::AttachmentDescription::Operation::DONT_STORE: return VK_ATTACHMENT_STORE_OP_DONT_CARE;
+			case RenderPass::AttachmentDescription::Operation::STORE_NONE: return VK_ATTACHMENT_STORE_OP_NONE;
 			default: return VkAttachmentStoreOp(0);
 		}
 	}
 
-	constexpr RenderPass::Attachment::Operation::Store AttachmentLoadOperationToRaindrop(const VkAttachmentStoreOp& op){
+	constexpr RenderPass::AttachmentDescription::Operation::Store AttachmentLoadOperationToRaindrop(const VkAttachmentStoreOp& op){
 		switch (op){
-			case VK_ATTACHMENT_STORE_OP_STORE: return RenderPass::Attachment::Operation::STORE;
-			case VK_ATTACHMENT_STORE_OP_DONT_CARE: return RenderPass::Attachment::Operation::DONT_STORE;
-			case VK_ATTACHMENT_STORE_OP_NONE: return RenderPass::Attachment::Operation::STORE_NONE;
-			default: return RenderPass::Attachment::Operation::Store(0);
+			case VK_ATTACHMENT_STORE_OP_STORE: return RenderPass::AttachmentDescription::Operation::STORE;
+			case VK_ATTACHMENT_STORE_OP_DONT_CARE: return RenderPass::AttachmentDescription::Operation::DONT_STORE;
+			case VK_ATTACHMENT_STORE_OP_NONE: return RenderPass::AttachmentDescription::Operation::STORE_NONE;
+			default: return RenderPass::AttachmentDescription::Operation::Store(0);
 		}
 	}
 

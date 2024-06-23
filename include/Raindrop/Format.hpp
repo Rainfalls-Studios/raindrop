@@ -400,14 +400,13 @@ namespace Raindrop{
 
 			Properties getProperties() const noexcept;
 
-			static Format FindTilingOptimal(Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except = Properties::NONE);
-			static Format FindTilingLinear(Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except = Properties::NONE);
-			static Format FindBuffer(Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except = Properties::NONE);
+			static Format FindTilingOptimal(const Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except = Properties::NONE);
+			static Format FindTilingLinear(const Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except = Properties::NONE);
+			static Format FindBuffer(const Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except = Properties::NONE);
 
-			static std::list<Format> FindAllTilingOptimal(Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except = Properties::NONE);
-			static std::list<Format> FindAllTilingLinear(Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except = Properties::NONE);
-			static std::list<Format> FindAllBuffer(Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except = Properties::NONE);
-
+			static std::list<Format> FindAllTilingOptimal(const Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except = Properties::NONE);
+			static std::list<Format> FindAllTilingLinear(const Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except = Properties::NONE);
+			static std::list<Format> FindAllBuffer(const Context& context, const Properties& requiredProperties, const Features& requiredFeatures, const Properties& except = Properties::NONE);
 
 		private:
 			Type _type;

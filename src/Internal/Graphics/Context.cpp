@@ -32,51 +32,55 @@ namespace Raindrop::Internal::Graphics{
 
 	Context::~Context(){}
 
-	Internal::Context& Context::getInternalContext(){
+	Internal::Context& Context::getInternalContext() noexcept{
 		return _internal;
 	}
 
-	VkAllocationCallbacks*& Context::getAllocationCallbacks(){
+	VkAllocationCallbacks*& Context::getAllocationCallbacks() noexcept{
 		return _allocationCallbacks;
 	}
 
-	std::shared_ptr<spdlog::logger> Context::getLogger(){
+	std::shared_ptr<spdlog::logger> Context::getLogger() noexcept{
 		return _logger;
 	}
 
-	Core::Window& Context::getWindow(){
+	Core::Window& Context::getWindow() noexcept{
 		return _window;
 	}
 
-	Core::Instance& Context::getInstance(){
+	Core::Instance& Context::getInstance() noexcept{
 		return _instance;
 	}
 
-	Core::PhysicalDevice& Context::getPhysicalDevice(){
+	Core::PhysicalDevice& Context::getPhysicalDevice() noexcept{
 		return _physicalDevice;
 	}
 
-	Core::Device& Context::getDevice(){
+	const Core::PhysicalDevice& Context::getPhysicalDevice() const noexcept{
+		return _physicalDevice;
+	}
+
+	Core::Device& Context::getDevice() noexcept{
 		return _device;
 	}
 
-	Queues& Context::getQueues(){
+	Queues& Context::getQueues() noexcept{
 		return _queues;
 	}
 	
-	Core::Swapchain& Context::getSwapchain(){
+	Core::Swapchain& Context::getSwapchain() noexcept{
 		return _swapchain;
 	}
 
-	CommandPool*& Context::Frame::getCommandPool(){
+	CommandPool*& Context::Frame::getCommandPool() noexcept{
 		return _commandPool;
 	}
 
-	Queue*& Context::Frame::getQueue(){
+	Queue*& Context::Frame::getQueue() noexcept{
 		return _queue;
 	}
 
-	MemoryTypes& Context::getMemoryTypes(){
+	MemoryTypes& Context::getMemoryTypes() noexcept{
 		return _memoryTypes;
 	}
 

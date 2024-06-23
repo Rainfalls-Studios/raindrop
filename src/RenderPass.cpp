@@ -7,16 +7,18 @@
 #include <Raindrop_internal/Texture.hpp>
 #include <Raindrop_internal/Format.hpp>
 #include <Raindrop_internal/Pipeline.hpp>
+#include <Raindrop_internal/CommandBuffer.hpp>
 
-
-#define LOGGER _impl->context->getInternalContext()->getLogger()
-#define GRAPHICS_CONTEXT _impl->context->getInternalContext()->getEngine().getContext()
+#define LOGGER _impl->context->getLogger()
+#define GRAPHICS_CONTEXT _impl->context->getEngine().getContext()
 #define ATTACHMENT_DATA reinterpret_cast<VkAttachmentDescription*>(_data)
 #define SUBPASS_DATA reinterpret_cast<Raindrop::Internal::Graphics::RenderPassConfigInfo::SubpassInfo*>(_data)
 #define DEPENDENCY_DATA reinterpret_cast<VkSubpassDependency*>(_data)
 
+#include <iostream>
+
 namespace Raindrop{
-	RenderPass::Attachment::Attachment() noexcept : 
+	RenderPass::AttachmentDescription::AttachmentDescription() noexcept : 
 		_flags{Flags::NONE},
 		_format{Format::UNDEFINED},
 		_loadOperation{Operation::LOAD},
@@ -27,75 +29,75 @@ namespace Raindrop{
 		_finalLayout{Texture::Layout::UNDEFINED}
 	{}
 
-	RenderPass::Attachment& RenderPass::Attachment::setFlags(const Flags& flags) noexcept{
+	RenderPass::AttachmentDescription& RenderPass::AttachmentDescription::setFlags(const Flags& flags) noexcept{
 		_flags = flags;
 		return *this;
 	}
 
-	RenderPass::Attachment& RenderPass::Attachment::setFormat(const Format& format) noexcept{
+	RenderPass::AttachmentDescription& RenderPass::AttachmentDescription::setFormat(const Format& format) noexcept{
 		_format = format;
 		return *this;
 	}
 
-	RenderPass::Attachment& RenderPass::Attachment::setLoadOperation(const Operation::Load& operation) noexcept{
+	RenderPass::AttachmentDescription& RenderPass::AttachmentDescription::setLoadOperation(const Operation::Load& operation) noexcept{
 		_loadOperation = operation;
 		return *this;
 	}
 
-	RenderPass::Attachment& RenderPass::Attachment::setStoreOperation(const Operation::Store& operation) noexcept{
+	RenderPass::AttachmentDescription& RenderPass::AttachmentDescription::setStoreOperation(const Operation::Store& operation) noexcept{
 		_storeOperation = operation;
 		return *this;
 	}
 
-	RenderPass::Attachment& RenderPass::Attachment::setStencilLoadOperation(const Operation::Load& operation) noexcept{
+	RenderPass::AttachmentDescription& RenderPass::AttachmentDescription::setStencilLoadOperation(const Operation::Load& operation) noexcept{
 		_stencilLoadOperation = operation;
 		return *this;
 	}
 
-	RenderPass::Attachment& RenderPass::Attachment::setStencilStoreOperation(const Operation::Store& operation) noexcept{
+	RenderPass::AttachmentDescription& RenderPass::AttachmentDescription::setStencilStoreOperation(const Operation::Store& operation) noexcept{
 		_stencilStoreOperation = operation;
 		return *this;
 	}
 
-	RenderPass::Attachment& RenderPass::Attachment::setInitialLayout(const Texture::Layout& layout) noexcept{
+	RenderPass::AttachmentDescription& RenderPass::AttachmentDescription::setInitialLayout(const Texture::Layout& layout) noexcept{
 		_initialLayout = layout;
 		return *this;
 	}
 
-	RenderPass::Attachment& RenderPass::Attachment::setFinalLayout(const Texture::Layout& layout) noexcept{
+	RenderPass::AttachmentDescription& RenderPass::AttachmentDescription::setFinalLayout(const Texture::Layout& layout) noexcept{
 		_finalLayout = layout;
 		return *this;
 	}
 
-	const RenderPass::Attachment::Flags& RenderPass::Attachment::getFlags() const noexcept{
+	const RenderPass::AttachmentDescription::Flags& RenderPass::AttachmentDescription::getFlags() const noexcept{
 		return _flags;
 	}
 
-	const Format& RenderPass::Attachment::getFormat() const noexcept{
+	const Format& RenderPass::AttachmentDescription::getFormat() const noexcept{
 		return _format;
 	}
 
-	const RenderPass::Attachment::Operation::Load& RenderPass::Attachment::getLoadOperation() const noexcept{
+	const RenderPass::AttachmentDescription::Operation::Load& RenderPass::AttachmentDescription::getLoadOperation() const noexcept{
 		return _loadOperation;
 	}
 
-	const RenderPass::Attachment::Operation::Store& RenderPass::Attachment::getStoreOperation() const noexcept{
+	const RenderPass::AttachmentDescription::Operation::Store& RenderPass::AttachmentDescription::getStoreOperation() const noexcept{
 		return _storeOperation;
 	}
 
-	const RenderPass::Attachment::Operation::Load& RenderPass::Attachment::getStencilLoadOperation() const noexcept{
+	const RenderPass::AttachmentDescription::Operation::Load& RenderPass::AttachmentDescription::getStencilLoadOperation() const noexcept{
 		return _stencilLoadOperation;
 	}
 
-	const RenderPass::Attachment::Operation::Store& RenderPass::Attachment::getStencilStoreOperation() const noexcept{
+	const RenderPass::AttachmentDescription::Operation::Store& RenderPass::AttachmentDescription::getStencilStoreOperation() const noexcept{
 		return _stencilStoreOperation;
 	}
 
-	const Texture::Layout& RenderPass::Attachment::getInitialLayout() const noexcept{
+	const Texture::Layout& RenderPass::AttachmentDescription::getInitialLayout() const noexcept{
 		return _initialLayout;
 	}
 
-	const Texture::Layout& RenderPass::Attachment::getFinalLayout() const noexcept{
+	const Texture::Layout& RenderPass::AttachmentDescription::getFinalLayout() const noexcept{
 		return _finalLayout;
 	}
 
@@ -136,7 +138,7 @@ namespace Raindrop{
 		return *this;
 	}
 
-	RenderPass::Subpass& RenderPass::Subpass::addPreserveAttachment(const Attachment& attachment){
+	RenderPass::Subpass& RenderPass::Subpass::addPreserveAttachment(const AttachmentDescription& attachment){
 		_preserveAttachments.emplace_back(std::cref(attachment));
 		return *this;
 	}
@@ -157,7 +159,7 @@ namespace Raindrop{
 		return _inputAttachments;
 	}
 
-	const std::list<std::reference_wrapper<const RenderPass::Attachment>>& RenderPass::Subpass::getPreserveAttachments() const noexcept{
+	const std::list<std::reference_wrapper<const RenderPass::AttachmentDescription>>& RenderPass::Subpass::getPreserveAttachments() const noexcept{
 		return _preserveAttachments;
 	}
 
@@ -243,204 +245,223 @@ namespace Raindrop{
 	//-----------------          Render pass             -----------------
 	//--------------------------------------------------------------------
 
-	RenderPass::Impl::Builder::Builder() : 
-		info{
-			.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
-			.pNext = nullptr,
-			.flags = 0,
-			.attachmentCount = 0,
-			.pAttachments = nullptr,
-			.subpassCount = 0,
-			.pSubpasses = nullptr,
-			.dependencyCount = 0,
-			.pDependencies = nullptr
-		},
-		attachments{},
-		subpasses{},
-		dependencies{}
-	{}
-
-	void RenderPass::Impl::Builder::update(){
-
-		translation.references.clear();
-		translation.preserveAttachments.clear();
-		translation.depthStencils.clear();
-		
-		// ATTACHMENTS
-		translation.attachments.resize(attachments.size());
-
-		for (std::size_t i=0; i<attachments.size(); i++){
-			const auto& src = attachments[i];
-
-			translation.attachments[i] = VkAttachmentDescription{
-				.flags = AttachmentFlagsToVulkan(src.getFlags()),
-				.format = FormatToVulkan(src.getFormat()),
-				.samples = VK_SAMPLE_COUNT_1_BIT,
-				.loadOp = AttachmentLoadOperationToVulkan(src.getLoadOperation()),
-				.storeOp = AttachmentStoreOperationToVulkan(src.getStoreOperation()),
-				.stencilLoadOp = AttachmentLoadOperationToVulkan(src.getStencilLoadOperation()),
-				.stencilStoreOp = AttachmentStoreOperationToVulkan(src.getStencilStoreOperation()),
-				.initialLayout = TextureLayoutToVulkan(src.getInitialLayout()),
-				.finalLayout = TextureLayoutToVulkan(src.getFinalLayout())
-			};
-		}
-		
-		// SUBPASSES
-		translation.subpasses.resize(subpasses.size());
-
-		for (std::size_t i=0; i<subpasses.size(); i++){
-			const auto& src = subpasses[i];
-
-			uint32_t inputAttachmentCount = 0;
-			{
-				const auto& input = src.getInputAttachments();
-				inputAttachmentCount = static_cast<uint32_t>(input.size());
-
-				for (const auto& attachment : input){
-					VkImageLayout layout = TextureLayoutToVulkan(attachment.layout);
-					uint32_t index = &attachment.attachment - &attachments[0];
-
-					translation.references.emplace_back(
-						VkAttachmentReference{
-							.attachment = index,
-							.layout = layout
-						}
-					);
-				}
-			}
-			VkAttachmentReference* inputAttachments = translation.references.data() + (translation.references.size() - inputAttachmentCount);
-
-			uint32_t colorAttachmentCount = 0;
-			{
-				const auto& input = src.getColorAttachments();
-				colorAttachmentCount = static_cast<uint32_t>(input.size());
-
-				for (const auto& attachment : input){
-					VkImageLayout layout = TextureLayoutToVulkan(attachment.layout);
-					uint32_t index = &attachment.attachment - &attachments[0];
-
-					translation.references.emplace_back(
-						VkAttachmentReference{
-							.attachment = index,
-							.layout = layout
-						}
-					);
-				}
-			}
-			VkAttachmentReference* colorAttachments = translation.references.data() + (translation.references.size() - colorAttachmentCount);
-
-			uint32_t preserveAttachmentCount = 0;
-			{
-				const auto& input = src.getPreserveAttachments();
-				preserveAttachmentCount = static_cast<uint32_t>(input.size());
-
-				for (const auto& attachment : input){
-					uint32_t index = &attachment.get() - &attachments[0];
-					translation.preserveAttachments.push_back(index);
-				}
-			}
-			uint32_t* preserveAttachments = translation.preserveAttachments.data() + (translation.preserveAttachments.size() - preserveAttachmentCount);
-
-			VkAttachmentReference* depthStencil = nullptr;
-
-			if (src.getDepthAttachment().has_value()){
-				auto& attachment = src.getDepthAttachment();
-
-				translation.depthStencils.emplace_back(
-					VkAttachmentReference{
-						.attachment = uint32_t(&attachment->attachment - &attachments[0]),
-						.layout = TextureLayoutToVulkan(attachment->layout)
-					}
-				);
-
-				depthStencil = &translation.depthStencils.back();
-			}
-
-			translation.subpasses[i] = VkSubpassDescription{
-				.flags = SubpassFlagsToVulkan(src.getFlags()),
-				.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
-				.inputAttachmentCount = inputAttachmentCount,
-				.pInputAttachments = inputAttachments,
-				.colorAttachmentCount = colorAttachmentCount,
-				.pColorAttachments = colorAttachments,
-				.pResolveAttachments = nullptr,
-				.pDepthStencilAttachment = depthStencil,
-				.preserveAttachmentCount = preserveAttachmentCount,
-				.pPreserveAttachments = preserveAttachments
-			};
-		}
-
-		// DEPENDENCIES
-		translation.dependencies.resize(dependencies.size());
-
-		for (std::size_t i=0; i<dependencies.size(); i++){
-			const auto& src = dependencies[i];
-
-			uint32_t srcSubpass = &src.getSrcSubpass() == &Subpass::External ? VK_SUBPASS_EXTERNAL : static_cast<uint32_t>(&src.getSrcSubpass() - &subpasses[0]);
-			uint32_t dstSubpass = &src.getDstSubpass() == &Subpass::External ? VK_SUBPASS_EXTERNAL : static_cast<uint32_t>(&src.getDstSubpass() - &subpasses[0]);
-
-			translation.dependencies[i] = VkSubpassDependency{
-				.srcSubpass = srcSubpass,
-				.dstSubpass = dstSubpass,
-				.srcStageMask = toVulkan(src.getSrcStage()),
-				.dstStageMask = toVulkan(src.getDstStage()),
-				.srcAccessMask = AccessFlagsToVulkan(src.getSrcAccess()),
-				.dstAccessMask = AccessFlagsToVulkan(src.getDstAccess()),
-				.dependencyFlags = SubpassDependencyFlagsToVulkan(src.getFlags())
-			};
-		}
-		
-		info.attachmentCount = static_cast<uint32_t>(translation.attachments.size());
-		info.pAttachments = translation.attachments.data();
-
-		info.subpassCount = static_cast<uint32_t>(translation.subpasses.size());
-		info.pSubpasses = translation.subpasses.data();
-
-		info.dependencyCount = static_cast<uint32_t>(translation.dependencies.size());
-		info.pDependencies = translation.dependencies.data();
-	}
-
 	RenderPass RenderPass::Create(Context& context){
 		return RenderPass(context);
 	}
 
-	RenderPass::RenderPass(Context& context) : _impl{std::make_unique<Impl>()}{
-		_impl->builder = std::make_unique<Impl::Builder>();
-		_impl->context = &context;
+	RenderPass::RenderPass(Context& context){
+		_impl = std::make_unique<Impl>();
+		_impl->context = context.getInternalContext();
 	}
 
 	RenderPass::~RenderPass(){
 		_impl.reset();
 	}
 
-	void RenderPass::initialize(){
-		if (!_impl->builder){
-			LOGGER->warn("Cannot initialize an already initialized render pass");
-			return;
+	struct NativeTranslation_{
+		Internal::Graphics::RenderPassConfigInfo info;
+
+		std::vector<VkAttachmentDescription> attachments;
+		std::vector<VkSubpassDescription> subpasses;
+		std::vector<VkSubpassDependency> dependencies;
+		
+		std::vector<uint32_t> preserveAttachmentBuffer;
+		std::vector<VkAttachmentReference> referenceBuffer;
+		std::list<VkAttachmentReference> depthStencilBuffer;
+
+		NativeTranslation_() : 
+			info{
+				.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+				.pNext = nullptr,
+				.flags = 0,
+				.attachmentCount = 0,
+				.pAttachments = nullptr,
+				.subpassCount = 0,
+				.pSubpasses = nullptr,
+				.dependencyCount = 0,
+				.pDependencies = nullptr
+			},
+			attachments{},
+			subpasses{},
+			dependencies{},
+			preserveAttachmentBuffer{},
+			referenceBuffer{},
+			depthStencilBuffer{}
+		{}
+
+		void translateAttachments(const std::vector<RenderPass::AttachmentDescription>& in){
+			attachments.resize(in.size());
+
+			for (std::size_t i=0; i<attachments.size(); i++){
+				const auto& src = in[i];
+
+				attachments[i] = VkAttachmentDescription{
+					.flags = AttachmentFlagsToVulkan(src.getFlags()),
+					.format = FormatToVulkan(src.getFormat()),
+					.samples = VK_SAMPLE_COUNT_1_BIT,
+					.loadOp = AttachmentLoadOperationToVulkan(src.getLoadOperation()),
+					.storeOp = AttachmentStoreOperationToVulkan(src.getStoreOperation()),
+					.stencilLoadOp = AttachmentLoadOperationToVulkan(src.getStencilLoadOperation()),
+					.stencilStoreOp = AttachmentStoreOperationToVulkan(src.getStencilStoreOperation()),
+					.initialLayout = TextureLayoutToVulkan(src.getInitialLayout()),
+					.finalLayout = TextureLayoutToVulkan(src.getFinalLayout())
+				};
+			}
 		}
 
+		void translateSubpasses(const std::vector<RenderPass::Subpass>& in, const std::vector<RenderPass::AttachmentDescription>& inAttachments){
+			subpasses.resize(in.size());
+
+			for (std::size_t i=0; i<subpasses.size(); i++){
+				const auto& src = in[i];
+
+				uint32_t inputAttachmentCount = 0;
+				{
+					const auto& input = src.getInputAttachments();
+					inputAttachmentCount = static_cast<uint32_t>(input.size());
+
+					for (const auto& attachment : input){
+						VkImageLayout layout = TextureLayoutToVulkan(attachment.layout);
+						uint32_t index = &attachment.attachment - inAttachments.data();
+
+						referenceBuffer.emplace_back(
+							VkAttachmentReference{
+								.attachment = index,
+								.layout = layout
+							}
+						);
+					}
+				}
+				VkAttachmentReference* inputAttachments = referenceBuffer.data() + (referenceBuffer.size() - inputAttachmentCount);
+
+				uint32_t colorAttachmentCount = 0;
+				{
+					const auto& input = src.getColorAttachments();
+					colorAttachmentCount = static_cast<uint32_t>(input.size());
+
+					for (const auto& attachment : input){
+						VkImageLayout layout = TextureLayoutToVulkan(attachment.layout);
+						uint32_t index = &attachment.attachment - inAttachments.data();
+
+						referenceBuffer.emplace_back(
+							VkAttachmentReference{
+								.attachment = index,
+								.layout = layout
+							}
+						);
+					}
+				}
+				VkAttachmentReference* colorAttachments = referenceBuffer.data() + (referenceBuffer.size() - colorAttachmentCount);
+
+				uint32_t preserveAttachmentCount = 0;
+				{
+					const auto& input = src.getPreserveAttachments();
+					preserveAttachmentCount = static_cast<uint32_t>(input.size());
+
+					for (const auto& attachment : input){
+						uint32_t index = &attachment.get() - inAttachments.data();
+						preserveAttachmentBuffer.push_back(index);
+					}
+				}
+				uint32_t* preserveAttachments = preserveAttachmentBuffer.data() + (preserveAttachmentBuffer.size() - preserveAttachmentCount);
+
+				VkAttachmentReference* depthStencil = nullptr;
+
+				if (src.getDepthAttachment().has_value()){
+					auto& attachment = src.getDepthAttachment();
+
+					depthStencilBuffer.emplace_back(
+						VkAttachmentReference{
+							.attachment = uint32_t(&attachment->attachment - inAttachments.data()),
+							.layout = TextureLayoutToVulkan(attachment->layout)
+						}
+					);
+
+					depthStencil = &depthStencilBuffer.back();
+				}
+
+				subpasses[i] = VkSubpassDescription{
+					.flags = SubpassFlagsToVulkan(src.getFlags()),
+					.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
+					.inputAttachmentCount = inputAttachmentCount,
+					.pInputAttachments = inputAttachments,
+					.colorAttachmentCount = colorAttachmentCount,
+					.pColorAttachments = colorAttachments,
+					.pResolveAttachments = nullptr,
+					.pDepthStencilAttachment = depthStencil,
+					.preserveAttachmentCount = preserveAttachmentCount,
+					.pPreserveAttachments = preserveAttachments
+				};
+			}
+		}
+
+		void translateDependencies(const std::vector<RenderPass::Dependency>& in, const std::vector<RenderPass::Subpass>& inSubpasses){
+			dependencies.resize(in.size());
+
+			for (std::size_t i=0; i<dependencies.size(); i++){
+				const auto& src = in[i];
+
+				uint32_t srcSubpass = &src.getSrcSubpass() == &RenderPass::Subpass::External ? VK_SUBPASS_EXTERNAL : static_cast<uint32_t>(&src.getSrcSubpass() - inSubpasses.data());
+				uint32_t dstSubpass = &src.getDstSubpass() == &RenderPass::Subpass::External ? VK_SUBPASS_EXTERNAL : static_cast<uint32_t>(&src.getDstSubpass() - inSubpasses.data());
+
+				dependencies[i] = VkSubpassDependency{
+					.srcSubpass = srcSubpass,
+					.dstSubpass = dstSubpass,
+					.srcStageMask = pipelineStageFlagsToVulkan(src.getSrcStage()),
+					.dstStageMask = pipelineStageFlagsToVulkan(src.getDstStage()),
+					.srcAccessMask = AccessFlagsToVulkan(src.getSrcAccess()),
+					.dstAccessMask = AccessFlagsToVulkan(src.getDstAccess()),
+					.dependencyFlags = SubpassDependencyFlagsToVulkan(src.getFlags())
+				};
+			}
+		}
+
+		void updateNativeInfo(){
+			info.attachmentCount = static_cast<uint32_t>(attachments.size());
+			info.pAttachments = attachments.data();
+
+			info.subpassCount = static_cast<uint32_t>(subpasses.size());
+			info.pSubpasses = subpasses.data();
+
+			info.dependencyCount = static_cast<uint32_t>(dependencies.size());
+			info.pDependencies = dependencies.data();
+		}
+
+		void clear(){
+			referenceBuffer.clear();
+			preserveAttachmentBuffer.clear();
+			depthStencilBuffer.clear();
+		}
+	};
+
+	void RenderPass::initialize(){
 		LOGGER->info("Initializing render pass ...");
 
-		_impl->builder->update();
+		NativeTranslation_ translation;
 
-		_impl->renderPass = std::make_shared<Internal::Graphics::RenderPass>(GRAPHICS_CONTEXT, _impl->builder->info);
-		_impl->builder.reset();
+		translation.translateAttachments(_impl->attachmentsDescriptions);
+		translation.translateSubpasses(_impl->subpasses, _impl->attachmentsDescriptions);
+		translation.translateDependencies(_impl->dependencies, _impl->subpasses);
+		translation.updateNativeInfo();
+
+		_impl->internal = std::make_shared<Internal::Graphics::RenderPass>(GRAPHICS_CONTEXT, translation.info);
 
 		LOGGER->info("Render pass initialized with success !");
-
 	}
 
 	void RenderPass::release(){
-		_impl->renderPass.reset();
-		_impl->builder = std::make_unique<Impl::Builder>();
+		auto context = _impl->context;
+
+		_impl = std::make_unique<Impl>();
+		_impl->context = context;
 	}
 
 	bool RenderPass::isInitialized() const noexcept{
-		return _impl->renderPass != nullptr;
+		return _impl->internal != nullptr;
 	}
 
 	void* RenderPass::getNativeHandle() const noexcept{
-		return static_cast<void*>(_impl->renderPass->get());
+		return static_cast<void*>(_impl->internal->get());
 	}
 
 	RenderPass::Impl* RenderPass::getImpl() const noexcept{
@@ -451,15 +472,22 @@ namespace Raindrop{
 
 	}
 
-	RenderPass::Attachment& RenderPass::addAttachment(){
-		return _impl->builder->attachments.emplace_back();
+	RenderPass::AttachmentDescription& RenderPass::addAttachment(){
+		return _impl->attachmentsDescriptions.emplace_back();
 	}
 
 	RenderPass::Subpass& RenderPass::addSubpass(){
-		return _impl->builder->subpasses.emplace_back();
+		return _impl->subpasses.emplace_back();
 	}
 
 	RenderPass::Dependency& RenderPass::addDependency(){
-		return _impl->builder->dependencies.emplace_back();
+		return _impl->dependencies.emplace_back();
+	}
+
+	void RenderPass::begin(CommandBuffer& commandBuffer){
+		// VkRenderPassBeginInfo info{};
+		// info.pClearValues
+		
+		// vkCmdBeginRenderPass()
 	}
 }

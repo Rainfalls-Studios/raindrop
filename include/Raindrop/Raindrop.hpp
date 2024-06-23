@@ -16,5 +16,6 @@
 #include "Pipeline.hpp"
 #include "GMemory.hpp"
 #include "GBuffer.hpp"
+#include "CommandBuffer.hpp"
 
 #endif

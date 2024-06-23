@@ -6,19 +6,40 @@
 
 namespace Raindrop{
 	struct Texture::Impl{
-		struct Builder{
-			VkImageCreateInfo info;
-			Builder();
-		};
 
-		std::shared_ptr<Internal::Graphics::Image> image;
-		std::unique_ptr<Builder> builder;
-		Context* context;
+		Internal::Context* context;
+
+		// Read only
+		Format format;
+		std::uint32_t width;
+		std::uint32_t height;
+		std::uint32_t depth;
+		Usage usage;
+		Layout initialLayout;
+		Tiling tiling;
+		Type type;
+		std::uint32_t mipmapCount;
+		std::uint32_t layerCount;
+		Flags flags;
+
+		// dynamic
+		Layout currentLayout;
+
+		std::shared_ptr<Internal::Graphics::Image> internal;
 
 		Impl() : 
-			image{nullptr},
-			builder{nullptr},
-			context{nullptr}
+			context{nullptr},
+			format{Format::UNDEFINED},
+			width{1},
+			height{1},
+			depth{1},
+			usage{Usage::NONE},
+			initialLayout{Layout::UNDEFINED},
+			tiling{Tiling::OPTIMAL},
+			mipmapCount{1},
+			layerCount{1},
+			currentLayout{Layout::UNDEFINED},
+			internal{nullptr}
 		{}
 	};
 

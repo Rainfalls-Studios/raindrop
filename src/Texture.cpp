@@ -9,43 +9,13 @@
 #include <Raindrop_internal/Format.hpp>
 #include <vulkan/vk_enum_string_helper.h>
 
-#define LOGGER _impl->context->getInternalContext()->getLogger()
-#define GRAPHICS_CONTEXT _impl->context->getInternalContext()->getEngine().getContext()
+#define LOGGER _impl->context->getLogger()
+#define GRAPHICS_CONTEXT _impl->context->getEngine().getContext()
 
 namespace Raindrop{
 	//--------------------------------------------------------------------
 	//-----------------           TEXTURE                -----------------
 	//--------------------------------------------------------------------
-
-	// Default configuration
-	Texture::Impl::Builder::Builder() :
-		info{
-			.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
-			.pNext = nullptr,
-			.flags = 0,
-			.imageType = VK_IMAGE_TYPE_2D,
-			.format = VK_FORMAT_R8G8B8A8_UNORM,
-			.extent{
-				.width = 1024,
-				.height = 1024,
-				.depth = 1
-			},
-			.mipLevels = 1,
-			.arrayLayers = 1,
-			.samples = VK_SAMPLE_COUNT_1_BIT,
-			.tiling = VK_IMAGE_TILING_OPTIMAL,
-			.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-			.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
-			.queueFamilyIndexCount = 0,
-			.pQueueFamilyIndices = nullptr,
-			.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-		}
-	{}
-
-	static inline std::runtime_error access_error(){
-		spdlog::error("Cannot access data of a non initialized texture");
-		return std::runtime_error("The texture is not initialized");
-	}
 
 	const Texture::FormatProperties Texture::FormatProperties::UNSUPPORTED = Texture::FormatProperties{false, 0, 0, 0, 0, 0, 0};
 
@@ -56,8 +26,7 @@ namespace Raindrop{
 	Texture::Texture(std::unique_ptr<Impl>&& impl) : _impl{std::move(impl)}{}
 
 	Texture::Texture(Context& context) : _impl{std::make_unique<Impl>()}{
-		_impl->builder = std::make_unique<Impl::Builder>();
-		_impl->context = &context;
+		_impl->context = context.getInternalContext();
 	}
 
 	Texture::~Texture(){
@@ -65,122 +34,141 @@ namespace Raindrop{
 	}
 
 	void Texture::initialize(){
-		if (!_impl->builder){
-			LOGGER->warn("Cannot initialize an already initialized texture");
-			return;
-		}
-
 		LOGGER->info("Initializing texture...");
-		_impl->image = std::make_shared<Internal::Graphics::Image>(GRAPHICS_CONTEXT, _impl->builder->info);
-		_impl->builder.reset();
+
+		VkImageCreateInfo info{
+			.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = TextureFlagsToVulkan(_impl->flags),
+			.imageType = TextureTypeToVulkan(_impl->type),
+			.format = FormatToVulkan(_impl->format),
+			.extent{
+				.width = static_cast<uint32_t>(_impl->width),
+				.height = static_cast<uint32_t>(_impl->height),
+				.depth = static_cast<uint32_t>(_impl->depth)
+			},
+			.mipLevels = static_cast<uint32_t>(_impl->mipmapCount),
+			.arrayLayers = static_cast<uint32_t>(_impl->layerCount),
+			.samples = VK_SAMPLE_COUNT_1_BIT,
+			.tiling = TextureTilingToVulkan(_impl->tiling),
+			.usage = TextureUsageToVulkan(_impl->usage),
+			.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+			.queueFamilyIndexCount = 0,
+			.pQueueFamilyIndices = nullptr,
+			.initialLayout = TextureLayoutToVulkan(_impl->initialLayout)
+		};
+
+		_impl->internal = std::make_shared<Internal::Graphics::Image>(GRAPHICS_CONTEXT, info);
+		_impl->currentLayout = _impl->initialLayout;
 
 		LOGGER->info("Texture initialized with success !");
 	}
 
 	void Texture::release(){
-		_impl->image.reset();
-		_impl->builder = std::make_unique<Impl::Builder>();
+		Internal::Context* context = _impl->context;
+
+		_impl = std::make_unique<Impl>();
+		_impl->context = context;
 	}
 
 	void Texture::setFormat(const Format& format){
-		_impl->builder->info.format = FormatToVulkan(format);
+		_impl->format = format;
 	}
 
 	void Texture::setWidth(const std::uint32_t& width){
-		_impl->builder->info.extent.width = width;
+		_impl->width = width;
 	}
 
 	void Texture::setHeight(const std::uint32_t& height){
-		_impl->builder->info.extent.height = height;
+		_impl->height = height;
 	}
 
 	void Texture::setDepth(const std::uint32_t& depth){
-		_impl->builder->info.extent.depth = depth;
+		_impl->depth = depth;
 	}
 
 	void Texture::setUsage(const Usage& usage){
-		_impl->builder->info.usage = TextureUsageToVulkan(usage);
+		_impl->usage = usage;
 	}
 
-	void Texture::setLayout(const Layout& layout){
-		_impl->builder->info.initialLayout = TextureLayoutToVulkan(layout);
+	void Texture::setInitialLayout(const Layout& layout){
+		_impl->initialLayout = layout;
 	}
 
 	void Texture::setTiling(const Tiling& tiling){
-		_impl->builder->info.tiling = TextureTilingToVulkan(tiling);
+		_impl->tiling = tiling;
 	}
 
 	void Texture::setType(const Type& type){
-		_impl->builder->info.imageType = TextureTypeToVulkan(type);
+		_impl->type = type;
 	}
 
 	void Texture::setMipmapCount(const std::uint32_t mip){
-		_impl->builder->info.mipLevels = mip;
+		_impl->mipmapCount = mip;
 	}
 
 	void Texture::setArrayLayers(const std::uint32_t layers){
-		_impl->builder->info.arrayLayers = layers;
+		_impl->layerCount = layers;
 	}
 
 	void Texture::setFlags(const Flags& flags){
-		_impl->builder->info.flags = TextureFlagsToVulkan(flags);
+		_impl->flags = flags;
 	}
 
-	Format Texture::getFormat() const noexcept{
-		return FormatToRaindrop(_impl->image->getFormat());
+	const Format& Texture::getFormat() const noexcept{
+		return _impl->format;
 	}
 
-	std::uint32_t Texture::getWidth() const noexcept{
-		return _impl->image->getWidth();
+	const std::uint32_t& Texture::getWidth() const noexcept{
+		return _impl->width;
 	}
 
-	std::uint32_t Texture::getHeight() const noexcept{
-		return _impl->image->getHeight();
+	const std::uint32_t& Texture::getHeight() const noexcept{
+		return _impl->height;
 	}
 
-	std::uint32_t Texture::getDepth() const noexcept{
-		return _impl->image->getDepth();
+	const std::uint32_t& Texture::getDepth() const noexcept{
+		return _impl->depth;
 	}
 
-	Texture::Usage Texture::getUsage() const noexcept{
-		return TextureUsageToRaindrop(_impl->image->getUsage());
+	const Texture::Usage& Texture::getUsage() const noexcept{
+		return _impl->usage;
 	}
 
-	Texture::Layout Texture::getLayout() const noexcept{
-		return TextureLayoutToRaindrop(_impl->image->getLayout());
+	const Texture::Layout& Texture::getInitialLayout() const noexcept{
+		return _impl->initialLayout;
 	}
 
-	Texture::Tiling Texture::getTiling() const noexcept{
-		return TextureTilingToRaindrop(_impl->image->getTiling());
+	const Texture::Layout& Texture::getCurrentLayout() const noexcept{
+		return _impl->currentLayout;
 	}
 
-	Texture::Type Texture::getType() const noexcept{
-		return TextureTypeToRaindrop(_impl->image->getType());
+	const Texture::Tiling& Texture::getTiling() const noexcept{
+		return _impl->tiling;
 	}
 
-	std::uint32_t Texture::getMipmapCount() const noexcept{
-		return _impl->image->getMipCount();
+	const Texture::Type& Texture::getType() const noexcept{
+		return _impl->type;
 	}
 
-	std::uint32_t Texture::getArrayLayers() const noexcept{
-		return _impl->image->getArrLayers();
+	const std::uint32_t& Texture::getMipmapCount() const noexcept{
+		return _impl->mipmapCount;
 	}
 
-	Texture::Flags Texture::getFlags() const noexcept{
-		return TextureFlagsToRaindrop(_impl->image->getFlags());
+	const std::uint32_t& Texture::getArrayLayers() const noexcept{
+		return _impl->layerCount;
+	}
+
+	const Texture::Flags& Texture::getFlags() const noexcept{
+		return _impl->flags;
 	}
 
 	bool Texture::isInitialized() const noexcept{
-		return _impl->image != nullptr;
+		return _impl->internal != nullptr;
 	}
 
-	void* Texture::getNativeHandle() const{
-		if (isInitialized()){
-			return _impl->image->get();
-		} else {
-			spdlog::error("Cannot access the native handle of a non initialied texture");
-			throw std::runtime_error("The texture is not initialized");
-		}
+	void* Texture::getNativeHandle() const noexcept{
+		return _impl->internal != nullptr ? static_cast<void*>(_impl->internal->get()) : nullptr;
 	}
 
 	Texture::Impl* Texture::getImpl() const noexcept{
@@ -193,18 +181,18 @@ namespace Raindrop{
 
 
 	Texture::FormatProperties Texture::getFormatProperties(const Format& format) const{
-		const auto& physicalDevice = _impl->context->getInternalContext()->getEngine().getContext().getPhysicalDevice();
-		VkFormat vkFormat = static_cast<VkFormat>(format.get());
+		const auto& physicalDevice = _impl->context->getEngine().getContext().getPhysicalDevice();
+		VkFormat vkFormat =  FormatToVulkan(format);
 
-		VkImageFormatProperties vkProperties;
+		VkImageFormatProperties vkProperties{};
 
 		VkResult result = vkGetPhysicalDeviceImageFormatProperties(
 			physicalDevice.get(),
 			vkFormat, 
-			_impl->builder->info.imageType,
-			_impl->builder->info.tiling,
-			_impl->builder->info.usage,
-			_impl->builder->info.flags,
+			TextureTypeToVulkan(_impl->type),
+			TextureTilingToVulkan(_impl->tiling),
+			TextureUsageToVulkan(_impl->usage),
+			TextureFlagsToVulkan(_impl->flags),
 			&vkProperties
 		);
 
@@ -230,10 +218,10 @@ namespace Raindrop{
 	
 	std::list<Format> Texture::findAllSupportedFormats(const Format::Properties& requiredProperties, const Format::Features& requiredFeatures, const Format::Properties& except) const{
 		std::list<Format> formats;
-		if (_impl->builder->info.tiling == VK_IMAGE_TILING_OPTIMAL){
-			formats = Format::FindAllTilingOptimal(*_impl->context, requiredProperties, requiredFeatures, except);
+		if (_impl->tiling == Tiling::OPTIMAL){
+			formats = Format::FindAllTilingOptimal(_impl->context->getInterface(), requiredProperties, requiredFeatures, except);
 		} else {
-			formats = Format::FindAllTilingLinear(*_impl->context, requiredProperties, requiredFeatures, except);
+			formats = Format::FindAllTilingLinear(_impl->context->getInterface(), requiredProperties, requiredFeatures, except);
 		}
 
 		formats.remove_if(
@@ -242,11 +230,11 @@ namespace Raindrop{
 				bool remove = false;
 
 				remove |= !properties.supported;
-				remove |= (_impl->builder->info.extent.width > properties.maxWidth);
-				remove |= (_impl->builder->info.extent.height > properties.maxHeight);
-				remove |= (_impl->builder->info.extent.depth > properties.maxDepth);
-				remove |= (_impl->builder->info.mipLevels > properties.maxMipmapLevels);
-				remove |= (_impl->builder->info.arrayLayers > properties.maxArrayLayers);
+				remove |= (_impl->width > properties.maxWidth);
+				remove |= (_impl->height > properties.maxHeight);
+				remove |= (_impl->depth > properties.maxDepth);
+				remove |= (_impl->mipmapCount > properties.maxMipmapLevels);
+				remove |= (_impl->layerCount > properties.maxArrayLayers);
 
 				return remove;
 			}
@@ -259,6 +247,7 @@ namespace Raindrop{
 
 		std::list<std::pair<Format, std::uint32_t>> formats;
 
+		// Copy all formats
 		{
 			auto source = findAllSupportedFormats(requiredProperties, requiredFeatures, except);
 			if (source.empty()){
@@ -275,13 +264,16 @@ namespace Raindrop{
 				});
 		}
 
+		// asign a score for each of them
 		for (auto& pair : formats){
 			auto& format = pair.first;
 			auto& score = pair.second;
 
+			// TODO: check fiability
 			score = std::__popcount(format.getProperties().get()) - std::__popcount(requiredFeatures.get());
 		}
 
+		// get the best one
 		auto it = std::min_element(
 			formats.begin(),
 			formats.end(),
