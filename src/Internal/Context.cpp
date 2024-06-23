@@ -6,6 +6,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 
 #include <chrono>
+#include <iostream>
 
 namespace Raindrop::Internal{
 	Context::Context(Raindrop::Context& interface) : _interface{interface}{
@@ -68,9 +69,9 @@ namespace Raindrop::Internal{
 
 			frameCount++;
 
-			if (t > std::chrono::milliseconds(500)){
+			if (t > std::chrono::seconds(1)){
 				t = std::chrono::milliseconds(0);
-				spdlog::info("fps : {}", frameCount * 2);
+				std::cout << "fps : " << frameCount << std::endl;;
 				frameCount = 0;
 			}
 

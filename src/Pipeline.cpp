@@ -535,7 +535,7 @@ namespace Raindrop{
 			translation.bindings.push_back(VkVertexInputBindingDescription{
 				.binding = bindingId,
 				.stride = static_cast<uint32_t>(binding.first.getStride()),
-				.inputRate = toVulkan(binding.second)
+				.inputRate = VertexInputRateToVulkan(binding.second)
 			});
 
 			uint32_t location = 0;

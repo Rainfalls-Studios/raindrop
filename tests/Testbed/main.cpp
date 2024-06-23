@@ -342,9 +342,22 @@ int main(){
 			
 	// 	}
 	// );
+
+	Raindrop::Vertex::IndexBuffer indexBuffer = Raindrop::CreateIndexBuffer(context);
+	indexBuffer.allocate(
+		Raindrop::Vertex::IndexBuffer::Type::UINT32,
+		1000,
+		Raindrop::GBuffer::Usage::NONE,
+		Raindrop::GBuffer::Flags::NONE,
+		{
+			Raindrop::GMemory::Type::Flags::CPU_VISIBLE,
+			Raindrop::GMemory::Type::Flags::GPU_LOCAL
+		}
+	);
 	
 	Raindrop::Start(context);
 	
+	indexBuffer.free();
 	pipeline.release();
 	renderPass.release();
 	pipelineLayout.release();

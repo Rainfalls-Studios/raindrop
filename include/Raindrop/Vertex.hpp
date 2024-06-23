@@ -45,9 +45,7 @@ namespace Raindrop{
 			public:
 				Buffer(Context& context);
 
-				const Layout& getLayout(const Layout& layout);
-
-				void* getMappedPointer();
+				const Layout& getLayout(const Layout& layout) const noexcept;
 
 				void allocate(const Layout& layout, const std::size_t& vertexCount, const Usage& usage, const Flags& flags, const GMemory::Type::Flags& memoryFlags, const std::size_t& alignement = 1);
 
@@ -60,6 +58,43 @@ namespace Raindrop{
 			private:
 				Layout _layout;
 		};
+
+		class IndexBuffer : public GBuffer{
+			public:
+				enum class Type{
+					NONE,
+					UINT8,
+					UINT16,
+					UINT32,
+				};
+
+				IndexBuffer(Context& context);
+
+				const Type& getType(const Type& type) const noexcept;
+
+				void allocate(const Type& type, const std::size_t& indexCount, const Usage& usage, const Flags& flags, const GMemory::Type::Flags& memoryFlags, const std::size_t& alignement = 1);
+
+				void map(const std::size_t& indexCount = WHOLE_SIZE, const std::size_t& indexOffset = 0);
+				void flush(const std::size_t& indexCount = WHOLE_SIZE, const std::size_t& indexOffset = 0);
+				void invalidate(const std::size_t& indexCount = WHOLE_SIZE, const std::size_t& indexOffset = 0);
+
+				const std::size_t getIndexCount() const;
+
+			private:
+				Type _type;
+		};
+	}
+
+	static inline Vertex::Layout CreateVertexLayout(){
+		return Vertex::Layout();
+	}
+
+	static inline Vertex::Buffer CreateVertexBuffer(Context& context){
+		return Vertex::Buffer(context);
+	}
+	
+	static inline Vertex::IndexBuffer CreateIndexBuffer(Context& context){
+		return Vertex::IndexBuffer(context);
 	}
 }
 

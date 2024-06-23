@@ -60,8 +60,15 @@ namespace Raindrop::Internal::Graphics{
 		auto& device = _context.getDevice();
 		auto& allocationCallbacks = _context.getAllocationCallbacks();
 
-		if (_buffer) vkDestroyBuffer(device.get(), _buffer, allocationCallbacks);
-		if (_memory) vkFreeMemory(device.get(), _memory, allocationCallbacks);
+		if (_buffer){
+			vkDestroyBuffer(device.get(), _buffer, allocationCallbacks);
+			_buffer = VK_NULL_HANDLE;
+		}
+
+		if (_memory){
+			vkFreeMemory(device.get(), _memory, allocationCallbacks);
+			_memory = VK_NULL_HANDLE;
+		}
 	}
 
 	VkResult Buffer::map(VkDeviceSize size, VkDeviceSize offset){

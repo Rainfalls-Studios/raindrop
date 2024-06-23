@@ -1,4 +1,5 @@
 #include <Raindrop/Vertex.hpp>
+#include <Raindrop_internal/Vertex.hpp>
 
 namespace Raindrop{
 	Vertex::Layout::Attribute::Attribute(const std::string& name, const Format& format, std::size_t size, std::size_t offset) : 
@@ -54,20 +55,15 @@ namespace Raindrop{
 		_layout()
 	{}
 
-	const Vertex::Layout& Vertex::Buffer::getLayout(const Layout& layout){
+	const Vertex::Layout& Vertex::Buffer::getLayout(const Layout& layout) const noexcept{
 		return _layout;
 	}
 
-	void* Vertex::Buffer::getMappedPointer(){
-		return GBuffer::getMappedPointer();
-	}
-
 	void Vertex::Buffer::allocate(const Layout& layout, const std::size_t& vertexCount, const Usage& usage, const Flags& flags, const GMemory::Type::Flags& memoryFlags, const std::size_t& alignement){
-		_layout = layout;
-		// GBuffer::allocate(_layout.getStride() * vertexCount, usage | Usage::VERTEX_BUFFER, flags, memoryFlags, alignement);
+		const std::size_t size = vertexCount * layout.getStride();
 
-		usage.operator|(Usage::VERTEX_BUFFER);
-		auto a = usage | Usage::VERTEX_BUFFER;
+		_layout = layout;
+		GBuffer::allocate(size, (usage | Usage::VERTEX_BUFFER).get(), flags, memoryFlags, alignement);
 	}
 
 	void Vertex::Buffer::map(const std::size_t& vertexCount, const std::size_t& vertexOffset){
@@ -93,5 +89,52 @@ namespace Raindrop{
 
 	const std::size_t Vertex::Buffer::getVertexCount() const{
 		return GBuffer::getSize() / _layout.getStride();
+	}
+
+	//--------------------------------------------------------------------
+	//-----------------           INDEX BUFFER           -----------------
+	//--------------------------------------------------------------------
+
+	
+
+	Vertex::IndexBuffer::IndexBuffer(Context& context) : 
+		GBuffer{context},
+		_type{Type::NONE}
+	{}
+
+	const Vertex::IndexBuffer::Type& Vertex::IndexBuffer::getType(const Type& type) const noexcept{
+		return _type;
+	}
+
+	void Vertex::IndexBuffer::allocate(const Type& type, const std::size_t& indexCount, const Usage& usage, const Flags& flags, const GMemory::Type::Flags& memoryFlags, const std::size_t& alignement){
+		const std::size_t size = IndexBufferTypeToSize(type) * indexCount;
+
+		_type = type;
+		GBuffer::allocate(size, (usage | Usage::INDEX_BUFFER).get(), flags, memoryFlags, alignement);
+	}
+
+	void Vertex::IndexBuffer::map(const std::size_t& indexCount, const std::size_t& indexOffset){
+		const std::size_t size = indexCount == WHOLE_SIZE ? WHOLE_SIZE : IndexBufferTypeToSize(_type) * indexCount;
+		const std::size_t offset = indexOffset == WHOLE_SIZE ? WHOLE_SIZE : IndexBufferTypeToSize(_type) * indexOffset;
+
+		GBuffer::map(size, offset);
+	}
+
+	void Vertex::IndexBuffer::flush(const std::size_t& indexCount, const std::size_t& indexOffset){
+		const std::size_t size = indexCount == WHOLE_SIZE ? WHOLE_SIZE : IndexBufferTypeToSize(_type) * indexCount;
+		const std::size_t offset = indexOffset == WHOLE_SIZE ? WHOLE_SIZE : IndexBufferTypeToSize(_type) * indexOffset;
+
+		GBuffer::flush(size, offset);
+	}
+
+	void Vertex::IndexBuffer::invalidate(const std::size_t& indexCount, const std::size_t& indexOffset){
+		const std::size_t size = indexCount == WHOLE_SIZE ? WHOLE_SIZE : IndexBufferTypeToSize(_type) * indexCount;
+		const std::size_t offset = indexOffset == WHOLE_SIZE ? WHOLE_SIZE : IndexBufferTypeToSize(_type) * indexOffset;
+
+		GBuffer::invalidate(size, offset);
+	}
+
+	const std::size_t Vertex::IndexBuffer::getIndexCount() const{
+		return GBuffer::getSize() / IndexBufferTypeToSize(_type);
 	}
 }

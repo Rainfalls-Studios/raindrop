@@ -83,8 +83,6 @@ namespace Raindrop{
 			const Flags& getFlags() const noexcept;
 			const GMemory::Type::Flags& getMemoryFlags() const noexcept;
 
-
-
 		private:
 			std::unique_ptr<Impl> _impl;
 	};
