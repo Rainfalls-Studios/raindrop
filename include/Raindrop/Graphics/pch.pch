@@ -1,0 +1,7 @@
+#ifndef __RAINDROP_GRAPHICS_PCH_PCH__
+#define __RAINDROP_GRAPHICS_PCH_PCH__
+
+#include <Raindrop/pch.pch>
+#include <vulkan/vulkan.h>
+
+#endif

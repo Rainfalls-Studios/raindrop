@@ -3,7 +3,7 @@
 
 #include "common.hpp"
 #include <Raindrop/Context.hpp>
-#include "Events/common.hpp"
+#include <Raindrop/Event.hpp>
 #include "Assets/common.hpp"
 #include "Graphics/common.hpp"
 
@@ -17,10 +17,12 @@ namespace Raindrop::Internal{
 			Context(Raindrop::Context& interface);
 			~Context();
 
+			void initialize();
+
 			std::shared_ptr<spdlog::logger>& getLogger() noexcept;
 			const std::shared_ptr<spdlog::logger>& getLogger() const noexcept;
 
-			Events::Manager& getEventManager() noexcept;
+			Event::Manager& getEventManager() noexcept;
 			Assets::Manager& getAssetManager() noexcept;
 			Graphics::Engine& getEngine() noexcept;
 			const Graphics::Engine& getEngine() const noexcept;
@@ -34,11 +36,11 @@ namespace Raindrop::Internal{
 			Raindrop::Context& _interface;
 
 			std::shared_ptr<spdlog::logger> _logger;
-			std::unique_ptr<Events::Manager> _eventManager;
+			std::unique_ptr<Event::Manager> _eventManager;
 			std::unique_ptr<Assets::Manager> _assetManager;
 			std::unique_ptr<Graphics::Engine> _engine;
 
-			Events::EventID _onTick;
+			Event _onTick;
 
 			enum class State{
 				RUNNING,

@@ -2,6 +2,7 @@
 #define __RAINDROP_INTERNAL_GRAPHICS_CORE_SWAPCHAIN_HPP__
 
 #include "common.hpp"
+#include <Raindrop/RenderPass.hpp>
 #include "SwapchainSupport.hpp"
 #include "../Queues.hpp"
 
@@ -34,7 +35,7 @@ namespace Raindrop::Internal::Graphics::Core{
 			uint32_t frameCount() const;
 			uint32_t currentFrame() const;
 
-			VkRenderPass renderPass() const;
+			const Raindrop::RenderPass& renderPass() const;
 
 			void beginRenderPass(VkCommandBuffer commandBuffer);
 			void endRenderPass(VkCommandBuffer commandBuffer);
@@ -61,7 +62,7 @@ namespace Raindrop::Internal::Graphics::Core{
 			std::unique_ptr<SwapchainData> _swapchain;
 			std::unique_ptr<SwapchainData> _oldSwapchain;
 
-			VkRenderPass _renderPass;
+			Raindrop::RenderPass _renderPass;
 			uint32_t _currentFrame;
 			VkFormat _imageFormat;
 

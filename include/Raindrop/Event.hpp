@@ -4,12 +4,24 @@
 #include "common.hpp"
 #include "Utils/Flags.hpp"
 
+#include <unordered_set>
+#include <queue>
+
+/**
+ * TODO
+ * 
+ * replace the event class by an event wrapper that stores an ID and referes to data in the manager
+ * Storing references to events can lead to issues when reallocating the event pool and moving away the actual event data.
+ * 
+ */
+
 namespace Raindrop{
+	namespace Internal{
+		class Context;
+	}
+
 	class Event{
 		public:
-			using ID = std::size_t;
-			static constexpr ID INVALID_ID = ID(~0ULL);
-
 			// based of SDL_SCANCODE keys
 			enum Key{
 				KEY_A = 4,
@@ -300,66 +312,401 @@ namespace Raindrop{
 				UP,
 			};
 
-			template<typename... Args>
-			static Event Register(Context& context, const std::string& name);
-			static void Unregister(Context& context, const Event& event);
+			class Manager;
+			class Listener;
 
+			friend class Manager;
+			friend class Listener;
 
-			static void Subscribe(Context& context, const Event& event, std::function<void()> callback);
+			/**
+			 * @brief Generic event identifier.
+			 * 
+			 */
+			using ID = std::size_t;
+
+			/**
+			 * @brief Invalid identifier placeholder. 
+			 * 
+			 */
+			static constexpr ID INVALID_ID = (ID)(~0);
+
+			/**
+			 * @brief When the event pool is empty, increase the original size by a factor of GROW_FACTOR plus GROW_CONSTANT
+			 * 
+			 * @example newSize = oldSize * GROW_FACTOR + GROW_CONSTANT
+			 * 
+			 */
+			static constexpr std::size_t GROW_FACTOR = 2;
+			static constexpr std::size_t GROW_CONSTANT = 10;
+		
+		protected:
+			struct Subscriber{
+				Listener* listener;
+				void* callback;
+
+				constexpr inline bool operator==(const Subscriber& other) const noexcept{
+					return listener == other.listener;
+				}
+
+				struct hash{
+					constexpr inline std::size_t operator()(const Subscriber& s) const noexcept{
+						return reinterpret_cast<std::size_t>(s.listener);
+					}
+				};
+			};
+		
+		public:
+			
+			/**
+			 * @brief Listener class, subscribes to events and receives callbacks on triggers.
+			 * 
+			 */
+			class Listener{
+				public:
+					/**
+					 * @brief Construct a new Listener object
+					 * 
+					 * @param manager The event manager where listened event will be registred
+					 */
+					inline Listener() noexcept : _manager{nullptr}{}
+					inline Listener(Manager& manager) noexcept : _manager{&manager}{}
+					inline Listener(Context& context) noexcept : _manager(&_GetManager(context)){}
+
+					static Listener Create(Context& context);
+
+					/**
+					 * @brief Destroy the Listener object and unsubscribes from all subscribed events
+					 * 
+					 */
+					virtual ~Listener();
+
+					// // Static events
+					// virtual void OnFrame(){}
+					// virtual void OnStartup(){}
+					// virtual void OnShutdown(){}
+
+					/**
+					 * @brief Subscribes to an event
+					 * 
+					 * @tparam F the function callback type
+					 * @param eventName the event's name to listen to
+					 * @param callback the function called on the event trigger
+					 */
+					template<typename F>
+					void subscribe(const std::string& eventName, const F& callback);
+
+					/**
+					 * @brief Subscribes to an event
+					 * 
+					 * @tparam F the function callback type
+					 * @param eventID the event's ID to listen to
+					 * @param callback the function called on the event trigger
+					 */
+					template<typename F>
+					void subscribe(const Event::ID& eventID, const F& callback);
+
+					/**
+					 * @brief Subscribes to an event
+					 * 
+					 * @tparam F the function callback type
+					 * @param event the event to listen to
+					 * @param callback the function called on the event trigger
+					 */
+					template<typename F>
+					void subscribe(Event& event, const F& callback);
+
+					/**
+					 * @brief Unsubscribes from an event
+					 * 
+					 * @param id the event's ID to unsubscribe from
+					 */
+					inline void unsubscribe(const Event::ID& id){
+						unsubscribe(_manager->get(id));
+					}
+
+					/**
+					 * @brief Unsubscribes from an event
+					 * 
+					 * @param name the event's name to unsubscribe from
+					 */
+					inline void unsubscribe(const std::string& name){
+						unsubscribe(_manager->get(name));
+					}
+
+					/**
+					 * @brief Unsubscribes from an event
+					 * 
+					 * @param event the event to unsubscribe from
+					 */
+					void unsubscribe(Event&& event);
+
+				protected:
+					Manager* _manager;
+					
+					void initialize(Context& context);
+				
+				private:
+					std::unordered_set<ID> _subscribtions;
+			};
+
+			/**
+			 * @brief The event registry. Stores events and link them to their name and id.
+			 * 
+			 */
+			class Manager{
+				friend class Event;
+				public:
+					/**
+					 * @brief Construct a new Manager object
+					 * 
+					 */
+					Manager(Internal::Context& context) : _context{context}{}
+
+					/**
+					 * @brief Destroy the Manager object
+					 * 
+					 */
+					~Manager() = default;
+					
+					/**
+					 * @brief Get an event from it's ID
+					 * 
+					 * @param id The ID of the event
+					 * @return Event& 
+					 */
+					inline Event get(const Event::ID& id){
+						return Event(this, id);
+					}
+
+					/**
+					 * @brief Get an event from it's name
+					 * 
+					 * @param name The name of the event
+					 * @return Event& 
+					 */
+					inline Event get(const std::string& name){
+						return Event(this, getID(name));
+					}
+
+					/**
+					 * @brief Get the ID of an event
+					 * 
+					 * @param name the name of the event
+					 * @return const Event::ID& 
+					 */
+					inline const Event::ID& getID(const std::string& name){
+						return _nameToIDMap.at(name);
+					}
+
+					/**
+					 * @brief Creates a new event
+					 * 
+					 * @tparam Args the event callbacks's arguments
+					 * @param name the name of the event
+					 * @return Event
+					 * 
+					 * @throws std::runtime_error if the name is already used
+					 * @throws std::bad_alloc if the pool reallocation failes
+					 */
+					template<typename... Args>
+					Event create(const std::string& name);
+
+					/**
+					 * @brief Creates a new event
+					 * 
+					 * @param name the name of the event
+					 * @return Event 
+					 * 
+					 * @throws std::runtime_error if the name is already used
+					 * @throws std::bad_alloc if the pool reallocation failes
+					 */
+					Event create(const std::string& name);
+
+					/**
+					 * @brief Destroys an event
+					 * 
+					 * @param name the name of the event
+					 */
+					inline void destroy(const std::string& name){
+						destroy(get(name));
+					}
+
+					/**
+					 * @brief Destroys an event
+					 * 
+					 * @param id the ID of the event
+					 */
+					inline void destroy(const Event::ID& id){
+						destroy(get(id));
+					}
+
+					/**
+					 * @brief Destroys an event
+					 * 
+					 * @param event The event to destroy
+					 */
+					void destroy(const Event& event);
+
+				private:
+					struct EventData{
+						ID id;
+						std::string name;
+						std::unordered_set<Subscriber, Subscriber::hash> subscribers;
+						std::vector<std::type_index> arguments;
+
+						template<typename... Args>
+						void setArguments();
+
+						void unsubscribe(Listener* listener);
+						void subscribe(Listener* listener, void* fnc);
+					};
+
+					constexpr inline EventData& getData(const ID& id) noexcept{
+						return _events[id];
+					}
+
+					Internal::Context& _context;
+					std::unordered_map<std::string, Event::ID> _nameToIDMap;
+					std::vector<EventData> _events;
+					std::queue<Event::ID> _freeIds;
+			};
+
+			/**
+			 * @brief Construct a new invalid Event object
+			 * 
+			 */
+			constexpr Event() noexcept : _id{INVALID_ID}, _manager{nullptr}{}
+
+			
+			constexpr Event(Manager* manager, const ID& id) noexcept : _manager{manager}, _id{id}{}
+			
+			/**
+			 * @brief Destroy the Event object
+			 * 
+			 */
+			virtual ~Event() = default;
+			
+			/**
+			 * @brief Calls all the subscribed callbacks with the given agruments
+			 * 
+			 * @tparam Args The arguments types
+			 * @param args The arguments given to the callbacks
+			 * 
+			 * @throws std::invalid_argument If the argument count does not match the initial agurment counts
+			 * @throws std::invalid_argument If the argument types do not match the initial arguments types
+			 */
 			template<typename... Args>
-			static void Subscribe(Context& context, const Event& event, std::function<void(Args...)> callback);
+			void trigger(Args&&... args);
+
+			/**
+			 * @brief Subscribe to the event
+			 * 
+			 * @tparam F the callback function type
+			 * @param listener The listener
+			 * @param function the listener's callback
+			 */
 			template<typename F>
-			static void Subscribe(Context& context, const Event& event, F&& callback);
+			void subscribe(Listener* listener, const F& function);
 
-			static void Subscribe(Context& context, const std::string& eventName, std::function<void()> callback);
+			/**
+			 * @brief Unsubscribes a listener from the callback
+			 * 
+			 * @param listener the listener who's unsubscribing
+			 */
+			void unsubscribe(Listener* listener);
+
+			/**
+			 * @brief Get the event ID
+			 * 
+			 * @return constexpr const ID& 
+			 */
+			constexpr inline const ID& id() const noexcept{
+				return _id;
+			}
+
+			/**
+			 * @brief Get the event name
+			 * 
+			 * @return constexpr const std::string& 
+			 */
+			constexpr inline const std::string& name() const noexcept{
+				return getData().name;
+			}
+
+			/**
+			 * @brief Get the count of listeners subcribed to this event
+			 * 
+			 * @return constexpr const std::size_t& 
+			 */
+			inline std::size_t subscriberCount() const noexcept{
+				return getData().subscribers.size();
+			}
+
+
 			template<typename... Args>
-			static void Subscribe(Context& context, const std::string& eventName, std::function<void(Args...)> callback);
+			static Event Create(Context& context, const std::string& name);
+			static Event Create(Context& context, const std::string& name);
+
+			static void Destroy(Context& context, const Event& event);
+			static void Destroy(Context& context, const std::string& name);
+			static void Destroy(Context& context, const ID& id);
+
+
 			template<typename F>
-			static void Subscribe(Context& context, const std::string& eventName, F&& callback);
+			static void Subscribe(Context& context, Event& event, Listener* listener, const F& function);
 
-
-			template<typename... Args>
-			static void Trigger(Context& context, const Event& event, Args... args);
-
-			template<typename... Args>
-			static void Trigger(Context& context, const std::string& eventName, Args... args);
-
-
-			static Event Get(Context& context, const std::string& name);
-
-			Event(const Event& other);
-			Event(Context& context, const ID& id);
-			Event();
-
-			void subscribe(std::function<void()> callback);
-			template<typename... Args>
-			void subscribe(std::function<void(Args...)> callback);
 			template<typename F>
-			void subscribe(F&& callback);
+			static void Subscribe(Context& context, const std::string& name, Listener* listener, const F& function);
+
+			template<typename F>
+			static void Subscribe(Context& context, const ID& id, Listener* listener, const F& function);
+
+			static void Unsubscribe(Context& context, Event& event, Listener* listener);
+			static void Unsubscribe(Context& context, const std::string& name, Listener* listener);
+			static void Unsubscribe(Context& context, const ID& id, Listener* listener);
 
 			template<typename... Args>
-			void trigger(Args... args);
+			static void Trigger(Context& context, Event& event, Args&&... args);
+			
+			template<typename... Args>
+			static void Trigger(Context& context, const std::string& name, Args&&... args);
 
-			ID getID() const;
+			template<typename... Args>
+			static void Trigger(Context& context, const ID& id, Args&&... args);
 
-		private:
-			Context* _context;
+
+		protected:
+
+			static Manager& _GetManager(Context& context) noexcept;
+
+			constexpr inline Manager::EventData& getData() noexcept{
+				return _manager->getData(_id);
+			}
+
+			constexpr inline const Manager::EventData& getData() const noexcept{
+				return _manager->getData(_id);
+			}
+
+			static std::string demangle(const std::type_index& i);
+
+			template<typename... Args>
+			void checkArgs() const;
+
+			Manager* _manager;
 			ID _id;
-
-			static ID _Register(Context& context, const std::size_t argCount, const std::string& name);
-			static void _Subscribe(Context& context, const ID& event, const std::function<void(const std::vector<void*>&)>& callback);
-			static void _Trigger(Context& context, const ID& event, const std::vector<void*>& arguments);
-
 	};
 
-	template<typename F>
-	inline void Subscribe(Context& context, const Event& event, F callback){
-		Event::Subscribe(context, event, callback);
+	static Event CreateEvent(Context& context, const std::string& name){
+		return Event::Create(context, name);
 	}
 
-	template<typename F>
-	inline void Subscribe(Context& context, const std::string& eventName, F callback){
-		Event::Subscribe(context, eventName, callback);
+	template<typename... Args>
+	static Event CreateEvent(Context& context, const std::string& name){
+		return Event::Create<Args...>(context, name);
+	}
+
+	static Event::Listener CreateEventListener(Context& context){
+		return Event::Listener::Create(context);
 	}
 }
 

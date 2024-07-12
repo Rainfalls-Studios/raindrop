@@ -2,16 +2,19 @@
 #define __RAINDROP_INTERNAL_GRAPHICS_ENGINE_HPP__
 
 #include "common.hpp"
-#include <Raindrop_internal/Events/common.hpp>
+#include <Raindrop/Event.hpp>
 
 namespace Raindrop::Internal::Graphics{
 	class Engine{
 		public:
 			Engine(Internal::Context& internal);
 			~Engine();
+
+			void initialize();
 			
 			void render();
 			void events();
+
 
 			Context& getContext() noexcept;
 			const Context& getContext() const noexcept;
@@ -41,8 +44,8 @@ namespace Raindrop::Internal::Graphics{
 
 			std::shared_ptr<ShaderLoader> _shaderLoader;
 
-			Events::EventID _OnFrame;
-			Events::EventID _OnSwapchainPass;
+			Event _OnFrame;
+			Event _OnSwapchainPass;
 	};
 }
 
