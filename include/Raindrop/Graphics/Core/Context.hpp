@@ -12,7 +12,6 @@ namespace Raindrop::Graphics::Core{
 		PhysicalDevice physicalDevice;
 		Device device;
 
-		void initialize();
 		void createLogger();
 	};
 }

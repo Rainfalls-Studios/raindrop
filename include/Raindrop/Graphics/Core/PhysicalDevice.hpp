@@ -13,38 +13,27 @@ namespace Raindrop::Graphics::Core{
 			PhysicalDevice(const PhysicalDevice&) = delete;
 			PhysicalDevice& operator=(const PhysicalDevice&) = delete;
 
-			void initialize(Context& context);
+			PhysicalDevice& prepare(Context& context);
+			PhysicalDevice& initialize();
 			void release();
 
-			VkPhysicalDevice get() const noexcept;
+			const VkPhysicalDevice& get() const noexcept;
+			const vkb::PhysicalDevice& getVkb() const noexcept;
 
-			const VkPhysicalDeviceProperties& getProperties() const noexcept;
-			const VkPhysicalDeviceFeatures& getFeatures() const noexcept;
-			const std::vector<VkQueueFamilyProperties>& getQueueProperties() const noexcept;
+			PhysicalDevice& requireSurfaceSupport(VkSurfaceKHR surface);
+			PhysicalDevice& requireExtension(const char* ext);
+			PhysicalDevice& requireExtensions(const std::vector<const char*>& extensions);
+			PhysicalDevice& requireFeatures(VkPhysicalDeviceFeatures& features);
+			PhysicalDevice& require11Features(VkPhysicalDeviceVulkan11Features& features);
+			PhysicalDevice& require12Features(VkPhysicalDeviceVulkan12Features& features);
+			PhysicalDevice& require13Features(VkPhysicalDeviceVulkan13Features& features);
 
-			void requireSurfaceSupport(VkSurfaceKHR surface);
-			void requireExtension(const char* ext);
+			std::vector<VkQueueFamilyProperties> getQueueFamilyProperties() const;
 
 		private:
 			Context* _context;
-			VkPhysicalDevice _device;
-
-			VkSurfaceKHR _surface;
-			std::list<const char*> _requiredExtensions;
-
-			VkPhysicalDeviceProperties _properties;
-			VkPhysicalDeviceFeatures _features;
-			std::vector<VkQueueFamilyProperties> _queueProperties;
-
-			void findPhysicalDevice();
-			bool isDeviceSuitable(VkPhysicalDevice device);
-
-			bool isSurfaceSupported(VkPhysicalDevice device);
-			bool areExtensionsSupported(VkPhysicalDevice device);
-
-			void queryProperties();
-			void queryFeatures();
-			void queryQueueProperties();
+			vkb::PhysicalDevice _device;
+			std::unique_ptr<vkb::PhysicalDeviceSelector> _selector;
 	};
 }
 

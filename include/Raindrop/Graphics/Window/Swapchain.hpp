@@ -1,11 +1,12 @@
 #ifndef __RAINDROP_GRAPHICS_WINDOW_SWAPCHAIN_HPP__
 #define __RAINDROP_GRAPHICS_WINDOW_SWAPCHAIN_HPP__
 
-#include "common.hpp"
-#include "SwapchainSupport.hpp"
-#include "../Queues.hpp"
+#include "prototypes.hpp"
+#include <Raindrop/Graphics/Core/prototypes.hpp>
+#include <Raindrop/Graphics/RenderPass.hpp>
+#include <Raindrop/Graphics/pch.pch>
 
-namespace Raindrop::Internal::Graphics::Core{
+namespace Raindrop::Graphics::Window{
 	class Swapchain{
 		public:
 			struct Frame{
@@ -18,15 +19,25 @@ namespace Raindrop::Internal::Graphics::Core{
 				VkImageView imageView = VK_NULL_HANDLE;
 			};
 
-			Swapchain(Context& context);
+			enum FrameCount{
+				SINGLE_BUFFERING = 1,
+				DOUBLE_BUFFERING = 2,
+				TRIPLE_BUFFERING = 3
+			};
+
+			Swapchain() noexcept;
 			~Swapchain();
+
+			void prepare(Context& context, Core::Context& core, Graphics::Context& graphics);
+			void initialize();
+			void release();
 
 			void rebuildSwapchain();
 
-			void setExtent(VkExtent2D extent);
-			void setFrameCount(uint32_t count);
-			void setPresentMode(VkPresentModeKHR presentMode);
-			void setSurfaceFormat(VkSurfaceFormatKHR surfaceFormat);
+			Swapchain& wantExtent(VkExtent2D extent);
+			Swapchain& wantFrameCount(uint32_t count);
+			Swapchain& wantPresentMode(VkPresentModeKHR presentMode);
+			Swapchain& wantSurfaceFormat(VkSurfaceFormatKHR surfaceFormat);
 
 			VkResult acquireNextImage();
 			VkResult submitCommandBuffer(VkCommandBuffer* buffers);
@@ -34,7 +45,7 @@ namespace Raindrop::Internal::Graphics::Core{
 			uint32_t frameCount() const;
 			uint32_t currentFrame() const;
 
-			const Raindrop::RenderPass& renderPass() const;
+			const RenderPass& renderPass() const;
 
 			void beginRenderPass(VkCommandBuffer commandBuffer);
 			void endRenderPass(VkCommandBuffer commandBuffer);
@@ -47,40 +58,55 @@ namespace Raindrop::Internal::Graphics::Core{
 
 		private:
 			struct SwapchainData{
-				Context* _context;
-				VkSwapchainKHR _swapchain = VK_NULL_HANDLE;
-				std::vector<Frame> _frames;
+				Core::Context* context;
+				VkSwapchainKHR swapchain;
+				std::vector<Frame> frames;
 
+				SwapchainData(Core::Context* context);
 				~SwapchainData();
-				SwapchainData(Context& _context);
 			};
 
 			Context* _context;
+			Core::Context* _core;
+			Graphics::Context* _graphics;
 
-			Core::SwapchainSupport _swapchainSupport;
 			std::unique_ptr<SwapchainData> _swapchain;
 			std::unique_ptr<SwapchainData> _oldSwapchain;
 
-			VkRenderPass _renderPass;
+			RenderPass _renderPass;
 			uint32_t _currentFrame;
-			VkFormat _imageFormat;
 
 			uint32_t _frameCount;
 			VkExtent2D _extent;
 			VkPresentModeKHR _presentMode;
 			VkSurfaceFormatKHR _surfaceFormat;
 
-			uint32_t _wantedFrameCount;
-			VkExtent2D _wantedExtent;
-			VkPresentModeKHR _wantedPresentMode;
-			VkSurfaceFormatKHR _wantedSurfaceFormat;
+			// Not released because the swapchain get continiously rebuilt
+			struct{
+				std::uint32_t frameCount;
+				VkExtent2D extent;
+				VkPresentModeKHR presentMode;
+				VkSurfaceFormatKHR surfaceFormat;
+			} _buildInfo;
+
+			struct{
+				VkSurfaceCapabilitiesKHR capabilities;
+				std::vector<VkSurfaceFormatKHR> formats;
+				std::vector<VkPresentModeKHR> presentModes;
+			} _support;
+
 
 			VkClearColorValue _clearColor;
 
-			void findSurfaceFormat();
-			void findPresentMode();
-			void findExtent();
-			void findFrameCount();
+			void querySupport();
+			void querySupportCapabilities();
+			void querySupportFormats();
+			void querySupportPresentModes();
+			
+			VkSurfaceFormatKHR findSurfaceFormat();
+			VkPresentModeKHR findPresentMode();
+			VkExtent2D findExtent();
+			std::uint32_t findFrameCount();
 
 			void createRenderPass();
 			void createImageViews();

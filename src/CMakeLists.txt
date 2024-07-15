@@ -25,14 +25,16 @@ function(add_library_target TARGET_TYPE)
 		"${PROJECT_SOURCE_DIR}/external/"
 	)
 	
+
 	target_link_libraries(
 		${TARGET}
-		PRIVATE 
+
+		PUBLIC # public is just simpler for now
 		Vulkan::Vulkan
+		vk-bootstrap
 		spdlog::spdlog_header_only
+		GPUOpen::VulkanMemoryAllocator
 		assimp
-		
-		PUBLIC
 		SDL3::SDL3-static
 		EnTT::EnTT
 		glm::glm

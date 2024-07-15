@@ -3,6 +3,7 @@
 
 #include "Window.hpp"
 #include "Surface.hpp"
+#include "Swapchain.hpp"
 #include <spdlog/spdlog.h>
 
 namespace Raindrop::Graphics::Window{
@@ -11,8 +12,8 @@ namespace Raindrop::Graphics::Window{
 
 		Window window;
 		Surface surface;
-
-
+		Swapchain swapchain;
+		
 		void createLogger();
 	};
 }

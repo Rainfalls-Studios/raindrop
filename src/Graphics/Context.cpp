@@ -1,45 +1,55 @@
 #include <Raindrop/Graphics/Context.hpp>
+#include <spdlog/sinks/stdout_color_sinks.h>
 
 namespace Raindrop::Graphics{
+	void Context::createLogger(){
+		logger = spdlog::stdout_color_st("Raindrop::Graphics");
+	}
+
 	void Context::initialize(){
+		createLogger();
 
 		// None for now
 		core.allocationCallbacks = nullptr;
 
 		// First create the window
 		window.createLogger();
-		window.window.initialize(window);
+		window.window.prepare(window);
+		window.window.initialize();
 		
 
-		// Then create the vulkan instance
+		// create the core logger
 		core.createLogger();
 		core.logger->set_level(spdlog::level::trace);
 
-		// Require the window mendatory extensions
-		core.instance.requireExtensions(window.window.getRequiredInstanceExtensions());
-
-		// Create the instance
-		core.instance.initialize(core);
-
+		// Create the vulkan instance
+		core.instance.prepare(core);
+		core.instance->set_engine_name("Raindrop");
+		core.instance->request_validation_layers();
+		core.instance.initialize();
 
 		// Create the window surface
-		window.surface.initialize(window, core);
+		window.surface.prepare(window, core);
+		window.surface.initialize();
 
-
-		// Require surface support
+		// // Require surface support
+		core.physicalDevice.prepare(core);
 		core.physicalDevice.requireSurfaceSupport(window.surface.get());
+		core.physicalDevice.initialize();
 
-		// Find a suitable physical device
-		core.physicalDevice.initialize(core);
+		// Create the physical device
+		core.device.prepare(core);
+		core.device.initialize();
 
-
-		// Require swapchain support for the window
-		core.device.requireExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
-	
-		core.device.initialize(core);
-
-		// Initialize syncronization
-		sync.createLogger();
-		sync.manager.initialize(sync, core);
+		// Create the window's swapchain
+		window.swapchain.prepare(window, core, *this);
+		window.swapchain.wantExtent(window.window.getExtent())
+						.wantFrameCount(Window::Swapchain::DOUBLE_BUFFERING)
+						.wantPresentMode(VK_PRESENT_MODE_FIFO_KHR)
+						.wantSurfaceFormat({
+							.format = VK_FORMAT_R8G8B8A8_SRGB,
+							.colorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR
+						});
+		window.swapchain.initialize();
 	}
 }

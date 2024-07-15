@@ -15,24 +15,29 @@ namespace Raindrop::Graphics::Window{
 		release();
 	}
 
-	void Surface::initialize(Context& context, Core::Context& core){
+	void Surface::prepare(Context& context, Core::Context& core){
 		_context = &context;
 		_core = &core;
+	}
 
-		if (SDL_Vulkan_CreateSurface(_context->window.get(), _core->instance.get(), _core->allocationCallbacks, &_surface) != VK_TRUE){
-			_context->logger->error("Failed to create SDL Vulkan surface : {}", SDL_GetError());
-			throw std::runtime_error("Failed to create SDL Vulkan surface");
+	void Surface::initialize(){
+		_context->logger->info("Creating SDL vulkan surface...");
+		if (SDL_Vulkan_CreateSurface(_context->window.get(), _core->instance.get(), _core->allocationCallbacks, &_surface) == VK_FALSE){
+			_context->logger->error("Failed to create SDL vulkan surface : {}", SDL_GetError());
+			throw std::runtime_error("Failed to create SDL vulkan surface");
 		}
 	}
 
 	void Surface::release(){
-		if (_core && _surface != VK_NULL_HANDLE){
+		if (_surface){
+			_context->logger->info("Destroying SDL vulkan surface...");
+
 			vkDestroySurfaceKHR(_core->instance.get(), _surface, _core->allocationCallbacks);
+			_surface = VK_NULL_HANDLE;
 		}
 
-		_context = nullptr;
 		_core = nullptr;
-		_surface = nullptr;
+		_context = nullptr;
 	}
 
 	const VkSurfaceKHR& Surface::get() const noexcept{

@@ -2,19 +2,21 @@
 #define __RAINDROP_GRAPHICS_WINDOW_WINDOW_HPP__
 
 #include "prototypes.hpp"
-#include <SDL3/SDL.h>
-#include <vector>
+#include <Raindrop/Graphics/pch.pch>
 
 namespace Raindrop::Graphics::Window{
 	class Window{
 		public:
-			Window();
+			Window() noexcept;
 			~Window();
 
-			void initialize(Context& context);
+			void prepare(Context& context);
+			void initialize();
 			void release();
 
 			SDL_Window* get() const noexcept;
+			VkExtent2D getExtent() const noexcept;
+			glm::u32vec2 getSize() const noexcept;
 
 			std::vector<const char*> getRequiredInstanceExtensions() const;
 		

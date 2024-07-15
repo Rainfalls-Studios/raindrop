@@ -3,5 +3,8 @@
 
 #include <Raindrop/pch.pch>
 #include <vulkan/vulkan.h>
+#include <SDL3/SDL.h>
+#include <VkBootstrap.h>
+#include <vk_mem_alloc.h>
 
 #endif

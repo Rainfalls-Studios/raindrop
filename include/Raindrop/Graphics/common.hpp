@@ -1,0 +1,5 @@
+#ifndef __RAINDROP_GRAPHICS_COMMON_HPP__
+#define __RAINDROP_GRAPHICS_COMMON_HPP__
+
+
+#endif

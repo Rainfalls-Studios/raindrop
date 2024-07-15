@@ -4,12 +4,7 @@
 #include "common.hpp"
 
 namespace Raindrop::Internal::Graphics::Core{
-	struct SwapchainSupport{
-		VkSurfaceCapabilitiesKHR capabilities;
-		std::vector<VkSurfaceFormatKHR> formats;
-		std::vector<VkPresentModeKHR> presentModes;
-		bool supported;
-	};
+	
 }
 
 #endif

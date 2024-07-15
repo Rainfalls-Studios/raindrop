@@ -4,6 +4,7 @@
 #include "prototypes.hpp"
 #include <Raindrop/Graphics/Core/prototypes.hpp>
 #include <vulkan/vulkan.h>
+#include <VkBootstrap.h>
 
 namespace Raindrop::Graphics::Window{
 	class Surface{
@@ -11,7 +12,8 @@ namespace Raindrop::Graphics::Window{
 			Surface() noexcept;
 			~Surface();
 
-			void initialize(Context& context, Core::Context& core);
+			void prepare(Context& context, Core::Context& core);
+			void initialize();
 			void release();
 
 			const VkSurfaceKHR& get() const noexcept; 

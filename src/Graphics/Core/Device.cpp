@@ -6,177 +6,104 @@
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
 
 namespace Raindrop::Graphics::Core{
-	Device::Device() noexcept :
+	Device::Device() noexcept : 
 		_context{nullptr},
-		_device{VK_NULL_HANDLE}
+		_device{},
+		_builder{}
 	{}
-
-	Device::~Device(){
-		release();
-	}
 	
-	void Device::initialize(Context& context){
+	Device::~Device(){
+		release();	
+	}
+
+	void Device::prepare(Context& context){
 		_context = &context;
-		_context->logger->info("Constructing vulkan device ...");
+		_builder = std::make_unique<vkb::DeviceBuilder>(context.physicalDevice.getVkb());
+	}
 
+	void Device::initialize(){
+		auto result = _builder->build();
 
-		auto& allocationCallbacks = _context->allocationCallbacks;
-		auto& physicalDevice = _context->physicalDevice;
+		_context->logger->info("Creating vulkan device...");
 
-		VkDeviceCreateInfo info{};
-		info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-		
-		const VkPhysicalDeviceFeatures& features = physicalDevice.getFeatures();
-		info.pEnabledFeatures = &features;
+		if (!result){
+			_context->logger->error("Failed to create vulkan device : {}", result.error().message());
+			throw std::runtime_error("Failed to create vulkan device");
+		}
 
-		info.ppEnabledExtensionNames = _requiredExtensions.data();
-		info.enabledExtensionCount = static_cast<uint32_t>(_requiredExtensions.size());
+		_device = result.value();
+		_builder.reset();
 
-		info.ppEnabledLayerNames = _requiredLayers.data();
-		info.enabledLayerCount = static_cast<uint32_t>(_requiredLayers.size());
-
-		float queuePriority = 1.f;
-
-		VkDeviceQueueCreateInfo queueCreateInfo{};
-		queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-		queueCreateInfo.queueCount = 1;
-		queueCreateInfo.pQueuePriorities = &queuePriority;
-		queueCreateInfo.queueFamilyIndex = 0;
-
-		info.pQueueCreateInfos = &queueCreateInfo;
-		info.queueCreateInfoCount = 1;
-
-		Exceptions::checkVkCreation<VkDevice>(
-			vkCreateDevice(physicalDevice.get(), &info, allocationCallbacks, &_device),
-			"Failed to create device",
-			_context->logger
-		);
-		
-		_context->logger->info("Vulkan device created !");
+		checkQueuePresence();
+		getQueues();
 	}
 
 	void Device::release(){
-		if (_context && _device != VK_NULL_HANDLE){
-			vkDestroyDevice(_device, _context->allocationCallbacks);
-		}
-
-		_device = VK_NULL_HANDLE;
+		_context->logger->info("Destroying vulkan device...");
+		_builder.reset();
+		vkb::destroy_device(_device);
 		_context = nullptr;
 	}
 
-	uint32_t Device::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties){
-
-		auto& physicalDevice = _context->physicalDevice;
-		VkPhysicalDeviceMemoryProperties memProperties;
-		vkGetPhysicalDeviceMemoryProperties(physicalDevice.get(), &memProperties);
-
-		for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
-			if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
-				return i;
-			}
-		}
-
-		_context->logger->warn("Failed to find suitable memory type filter (filter : {}; properties: {})", typeFilter, properties);
-		throw std::runtime_error("failed to find suitable memory type");
-	}
-
-	void Device::waitIdle(){
-		vkDeviceWaitIdle(_device);
-	}
-
+	
 	const VkDevice& Device::get() const noexcept{
+		return _device.device;
+	}
+
+	const vkb::Device& Device::getVkb() const noexcept{
 		return _device;
 	}
 
-	void Device::requireExtension(const char* extension){
-		_requiredExtensions.push_back(extension);
-	}
+	void Device::checkQueuePresence(){
+		auto graphics = _device.get_queue_index(vkb::QueueType::graphics);
 
-	void Device::requireLayer(const char* layer){
-		_requiredLayers.push_back(layer);
-	}
+		if (!graphics){
+			_context->logger->critical("The device does not support graphics queues");
+			throw std::runtime_error("The device does not support graphics queues");
+		}
 
+		// TODO: change that
+		const bool surfaceRequired = _context->physicalDevice.getVkb().surface != VK_NULL_HANDLE;
 
-	static constexpr VkQueueFlags PRESENT_BIT = 1 << 31;
+		if (surfaceRequired){
+			auto present = _device.get_queue_index(vkb::QueueType::present);
 
-	struct QueueSearchData{
-		const std::vector<VkQueueFlags>& candidates;
-		const VkQueueFlags& requiredFlags;
-		const VkQueueFlags& currentFlags;
-		const std::size_t& index;
-		std::vector<std::size_t>& currentSolution;
-		std::vector<std::size_t>& bestSolution;
-	};
-
-	void findBestQueues(QueueSearchData data) {
-		const std::vector<VkQueueFlags>& candidates = data.candidates;
-		const VkQueueFlags& requiredFlags = data.requiredFlags;
-		const VkQueueFlags& currentFlags = data.currentFlags;
-		const std::size_t& index = data.index;
-		std::vector<std::size_t>& currentSolution = data.currentSolution;
-		std::vector<std::size_t>& bestSolution = data.bestSolution;
-
-
-		// If the current solutions cover all the needs
-		if ((currentFlags & requiredFlags) == requiredFlags) {
-
-			// If ths collection is smaller than the already present one
-			if (currentSolution.size() < bestSolution.size()) {
-
-				// We have found a new best solution
-				bestSolution = currentSolution;
+			if (!present){
+				_context->logger->critical("The device does not support present queues");
+				throw std::runtime_error("The device does not support present queues");
 			}
-			return;
-		}
-		
-		// If we are at the end of the candidats vector. we can't check further
-		if (index == candidates.size() || currentSolution.size() >= bestSolution.size()) {
-			return;
-		}
 
-		// Include the current candidate
-		currentSolution.push_back(candidates[index]);
-		findBestQueues({candidates, requiredFlags, currentFlags | candidates[index], index + 1, currentSolution, bestSolution});
-		
-		// Exclude the current candidate
-		currentSolution.pop_back();
-		findBestQueues({candidates, requiredFlags, currentFlags, index + 1, currentSolution, bestSolution});
-	}
-
-	std::vector<std::size_t> getBestQueues(const std::vector<VkQueueFlags>& candidates, const VkQueueFlags& requiredFlags) {
-		std::vector<std::size_t> bestSolution; // Initially set to an impossibly large solution size
-		std::vector<std::size_t> currentSolution;
-
-		findBestQueues({candidates, requiredFlags, 0, 0, currentSolution, bestSolution});
-
-		return bestSolution;
-	}
-
-	void Device::findQueues()
-	const bool isSurfaceSupportRequired = _surface != VK_NULL_HANDLE;
-
-		VkQueueFlags requiredFlags = VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_TRANSFER_BIT;
-		if (isSurfaceSupportRequired){
-			requiredFlags |= PRESENT_BIT;
-		}
-
-		std::vector<VkQueueFlags> candidats(_families.size());
-
-
-		for (std::size_t i=0; i<_families.size(); i++){
-			const QueueFamily& family = _families[i];
-			VkQueueFlags& candidat = candidats[i];
-
-			candidat = family.getFlags();
-
-			if (isSurfaceSupportRequired && family.isPresentSupported(_surface)){
-				candidat |= PRESENT_BIT;
+			if (present.value() != graphics.value()){
+				_context->logger->warn("The main grahics queue does not share the same family has the present queue : {} != {}", graphics.value(), present.value());
 			}
 		}
 
-		std::vector<std::size_t> bestCombination = getBestQueues(candidats, requiredFlags);
-
-		for (auto& id : bestCombination){
-			spdlog::info("{}", id);
+		auto transfert = _device.get_queue_index(vkb::QueueType::transfer);
+		if (!transfert){
+			_context->logger->critical("The device does not support transfert queues");
+			throw std::runtime_error("The device does not support transfert queues");
 		}
+
+		if (transfert.value() != graphics.value()){
+			_context->logger->warn("The transfert queue does not share the same family has the graphics queue : {} != {}", transfert.value(), graphics.value());
+		}
+	}
+
+	void Device::getQueues(){
+		auto initQueue = [this](const vkb::QueueType& type) -> QueueInfo {
+			// We can skip queue check because we already did that
+			return QueueInfo{ 
+					.queue = _device.get_queue(type).value(),
+					.familyIndex = _device.get_queue_index(type).value()
+				};
+		};
+
+		graphicsQueue = initQueue(vkb::QueueType::graphics);
+		presentQueue = initQueue(vkb::QueueType::present);
+		transfetQueue = initQueue(vkb::QueueType::transfer);
+	}
+
+	void Device::waitIdle(){
+		vkDeviceWaitIdle(_device.device);
+	}
 }

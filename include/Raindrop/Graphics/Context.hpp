@@ -7,10 +7,13 @@
 
 namespace Raindrop::Graphics{
 	struct Context{
+		std::shared_ptr<spdlog::logger> logger;
+
 		Core::Context core;
 		Window::Context window;
 		Sync::Context sync;
 
+		void createLogger();
 		void initialize();
 	};
 }

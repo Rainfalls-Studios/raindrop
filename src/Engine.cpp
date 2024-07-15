@@ -10,7 +10,6 @@ namespace Raindrop{
 		release();
 	}
 
-
 	void Engine::initialize(InitFlags flags){
 		initializeCore();
 		
@@ -23,8 +22,6 @@ namespace Raindrop{
 	void Engine::release(){
 		_context.reset();
 	}
-
-
 
 	void Engine::initializeCore(){
 		_context = std::make_unique<Context>();

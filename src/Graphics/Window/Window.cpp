@@ -25,7 +25,7 @@ namespace Raindrop::Graphics::Window{
 	static constexpr uint32_t DEFAULT_WINDOW_WIDTH = 1080;
 	static constexpr uint32_t DEFAULT_WINDOW_HEIGHT = 720;
 
-	Window::Window() :
+	Window::Window() noexcept :
 		_context{nullptr},
 		_window{nullptr}
 	{}
@@ -34,8 +34,11 @@ namespace Raindrop::Graphics::Window{
 		release();
 	}
 
-	void Window::initialize(Context& context){
+	void Window::prepare(Context& context){
 		_context = &context;
+	}
+
+	void Window::initialize(){
 		
 		_context->logger->info("Constructing window ...");
 		_context->logger->info("Initializing SDL3...");
@@ -86,6 +89,22 @@ namespace Raindrop::Graphics::Window{
 
 		return std::vector<const char*>(rawExtensions, rawExtensions + count);
 	}
+
+	glm::u32vec2 Window::getSize() const noexcept{
+		int width, height;
+		SDL_GetWindowSizeInPixels(_window, &width, &height);
+		return glm::u32vec2(width, height);
+	}
+
+
+	VkExtent2D Window::getExtent() const noexcept{
+		glm::u32vec2 size = getSize();
+		return VkExtent2D{
+			.width = size.x,
+			.height = size.y
+		};
+	}
+
 
 	// void Window::registerEvents(){
 	// 	auto& event = _context.getInternalContext().getEventManager();

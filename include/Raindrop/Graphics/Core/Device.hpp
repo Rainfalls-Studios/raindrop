@@ -7,31 +7,37 @@
 namespace Raindrop::Graphics::Core{
 	class Device{
 		public:
+			struct QueueInfo{
+				VkQueue queue;
+				std::uint32_t familyIndex;
+			};
+
 			Device() noexcept;
 			~Device();
 
 			Device(const Device&) = delete;
 			Device& operator=(const Device&) = delete;
 
-			void requireExtension(const char* extension);
-			void requireLayer(const char* layer);
-
-			void initialize(Context& context);
+			void prepare(Context& context);
+			void initialize();
 			void release();
 
 			const VkDevice& get() const noexcept;
-			uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+			const vkb::Device& getVkb() const noexcept;
+
 			void waitIdle();
+
+			QueueInfo graphicsQueue;
+			QueueInfo presentQueue;
+			QueueInfo transfetQueue;
 
 		private:
 			Context* _context;
-			VkDevice _device;
+			vkb::Device _device;
+			std::unique_ptr<vkb::DeviceBuilder> _builder;
 
-			std::vector<const char*> _requiredExtensions;
-			std::vector<const char*> _requiredLayers;
-
-
-			void findQueues();
+			void checkQueuePresence();
+			void getQueues();
 	};
 }
 

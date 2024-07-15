@@ -5,6 +5,8 @@ class Testbed : public Raindrop::Engine{
 	public:
 		Testbed() : Engine(){
 			Engine::initialize(Engine::GRAPHICS);
+
+			
 		}
 
 	private:
@@ -12,7 +14,6 @@ class Testbed : public Raindrop::Engine{
 };
 
 int main(){
-
 	Testbed testbed;
 
 	return EXIT_SUCCESS;
