@@ -3,7 +3,6 @@
 
 #include "Core/Context.hpp"
 #include "Window/Context.hpp"
-#include "Sync/Context.hpp"
 
 namespace Raindrop::Graphics{
 	struct Context{
@@ -11,10 +10,20 @@ namespace Raindrop::Graphics{
 
 		Core::Context core;
 		Window::Context window;
-		Sync::Context sync;
 
 		void createLogger();
 		void initialize();
+		
+		Core::Instance& getInstance() noexcept;
+		const Core::Instance& getInstance() const noexcept;
+
+		Core::PhysicalDevice& getPhysicalDevice() noexcept;
+		const Core::PhysicalDevice& getPhysicalDevice() const noexcept;
+
+		Core::Device& getDevice() noexcept;
+		const Core::Device& getDevice() const noexcept;
+
+
 	};
 }
 

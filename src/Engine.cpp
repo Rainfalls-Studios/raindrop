@@ -68,22 +68,4 @@ namespace Raindrop{
 		}
 		return *_graphics;
 	}
-
-
-	Graphics::Core::Context& Engine::getGraphicsCoreContext(){
-		return getGraphicsContext().core;
-	}
-
-	const Graphics::Core::Context& Engine::getGraphicsCoreContext() const{
-		return getGraphicsContext().core;
-	}
-
-
-	Graphics::Window::Context& Engine::getGraphicsWindowContext(){
-		return getGraphicsContext().window;
-	}
-
-	const Graphics::Window::Context& Engine::getGraphicsWindowContext() const{
-		return getGraphicsContext().window;
-	}
 }

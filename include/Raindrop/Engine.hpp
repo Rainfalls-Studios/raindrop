@@ -32,12 +32,6 @@ namespace Raindrop{
 			Graphics::Context& getGraphicsContext();
 			const Graphics::Context& getGraphicsContext() const;
 
-			Graphics::Core::Context& getGraphicsCoreContext();
-			const Graphics::Core::Context& getGraphicsCoreContext() const;
-
-			Graphics::Window::Context& getGraphicsWindowContext();
-			const Graphics::Window::Context& getGraphicsWindowContext() const;
-
 		private:
 			std::unique_ptr<Context> _context;
 			std::unique_ptr<Graphics::Context> _graphics;

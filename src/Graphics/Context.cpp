@@ -52,4 +52,30 @@ namespace Raindrop::Graphics{
 						});
 		window.swapchain.initialize();
 	}
+
+
+	Core::Device& Context::getDevice() noexcept{
+		return core.device;
+	}
+
+	const Core::Device& Context::getDevice() const noexcept{
+		return core.device;
+	}
+
+	Core::PhysicalDevice& Context::getPhysicalDevice() noexcept{
+		return core.physicalDevice;
+	}
+
+	const Core::PhysicalDevice& Context::getPhysicalDevice() const noexcept{
+		return core.physicalDevice;
+	}
+
+	Core::Instance& Context::getInstance() noexcept{
+		return core.instance;
+	}
+
+	const Core::Instance& Context::getInstance() const noexcept{
+		return core.instance;
+	}
+
 }
