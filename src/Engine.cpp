@@ -12,9 +12,8 @@ namespace Raindrop{
 
 	void Engine::initialize(InitFlags flags){
 		initializeCore();
-		
 
-		if (flags & GRAPHICS){
+		if (flags & INIT_GRAPHICS){
 			initializeGraphics();
 		}
 	}
@@ -36,4 +35,55 @@ namespace Raindrop{
 		// _graphics->core.instance.initialize(_graphics->core);
 	}
 
+
+
+	// ======================= CORE ==============================
+
+	Context& Engine::getContext(){
+		if (!_context){
+			throw std::runtime_error("Core has not been initialized");
+		}
+		return *_context;
+	}
+
+	const Context& Engine::getContext() const{
+		if (!_context){
+			throw std::runtime_error("Core has not been initialized");
+		}
+		return *_context;
+	}
+
+	// ==================== GRAPHICS ============================
+
+	Graphics::Context& Engine::getGraphicsContext(){
+		if (!_graphics){
+			throw std::runtime_error("Graphics context has not been initialized");
+		}
+		return *_graphics;
+	}
+
+	const Graphics::Context& Engine::getGraphicsContext() const{
+		if (!_graphics){
+			throw std::runtime_error("Graphics context has not been initialized");
+		}
+		return *_graphics;
+	}
+
+
+	Graphics::Core::Context& Engine::getGraphicsCoreContext(){
+		return getGraphicsContext().core;
+	}
+
+	const Graphics::Core::Context& Engine::getGraphicsCoreContext() const{
+		return getGraphicsContext().core;
+	}
+
+
+	Graphics::Window::Context& Engine::getGraphicsWindowContext(){
+		return getGraphicsContext().window;
+	}
+
+	const Graphics::Window::Context& Engine::getGraphicsWindowContext() const{
+		return getGraphicsContext().window;
+	}
 }

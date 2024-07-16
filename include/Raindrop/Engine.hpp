@@ -11,15 +11,34 @@ namespace Raindrop{
 			~Engine();
 
 			enum InitFlagBits{
-				GRAPHICS = 1 << 0
+				INIT_GRAPHICS = 1 << 0,
+
+				INIT_EVERYTHING = INIT_GRAPHICS
 			};
+
 			using InitFlags = std::uint32_t;
 
-			void initialize(InitFlags flags);
+			void initialize(InitFlags flags = 0);
 
 			void release();
 
-		protected:
+			// CORE
+
+			Context& getContext();
+			const Context& getContext() const;
+
+			// GRAPHICS
+
+			Graphics::Context& getGraphicsContext();
+			const Graphics::Context& getGraphicsContext() const;
+
+			Graphics::Core::Context& getGraphicsCoreContext();
+			const Graphics::Core::Context& getGraphicsCoreContext() const;
+
+			Graphics::Window::Context& getGraphicsWindowContext();
+			const Graphics::Window::Context& getGraphicsWindowContext() const;
+
+		private:
 			std::unique_ptr<Context> _context;
 			std::unique_ptr<Graphics::Context> _graphics;
 

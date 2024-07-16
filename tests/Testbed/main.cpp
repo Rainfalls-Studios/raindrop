@@ -4,9 +4,11 @@
 class Testbed : public Raindrop::Engine{
 	public:
 		Testbed() : Engine(){
-			Engine::initialize(Engine::GRAPHICS);
+			Engine::initialize(INIT_EVERYTHING);
+		}
 
-			
+		void run(){
+			auto& windowContext = getGraphicsWindowContext();
 		}
 
 	private:

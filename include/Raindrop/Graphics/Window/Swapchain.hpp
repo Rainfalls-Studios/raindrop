@@ -40,12 +40,12 @@ namespace Raindrop::Graphics::Window{
 			Swapchain& wantSurfaceFormat(VkSurfaceFormatKHR surfaceFormat);
 
 			VkResult acquireNextImage();
-			VkResult submitCommandBuffer(VkCommandBuffer* buffers);
+			VkResult submitCommandBuffer(std::vector<VkCommandBuffer> buffers);
 
-			uint32_t frameCount() const;
-			uint32_t currentFrame() const;
+			uint32_t getFrameCount() const;
+			uint32_t getCurrentFrameIndex() const;
 
-			const RenderPass& renderPass() const;
+			const RenderPass& getRenderPass() const;
 
 			void beginRenderPass(VkCommandBuffer commandBuffer);
 			void endRenderPass(VkCommandBuffer commandBuffer);
