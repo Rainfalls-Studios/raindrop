@@ -13,6 +13,10 @@ namespace Raindrop{
 	void Engine::initialize(InitFlags flags){
 		initializeCore();
 
+		if (flags & INIT_EVENTS){
+			initializeEvents();
+		}
+
 		if (flags & INIT_GRAPHICS){
 			initializeGraphics();
 		}
@@ -33,6 +37,10 @@ namespace Raindrop{
 
 		// _graphics->core.createLogger();
 		// _graphics->core.instance.initialize(_graphics->core);
+	}
+
+	void Engine::initializeEvents(){
+		_events = std::make_unique<Events::Context>();
 	}
 
 
@@ -68,4 +76,19 @@ namespace Raindrop{
 		}
 		return *_graphics;
 	}
+
+	Events::Context& Engine::getEventsContext(){
+		if (!_events){
+			throw std::runtime_error("Events context has not been initialized");
+		}
+		return *_events;
+	}
+
+	const Events::Context& Engine::getEventsContext() const{
+		if (!_events){
+			throw std::runtime_error("Events context has not been initialized");
+		}
+		return *_events;
+	}
+
 }

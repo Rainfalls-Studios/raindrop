@@ -3,6 +3,7 @@
 
 #include "Context.hpp"
 #include "Graphics/Context.hpp"
+#include "Events/Context.hpp"
 
 namespace Raindrop{
 	class Engine{
@@ -12,6 +13,7 @@ namespace Raindrop{
 
 			enum InitFlagBits{
 				INIT_GRAPHICS = 1 << 0,
+				INIT_EVENTS = 1 << 1,
 
 				INIT_EVERYTHING = INIT_GRAPHICS
 			};
@@ -32,12 +34,19 @@ namespace Raindrop{
 			Graphics::Context& getGraphicsContext();
 			const Graphics::Context& getGraphicsContext() const;
 
+			// EVENTS
+
+			Events::Context& getEventsContext();
+			const Events::Context& getEventsContext() const;
+
 		private:
 			std::unique_ptr<Context> _context;
 			std::unique_ptr<Graphics::Context> _graphics;
+			std::unique_ptr<Events::Context> _events;
 
 			void initializeCore();
 			void initializeGraphics();
+			void initializeEvents();
 	};
 }
 

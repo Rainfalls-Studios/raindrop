@@ -13,6 +13,8 @@
 
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
 
+#include <iostream>
+
 namespace Raindrop::Graphics::Window{
 	Swapchain::SwapchainData::SwapchainData(Core::Context* context) :
 		context{context},
@@ -69,6 +71,7 @@ namespace Raindrop::Graphics::Window{
 		_oldSwapchain{},
 		_renderPass{},
 		_currentFrame{0},
+		_nextFrame{0},
 		_frameCount{0},
 		_extent{
 			.width = 0,
@@ -344,6 +347,21 @@ namespace Raindrop::Graphics::Window{
 		info.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 		info.presentMode = _presentMode;
 		info.clipped = VK_TRUE;
+
+		uint32_t queueFamilyIndices[] = {
+			_core->device.graphicsQueue.familyIndex,
+			_core->device.presentQueue.familyIndex,
+		};
+
+		if (queueFamilyIndices[0] != queueFamilyIndices[1]){
+			info.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+			info.queueFamilyIndexCount = 2;
+			info.pQueueFamilyIndices = queueFamilyIndices;
+		} else {
+			info.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+			info.queueFamilyIndexCount = 0;
+			info.pQueueFamilyIndices = nullptr;
+		}
 		
 		info.minImageCount = _frameCount;
 		info.imageFormat = _surfaceFormat.format;
@@ -530,7 +548,7 @@ namespace Raindrop::Graphics::Window{
 			Exceptions::VulkanOperationType::WAIT
 		);
 
-		VkResult result = vkAcquireNextImageKHR(device.get(), _swapchain->swapchain, UINT64_MAX, _swapchain->frames[_currentFrame].imageAvailable, VK_NULL_HANDLE, &_currentFrame);
+		VkResult result = vkAcquireNextImageKHR(device.get(), _swapchain->swapchain, UINT64_MAX, _swapchain->frames[_currentFrame].imageAvailable, VK_NULL_HANDLE, &_nextFrame);
 		return result;
 	}
 
@@ -538,15 +556,16 @@ namespace Raindrop::Graphics::Window{
 		auto& device = _core->device;
 		auto& allocationCallbacks = _core->allocationCallbacks;
 
-		if (_swapchain->frames[_currentFrame].imageInFlight != VK_NULL_HANDLE){
+		
+		if (_swapchain->frames[_nextFrame].imageInFlight != VK_NULL_HANDLE){
 			Exceptions::checkVkOperation<VkFence>(
-				vkWaitForFences(device.get(), 1, &_swapchain->frames[_currentFrame].imageInFlight, VK_TRUE, UINT64_MAX),
+				vkWaitForFences(device.get(), 1, &_swapchain->frames[_nextFrame].imageInFlight, VK_TRUE, UINT64_MAX),
 				"Failed to wait for swapchain attachment in flight fence",
 				Exceptions::VulkanOperationType::WAIT
 			);
 		}
 		
-		_swapchain->frames[_currentFrame].imageInFlight = _swapchain->frames[_currentFrame].inFlightFence;
+		_swapchain->frames[_nextFrame].imageInFlight = _swapchain->frames[_currentFrame].inFlightFence;
 
 
 		VkSemaphore waitSemaphores[] = {_swapchain->frames[_currentFrame].imageAvailable};
@@ -572,6 +591,7 @@ namespace Raindrop::Graphics::Window{
 			Exceptions::VulkanOperationType::RESET
 		);
 
+		
 		Exceptions::checkVkOperation<VkCommandBuffer>(
 			vkQueueSubmit(device.graphicsQueue.queue, 1, &submitInfo, _swapchain->frames[_currentFrame].inFlightFence),
 			"Faile to submit graphics command buffer",
@@ -588,9 +608,11 @@ namespace Raindrop::Graphics::Window{
 		presentInfo.swapchainCount = 1;
 		presentInfo.pSwapchains = swapChains;
 
-		presentInfo.pImageIndices = &_currentFrame;
+		presentInfo.pImageIndices = &_nextFrame;
 
 		VkResult result = vkQueuePresentKHR(device.presentQueue.queue, &presentInfo);
+
+		_currentFrame = (_currentFrame + 1) % _frameCount;
 		return result;
 	}
 
@@ -617,6 +639,11 @@ namespace Raindrop::Graphics::Window{
 	uint32_t Swapchain::getCurrentFrameIndex() const{
 		return _currentFrame;
 	}
+
+	uint32_t Swapchain::getNextFrameIndex() const{
+		return _nextFrame;
+	}
+
 
 	const RenderPass& Swapchain::getRenderPass() const{
 		return _renderPass;

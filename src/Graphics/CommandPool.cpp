@@ -1,6 +1,7 @@
 #include <Raindrop/Graphics/CommandPool.hpp>
 #include <Raindrop/Graphics/Context.hpp>
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
+#include <Raindrop/Graphics/CommandBuffer.hpp>
 
 namespace Raindrop::Graphics{
 	CommandPool::CommandPool() : 
@@ -66,4 +67,65 @@ namespace Raindrop::Graphics{
 		return *this;
 	}
 
+	std::vector<CommandBuffer> CommandPool::allocate(const std::uint32_t& count, const VkCommandBufferLevel& level){
+		_context->logger->info("Allocating {} command buffers...", count);
+
+		VkCommandBufferAllocateInfo info{};
+		info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+		info.commandPool = _pool;
+		info.commandBufferCount = static_cast<uint32_t>(count);
+		info.level = level;
+
+		std::vector<VkCommandBuffer> vkBuffers(static_cast<std::size_t>(count));
+		auto& device = _context->getDevice();
+		
+		Exceptions::checkVkOperation<VkCommandPool>(
+			vkAllocateCommandBuffers(device.get(), &info, vkBuffers.data()),
+			"Failed to allocate command buffers",
+			Exceptions::VulkanOperationType::ALLOCATION,
+			_context->logger
+		);
+
+		std::vector<CommandBuffer> output;
+		std::transform(
+			vkBuffers.begin(),
+			vkBuffers.end(),
+			std::back_inserter(output),
+
+			[this](const VkCommandBuffer& commandBuffer) {
+				return CommandBuffer(*_context, commandBuffer);
+			}
+		);
+
+		return output;
+	}
+
+	void CommandPool::free(const std::vector<CommandBuffer>& commandBuffers){
+		_context->logger->info("Freeing {} command buffers...", commandBuffers.size());
+		auto& device = _context->getDevice();
+
+		std::vector<VkCommandBuffer> vkCommandBuffers(commandBuffers.size());
+		for (std::size_t i=0; i<commandBuffers.size(); i++){
+			vkCommandBuffers[i] = commandBuffers[i].get();
+		}
+
+		vkFreeCommandBuffers(device.get(), _pool, static_cast<uint32_t>(commandBuffers.size()), vkCommandBuffers.data());
+	}
+
+	void CommandPool::reset(const VkCommandPoolResetFlags& flags){
+		auto& device = _context->getDevice();
+
+		Exceptions::checkVkOperation<VkCommandPool>(
+			vkResetCommandPool(device.get(), _pool, flags),
+			"Failed to reset command pool",
+			Exceptions::VulkanOperationType::RESET,
+			_context->logger
+		);
+	}
+
+	void CommandPool::trim(const VkCommandPoolTrimFlags& flags){
+		auto& device = _context->getDevice();
+
+		vkTrimCommandPool(device.get(), _pool, flags);
+	}
 }

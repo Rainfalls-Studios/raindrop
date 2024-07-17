@@ -44,6 +44,7 @@ namespace Raindrop::Graphics::Window{
 
 			uint32_t getFrameCount() const;
 			uint32_t getCurrentFrameIndex() const;
+			uint32_t getNextFrameIndex() const;
 
 			const RenderPass& getRenderPass() const;
 
@@ -75,6 +76,7 @@ namespace Raindrop::Graphics::Window{
 
 			RenderPass _renderPass;
 			uint32_t _currentFrame;
+			uint32_t _nextFrame;
 
 			uint32_t _frameCount;
 			VkExtent2D _extent;

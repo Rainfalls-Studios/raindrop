@@ -13,6 +13,7 @@
 #include "GraphicsPipeline.hpp"
 #include "Image.hpp"
 #include "ImageView.hpp"
+#include "PipelineLayout.hpp"
 #include "RenderPass.hpp"
 #include "ShaderModule.hpp"
 

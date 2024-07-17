@@ -19,6 +19,12 @@ namespace Raindrop::Graphics{
 
 			const VkCommandPool& get() const noexcept;
 
+			std::vector<CommandBuffer> allocate(const std::uint32_t& count, const VkCommandBufferLevel& level);
+			void free(const std::vector<CommandBuffer>& commandBuffers);
+			
+			void reset(const VkCommandPoolResetFlags& flags);
+			void trim(const VkCommandPoolTrimFlags& flags);
+
 		private:
 			Context* _context;
 			VkCommandPool _pool;
