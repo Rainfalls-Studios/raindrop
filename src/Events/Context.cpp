@@ -8,5 +8,8 @@ namespace Raindrop::Events{
 
 	void Context::initialize(){
 		createLogger();
+
+		manager.prepare(*this);
+		manager.initialize();
 	}
 }

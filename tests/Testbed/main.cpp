@@ -118,22 +118,31 @@ class Renderer{
 		
 };
 
-class Testbed : public Raindrop::Engine{
+class Testbed : public Raindrop::Engine, public Raindrop::Events::Listener{
 	public:
-		Testbed() : Engine(){
+		bool closeEvent(const Raindrop::Events::WindowCloseRequest& event){
+			_run = false;
+			return true;
+		}
+
+		Testbed() : Engine(), Listener(){
 			Engine::initialize(INIT_EVERYTHING | INIT_EVENTS);
 			_renderer.initialize(getGraphicsContext());
+
+			auto& eventManager = Engine::getEventsContext().manager;
+			eventManager.subscribe<Raindrop::Events::WindowCloseRequest>(this, &Testbed::closeEvent);
 		}
 
 		void run(){
+			_run = true;
 			auto start = std::chrono::steady_clock::now();
-			bool run = true;
 
-			while (run){
+			while (_run){
 				auto now = std::chrono::steady_clock::now();
-				run = now - start < std::chrono::seconds(4);
 
 				std::chrono::duration<float> duration = now - start;
+				getGraphicsContext().window.window.events();
+
 
 				auto commandBuffer = _renderer.beginFrame();
 				if (commandBuffer){
@@ -156,6 +165,7 @@ class Testbed : public Raindrop::Engine{
 
 	private:
 		Renderer _renderer;
+		bool _run;
 };
 
 int main(){

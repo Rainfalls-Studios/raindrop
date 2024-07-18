@@ -3,5 +3,6 @@
 
 #include "Engine.hpp"
 #include "Graphics/common.hpp"
+#include "Events/common.hpp"
 
 #endif

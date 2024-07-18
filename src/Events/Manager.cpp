@@ -27,20 +27,20 @@ namespace Raindrop::Events{
 		_events[id].callbacks.push_back(info);
 	}
 
-	void Manager::unsubscribe(const std::type_index& id, const Listener* listener){
-		auto& callbacks = _events[id].callbacks;
+	// void Manager::unsubscribe(const std::type_index& id, const Listener* listener){
+	// 	auto& callbacks = _events[id].callbacks;
 
-		callbacks.remove_if(
-			[listener](const CallbackInfo& info){
-				return info.listener == listener;
-			}
-		);
-	}
+	// 	callbacks.remove_if(
+	// 		[listener](const CallbackInfo& info){
+	// 			return info.listener == listener;
+	// 		}
+	// 	);
+	// }
 
 	void Manager::trigger(const std::type_index& id, const Event& event){
 		auto& callbacks = _events[id].callbacks;
 		for (const auto& callback : callbacks){
-			callback.callback(*callback.listener, event);
+			callback.callback(event);
 		}
 	}
 }

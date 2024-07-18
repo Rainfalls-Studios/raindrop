@@ -11,7 +11,7 @@ namespace Raindrop::Graphics::Window{
 			Window() noexcept;
 			~Window();
 
-			void prepare(Context& context);
+			void prepare(Context& context, Events::Context& events);
 			void initialize();
 			void release();
 
@@ -20,14 +20,15 @@ namespace Raindrop::Graphics::Window{
 			glm::u32vec2 getSize() const noexcept;
 
 			std::vector<const char*> getRequiredInstanceExtensions() const;
+
+			void events();
 		
 		private:
 			Context* _context;
+			Events::Context* _events;
 			SDL_Window* _window;
 
 			bool _resized;
-
-			void quitEvent(SDL_Event& e);
 
 			void terminatingEvent(SDL_Event& e);
 			void lowMemoryEvent(SDL_Event& e);

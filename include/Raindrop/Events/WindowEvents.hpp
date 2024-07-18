@@ -115,8 +115,8 @@ namespace Raindrop::Events{
 	 */
 	class WindowMouseEntered : public WindowEvent{
 		public:
-			WindowMouseEnter(Window& window) : WindowEvent(window){}
-			~WindowMouseEnter() = default;
+			WindowMouseEntered(Window& window) : WindowEvent(window){}
+			~WindowMouseEntered() = default;
 	};
 
 	/**

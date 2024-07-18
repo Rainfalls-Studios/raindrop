@@ -8,8 +8,7 @@ namespace Raindrop::Events{
 	class Manager{
 		public:
 			struct CallbackInfo{
-				Listener* listener;
-				std::function<bool(Listener&, const Event&)> callback;
+				std::function<bool(const Event&)> callback;
 			};
 
 			struct EventData{
@@ -24,22 +23,43 @@ namespace Raindrop::Events{
 			void release();
 			
 			void subscribe(const std::type_index& id, const CallbackInfo& info);
-			void unsubscribe(const std::type_index& id, const Listener* listener);
+			// void unsubscribe(const std::type_index& id, const Listener* listener);
 
 			void trigger(const std::type_index& id, const Event& event);
 
 
-			template<typename T>
-			void subscribe(Listener& listener, std::function<bool(Listener&, const T&)> callback){
-				static_assert(std::is_base_of<Event, T>::value, "The event type has to be derived from Raindrop::Events::Event");
-				subscribe(typeid(T), CallbackInfo(listener, callback));
+			template<typename EventType>
+			void subscribe(std::function<bool(const EventType&)> callback){
+				static_assert(std::is_base_of<Event, EventType>::value, "The event type has to be derived from Raindrop::Events::Event");
+
+				subscribe(
+					typeid(EventType),
+					CallbackInfo(
+						[callback](const Event& event) -> bool {
+							return callback(static_cast<const EventType&>(event));
+						}
+				));
 			}
 
-			template<typename T>
-			void unsubscibe(const Listener& listener){
-				static_assert(std::is_base_of<Event, T>::value, "The event type has to be derived from Raindrop::Events::Event");
-				unsubscribe(typeid(T), &listener);
+			template<typename EventType, typename ClassType>
+			void subscribe(ClassType& instance, bool (ClassType::*memberFunction)(const EventType&)) {
+				subscribe<EventType>([&instance, memberFunction](const EventType& event) -> bool {
+					return (instance.*memberFunction)(event);
+				});
 			}
+
+			template<typename EventType, typename ClassType>
+			void subscribe(ClassType* instance, bool (ClassType::*memberFunction)(const EventType&)) {
+				subscribe<EventType>([instance, memberFunction](const EventType& event) -> bool {
+					return (instance->*memberFunction)(event);
+				});
+			}
+
+			// template<typename T>
+			// void unsubscibe(const Listener& listener){
+			// 	static_assert(std::is_base_of<Event, T>::value, "The event type has to be derived from Raindrop::Events::Event");
+			// 	unsubscribe(typeid(T), &listener);
+			// }
 
 			template<typename T>
 			void trigger(const T& event){

@@ -3,6 +3,7 @@
 
 #include "Core/Context.hpp"
 #include "Window/Context.hpp"
+#include <Raindrop/Events/types.hpp>
 
 namespace Raindrop::Graphics{
 	struct Context{
@@ -12,7 +13,7 @@ namespace Raindrop::Graphics{
 		Window::Context window;
 
 		void createLogger();
-		void initialize();
+		void initialize(Events::Context& events);
 		
 		Core::Instance& getInstance() noexcept;
 		const Core::Instance& getInstance() const noexcept;

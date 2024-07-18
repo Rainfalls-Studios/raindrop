@@ -6,7 +6,7 @@ namespace Raindrop::Graphics{
 		logger = spdlog::stdout_color_st("Raindrop::Graphics");
 	}
 
-	void Context::initialize(){
+	void Context::initialize(Events::Context& events){
 		createLogger();
 
 		// None for now
@@ -14,7 +14,7 @@ namespace Raindrop::Graphics{
 
 		// First create the window
 		window.createLogger();
-		window.window.prepare(window);
+		window.window.prepare(window, events);
 		window.window.initialize();
 		
 

@@ -33,7 +33,7 @@ namespace Raindrop{
 
 	void Engine::initializeGraphics(){
 		_graphics = std::make_unique<Graphics::Context>();
-		_graphics->initialize();
+		_graphics->initialize(getEventsContext());
 
 		// _graphics->core.createLogger();
 		// _graphics->core.instance.initialize(_graphics->core);
