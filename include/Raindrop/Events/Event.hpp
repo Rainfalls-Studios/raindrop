@@ -4,6 +4,7 @@
 namespace Raindrop::Events{
 	class Event{
 		public:
+			Event() = default;
 			virtual ~Event() = default;
 	};
 }

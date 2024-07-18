@@ -105,7 +105,6 @@ namespace Raindrop::Graphics::Window{
 		};
 	}
 
-
 	// void Window::registerEvents(){
 	// 	auto& event = _context.getInternalContext().getEventManager();
 

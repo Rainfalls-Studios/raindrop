@@ -3,6 +3,7 @@
 
 #include "prototypes.hpp"
 #include <Raindrop/Graphics/pch.pch>
+#include <Raindrop/Events/types.hpp>
 
 namespace Raindrop::Graphics::Window{
 	class Window{

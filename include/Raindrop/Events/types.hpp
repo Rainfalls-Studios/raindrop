@@ -4,6 +4,8 @@
 namespace Raindrop::Events{
 	struct Context;
 	class Event;
+	class Manager;
+	class Listener;
 }
 
 #endif
