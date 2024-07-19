@@ -55,12 +55,6 @@ namespace Raindrop::Events{
 				});
 			}
 
-			// template<typename T>
-			// void unsubscibe(const Listener& listener){
-			// 	static_assert(std::is_base_of<Event, T>::value, "The event type has to be derived from Raindrop::Events::Event");
-			// 	unsubscribe(typeid(T), &listener);
-			// }
-
 			template<typename T>
 			void trigger(const T& event){
 				static_assert(std::is_base_of<Event, T>::value, "The event type has to be derived from Raindrop::Events::Event");

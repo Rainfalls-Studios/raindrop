@@ -125,12 +125,19 @@ class Testbed : public Raindrop::Engine, public Raindrop::Events::Listener{
 			return true;
 		}
 
+		bool windowResized(const Raindrop::Events::WindowResized& event){
+			const auto& position = event.getSize();
+			std::cout << position.x << " : " << position.y << std::endl;
+			return true;
+		}
+
 		Testbed() : Engine(), Listener(){
 			Engine::initialize(INIT_EVERYTHING | INIT_EVENTS);
 			_renderer.initialize(getGraphicsContext());
 
 			auto& eventManager = Engine::getEventsContext().manager;
 			eventManager.subscribe<Raindrop::Events::WindowCloseRequest>(this, &Testbed::closeEvent);
+			eventManager.subscribe<Raindrop::Events::WindowResized>(this, &Testbed::windowResized);
 		}
 
 		void run(){

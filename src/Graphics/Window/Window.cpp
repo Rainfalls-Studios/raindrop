@@ -2,6 +2,8 @@
 #include <Raindrop/Graphics/Window/Context.hpp>
 #include <Raindrop/Events/Context.hpp>
 #include <Raindrop/Events/WindowEvents.hpp>
+#include <Raindrop/Events/KeyEvents.hpp>
+#include <Raindrop/Events/MouseEvents.hpp>
 
 #include <SDL3/SDL.h>
 #include <spdlog/spdlog.h>
@@ -385,11 +387,16 @@ namespace Raindrop::Graphics::Window{
 	}
 
 	void Window::keyDownEvent(SDL_Event& e){
+		Events::Key key = static_cast<Events::Key>(e.key.keysym.scancode);
+		uint32_t repeat = e.key.repeat;
 
+		_events->manager.trigger(Events::KeyDown(*this, key, repeat));
 	}
 
 	void Window::keyUpEvent(SDL_Event& e){
+		Events::Key key = static_cast<Events::Key>(e.key.keysym.scancode);
 
+		_events->manager.trigger(Events::KeyUp(*this, key));
 	}
 
 	void Window::textEditingEvent(SDL_Event& e){
@@ -405,19 +412,44 @@ namespace Raindrop::Graphics::Window{
 	}
 
 	void Window::mouseMotionEvent(SDL_Event& e){
+		glm::u32vec2 position{
+			static_cast<std::uint32_t>(e.motion.x),
+			static_cast<std::uint32_t>(e.motion.y)
+		};
 
+		glm::i32vec2 delta{
+			static_cast<std::int32_t>(e.motion.xrel),
+			static_cast<std::int32_t>(e.motion.yrel)
+		};
+
+		_events->manager.trigger(Events::MouseMovedEvent(*this, position, delta));
 	}
 
 	void Window::mouseButtonDownEvent(SDL_Event& e){
+		Events::MouseButton button = static_cast<Events::MouseButton>(e.button.button);
+		std::uint32_t clicks = e.button.clicks;
+		
+		glm::u32vec2 position{
+			static_cast<std::uint32_t>(e.button.x),
+			static_cast<std::uint32_t>(e.button.y)
+		};
 
+		_events->manager.trigger(Events::MouseButtonDownEvent(*this, button, clicks, position));
 	}
 
 	void Window::mouseButtonUpEvent(SDL_Event& e){
+		Events::MouseButton button = static_cast<Events::MouseButton>(e.button.button);
+		
+		glm::u32vec2 position{
+			static_cast<std::uint32_t>(e.button.x),
+			static_cast<std::uint32_t>(e.button.y)
+		};
 
+		_events->manager.trigger(Events::MouseButtonUpEvent(*this, button, position));
 	}
 
 	void Window::mouseWheelEvent(SDL_Event& e){
-
+		_events->manager.trigger(Events::MouseScrollEvent(*this, e.wheel.y));
 	}
 
 	// void Window::registerEvents(){
