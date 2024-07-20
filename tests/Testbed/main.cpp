@@ -23,10 +23,11 @@ class Renderer{
 
 		Raindrop::Graphics::CommandBuffer* beginFrame(){
 			auto& swapchain = _context->window.swapchain;
+			auto& window = _context->window.window;
 
 			VkResult result = swapchain.acquireNextImage();
 			
-			if (result == VK_ERROR_OUT_OF_DATE_KHR){
+			if (window.wasResized() || result == VK_ERROR_OUT_OF_DATE_KHR){
 				rebuildSwapchain();
 				return nullptr;
 			}
@@ -57,6 +58,7 @@ class Renderer{
 			VkResult result = vkEndCommandBuffer(commandBuffer->get());
 
 			auto& swapchain = _context->window.swapchain;
+			auto& window = _context->window.window;
 
 			if (result != VK_SUCCESS){
 				_context->logger->info("Failed to end command buffer");
@@ -65,7 +67,7 @@ class Renderer{
 			
 			result = swapchain.submitCommandBuffer({commandBuffer->get()});
 
-			if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR){
+			if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || window.wasResized()){
 				rebuildSwapchain();
 			} else if (result != VK_SUCCESS) {
 				_context->logger->info("Failed to submit command buffer");
@@ -167,7 +169,6 @@ class Testbed : public Raindrop::Engine, public Raindrop::Events::Listener{
 					_renderer.endFrame(commandBuffer);
 				}
 			}
-		
 		}
 
 	private:

@@ -110,7 +110,12 @@ namespace Raindrop::Graphics::Window{
 		};
 	}
 
+	void Window::resetFlags(){
+		_flags = 0;
+	}
+
 	void Window::events(){
+		resetFlags();
 		SDL_Event e;
 
 		while (SDL_PollEvent(&e)){
@@ -278,14 +283,17 @@ namespace Raindrop::Graphics::Window{
 
 	void Window::windowShownEvent(SDL_Event& e){
 		_events->manager.trigger(Events::WindowShown(*this));
+		_flags |= static_cast<Flags>(FlagsBits::SHOWN);
 	}
 
 	void Window::windowHiddenEvent(SDL_Event& e){
 		_events->manager.trigger(Events::WindowHidden(*this));
+		_flags |= static_cast<Flags>(FlagsBits::HIDDEN);
 	}
 
 	void Window::windowExposedEvent(SDL_Event& e){
 		_events->manager.trigger(Events::WindowExposed(*this));
+		_flags |= static_cast<Flags>(FlagsBits::EXPOSED);
 	}
 
 	void Window::windowMovedEvent(SDL_Event& e){
@@ -295,6 +303,7 @@ namespace Raindrop::Graphics::Window{
 		};
 
 		_events->manager.trigger(Events::WindowMoved(*this, position));
+		_flags |= static_cast<Flags>(FlagsBits::MOVED);
 	}
 
 	void Window::windowResizedEvent(SDL_Event& e){
@@ -304,6 +313,7 @@ namespace Raindrop::Graphics::Window{
 		};
 
 		_events->manager.trigger(Events::WindowResized(*this, size));
+		_flags |= static_cast<Flags>(FlagsBits::RESIZED);
 	}
 
 	void Window::windowPixelSizeChangedEvent(SDL_Event& e){
@@ -342,25 +352,11 @@ namespace Raindrop::Graphics::Window{
 		_events->manager.trigger(Events::WindowCloseRequest(*this));
 	}
 
-	void Window::windowTakeFocusEvent(SDL_Event& e){
-
-	}
-
-	void Window::windowHitTestEvent(SDL_Event& e){
-
-	}
-
-	void Window::windowICCPROFChangedEvent(SDL_Event& e){
-
-	}
-
-	void Window::windowDisplayChangedEvent(SDL_Event& e){
-
-	}
-
-	void Window::windowDisplayScaleChangedEvent(SDL_Event& e){
-
-	}
+	void Window::windowTakeFocusEvent(SDL_Event& e){}
+	void Window::windowHitTestEvent(SDL_Event& e){}
+	void Window::windowICCPROFChangedEvent(SDL_Event& e){}
+	void Window::windowDisplayChangedEvent(SDL_Event& e){}
+	void Window::windowDisplayScaleChangedEvent(SDL_Event& e){}
 
 	void Window::windowOccludedEvent(SDL_Event& e){
 		_events->manager.trigger(Events::WindowOccluded(*this));
@@ -378,13 +374,8 @@ namespace Raindrop::Graphics::Window{
 		_events->manager.trigger(Events::WindowDestroyed());
 	}
 
-	void Window::windowPenEnterEvent(SDL_Event& e){
-
-	}
-
-	void Window::windowPenLeaveEvent(SDL_Event& e){
-
-	}
+	void Window::windowPenEnterEvent(SDL_Event& e){}
+	void Window::windowPenLeaveEvent(SDL_Event& e){}
 
 	void Window::keyDownEvent(SDL_Event& e){
 		Events::Key key = static_cast<Events::Key>(e.key.keysym.scancode);
@@ -399,17 +390,9 @@ namespace Raindrop::Graphics::Window{
 		_events->manager.trigger(Events::KeyUp(*this, key));
 	}
 
-	void Window::textEditingEvent(SDL_Event& e){
-
-	}
-
-	void Window::textInputEvent(SDL_Event& e){
-
-	}
-
-	void Window::keymapChangedEvent(SDL_Event& e){
-
-	}
+	void Window::textEditingEvent(SDL_Event& e){}
+	void Window::textInputEvent(SDL_Event& e){}
+	void Window::keymapChangedEvent(SDL_Event& e){}
 
 	void Window::mouseMotionEvent(SDL_Event& e){
 		glm::u32vec2 position{
@@ -451,6 +434,27 @@ namespace Raindrop::Graphics::Window{
 	void Window::mouseWheelEvent(SDL_Event& e){
 		_events->manager.trigger(Events::MouseScrollEvent(*this, e.wheel.y));
 	}
+
+	bool Window::wasResized() const noexcept{
+		return _flags & static_cast<Flags>(FlagsBits::RESIZED);
+	}
+
+	bool Window::wasMoved() const noexcept{
+		return _flags & static_cast<Flags>(FlagsBits::MOVED);
+	}
+
+	bool Window::wasExposed() const noexcept{
+		return _flags & static_cast<Flags>(FlagsBits::EXPOSED);
+	}
+
+	bool Window::wasShown() const noexcept{
+		return _flags & static_cast<Flags>(FlagsBits::SHOWN);
+	}
+
+	bool Window::wasHidden() const noexcept{
+		return _flags & static_cast<Flags>(FlagsBits::HIDDEN);
+	}
+
 
 	// void Window::registerEvents(){
 	// 	auto& event = _context.getInternalContext().getEventManager();

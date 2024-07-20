@@ -387,7 +387,6 @@ namespace Raindrop::Graphics::Window{
 		_context->logger->info("The vulkan swapchain has been rebuilt without any critical error");
 	}
 
-
 	void Swapchain::getSwapchainImages(){
 		auto& device = _core->device;
 

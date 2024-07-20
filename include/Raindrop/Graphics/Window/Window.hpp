@@ -11,6 +11,7 @@ namespace Raindrop::Graphics::Window{
 			Window() noexcept;
 			~Window();
 
+
 			void prepare(Context& context, Events::Context& events);
 			void initialize();
 			void release();
@@ -22,13 +23,30 @@ namespace Raindrop::Graphics::Window{
 			std::vector<const char*> getRequiredInstanceExtensions() const;
 
 			void events();
+
+			bool wasResized() const noexcept;
+			bool wasMoved() const noexcept;
+			bool wasExposed() const noexcept;
+			bool wasShown() const noexcept;
+			bool wasHidden() const noexcept;
 		
 		private:
+			enum class FlagsBits{
+				RESIZED = 1 << 0,
+				MOVED = 1 << 1,
+				EXPOSED = 1 << 2,
+				SHOWN = 1 << 3,
+				HIDDEN = 1 << 4
+			};
+
 			Context* _context;
 			Events::Context* _events;
 			SDL_Window* _window;
 
-			bool _resized;
+			void resetFlags();
+			
+			using Flags = std::uint32_t;
+			Flags _flags;
 
 			void terminatingEvent(SDL_Event& e);
 			void lowMemoryEvent(SDL_Event& e);

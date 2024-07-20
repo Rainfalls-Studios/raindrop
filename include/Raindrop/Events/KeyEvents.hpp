@@ -30,9 +30,6 @@ namespace Raindrop::Events{
 		KEY_O = 18,
 		KEY_P = 19,
 		KEY_Q = 20,
-		KEY_R = 21,
-		KEY_S = 22,
-		KEY_T = 23,
 		KEY_U = 24,
 		KEY_V = 25,
 		KEY_W = 26,
@@ -237,6 +234,13 @@ namespace Raindrop::Events{
 		KEY_RSHIFT = 229,
 		KEY_RALT = 230,
 		KEY_RGUI = 231,
+
+		__KEY_COUNT__ = 256
+	};
+
+	enum class KeyStatus{
+		RELEASED,
+		PRESSED,
 	};
 
 	class KeyEvent : public WindowEvent{

@@ -7,7 +7,14 @@ namespace Raindrop::Events{
 	enum MouseButton{
 		BUTTON_LEFT = 0,
 		BUTTON_MIDDLE = 1,
-		BUTTON_RIGH = 2
+		BUTTON_RIGH = 2,
+
+		__BUTTON_COUNT__ = 3
+	};
+
+	enum class MouseButtonStatus{
+		PRESSED,
+		RELEASED
 	};
 
 	class MouseMovedEvent : public WindowEvent{

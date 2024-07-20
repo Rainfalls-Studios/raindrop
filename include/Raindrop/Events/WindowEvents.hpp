@@ -6,6 +6,7 @@
 #include <Raindrop/Graphics/Window/prototypes.hpp>
 
 namespace Raindrop::Events{
+
 	/**
 	 * @brief Base window event class
 	 * 

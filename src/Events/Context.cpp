@@ -11,5 +11,8 @@ namespace Raindrop::Events{
 
 		manager.prepare(*this);
 		manager.initialize();
+
+		inputs.prepare(*this);
+		inputs.initialize();
 	}
 }
