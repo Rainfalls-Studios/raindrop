@@ -4,6 +4,13 @@
 #include "types.hpp"
 #include "pch.pch"
 
+class Object{
+	
+};
+
+class Sphere : public Object{};
+class LightPoint : public Object{};
+
 namespace Raindrop::Events{
 	class Manager{
 		public:

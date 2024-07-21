@@ -20,9 +20,16 @@ namespace Raindrop{
 		if (flags & INIT_GRAPHICS){
 			initializeGraphics();
 		}
+
+		if (flags & INIT_SCENES){
+			initializeScenes();
+		}
 	}
 
 	void Engine::release(){
+		_scenes.reset();
+		_graphics.reset();
+		_events.reset();
 		_context.reset();
 	}
 
@@ -41,8 +48,11 @@ namespace Raindrop{
 
 	void Engine::initializeEvents(){
 		_events = std::make_unique<Events::Context>();
+	}	
+	
+	void Engine::initializeScenes(){
+		_scenes = std::make_unique<Scenes::Context>();
 	}
-
 
 
 	// ======================= CORE ==============================
@@ -77,6 +87,8 @@ namespace Raindrop{
 		return *_graphics;
 	}
 
+	// ==================== EVENTS ============================
+
 	Events::Context& Engine::getEventsContext(){
 		if (!_events){
 			throw std::runtime_error("Events context has not been initialized");
@@ -91,4 +103,20 @@ namespace Raindrop{
 		return *_events;
 	}
 
+
+	// ==================== SCENES ============================
+
+	Scenes::Context& Engine::getScenesContext(){
+		if (!_scenes){
+			throw std::runtime_error("Scenes context has not been initialized");
+		}
+		return *_scenes;
+	}
+
+	const Scenes::Context& Engine::getScenesContext() const{
+		if (!_scenes){
+			throw std::runtime_error("Scenes context has not been initialized");
+		}
+		return *_scenes;
+	}
 }
