@@ -6,12 +6,31 @@ namespace Raindrop::Scenes{
 
 	Scene::Scene() noexcept : 
 		_context{nullptr},
-		_registry{},
 		_properties{}
 	{}
 
 	Scene::~Scene(){
 		release();
+	}
+
+	Scene::Scene(Scene&& other) : 
+		_context{nullptr},
+		_properties{}
+	{
+		Scene::swap(*this, other);
+	}
+	
+	Scene& Scene::operator=(Scene&& other){
+		Scene::swap(*this, other);
+		return *this;
+	}
+
+	void Scene::swap(Scene& A, Scene& B){
+		// std::swap(static_cast<Registry&>(A), static_cast<Registry&>(B));
+		// static_cast<Registry&>(A).swap()
+		static_cast<Registry&>(A).swap(static_cast<Registry&>(B));
+		std::swap(A._context, B._context);
+		std::swap(A._properties, B._properties);
 	}
 
 	void Scene::prepare(Context& context){
@@ -24,15 +43,21 @@ namespace Raindrop::Scenes{
 
 	void Scene::release(){
 		_properties.clear();
-		_registry.clear();
+		Registry::clear();
 		_context = nullptr;
 	}
 
-	entt::registry& Scene::getRegistry() noexcept{
-		return _registry;
+	Entity Scene::create(){
+		EntityID id = Registry::create();
+		return Entity(*this, id);
 	}
-	
-	const entt::registry& Scene::getRegistry() const noexcept{
-		return _registry;
+
+	Entity Scene::create(const EntityID& hint){
+		EntityID id = Registry::create(hint);
+		return Entity(*this, id);
+	}
+
+	void Scene::destroy(const Entity& entity){
+		Registry::destroy(entity.getID());
 	}
 }

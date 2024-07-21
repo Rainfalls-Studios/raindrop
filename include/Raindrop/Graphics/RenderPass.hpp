@@ -94,6 +94,9 @@ namespace Raindrop::Graphics{
 			RenderPass() noexcept;
 			~RenderPass();
 
+			RenderPass(RenderPass&& other);
+			RenderPass& operator=(RenderPass&& other);
+
 			void prepare(Context& context);
 			void initialize();
 			void release();
@@ -105,6 +108,8 @@ namespace Raindrop::Graphics{
 			Dependency addDependency();
 
 			const VkRenderPass& get() const noexcept;
+
+			friend void swap(RenderPass& A, RenderPass& B);
 
 		private:
 			Context* _context;

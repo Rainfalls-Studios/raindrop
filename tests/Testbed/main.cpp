@@ -4,6 +4,11 @@
 #include <spdlog/spdlog.h>
 #include <iostream>
 
+class CustomSceneProperty : public Raindrop::Scenes::Property{
+	public:
+		int myValue;
+};
+
 
 class Testbed : public Raindrop::Engine, public Raindrop::Events::Listener{
 	public:
@@ -13,11 +18,16 @@ class Testbed : public Raindrop::Engine, public Raindrop::Events::Listener{
 		}
 
 		Testbed() : Engine(), Listener(){
-			Engine::initialize(INIT_EVERYTHING | INIT_EVENTS);
+			Engine::initialize(INIT_EVERYTHING);
 			_renderer.initialize(getGraphicsContext());
 
-			auto& eventManager = Engine::getEventsContext().manager;
-			eventManager.subscribe<Raindrop::Events::WindowCloseRequest>(this, &Testbed::closeEvent);
+			Engine::subscribeToEvent<Raindrop::Events::WindowCloseRequest>(this, &Testbed::closeEvent);
+
+
+			auto scene = Engine::createScene();
+			auto& property = scene.addProperty<CustomSceneProperty>();
+
+			auto entity = scene.create();
 		}
 
 		void run(){
@@ -28,8 +38,7 @@ class Testbed : public Raindrop::Engine, public Raindrop::Events::Listener{
 				auto now = std::chrono::steady_clock::now();
 
 				std::chrono::duration<float> duration = now - start;
-				getGraphicsContext().window.window.events();
-
+				Engine::getGraphicsWindow().events();
 
 				auto commandBuffer = _renderer.beginFrame();
 				if (commandBuffer){

@@ -36,15 +36,46 @@ namespace Raindrop{
 			Graphics::Context& getGraphicsContext();
 			const Graphics::Context& getGraphicsContext() const;
 
+			Graphics::Core::Instance& getGraphicsInstance();
+			Graphics::Core::PhysicalDevice& getGraphicsPhysicalDevice();
+			Graphics::Core::Device& getGraphicsDevice();
+			Graphics::Window::Window& getGraphicsWindow();
+			Graphics::Window::Surface& getGraphicsWindowSurface();
+			Graphics::Window::Swapchain& getGraphicsWindowSwapchain();
+
+			Graphics::RenderPass createGraphicsRenderPass();
+
 			// EVENTS
 
 			Events::Context& getEventsContext();
 			const Events::Context& getEventsContext() const;
 
+			template<typename EventType>
+			void subscribeToEvent(std::function<bool(const EventType&)> callback){
+				getEventsContext().manager.subscribe<EventType>(callback);
+			}
+
+			template<typename EventType, typename ClassType>
+			void subscribeToEvent(ClassType& instance, bool (ClassType::*memberFunction)(const EventType&)){
+				getEventsContext().manager.subscribe<EventType, ClassType>(instance, memberFunction);
+			}
+
+			template<typename EventType, typename ClassType>
+			void subscribeToEvent(ClassType* instance, bool (ClassType::*memberFunction)(const EventType&)){
+				getEventsContext().manager.subscribe<EventType, ClassType>(instance, memberFunction);
+			}
+
+			template<typename T>
+			void triggerEvent(const T& event){
+				getEventsContext().manager.trigger<T>(event);
+			}
+
 			// SCENES
 
 			Scenes::Context& getScenesContext();
 			const Scenes::Context& getScenesContext() const;
+
+			Scenes::Scene createScene();
 
 		private:
 			std::unique_ptr<Context> _context;

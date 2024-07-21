@@ -23,8 +23,6 @@ namespace Raindrop::Graphics{
 
 		Core::Device& getDevice() noexcept;
 		const Core::Device& getDevice() const noexcept;
-
-
 	};
 }
 

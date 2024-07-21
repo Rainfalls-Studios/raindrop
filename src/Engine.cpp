@@ -87,6 +87,37 @@ namespace Raindrop{
 		return *_graphics;
 	}
 
+
+	Graphics::Core::Instance& Engine::getGraphicsInstance(){
+		return getGraphicsContext().core.instance;
+	}
+
+	Graphics::Core::PhysicalDevice& Engine::getGraphicsPhysicalDevice(){
+		return getGraphicsContext().core.physicalDevice;
+	}
+
+	Graphics::Core::Device& Engine::getGraphicsDevice(){
+		return getGraphicsContext().core.device;
+	}
+
+	Graphics::Window::Window& Engine::getGraphicsWindow(){
+		return getGraphicsContext().window.window;
+	}
+
+	Graphics::Window::Surface& Engine::getGraphicsWindowSurface(){
+		return getGraphicsContext().window.surface;
+	}
+
+	Graphics::Window::Swapchain& Engine::getGraphicsWindowSwapchain(){
+		return getGraphicsContext().window.swapchain;
+	}
+
+	Graphics::RenderPass Engine::createGraphicsRenderPass(){
+		Graphics::RenderPass renderPass;
+		renderPass.prepare(getGraphicsContext());
+		return std::move(renderPass);
+	}
+
 	// ==================== EVENTS ============================
 
 	Events::Context& Engine::getEventsContext(){
@@ -118,5 +149,11 @@ namespace Raindrop{
 			throw std::runtime_error("Scenes context has not been initialized");
 		}
 		return *_scenes;
+	}
+
+	Scenes::Scene Engine::createScene(){
+		Scenes::Scene scene;
+		scene.prepare(getScenesContext());
+		return std::move(scene);
 	}
 }

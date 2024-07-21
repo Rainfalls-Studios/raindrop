@@ -3,5 +3,6 @@
 
 #include "Scene.hpp"
 #include "Property.hpp"
+#include "Entity.hpp"
 
 #endif

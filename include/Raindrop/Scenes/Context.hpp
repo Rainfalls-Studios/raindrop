@@ -2,6 +2,7 @@
 #define __RAINDROP_SCENES_CONTEXT_HPP__
 
 #include "pch.pch"
+#include "Scene.hpp"
 
 namespace Raindrop::Scenes{
 	struct Context{

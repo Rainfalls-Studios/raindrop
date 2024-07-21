@@ -190,6 +190,23 @@ namespace Raindrop::Graphics{
 		release();
 	}
 
+	RenderPass::RenderPass(RenderPass&& other) : 
+		_context{nullptr},
+		_renderPass{VK_NULL_HANDLE}{
+		swap(*this, other);
+	}
+
+	RenderPass& RenderPass::operator=(RenderPass&& other){
+		swap(*this, other);
+		return *this;
+	}
+
+	void swap(RenderPass& A, RenderPass& B){
+		std::swap(A._context, B._context);
+		std::swap(A._renderPass, B._renderPass);
+		std::swap(A._buildInfo, B._buildInfo);
+	}
+
 	void RenderPass::prepare(Context& context){
 		_context = &context;
 
