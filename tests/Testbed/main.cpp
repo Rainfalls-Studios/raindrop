@@ -4,13 +4,10 @@
 #include <spdlog/spdlog.h>
 #include <iostream>
 
-#include <vulkan/vk_enum_string_helper.h>
-
 class CustomSceneProperty : public Raindrop::Scenes::Property{
 	public:
 		int myValue;
 };
-
 
 class Testbed : public Raindrop::Engine, public Raindrop::Events::Listener{
 	public:

@@ -27,6 +27,9 @@ namespace Raindrop::Graphics::Core{
 
 			void waitIdle();
 
+			uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+
+
 			QueueInfo graphicsQueue;
 			QueueInfo presentQueue;
 			QueueInfo transfetQueue;
