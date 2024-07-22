@@ -60,4 +60,12 @@ namespace Raindrop::Scenes{
 	void Scene::destroy(const Entity& entity){
 		Registry::destroy(entity.getID());
 	}
+
+	Registry& Scene::getRegistry() noexcept{
+		return *this;
+	}
+
+	const Registry& Scene::getRegistry() const noexcept{
+		return *this;
+	}
 }

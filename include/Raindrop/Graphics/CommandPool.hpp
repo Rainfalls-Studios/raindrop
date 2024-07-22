@@ -1,7 +1,7 @@
 #ifndef __RAINDROP_GRAPHICS_COMMAND_POOL_HPP__
 #define __RAINDROP_GRAPHICS_COMMAND_POOL_HPP__
 
-#include "prototypes.hpp"
+#include "types.hpp"
 #include "pch.pch"
 
 namespace Raindrop::Graphics{

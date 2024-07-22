@@ -37,9 +37,13 @@ namespace Raindrop::Graphics{
 		core.physicalDevice.requireSurfaceSupport(window.surface.get());
 		core.physicalDevice.initialize();
 
+		formats.prepare(*this);
+		formats.initialize();
+
 		// Create the physical device
 		core.device.prepare(core);
 		core.device.initialize();
+
 
 		// Create the window's swapchain
 		window.swapchain.prepare(window, core, *this);

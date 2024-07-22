@@ -45,14 +45,13 @@ namespace Raindrop::Scenes{
 		return _id;
 	}
 
-
 	Registry& Entity::getRegistry(){
 		if (!_scene) throw std::runtime_error("Invalid entity");
-		return *_scene;
+		return _scene->getRegistry();
 	}
 
 	const Registry& Entity::getRegistry() const{
 		if (!_scene) throw std::runtime_error("Invalid entity");
-		return *_scene;
+		return _scene->getRegistry();
 	}
 }

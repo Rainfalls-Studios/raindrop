@@ -1,5 +1,5 @@
-#ifndef __RAINDROP_GRAPHICS_PROTOTYPES_HPP__
-#define __RAINDROP_GRAPHICS_PROTOTYPES_HPP__
+#ifndef __RAINDROP_GRAPHICS_TYPES_HPP__
+#define __RAINDROP_GRAPHICS_TYPES_HPP__
 
 namespace Raindrop::Graphics{
 	struct Context;
@@ -15,6 +15,7 @@ namespace Raindrop::Graphics{
 	class PipelineLayout;
 	class RenderPass;
 	class ShaderModule;
+	class Formats;
 }
 
 #endif

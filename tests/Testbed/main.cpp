@@ -4,6 +4,8 @@
 #include <spdlog/spdlog.h>
 #include <iostream>
 
+#include <vulkan/vk_enum_string_helper.h>
+
 class CustomSceneProperty : public Raindrop::Scenes::Property{
 	public:
 		int myValue;
@@ -22,7 +24,6 @@ class Testbed : public Raindrop::Engine, public Raindrop::Events::Listener{
 			_renderer.initialize(getGraphicsContext());
 
 			Engine::subscribeToEvent<Raindrop::Events::WindowCloseRequest>(this, &Testbed::closeEvent);
-
 
 			auto scene = Engine::createScene();
 			auto& property = scene.addProperty<CustomSceneProperty>();

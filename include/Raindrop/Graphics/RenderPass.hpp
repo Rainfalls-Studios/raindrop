@@ -1,7 +1,7 @@
 #ifndef __RAINDROP_GRAPHICS_RENDER_PASS_HPP__
 #define __RAINDROP_GRAPHICS_RENDER_PASS_HPP__
 
-#include "prototypes.hpp"
+#include "types.hpp"
 #include <Raindrop/Graphics/Core/prototypes.hpp>
 #include <Raindrop/Graphics/pch.pch>
 

@@ -42,6 +42,7 @@ namespace Raindrop{
 			Graphics::Window::Window& getGraphicsWindow();
 			Graphics::Window::Surface& getGraphicsWindowSurface();
 			Graphics::Window::Swapchain& getGraphicsWindowSwapchain();
+			Graphics::Formats& getGraphicsFormats();
 
 			Graphics::RenderPass createGraphicsRenderPass();
 

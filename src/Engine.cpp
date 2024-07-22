@@ -112,6 +112,11 @@ namespace Raindrop{
 		return getGraphicsContext().window.swapchain;
 	}
 
+	Graphics::Formats& Engine::getGraphicsFormats(){
+		return getGraphicsContext().formats;
+	}
+
+
 	Graphics::RenderPass Engine::createGraphicsRenderPass(){
 		Graphics::RenderPass renderPass;
 		renderPass.prepare(getGraphicsContext());

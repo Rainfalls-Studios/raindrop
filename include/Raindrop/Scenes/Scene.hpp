@@ -7,7 +7,7 @@
 #include "Entity.hpp"
 
 namespace Raindrop::Scenes{
-	class Scene : public Registry{
+	class Scene : private Registry{
 		public:
 			Scene() noexcept;
 			~Scene();
@@ -83,6 +83,9 @@ namespace Raindrop::Scenes{
 			Entity create();
 			Entity create(const EntityID& hint);
 			void destroy(const Entity& entity);
+
+			Registry& getRegistry() noexcept;
+			const Registry& getRegistry() const noexcept;
 
 			template<typename... Types>
 			void trim(){

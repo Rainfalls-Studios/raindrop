@@ -1,8 +1,10 @@
 #ifndef __RAINDROP_GRAPHICS_CONTEXT_HPP__
 #define __RAINDROP_GRAPHICS_CONTEXT_HPP__
 
+#include "types.hpp"
 #include "Core/Context.hpp"
 #include "Window/Context.hpp"
+#include "Formats.hpp"
 #include <Raindrop/Events/types.hpp>
 
 namespace Raindrop::Graphics{
@@ -11,6 +13,7 @@ namespace Raindrop::Graphics{
 
 		Core::Context core;
 		Window::Context window;
+		Formats formats;
 
 		void createLogger();
 		void initialize(Events::Context& events);
