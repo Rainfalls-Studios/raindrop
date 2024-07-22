@@ -2,6 +2,7 @@
 #define __RAINDROP_GRAPHICS_CONTEXT_HPP__
 
 #include "types.hpp"
+#include "common.hpp"
 #include "Core/Context.hpp"
 #include "Window/Context.hpp"
 #include "Formats.hpp"

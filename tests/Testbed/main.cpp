@@ -26,6 +26,13 @@ class Testbed : public Raindrop::Engine, public Raindrop::Events::Listener{
 			auto& property = scene.addProperty<CustomSceneProperty>();
 
 			auto entity = scene.create();
+
+			
+			Raindrop::Graphics::Buffer buffer = Engine::createGraphicsBuffer();
+			buffer.setSize(4096)
+				.setUsage(VK_BUFFER_USAGE_TRANSFER_SRC_BIT)
+				.setMemoryProperties(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+			buffer.allocate();
 		}
 
 		void run(){

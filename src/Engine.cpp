@@ -123,6 +123,12 @@ namespace Raindrop{
 		return std::move(renderPass);
 	}
 
+	Graphics::Buffer Engine::createGraphicsBuffer(){
+		Graphics::Buffer buffer;
+		buffer.prepare(getGraphicsContext());
+		return std::move(buffer);
+	}
+
 	// ==================== EVENTS ============================
 
 	Events::Context& Engine::getEventsContext(){

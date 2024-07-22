@@ -4,39 +4,85 @@
 #include <Raindrop/Utils/alignement.hpp>
 
 namespace Raindrop::Graphics{
+	Buffer::BuildInfo::BuildInfo() : 
+		size{0},
+		alignement{1},
+		usage{0},
+		createFlags{0},
+		memoryPropertiess{0},
+		queueFamilies{},
+		sharingMode{VK_SHARING_MODE_EXCLUSIVE}
+	{}
+
 	Buffer::Buffer() noexcept : 
 		_context{nullptr},
 		_buffer{VK_NULL_HANDLE},
 		_memory{VK_NULL_HANDLE},
-		_mapped{nullptr}
+		_mapped{nullptr},
+		_buildInfo{},
+		_size{0}
 	{}
 	
 	Buffer::~Buffer(){
 		release();
 	}
 
+
+	Buffer::Buffer(Buffer&& other) :
+		_context{nullptr},
+		_buffer{VK_NULL_HANDLE},
+		_memory{VK_NULL_HANDLE},
+		_mapped{nullptr},
+		_buildInfo{},
+		_size{0}
+	{
+		swap(*this, other);
+	}
+	
+	Buffer& Buffer::operator=(Buffer&& other){
+		swap(*this, other);
+		return *this;
+	}
+
+	void swap(Buffer& A, Buffer& B){
+		std::swap(A._context, B._context);
+		std::swap(A._buffer, B._buffer);
+		std::swap(A._memory, B._memory);
+		std::swap(A._mapped, B._mapped);
+		std::swap(A._buildInfo, B._buildInfo);
+		std::swap(A._size, B._size);
+	}
+
 	void Buffer::prepare(Context& context){
 		_context = &context;
+		_buildInfo = std::make_unique<BuildInfo>();
 	}
 
 	void Buffer::release(){
+		_buildInfo.reset();
+
 		if (!_context) return;
 		free();
 		_context = nullptr;
 	}
 
-	void Buffer::allocate(const std::size_t& size, const VkBufferUsageFlags& usage, const VkBufferCreateFlags& flags, const VkMemoryPropertyFlags& memoryFlags, const std::size_t& alignement){
+	void Buffer::allocate(){
+		if (!_buildInfo) throw std::runtime_error("The buffer has already been allocated");
+		
+
 		auto& device = _context->getDevice();
 		auto& allocationCallbacks = _context->core.allocationCallbacks;
 		
-		_size = static_cast<std::size_t>(Utils::alignTo(size, alignement));
+		_size = static_cast<std::size_t>(Utils::alignTo(_buildInfo->size, _buildInfo->alignement));
 
 		VkBufferCreateInfo bufferInfo{};
 		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 		bufferInfo.size = static_cast<VkDeviceSize>(_size);
-		bufferInfo.usage = usage;
-		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-		bufferInfo.flags = flags;
+		bufferInfo.usage = _buildInfo->usage;
+		bufferInfo.flags = _buildInfo->createFlags;
+		bufferInfo.sharingMode = _buildInfo->sharingMode;
+		bufferInfo.queueFamilyIndexCount = static_cast<uint32_t>(_buildInfo->queueFamilies.size());
+		bufferInfo.pQueueFamilyIndices = _buildInfo->queueFamilies.data();
 
 		_context->logger->trace("Creating a graphics buffer...");
 
@@ -52,7 +98,7 @@ namespace Raindrop::Graphics{
 		VkMemoryAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 		allocInfo.allocationSize = memRequirements.size;
-		allocInfo.memoryTypeIndex = device.findMemoryType(memRequirements.memoryTypeBits, memoryFlags);
+		allocInfo.memoryTypeIndex = device.findMemoryType(memRequirements.memoryTypeBits, _buildInfo->memoryPropertiess);
 
 		_context->logger->trace("Allocating a graphics buffer...");
 
@@ -70,6 +116,8 @@ namespace Raindrop::Graphics{
 			Exceptions::VulkanOperationType::BINDING,
 			_context->logger
 		);
+
+		_buildInfo.reset();
 	}
 
 	void Buffer::free(){
@@ -89,6 +137,48 @@ namespace Raindrop::Graphics{
 		}
 
 		_mapped = nullptr;
+	}
+
+	Buffer& Buffer::setSize(const std::size_t& size){
+		if (!_buildInfo) throw std::runtime_error("The buffer has already been allocated");
+		_buildInfo->size = size;
+		return *this;
+	}
+
+	Buffer& Buffer::setAlignement(const std::size_t& alignement){
+		if (!_buildInfo) throw std::runtime_error("The buffer has already been allocated");
+		_buildInfo->alignement = alignement;
+		return *this;
+	}
+
+	Buffer& Buffer::setUsage(const VkBufferUsageFlags& usage){
+		if (!_buildInfo) throw std::runtime_error("The buffer has already been allocated");
+		_buildInfo->usage = usage;
+		return *this;
+	}
+
+	Buffer& Buffer::setCreateFlags(const VkBufferCreateFlags& flags){
+		if (!_buildInfo) throw std::runtime_error("The buffer has already been allocated");
+		_buildInfo->createFlags = flags;
+		return *this;
+	}
+
+	Buffer& Buffer::setMemoryProperties(const VkMemoryPropertyFlags& properties){
+		if (!_buildInfo) throw std::runtime_error("The buffer has already been allocated");
+		_buildInfo->memoryPropertiess = properties;
+		return *this;
+	}
+
+	Buffer& Buffer::setQueueFamilies(const std::vector<uint32_t>& families){
+		if (!_buildInfo) throw std::runtime_error("The buffer has already been allocated");
+		_buildInfo->queueFamilies = families;
+		return *this;
+	}
+
+	Buffer& Buffer::setSharingMode(const VkSharingMode& sharingMode){
+		if (!_buildInfo) throw std::runtime_error("The buffer has already been allocated");
+		_buildInfo->sharingMode = sharingMode;
+		return *this;
 	}
 
 	const VkBuffer& Buffer::get() const noexcept{
