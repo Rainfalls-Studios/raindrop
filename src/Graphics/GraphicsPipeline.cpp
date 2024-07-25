@@ -713,11 +713,32 @@ namespace Raindrop::Graphics{
 
 	GraphicsPipeline::GraphicsPipeline() noexcept : 
 		_context{nullptr},
-		_pipeline{VK_NULL_HANDLE}
+		_pipeline{VK_NULL_HANDLE},
+		_info{}
 	{}
 
 	GraphicsPipeline::~GraphicsPipeline(){
 		release();
+	}
+
+
+	GraphicsPipeline::GraphicsPipeline(GraphicsPipeline&& other) : 
+		_context{nullptr},
+		_pipeline{VK_NULL_HANDLE},
+		_info{}
+	{
+		swap(*this, other);
+	}
+
+	GraphicsPipeline& GraphicsPipeline::operator=(GraphicsPipeline&& other){
+		swap(*this, other);
+		return *this;
+	}
+
+	void swap(GraphicsPipeline& A, GraphicsPipeline& B){
+		std::swap(A._context, B._context);
+		std::swap(A._pipeline, B._pipeline);
+		std::swap(A._info, B._info);
 	}
 
 	void GraphicsPipeline::prepare(Context& context){

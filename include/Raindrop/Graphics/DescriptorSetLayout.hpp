@@ -27,6 +27,14 @@ namespace Raindrop::Graphics{
 			DescriptorSetLayout() noexcept;
 			~DescriptorSetLayout();
 
+			DescriptorSetLayout(const DescriptorSetLayout&) = delete;
+			DescriptorSetLayout& operator=(const DescriptorSetLayout&) = delete;
+
+			DescriptorSetLayout(DescriptorSetLayout&& other);
+			DescriptorSetLayout& operator=(DescriptorSetLayout&& other);
+
+			friend void swap(DescriptorSetLayout& A, DescriptorSetLayout& B);
+
 			void prepare(Context& context);
 			void initialize();
 			void release();

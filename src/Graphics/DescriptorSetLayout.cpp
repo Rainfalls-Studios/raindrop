@@ -58,6 +58,25 @@ namespace Raindrop::Graphics{
 		release();
 	}
 
+	DescriptorSetLayout::DescriptorSetLayout(DescriptorSetLayout&& other) : 
+		_context{nullptr},
+		_layout{VK_NULL_HANDLE},
+		_info{}
+	{
+		swap(*this, other);
+	}
+
+	DescriptorSetLayout& DescriptorSetLayout::operator=(DescriptorSetLayout&& other){
+		swap(*this, other);
+		return *this;
+	}
+
+	void swap(DescriptorSetLayout& A, DescriptorSetLayout& B){
+		std::swap(A._context, B._context);
+		std::swap(A._layout, B._layout);
+		std::swap(A._info, B._info);
+	}
+
 	void DescriptorSetLayout::prepare(Context& context){
 		_context = &context;
 		_info = std::make_unique<BuildInfo>();

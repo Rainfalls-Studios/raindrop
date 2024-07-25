@@ -22,17 +22,20 @@ class Testbed : public Raindrop::Engine, public Raindrop::Events::Listener{
 
 			Engine::subscribeToEvent<Raindrop::Events::WindowCloseRequest>(this, &Testbed::closeEvent);
 
-			auto scene = Engine::createScene();
-			auto& property = scene.addProperty<CustomSceneProperty>();
-
-			auto entity = scene.create();
-
+			auto layout = Engine::createGraphicsDescriptorSetLayout();
+			layout.addBinding()
+				.setDescriptorCount(5)
+				.setDescriptorType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
+				.setShaderStage(VK_SHADER_STAGE_FRAGMENT_BIT);
 			
-			Raindrop::Graphics::Buffer buffer = Engine::createGraphicsBuffer();
-			buffer.setSize(4096)
-				.setUsage(VK_BUFFER_USAGE_TRANSFER_SRC_BIT)
-				.setMemoryProperties(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-			buffer.allocate();
+			layout.addBinding()
+				.setDescriptorCount(1)
+				.setDescriptorType(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
+				.setShaderStage(VK_SHADER_STAGE_FRAGMENT_BIT);
+			
+			layout.initialize();
+
+			layout.release();
 		}
 
 		void run(){

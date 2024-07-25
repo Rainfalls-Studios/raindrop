@@ -350,6 +350,14 @@ namespace Raindrop::Graphics{
 			GraphicsPipeline() noexcept;
 			~GraphicsPipeline();
 
+			GraphicsPipeline(const GraphicsPipeline&) = delete;
+			GraphicsPipeline& operator=(const GraphicsPipeline&) = delete;
+
+			GraphicsPipeline(GraphicsPipeline&& other);
+			GraphicsPipeline& operator=(GraphicsPipeline&& other);
+
+			friend void swap(GraphicsPipeline& A, GraphicsPipeline& B);
+
 			void prepare(Context& context);
 			void initialize();
 			void release();

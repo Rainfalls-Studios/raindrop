@@ -116,7 +116,6 @@ namespace Raindrop{
 		return getGraphicsContext().formats;
 	}
 
-
 	Graphics::RenderPass Engine::createGraphicsRenderPass(){
 		Graphics::RenderPass renderPass;
 		renderPass.prepare(getGraphicsContext());
@@ -127,6 +126,18 @@ namespace Raindrop{
 		Graphics::Buffer buffer;
 		buffer.prepare(getGraphicsContext());
 		return std::move(buffer);
+	}
+
+	Graphics::DescriptorSetLayout Engine::createGraphicsDescriptorSetLayout(){
+		Graphics::DescriptorSetLayout descriptorSetLayout;
+		descriptorSetLayout.prepare(getGraphicsContext());
+		return std::move(descriptorSetLayout);
+	}
+
+	Graphics::GraphicsPipeline Engine::createGraphicsGraphicsPipeline(){
+		Graphics::GraphicsPipeline pipeline;
+		pipeline.prepare(getGraphicsContext());
+		return std::move(pipeline);
 	}
 
 	// ==================== EVENTS ============================
