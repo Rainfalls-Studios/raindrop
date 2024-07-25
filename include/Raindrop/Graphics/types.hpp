@@ -16,6 +16,7 @@ namespace Raindrop::Graphics{
 	class RenderPass;
 	class ShaderModule;
 	class Formats;
+	class DescriptorSetLayout;
 }
 
 #endif

@@ -12,10 +12,7 @@ namespace Raindrop::Graphics{
 		_commandBuffer{commandBuffer}
 	{}
 
-
-	CommandBuffer::~CommandBuffer(){
-
-	}
+	CommandBuffer::~CommandBuffer(){}
 
 	const VkCommandBuffer& CommandBuffer::get() const noexcept{
 		return _commandBuffer;

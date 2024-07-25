@@ -759,7 +759,6 @@ namespace Raindrop::Graphics{
 			.basePipelineIndex = -1
 		};
 
-
 		auto& device = _context->getDevice();
 		auto& allocationCallbacks = _context->core.allocationCallbacks;
 
@@ -768,6 +767,8 @@ namespace Raindrop::Graphics{
 			"Failed to create graphics pipeline",
 			_context->logger
 		);
+
+		_info.reset();
 	}
 
 	void GraphicsPipeline::release(){
@@ -782,12 +783,13 @@ namespace Raindrop::Graphics{
 		}
 
 		_context = nullptr;
+		_info.reset();
 	}
 
 	GraphicsPipeline::BuildInfo& GraphicsPipeline::checkBuild(){
 		if (!_info){
-			_context->logger->warn("Attempt to change graphics pipeline build info after initialization");
-			throw std::runtime_error("The graphics pipeline has already been initialied");
+			_context->logger->warn("Attempt to change build info of an unprepared graphics pipeline");
+			throw std::runtime_error("The graphics pipeline has not been prepared");
 		}
 		return *_info;
 	}
