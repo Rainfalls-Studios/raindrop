@@ -708,6 +708,66 @@ namespace Raindrop::Graphics{
 		return *_data;
 	}
 
+	// =========================== SHADER STAGE ========================
+
+	GraphicsPipeline::ShaderStage::ShaderStage() noexcept : 
+		_info{nullptr},
+		_data{nullptr}
+	{}
+
+	GraphicsPipeline::ShaderStage::ShaderStage(VkPipelineShaderStageCreateInfo& info, BuildInfo::ShaderStageData& data) noexcept :	
+		_info{&info},
+		_data{&data}
+	{}
+
+	GraphicsPipeline::ShaderStage& GraphicsPipeline::ShaderStage::setFlags(const VkPipelineStageFlags& flags){
+		getInfo().flags = flags;
+		return *this;
+	}
+
+	GraphicsPipeline::ShaderStage& GraphicsPipeline::ShaderStage::setStage(const VkShaderStageFlagBits& stage){
+		getInfo().stage = stage;
+		return *this;
+	}
+
+	GraphicsPipeline::ShaderStage& GraphicsPipeline::ShaderStage::setModule(const VkShaderModule& module){
+		getInfo().module = module;
+		return *this;
+	}
+
+	GraphicsPipeline::ShaderStage& GraphicsPipeline::ShaderStage::setEntryPoint(const std::string& entryPoint){
+		auto& data = getData();
+		auto& info = getInfo();
+
+		auto& str = data.entryPoints.emplace_back(entryPoint);
+		info.pName = str.c_str();
+
+		return *this;
+	}
+
+	GraphicsPipeline::ShaderStage& GraphicsPipeline::ShaderStage::addSpecialization(const VkSpecializationInfo& specialization){
+		auto& data = getData();
+		auto& info = getInfo();
+
+		info.pSpecializationInfo = &data.specializations.emplace_back(specialization);
+
+		return *this;
+	}
+
+	VkPipelineShaderStageCreateInfo& GraphicsPipeline::ShaderStage::get(){
+		return getInfo();
+	}
+
+	VkPipelineShaderStageCreateInfo& GraphicsPipeline::ShaderStage::getInfo(){
+		if (!_info) throw std::runtime_error("Invalid shader stage");
+		return *_info;
+	}
+
+	GraphicsPipeline::BuildInfo::ShaderStageData& GraphicsPipeline::ShaderStage::getData(){
+		if (!_data) throw std::runtime_error("Invalid dynamic state");
+		return *_data;
+	}
+
 	// =========================== GRAPHICS PIPELINE ========================
 
 
@@ -838,6 +898,13 @@ namespace Raindrop::Graphics{
 	GraphicsPipeline& GraphicsPipeline::setSubpass(const std::uint32_t& subpass){
 		checkBuild().subpass = subpass;
 		return *this;
+	}
+
+	GraphicsPipeline::ShaderStage GraphicsPipeline::addStage(){
+		auto& info = checkBuild();
+
+		auto& stage = info.stages.emplace_back();
+		return std::move(ShaderStage(stage, info.shaderStageData));
 	}
 
 	GraphicsPipeline::VertexInputState GraphicsPipeline::getVertexInputState(const bool& disable){

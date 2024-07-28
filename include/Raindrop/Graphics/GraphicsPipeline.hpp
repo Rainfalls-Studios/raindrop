@@ -31,11 +31,17 @@ namespace Raindrop::Graphics{
 					std::vector<VkDynamicState> dynamicStates;
 				} dynamicStateData;
 
+				struct ShaderStageData{
+					std::vector<std::string> entryPoints;
+					std::vector<VkSpecializationInfo> specializations;
+				} shaderStageData;
+
 				VkPipelineCreateFlags flags;
 				const RenderPass* renderPass;
 				const PipelineLayout* layout;
 				std::uint32_t subpass;
 
+				std::vector<VkPipelineShaderStageCreateInfo> stages;
 				std::optional<VkPipelineVertexInputStateCreateInfo> vertexInputState;
 				std::optional<VkPipelineInputAssemblyStateCreateInfo> inputAssemblyState;
 				std::optional<VkPipelineTessellationStateCreateInfo> tessellationState;
@@ -343,7 +349,27 @@ namespace Raindrop::Graphics{
 
 					VkPipelineDynamicStateCreateInfo& getInfo();
 					BuildInfo::DynamicStateData& getData();
+			};
 
+			class ShaderStage{
+				public:
+					ShaderStage() noexcept;
+					ShaderStage(VkPipelineShaderStageCreateInfo& info, BuildInfo::ShaderStageData& data) noexcept;
+
+					ShaderStage& setFlags(const VkPipelineStageFlags& flags);
+					ShaderStage& setStage(const VkShaderStageFlagBits& stage);
+					ShaderStage& setModule(const VkShaderModule& module);
+					ShaderStage& setEntryPoint(const std::string& entryPoint);
+					ShaderStage& addSpecialization(const VkSpecializationInfo& specialization);
+
+					VkPipelineShaderStageCreateInfo& get();
+
+				private:
+					VkPipelineShaderStageCreateInfo* _info;
+					BuildInfo::ShaderStageData* _data;
+
+					VkPipelineShaderStageCreateInfo& getInfo();
+					BuildInfo::ShaderStageData& getData();
 			};
 
 
@@ -367,6 +393,7 @@ namespace Raindrop::Graphics{
 			GraphicsPipeline& setLayout(const PipelineLayout& layout);
 			GraphicsPipeline& setSubpass(const std::uint32_t& subpass);
 
+			ShaderStage addStage();
 			VertexInputState getVertexInputState(const bool& disable = false);
 			InputAssemblyState getInputAssemplyState(const bool& disable = false);
 			TessellationState getTessellationState(const bool& disable = false);
