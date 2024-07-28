@@ -42,6 +42,9 @@ namespace Raindrop::Graphics{
 			DescriptorSetLayout& setFlags(const VkDescriptorSetLayoutCreateFlags& flags) noexcept;
 			Binding addBinding();
 
+			const VkDescriptorSetLayout& get() const noexcept;
+			VkDescriptorSetLayout& get() noexcept;
+
 		private:
 			Context* _context;
 			VkDescriptorSetLayout _layout;

@@ -140,6 +140,11 @@ namespace Raindrop{
 		return std::move(pipeline);
 	}
 
+	Graphics::PipelineLayout Engine::createGraphicsPipelineLayout(){
+		Graphics::PipelineLayout layout;
+		layout.prepare(getGraphicsContext());
+		return std::move(layout);
+	}
 	// ==================== EVENTS ============================
 
 	Events::Context& Engine::getEventsContext(){

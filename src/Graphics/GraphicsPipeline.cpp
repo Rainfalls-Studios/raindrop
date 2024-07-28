@@ -808,6 +808,11 @@ namespace Raindrop::Graphics{
 	}
 
 	GraphicsPipeline::BuildInfo& GraphicsPipeline::checkBuild(){
+		if (!_context){
+			spdlog::warn("Attempt to change build info of an unprepared graphics pipeline");
+			throw std::runtime_error("The graphics pipeline has not been prepared");
+		}
+		
 		if (!_info){
 			_context->logger->warn("Attempt to change build info of an unprepared graphics pipeline");
 			throw std::runtime_error("The graphics pipeline has not been prepared");

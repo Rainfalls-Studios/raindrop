@@ -48,6 +48,7 @@ namespace Raindrop{
 			Graphics::Buffer createGraphicsBuffer();
 			Graphics::DescriptorSetLayout createGraphicsDescriptorSetLayout();
 			Graphics::GraphicsPipeline createGraphicsGraphicsPipeline();
+			Graphics::PipelineLayout createGraphicsPipelineLayout();
 
 			// EVENTS
 

@@ -9,6 +9,11 @@ class CustomSceneProperty : public Raindrop::Scenes::Property{
 		int myValue;
 };
 
+struct PushConstant{
+	int a;
+};
+
+
 class Testbed : public Raindrop::Engine, public Raindrop::Events::Listener{
 	public:
 		bool closeEvent(const Raindrop::Events::WindowCloseRequest& event){
@@ -21,21 +26,6 @@ class Testbed : public Raindrop::Engine, public Raindrop::Events::Listener{
 			_renderer.initialize(getGraphicsContext());
 
 			Engine::subscribeToEvent<Raindrop::Events::WindowCloseRequest>(this, &Testbed::closeEvent);
-
-			auto layout = Engine::createGraphicsDescriptorSetLayout();
-			layout.addBinding()
-				.setDescriptorCount(5)
-				.setDescriptorType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
-				.setShaderStage(VK_SHADER_STAGE_FRAGMENT_BIT);
-			
-			layout.addBinding()
-				.setDescriptorCount(1)
-				.setDescriptorType(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
-				.setShaderStage(VK_SHADER_STAGE_FRAGMENT_BIT);
-			
-			layout.initialize();
-
-			layout.release();
 		}
 
 		void run(){

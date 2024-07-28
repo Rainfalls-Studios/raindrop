@@ -152,4 +152,13 @@ namespace Raindrop::Graphics{
 		}
 		return *_info;
 	}
+
+
+	const VkDescriptorSetLayout& DescriptorSetLayout::get() const noexcept{
+		return _layout;
+	}
+
+	VkDescriptorSetLayout& DescriptorSetLayout::get() noexcept{
+		return _layout;
+	}
 }
