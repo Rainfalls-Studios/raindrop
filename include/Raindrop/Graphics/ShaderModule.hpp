@@ -10,6 +10,14 @@ namespace Raindrop::Graphics{
 			ShaderModule() noexcept;
 			~ShaderModule();
 
+			ShaderModule(const ShaderModule&) = delete;
+			ShaderModule& operator=(const ShaderModule&) = delete;
+
+			ShaderModule(ShaderModule&& other);
+			ShaderModule& operator=(ShaderModule&& other);
+
+			friend void swap(ShaderModule& A, ShaderModule& B);
+
 			void prepare(Context& context);
 			void initialize();
 			void release();

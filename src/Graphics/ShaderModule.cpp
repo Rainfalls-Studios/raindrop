@@ -13,6 +13,25 @@ namespace Raindrop::Graphics{
 		release();
 	}
 
+	ShaderModule::ShaderModule(ShaderModule&& other) : 
+		_context{nullptr},
+		_module{VK_NULL_HANDLE},
+		_info{}
+	{
+		swap(*this, other);
+	}
+
+	ShaderModule& ShaderModule::operator=(ShaderModule&& other){
+		swap(*this, other);
+		return *this;
+	}
+
+	void swap(ShaderModule& A, ShaderModule& B){
+		std::swap(A._context, B._context);
+		std::swap(A._info, B._info);
+		std::swap(A._module, B._module);
+	}
+
 	void ShaderModule::prepare(Context& context){
 		_context = &context;
 		_info = std::make_unique<BuildInfo>();

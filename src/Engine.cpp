@@ -145,6 +145,13 @@ namespace Raindrop{
 		layout.prepare(getGraphicsContext());
 		return std::move(layout);
 	}
+
+	Graphics::ShaderModule Engine::createGraphicsShaderModule(){
+		Graphics::ShaderModule module;
+		module.prepare(getGraphicsContext());
+		return std::move(module);
+	}
+
 	// ==================== EVENTS ============================
 
 	Events::Context& Engine::getEventsContext(){
