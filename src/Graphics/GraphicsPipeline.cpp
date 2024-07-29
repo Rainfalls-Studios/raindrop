@@ -637,10 +637,21 @@ namespace Raindrop::Graphics{
 	}
 
 	GraphicsPipeline::ColorAttachment GraphicsPipeline::ColorBlendState::addColorAttachment(){
+		static constexpr VkPipelineColorBlendAttachmentState DEFAULT{
+			.blendEnable = VK_FALSE,
+			.srcColorBlendFactor = VK_BLEND_FACTOR_ONE,
+			.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO,
+			.colorBlendOp = VK_BLEND_OP_ADD,
+			.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE,
+			.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO,
+			.alphaBlendOp = VK_BLEND_OP_ADD,
+			.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT
+		};
+
 		auto& info = getInfo();
 		auto& data = getData();
 
-		auto& attachment = data.attachments.emplace_back();
+		auto& attachment = data.attachments.emplace_back(DEFAULT);
 
 		info.attachmentCount = static_cast<uint32_t>(data.attachments.size());
 		info.pAttachments = data.attachments.data();
@@ -822,8 +833,8 @@ namespace Raindrop::Graphics{
 			.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
 			.pNext = nullptr,
 			.flags = _info->flags,
-			.stageCount = 0, // TODO
-			.pStages = nullptr, // TODO
+			.stageCount = static_cast<uint32_t>(_info->stages.size()),
+			.pStages = _info->stages.data(),
 			.pVertexInputState = _info->vertexInputState.has_value() ? &_info->vertexInputState.value() : nullptr,
 			.pInputAssemblyState = _info->inputAssemblyState.has_value() ? &_info->inputAssemblyState.value() : nullptr,
 			.pTessellationState = _info->tessellationState.has_value() ? &_info->tessellationState.value() : nullptr,
@@ -833,10 +844,10 @@ namespace Raindrop::Graphics{
 			.pDepthStencilState = _info->depthStencilState.has_value() ? &_info->depthStencilState.value() : nullptr,
 			.pColorBlendState = _info->colorBlendState.has_value() ? &_info->colorBlendState.value() : nullptr,
 			.pDynamicState = _info->dynamicState.has_value() ? &_info->dynamicState.value() : nullptr,
-			.layout = VK_NULL_HANDLE, // _info->layout->get()
+			.layout = _info->layout->get(),
 			.renderPass = _info->renderPass->get(),
 			.subpass = _info->subpass,
-			.basePipelineHandle = VK_NULL_HANDLE,
+			.basePipelineHandle = VK_NULL_HANDLE, // TODO : batched pipeline creation
 			.basePipelineIndex = -1
 		};
 
@@ -901,101 +912,215 @@ namespace Raindrop::Graphics{
 	}
 
 	GraphicsPipeline::ShaderStage GraphicsPipeline::addStage(){
+		static constexpr VkPipelineShaderStageCreateInfo DEFAULT{
+			.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.stage = VkShaderStageFlagBits(0),
+			.module = VK_NULL_HANDLE,
+			.pName = nullptr,
+			.pSpecializationInfo = nullptr
+		};
+
 		auto& info = checkBuild();
 
-		auto& stage = info.stages.emplace_back();
+		auto& stage = info.stages.emplace_back(DEFAULT);
 		return std::move(ShaderStage(stage, info.shaderStageData));
 	}
 
 	GraphicsPipeline::VertexInputState GraphicsPipeline::getVertexInputState(const bool& disable){
+		static constexpr VkPipelineVertexInputStateCreateInfo DEFAULT{
+			.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.vertexBindingDescriptionCount = 0,
+			.pVertexBindingDescriptions = nullptr,
+			.vertexAttributeDescriptionCount = 0,
+			.pVertexAttributeDescriptions = nullptr
+		};
+
 		auto& info = checkBuild();
 
 		if (disable){
 			info.vertexInputState.reset();
 			return VertexInputState();
 		}
-		return VertexInputState(info.vertexInputState.has_value() ? info.vertexInputState.value() : info.vertexInputState.emplace(), info.vertexInputData);
+		return VertexInputState(info.vertexInputState.has_value() ? info.vertexInputState.value() : info.vertexInputState.emplace(DEFAULT), info.vertexInputData);
 	}
 
 	GraphicsPipeline::InputAssemblyState GraphicsPipeline::getInputAssemplyState(const bool& disable){
+		static constexpr VkPipelineInputAssemblyStateCreateInfo DEFAULT{
+			.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP,
+			.primitiveRestartEnable = VK_FALSE
+		};
+
 		auto& info = checkBuild();
 
 		if (disable){
 			info.inputAssemblyState.reset();
 			return InputAssemblyState();
 		}
-		return InputAssemblyState(info.inputAssemblyState.has_value() ? info.inputAssemblyState.value() : info.inputAssemblyState.emplace());
+		return InputAssemblyState(info.inputAssemblyState.has_value() ? info.inputAssemblyState.value() : info.inputAssemblyState.emplace(DEFAULT));
 	}
 
 	GraphicsPipeline::TessellationState GraphicsPipeline::getTessellationState(const bool& disable){
+		static constexpr VkPipelineTessellationStateCreateInfo DEFAULT{
+			.sType = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.patchControlPoints = 0
+		};
+
 		auto& info = checkBuild();
 
 		if (disable){
 			info.tessellationState.reset();
 			return TessellationState();
 		}
-		return TessellationState(info.tessellationState.has_value() ? info.tessellationState.value() : info.tessellationState.emplace());
+		return TessellationState(info.tessellationState.has_value() ? info.tessellationState.value() : info.tessellationState.emplace(DEFAULT));
 	}
 
 	GraphicsPipeline::ViewportState GraphicsPipeline::getViewportState(const bool& disable){
+		static constexpr VkPipelineViewportStateCreateInfo DEFAULT{
+			.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.viewportCount = 0,
+			.pViewports = nullptr,
+			.scissorCount = 0,
+			.pScissors = nullptr
+		};
+
 		auto& info = checkBuild();
 
 		if (disable){
 			info.viewportState.reset();
 			return ViewportState();
 		}
-		return ViewportState(info.viewportState.has_value() ? info.viewportState.value() : info.viewportState.emplace(), info.viewportData);
+		return ViewportState(info.viewportState.has_value() ? info.viewportState.value() : info.viewportState.emplace(DEFAULT), info.viewportData);
 	}
 
 	GraphicsPipeline::RasterizationState GraphicsPipeline::getRasterizationState(const bool& disable){
+		static constexpr VkPipelineRasterizationStateCreateInfo DEFAULT{
+			.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.depthClampEnable = VK_FALSE,
+			.rasterizerDiscardEnable = VK_FALSE,
+			.polygonMode = VK_POLYGON_MODE_FILL,
+			.cullMode = VK_CULL_MODE_NONE,
+			.frontFace = VK_FRONT_FACE_CLOCKWISE,
+			.depthBiasEnable = VK_FALSE,
+			.depthBiasConstantFactor = 0.f,
+			.depthBiasClamp = 0.f,
+			.depthBiasSlopeFactor = 0.f,
+			.lineWidth = 1.f
+		};
+
 		auto& info = checkBuild();
 
 		if (disable){
 			info.rasterizationState.reset();
 			return RasterizationState();
 		}
-		return RasterizationState(info.rasterizationState.has_value() ? info.rasterizationState.value() : info.rasterizationState.emplace());
+		return RasterizationState(info.rasterizationState.has_value() ? info.rasterizationState.value() : info.rasterizationState.emplace(DEFAULT));
 	}
 
 	GraphicsPipeline::MultisampleState GraphicsPipeline::getMultisampleState(const bool& disable){
+		static constexpr VkPipelineMultisampleStateCreateInfo DEFAULT{
+			.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT,
+			.sampleShadingEnable = VK_FALSE,
+			.minSampleShading = 0.f,
+			.pSampleMask = nullptr,
+			.alphaToCoverageEnable = VK_FALSE,
+			.alphaToOneEnable = VK_FALSE
+		};
+
 		auto& info = checkBuild();
 
 		if (disable){
 			info.multisampleState.reset();
 			return MultisampleState();
 		}
-		return MultisampleState(info.multisampleState.has_value() ? info.multisampleState.value() : info.multisampleState.emplace(), info.multisampleData);
+		return MultisampleState(info.multisampleState.has_value() ? info.multisampleState.value() : info.multisampleState.emplace(DEFAULT), info.multisampleData);
 	}
 
 	GraphicsPipeline::DepthStencilState GraphicsPipeline::getDepthStencilState(const bool& disable){
+		static constexpr VkStencilOpState DEFAULT_STENCIL{
+			.failOp = VK_STENCIL_OP_KEEP,
+			.passOp = VK_STENCIL_OP_KEEP,
+			.depthFailOp = VK_STENCIL_OP_KEEP,
+			.compareOp = VK_COMPARE_OP_NEVER,
+			.compareMask = 0x0,
+			.writeMask = 0x0,
+			.reference = 0
+		};
+
+		static constexpr VkPipelineDepthStencilStateCreateInfo DEFAULT{
+			.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.depthTestEnable = VK_TRUE,
+			.depthWriteEnable = VK_TRUE,
+			.depthCompareOp = VK_COMPARE_OP_LESS,
+			.stencilTestEnable = VK_FALSE,
+			.front = DEFAULT_STENCIL,
+			.back = DEFAULT_STENCIL,
+			.minDepthBounds = 0.f,
+			.maxDepthBounds = 1.f
+		};
+
 		auto& info = checkBuild();
 
 		if (disable){
 			info.depthStencilState.reset();
 			return DepthStencilState();
 		}
-		return DepthStencilState(info.depthStencilState.has_value() ? info.depthStencilState.value() : info.depthStencilState.emplace());
+		return DepthStencilState(info.depthStencilState.has_value() ? info.depthStencilState.value() : info.depthStencilState.emplace(DEFAULT));
 	}
 
 	GraphicsPipeline::ColorBlendState GraphicsPipeline::getColorBlendState(const bool& disable){
+		static constexpr VkPipelineColorBlendStateCreateInfo DEFAULT{
+			.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.logicOpEnable = VK_FALSE,
+			.logicOp = VK_LOGIC_OP_SET,
+			.attachmentCount = 0,
+			.pAttachments = nullptr,
+			.blendConstants{1.f, 1.f, 1.f, 1.f}
+		};
+
 		auto& info = checkBuild();
 
 		if (disable){
 			info.colorBlendState.reset();
 			return ColorBlendState();
 		}
-		return ColorBlendState(info.colorBlendState.has_value() ? info.colorBlendState.value() : info.colorBlendState.emplace(), info.colorBlendData);
+		return ColorBlendState(info.colorBlendState.has_value() ? info.colorBlendState.value() : info.colorBlendState.emplace(DEFAULT), info.colorBlendData);
 	}
 
 	GraphicsPipeline::DynamicState GraphicsPipeline::getDynamicState(const bool& disable){
+		static constexpr VkPipelineDynamicStateCreateInfo DEFAULT{
+			.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.dynamicStateCount = 0,
+			.pDynamicStates = nullptr
+		};
+
 		auto& info = checkBuild();
 
 		if (disable){
 			info.dynamicState.reset();
 			return DynamicState();
 		}
-		return DynamicState(info.dynamicState.has_value() ? info.dynamicState.value() : info.dynamicState.emplace(), info.dynamicStateData);
+		return DynamicState(info.dynamicState.has_value() ? info.dynamicState.value() : info.dynamicState.emplace(DEFAULT), info.dynamicStateData);
 	}
-
-
 }
