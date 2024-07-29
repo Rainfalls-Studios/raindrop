@@ -1,8 +1,8 @@
 #ifndef __TESTBED_CONFIG_H_IN__
 #define __TESTBED_CONFIG_H_IN__
 
-#define PATH "${CMAKE_CURRENT_SOURCE_DIR}"
-#define MODULE_PATH "${MODULE_BUILD_DIR}"
-#define PROGRAD_PATH "${PROGRAD_BUILD_DIR}"
+#include <filesystem>
+
+#define PATH std::filesystem::path("${CMAKE_CURRENT_SOURCE_DIR}")
 
 #endif

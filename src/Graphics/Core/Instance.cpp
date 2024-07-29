@@ -55,7 +55,11 @@ namespace Raindrop::Graphics::Core{
 	void Instance::initialize(){
 		_builder->set_debug_callback(debugCallback);
 		_builder->set_debug_callback_user_data_pointer(_context);
-		_builder->set_debug_messenger_severity(VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT);
+		_builder->set_debug_messenger_severity(
+				VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
+				VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT |
+				VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
+				VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT);
 
 		_context->logger->info("Creating vulkan instance...");
 

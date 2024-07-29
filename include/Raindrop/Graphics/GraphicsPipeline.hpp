@@ -32,7 +32,7 @@ namespace Raindrop::Graphics{
 				} dynamicStateData;
 
 				struct ShaderStageData{
-					std::vector<std::string> entryPoints;
+					std::list<std::string> entryPoints;
 					std::vector<VkSpecializationInfo> specializations;
 				} shaderStageData;
 
@@ -403,6 +403,8 @@ namespace Raindrop::Graphics{
 			DepthStencilState getDepthStencilState(const bool& disable = false);
 			ColorBlendState getColorBlendState(const bool& disable = false);
 			DynamicState getDynamicState(const bool& disable = false);
+
+			void bind(const CommandBuffer& cmd);
 
 		private:
 			Context* _context;

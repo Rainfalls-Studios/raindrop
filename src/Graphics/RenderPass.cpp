@@ -250,28 +250,63 @@ namespace Raindrop::Graphics{
 	}
 
 	RenderPass::AttachmentDescription RenderPass::addAttachment(){
+		static constexpr VkAttachmentDescription DEFAULT{
+			.flags = 0,
+			.format = VK_FORMAT_UNDEFINED,
+			.samples = VK_SAMPLE_COUNT_1_BIT,
+			.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD,
+			.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+			.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_LOAD,
+			.stencilStoreOp = VK_ATTACHMENT_STORE_OP_STORE,
+			.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+			.finalLayout = VK_IMAGE_LAYOUT_UNDEFINED
+		};
+
 		if (!_buildInfo) throw std::runtime_error("The render pass has already been initialized");
 
 		std::uint32_t index = static_cast<std::uint32_t>(_buildInfo->attachmentDescriptions.size());
-		VkAttachmentDescription& description = _buildInfo->attachmentDescriptions.emplace_back();
+		VkAttachmentDescription& description = _buildInfo->attachmentDescriptions.emplace_back(DEFAULT);
 
 		return AttachmentDescription(description, index);
 	}
 
 	RenderPass::SubpassDescription RenderPass::addSubpass(){
+		static constexpr VkSubpassDescription DEFAULT{
+			.flags = 0,
+			.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
+			.inputAttachmentCount = 0,
+			.pInputAttachments = nullptr,
+			.colorAttachmentCount = 0,
+			.pColorAttachments = nullptr,
+			.pResolveAttachments = nullptr,
+			.pDepthStencilAttachment = nullptr,
+			.preserveAttachmentCount = 0,
+			.pPreserveAttachments = nullptr
+		};
+
 		if (!_buildInfo) throw std::runtime_error("The render pass has already been initialized");
 		
 		std::uint32_t index = static_cast<std::uint32_t>(_buildInfo->subpassDescriptions.size());
-		VkSubpassDescription& description = _buildInfo->subpassDescriptions.emplace_back();
+		VkSubpassDescription& description = _buildInfo->subpassDescriptions.emplace_back(DEFAULT);
 		BuildInfo::SubpassData& data = _buildInfo->subpassData.emplace_back();
 
 		return SubpassDescription(description, data, index);
 	}
 
 	RenderPass::Dependency RenderPass::addDependency(){
+		static constexpr VkSubpassDependency DEFAULT{
+			.srcSubpass = VK_SUBPASS_EXTERNAL,
+			.dstSubpass = VK_SUBPASS_EXTERNAL,
+			.srcStageMask = 0,
+			.dstStageMask = 0,
+			.srcAccessMask = 0,
+			.dstAccessMask = 0,
+			.dependencyFlags = 0
+		};
+
 		if (!_buildInfo) throw std::runtime_error("The render pass has already been initialized");
-		
-		VkSubpassDependency& dependency = _buildInfo->subpassDependencies.emplace_back();
+
+		VkSubpassDependency& dependency = _buildInfo->subpassDependencies.emplace_back(DEFAULT);
 
 		return Dependency(dependency);
 	}

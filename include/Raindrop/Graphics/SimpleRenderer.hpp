@@ -109,7 +109,7 @@ namespace Raindrop::Graphics{
 
 			void initCommandPool(){
 				mainCommandPool.prepare(*_context);
-				mainCommandPool.setCreateFlags(VK_COMMAND_POOL_CREATE_TRANSIENT_BIT);
+				mainCommandPool.setCreateFlags(VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 				mainCommandPool.setQueueFamily(_context->getDevice().graphicsQueue.familyIndex);
 
 				mainCommandPool.initialize();

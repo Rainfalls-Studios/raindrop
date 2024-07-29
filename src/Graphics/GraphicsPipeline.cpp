@@ -2,6 +2,7 @@
 #include <Raindrop/Graphics/Context.hpp>
 #include <Raindrop/Graphics/RenderPass.hpp>
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
+#include <iostream>
 
 namespace Raindrop::Graphics{
 	// =========================== VIEWPORT ========================
@@ -816,10 +817,21 @@ namespace Raindrop::Graphics{
 		_context = &context;
 
 		_info = std::make_unique<BuildInfo>();
+
+		// forcefully initialize the building with pipeline states
+		getVertexInputState();
+		getInputAssemplyState();
+		getTessellationState();
+		getViewportState();
+		getRasterizationState();
+		getMultisampleState();
+		getDepthStencilState();
+		getColorBlendState();
+		getDynamicState();
 	}
 
 	void GraphicsPipeline::initialize(){
-		if (_context){
+		if (!_context){
 			spdlog::warn("Attempt to initialize a non prepared graphics pipeline");
 			throw std::runtime_error("The pipeline has not been prepared for initialization");
 		}
@@ -851,11 +863,11 @@ namespace Raindrop::Graphics{
 			.basePipelineIndex = -1
 		};
 
-		auto& device = _context->getDevice();
+		auto& device = _context->getDevice().get();
 		auto& allocationCallbacks = _context->core.allocationCallbacks;
 
 		Exceptions::checkVkCreation<VkPipeline>(
-			vkCreateGraphicsPipelines(device.get(), VK_NULL_HANDLE, 1, &info, allocationCallbacks, &_pipeline),
+			vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &info, nullptr, &_pipeline),
 			"Failed to create graphics pipeline",
 			_context->logger
 		);
@@ -1123,4 +1135,9 @@ namespace Raindrop::Graphics{
 		}
 		return DynamicState(info.dynamicState.has_value() ? info.dynamicState.value() : info.dynamicState.emplace(DEFAULT), info.dynamicStateData);
 	}
+
+	void GraphicsPipeline::bind(const CommandBuffer& cmd){
+		vkCmdBindPipeline(cmd.get(), VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
+	}
+
 }

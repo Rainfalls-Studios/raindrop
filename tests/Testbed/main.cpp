@@ -3,6 +3,9 @@
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
 #include <spdlog/spdlog.h>
 #include <iostream>
+#include <fstream>
+
+#include "config.h"
 
 class CustomSceneProperty : public Raindrop::Scenes::Property{
 	public:
@@ -11,6 +14,90 @@ class CustomSceneProperty : public Raindrop::Scenes::Property{
 
 struct PushConstant{
 	int a;
+};
+
+std::string read_file(const std::filesystem::path& path){
+	spdlog::info("Loading file \"{}\" ...", path.string());
+	std::ifstream file(path, std::ios_base::binary | std::ios_base::in);
+	if (!file.is_open()){
+		spdlog::warn("Could not open file \"{}\"", path.string());
+		throw std::runtime_error("Could not open file");
+	}
+
+	std::stringstream streamBuf;
+	streamBuf << file.rdbuf();
+
+	spdlog::info("File \"{}\" loaded !", path.string());
+
+	return streamBuf.str();
+}
+
+class TrianglePipeline{
+	public:
+		TrianglePipeline() noexcept : 
+			_engine{nullptr},
+			_layout{},
+			_fragment{},
+			_vertex{},
+			_pipeline{}
+		{}
+
+		~TrianglePipeline(){
+			_engine->getGraphicsContext().getDevice().waitIdle();
+		}
+
+		void initialize(Raindrop::Engine& engine){
+			_engine = &engine;
+
+			_layout.prepare(engine.getGraphicsContext());
+			_layout.initialize();
+
+			_fragment.prepare(engine.getGraphicsContext());
+			_fragment.setCode(read_file(PATH / "shaders/triangle/triangle.frag.spv"))
+				.initialize();
+			
+			_vertex.prepare(engine.getGraphicsContext());
+			_vertex.setCode(read_file(PATH / "shaders/triangle/triangle.vert.spv"))
+				.initialize();
+			
+			_pipeline.prepare(engine.getGraphicsContext());
+			_pipeline.addStage()
+				.setModule(_fragment.get())
+				.setEntryPoint("main")
+				.setStage(VK_SHADER_STAGE_FRAGMENT_BIT);
+			
+			_pipeline.addStage()
+				.setModule(_vertex.get())
+				.setEntryPoint("main")
+				.setStage(VK_SHADER_STAGE_VERTEX_BIT);
+			
+			_pipeline.setLayout(_layout)
+				.setRenderPass(_engine->getGraphicsContext().window.swapchain.getRenderPass())
+				.setSubpass(0);
+			
+			_pipeline.getViewportState().addScissor();
+			_pipeline.getViewportState().addViewport();
+			
+			_pipeline.getDynamicState()
+				.addDynamicStates({VK_DYNAMIC_STATE_SCISSOR, VK_DYNAMIC_STATE_VIEWPORT});
+
+			_pipeline.getColorBlendState()
+				.addColorAttachment()
+					.enableBlending();
+				
+			_pipeline.initialize();
+		}
+
+		void bind(Raindrop::Graphics::CommandBuffer& cmd){
+			_pipeline.bind(cmd);
+		}
+
+	private:
+		Raindrop::Engine* _engine;
+		Raindrop::Graphics::PipelineLayout _layout;
+		Raindrop::Graphics::ShaderModule _fragment;
+		Raindrop::Graphics::ShaderModule _vertex;
+		Raindrop::Graphics::GraphicsPipeline _pipeline;
 };
 
 
@@ -26,6 +113,10 @@ class Testbed : public Raindrop::Engine, public Raindrop::Events::Listener{
 			_renderer.initialize(getGraphicsContext());
 
 			Engine::subscribeToEvent<Raindrop::Events::WindowCloseRequest>(this, &Testbed::closeEvent);
+
+			_pipeline.initialize(*this);
+
+
 		}
 
 		void run(){
@@ -47,8 +138,11 @@ class Testbed : public Raindrop::Engine, public Raindrop::Events::Listener{
 					clearColor.b = glm::sin(duration.count() * 1.5);
 
 					_renderer.setSwapchainColor(clearColor);
-					
 					_renderer.beginSwapchainRenderPass(commandBuffer);
+
+					_pipeline.bind(*commandBuffer);
+					vkCmdDraw(commandBuffer->get(), 3, 1, 0, 0);
+
 					_renderer.endSwapchainRenderPass(commandBuffer);
 
 					_renderer.endFrame(commandBuffer);
@@ -58,6 +152,7 @@ class Testbed : public Raindrop::Engine, public Raindrop::Events::Listener{
 
 	private:
 		Raindrop::Graphics::SimpleRenderer _renderer;
+		TrianglePipeline _pipeline;
 		bool _run;
 };
 
