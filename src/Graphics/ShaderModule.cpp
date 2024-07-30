@@ -40,12 +40,12 @@ namespace Raindrop::Graphics{
 	void ShaderModule::initialize(){
 		if (!_context){
 			spdlog::warn("Attempt to initialized a non prepared shader module");
-			throw std::runtime_error("The shader modyule has not been prepared !");
+			throw std::runtime_error("The shader module has not been prepared !");
 		}
 
 		if (!_info){
 			_context->logger->warn("Attempt to initialized a non prepared shader module");
-			throw std::runtime_error("The shader modyule has not been prepared !");
+			throw std::runtime_error("The shader module has not been prepared !");
 		}
 
 		const auto& code = _info->code;
@@ -112,5 +112,4 @@ namespace Raindrop::Graphics{
 
 		return *_info;
 	}
-
 }

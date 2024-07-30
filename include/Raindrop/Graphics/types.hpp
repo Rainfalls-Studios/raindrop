@@ -1,7 +1,11 @@
 #ifndef __RAINDROP_GRAPHICS_TYPES_HPP__
 #define __RAINDROP_GRAPHICS_TYPES_HPP__
 
+#include <cstddef>
+
 namespace Raindrop::Graphics{
+	static constexpr std::size_t WHOLE_SIZE = static_cast<std::size_t>(~0ULL);
+	
 	struct Context;
 	class Buffer;
 	class CommandBuffer;
@@ -17,6 +21,7 @@ namespace Raindrop::Graphics{
 	class ShaderModule;
 	class Formats;
 	class DescriptorSetLayout;
+	class Memory;
 }
 
 #endif

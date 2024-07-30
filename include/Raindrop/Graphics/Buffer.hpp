@@ -5,7 +5,6 @@
 #include "pch.pch"
 
 namespace Raindrop::Graphics{
-	static constexpr std::size_t WHOLE_SIZE = static_cast<std::size_t>(~0ULL);
 	class Buffer{
 		public:
 			Buffer() noexcept;
@@ -32,9 +31,11 @@ namespace Raindrop::Graphics{
 			Buffer& setMemoryProperties(const VkMemoryPropertyFlags& properties);
 			Buffer& setQueueFamilies(const std::vector<uint32_t>& families);
 			Buffer& setSharingMode(const VkSharingMode& sharingMode);
+			Buffer& setMemory(const std::shared_ptr<Memory>& memory);
+			Buffer& setMemoryOffset(const std::size_t& offset);
 
 			const VkBuffer& get() const noexcept;
-			const VkDeviceMemory& getMemory() const noexcept;
+			const std::shared_ptr<Memory>& getMemory() const noexcept;
 
 			void map(const std::size_t& size = WHOLE_SIZE, const std::size_t& offset = 0);
 			void unmap();
@@ -54,17 +55,20 @@ namespace Raindrop::Graphics{
 				VkMemoryPropertyFlags memoryPropertiess;
 				std::vector<uint32_t> queueFamilies;
 				VkSharingMode sharingMode;
+				std::shared_ptr<Memory> memory;
+				std::size_t memoryOffset;
 
 				BuildInfo();
 			};
 
 			Context* _context;
 			VkBuffer _buffer;
-			VkDeviceMemory _memory;
+			std::shared_ptr<Memory> _memory;
 			void* _mapped;
+			std::size_t _size;
 
 			std::unique_ptr<BuildInfo> _buildInfo;
-			std::size_t _size;
+			BuildInfo& getInfo();
 	};
 }
 

@@ -88,8 +88,8 @@ class TrianglePipeline{
 			_pipeline.initialize();
 		}
 
-		void bind(Raindrop::Graphics::CommandBuffer& cmd){
-			_pipeline.bind(cmd);
+		void bind(Raindrop::Graphics::CommandBuffer* cmd){
+			_pipeline.bind(*cmd);
 		}
 
 	private:
@@ -115,8 +115,6 @@ class Testbed : public Raindrop::Engine, public Raindrop::Events::Listener{
 			Engine::subscribeToEvent<Raindrop::Events::WindowCloseRequest>(this, &Testbed::closeEvent);
 
 			_pipeline.initialize(*this);
-
-
 		}
 
 		void run(){
@@ -140,7 +138,7 @@ class Testbed : public Raindrop::Engine, public Raindrop::Events::Listener{
 					_renderer.setSwapchainColor(clearColor);
 					_renderer.beginSwapchainRenderPass(commandBuffer);
 
-					_pipeline.bind(*commandBuffer);
+					_pipeline.bind(commandBuffer);
 					vkCmdDraw(commandBuffer->get(), 3, 1, 0, 0);
 
 					_renderer.endSwapchainRenderPass(commandBuffer);
