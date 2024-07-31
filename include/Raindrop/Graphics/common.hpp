@@ -17,5 +17,6 @@
 #include "RenderPass.hpp"
 #include "ShaderModule.hpp"
 #include "DescriptorSetLayout.hpp"
+#include "Memory.hpp"
 
 #endif

@@ -20,22 +20,30 @@ namespace Raindrop::Graphics::Core{
 	PhysicalDevice& PhysicalDevice::prepare(Context& context){
 		_context = &context;
 		_selector = std::make_unique<vkb::PhysicalDeviceSelector>(context.instance.getVkb());
+
+		_selector->prefer_gpu_device_type(vkb::PreferredDeviceType::discrete);
 		return *this;
 	}
 
 	PhysicalDevice& PhysicalDevice::initialize(){
+		_context->logger->info("Looking for suitable physical device...");
+
+		auto list = _selector->select_devices();
+		
 		auto result = _selector->select();
 
-		_context->logger->info("Looking for suitable physical device...");
+		_context->logger->info("Found {} GPU(s) :", list.value().size());
+		for (auto& d : list.value()){
+			_context->logger->info("\t - {}", d.name);
+		}
 
 		if (!result){
 			_context->logger->error("Failed to find a suitable physical device : {}", result.error().message());
 			throw std::runtime_error("Failed to find a suitable physical device");
 		}
 
-
 		_device = result.value();
-		_context->logger->info("Found suitable physical device : {}", _device.name);
+		_context->logger->info("using first suitable GPU : {}", _device.name);
 
 		_selector.reset();
 		return *this;

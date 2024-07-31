@@ -152,6 +152,18 @@ namespace Raindrop{
 		return std::move(module);
 	}
 
+	Graphics::Memory Engine::createGraphicsMemory(){
+		Graphics::Memory memory;
+		memory.prepare(getGraphicsContext());
+		return std::move(memory);
+	}
+
+	Graphics::Image Engine::createGraphicsImage(){
+		Graphics::Image image;
+		image.prepare(getGraphicsContext());
+		return std::move(image);
+	}
+
 	// ==================== EVENTS ============================
 
 	Events::Context& Engine::getEventsContext(){
