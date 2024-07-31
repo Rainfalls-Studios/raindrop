@@ -122,13 +122,13 @@ namespace Raindrop::Graphics{
 			static bool hasNotStencil(const VkFormat& format) noexcept;
 
 
-			std::size_t getComponentCount(const VkFormat& format) noexcept;
-			std::size_t getPlaneCount(const VkFormat& format) noexcept;
-			std::size_t getDepthSize(const VkFormat& format) noexcept;
-			std::size_t getStencilSize(const VkFormat& format) noexcept;
-			std::size_t getSize(const VkFormat& format) noexcept;
-			std::size_t getTexelCount(const VkFormat& format) noexcept;
-			PropertiesFlags getProperties(const VkFormat& format) noexcept;
+			static std::size_t getComponentCount(const VkFormat& format) noexcept;
+			static std::size_t getPlaneCount(const VkFormat& format) noexcept;
+			static std::size_t getDepthSize(const VkFormat& format) noexcept;
+			static std::size_t getStencilSize(const VkFormat& format) noexcept;
+			static std::size_t getSize(const VkFormat& format) noexcept;
+			static std::size_t getTexelCount(const VkFormat& format) noexcept;
+			static PropertiesFlags getProperties(const VkFormat& format) noexcept;
 
 			enum Usage{
 				BUFFER,
