@@ -77,10 +77,23 @@ namespace Raindrop::Graphics{
 			"Failed to create image view",
 			_context->logger
 		);
+
+		_info.reset();
 	}
 
 	void ImageView::release(){
+		if (!_context) return;
 
+		auto& device = _context->getDevice();
+		auto& allocationCallbacks = _context->core.allocationCallbacks;
+
+		if (_imageView){
+			vkDestroyImageView(device.get(), _imageView, allocationCallbacks);
+			_imageView = VK_NULL_HANDLE;
+		}
+
+		_context = nullptr;
+		_info.reset();
 	}
 
 	ImageView& ImageView::setSource(const Image& image){

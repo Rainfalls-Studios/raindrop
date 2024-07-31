@@ -164,6 +164,12 @@ namespace Raindrop{
 		return std::move(image);
 	}
 
+	Graphics::ImageView Engine::createGraphicsImageView(){
+		Graphics::ImageView imageView;
+		imageView.prepare(getGraphicsContext());
+		return std::move(imageView);
+	}
+
 	// ==================== EVENTS ============================
 
 	Events::Context& Engine::getEventsContext(){

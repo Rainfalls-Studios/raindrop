@@ -52,6 +52,7 @@ namespace Raindrop{
 			Graphics::ShaderModule createGraphicsShaderModule();
 			Graphics::Memory createGraphicsMemory();
 			Graphics::Image createGraphicsImage();
+			Graphics::ImageView createGraphicsImageView();
 
 			// EVENTS
 

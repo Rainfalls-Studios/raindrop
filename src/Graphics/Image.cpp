@@ -97,13 +97,15 @@ namespace Raindrop::Graphics{
 		} else {
 			_memory = _info->memory;
 		}
-		
+
 		Exceptions::checkVkOperation<VkDeviceMemory>(
 			vkBindImageMemory(device.get(), _image, _memory->get(), static_cast<VkDeviceSize>(_info->memoryOffset)),
 			"Failed to bind image memory",
 			Exceptions::VulkanOperationType::BINDING,
 			_context->logger
 		);
+
+		_info.reset();
 	}
 
 	void Image::release(){
