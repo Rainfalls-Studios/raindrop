@@ -71,7 +71,7 @@ namespace Raindrop::Graphics{
 	void Image::initialize(){
 		if (!_context || !_info){
 			(_context == nullptr ? spdlog::default_logger() : _context->logger)->warn("Attempt to initialized a non prepared image");
-			throw std::runtime_error("The image has not be en prepared !");
+			throw std::runtime_error("The image has not been prepared !");
 		}
 
 		VkImageCreateInfo& info = _info->info;

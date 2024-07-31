@@ -170,6 +170,12 @@ namespace Raindrop{
 		return std::move(imageView);
 	}
 
+	Graphics::Sampler Engine::createGraphicsSampler(){
+		Graphics::Sampler sampler;
+		sampler.prepare(getGraphicsContext());
+		return std::move(sampler);
+	}
+
 	// ==================== EVENTS ============================
 
 	Events::Context& Engine::getEventsContext(){

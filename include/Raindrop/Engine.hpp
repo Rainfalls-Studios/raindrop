@@ -53,6 +53,7 @@ namespace Raindrop{
 			Graphics::Memory createGraphicsMemory();
 			Graphics::Image createGraphicsImage();
 			Graphics::ImageView createGraphicsImageView();
+			Graphics::Sampler createGraphicsSampler();
 
 			// EVENTS
 

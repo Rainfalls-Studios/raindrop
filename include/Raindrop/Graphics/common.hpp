@@ -18,5 +18,6 @@
 #include "ShaderModule.hpp"
 #include "DescriptorSetLayout.hpp"
 #include "Memory.hpp"
+#include "Sampler.hpp"
 
 #endif
