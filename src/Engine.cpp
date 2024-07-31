@@ -176,6 +176,13 @@ namespace Raindrop{
 		return std::move(sampler);
 	}
 
+	Graphics::DescriptorPool Engine::createGraphicsDescriptorPool(){
+		Graphics::DescriptorPool pool;
+		pool.prepare(getGraphicsContext());
+		return std::move(pool);
+	}
+
+
 	// ==================== EVENTS ============================
 
 	Events::Context& Engine::getEventsContext(){
