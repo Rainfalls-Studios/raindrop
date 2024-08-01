@@ -28,8 +28,9 @@ namespace Raindrop::Graphics::Core{
 	PhysicalDevice& PhysicalDevice::initialize(){
 		_context->logger->info("Looking for suitable physical device...");
 
-		auto list = _selector->select_devices();
+		_selector->allow_any_gpu_device_type(false);
 		
+		auto list = _selector->select_devices();
 		auto result = _selector->select();
 
 		_context->logger->info("Found {} GPU(s) :", list.value().size());
