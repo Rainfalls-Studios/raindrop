@@ -1,6 +1,7 @@
 #include <Raindrop/Graphics/DescriptorPool.hpp>
 #include <Raindrop/Graphics/Context.hpp>
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
+#include <Raindrop/Graphics/DescriptorSet.hpp>
 
 namespace Raindrop::Graphics{
 	DescriptorPool::BuildInfo::BuildInfo() : 
@@ -118,5 +119,95 @@ namespace Raindrop::Graphics{
 		}
 
 		return *_info;
+	}
+
+	std::vector<DescriptorSet> DescriptorPool::allocate(const std::vector<DescriptorSetLayout>& layouts){
+		checkInitialize();
+
+		std::vector<VkDescriptorSetLayout> vkLayouts;
+		std::transform(
+			layouts.begin(),
+			layouts.end(),
+			std::back_inserter(vkLayouts),
+			[](const DescriptorSetLayout& layout) -> VkDescriptorSetLayout {
+				return layout.get();
+			}
+		);
+
+		VkDescriptorSetAllocateInfo info{
+			.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
+			.pNext = nullptr,
+			.descriptorPool = _pool,
+			.descriptorSetCount = static_cast<uint32_t>(layouts.size()),
+			.pSetLayouts = vkLayouts.data()
+		};
+
+		auto& device = _context->getDevice();
+		std::vector<VkDescriptorSet> vkSets(layouts.size());
+
+		Exceptions::checkVkOperation<VkDescriptorPool>(
+			vkAllocateDescriptorSets(device.get(), &info, vkSets.data()),
+			"Failed to allocate descriptor sets",
+			Exceptions::VulkanOperationType::ALLOCATION,
+			_context->logger
+		);
+
+		std::vector<DescriptorSet> sets;
+
+		std::transform(
+			vkSets.begin(),
+			vkSets.end(),
+			std::back_inserter(sets),
+			[this](const VkDescriptorSet& set) -> DescriptorSet {
+				return DescriptorSet(*_context, set);
+			}
+		);
+
+		return std::move(sets);
+	}
+
+	void DescriptorPool::checkInitialize(){
+		if (!_context || !_info){
+			(_context == nullptr ? spdlog::default_logger() : _context->logger)->warn("Attempt to access a non initialized descriptor pool");
+			throw std::runtime_error("The descriptor pool has not been initialized !");
+		}
+	}
+
+	void DescriptorPool::reset(const VkDescriptorPoolResetFlags& flags){
+		checkInitialize();
+
+		auto& device = _context->getDevice();
+
+		Exceptions::checkVkOperation<VkDescriptorPool>(
+			vkResetDescriptorPool(device.get(), _pool, flags),
+			"Failed to reset descriptor pool",
+			Exceptions::VulkanOperationType::RESET,
+			_context->logger
+		);
+	}
+
+	void DescriptorPool::free(const std::vector<DescriptorSet>& sets){
+		checkInitialize();
+
+		auto& device = _context->getDevice();
+
+		std::vector<VkDescriptorSet> vkSets;
+		vkSets.reserve(sets.size());
+
+		std::transform(
+			sets.begin(),
+			sets.end(),
+			std::back_inserter(vkSets),
+			[](const DescriptorSet& set) -> VkDescriptorSet {
+				return set.get();
+			}
+		);
+
+		Exceptions::checkVkOperation<VkDescriptorPool>(
+			vkFreeDescriptorSets(device.get(), _pool, static_cast<uint32_t>(sets.size()), vkSets.data()),
+			"Failed to free descriptor sets",
+			Exceptions::VulkanOperationType::FREE,
+			_context->logger
+		);
 	}
 }

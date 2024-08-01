@@ -28,6 +28,10 @@ namespace Raindrop::Graphics{
 
 			const VkDescriptorPool& get() const noexcept;
 
+			std::vector<DescriptorSet> allocate(const std::vector<DescriptorSetLayout>& layouts);
+			void reset(const VkDescriptorPoolResetFlags& flags = 0);
+			void free(const std::vector<DescriptorSet>& sets);
+
 		private:
 			struct BuildInfo{
 				VkDescriptorPoolCreateInfo info;
@@ -41,6 +45,8 @@ namespace Raindrop::Graphics{
 
 			std::unique_ptr<BuildInfo> _info;
 			BuildInfo& getInfo();
+
+			void checkInitialize();
 	};
 }
 
