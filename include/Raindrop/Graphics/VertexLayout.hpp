@@ -7,9 +7,6 @@
 
 namespace Raindrop::Graphics{
 	class VertexLayout{
-		private:
-			struct Info;
-
 		public:
 			struct AttributeInfo{
 				VkFormat format;
@@ -22,10 +19,14 @@ namespace Raindrop::Graphics{
 			struct BindingInfo{
 				std::uint32_t binding;
 				std::uint32_t stride;
-				std::uint32_t nextLocation;
 				VkMemoryPropertyFlags memoryProperties;
 				std::string name;
 				VkVertexInputRate rate;
+
+				std::unordered_map<std::string, AttributeInfo>  attributes;
+
+				AttributeInfo& operator[](const std::string& name);
+				const AttributeInfo& operator[](const std::string& name) const;
 			};
 
 			class Attribute{
@@ -49,7 +50,7 @@ namespace Raindrop::Graphics{
 			class Binding{
 				friend class VertexLayout;
 				public:	
-					Binding(BindingInfo& info, Info& data) noexcept;
+					Binding(BindingInfo& info) noexcept;
 					~Binding() = default;
 
 					Binding& setName(const std::string& name);
@@ -60,7 +61,6 @@ namespace Raindrop::Graphics{
 
 				private:
 					BindingInfo& _info;
-					Info& _data;
 			};
 
 			static constexpr std::uint32_t BINDING_AUTO = UINT32_MAX;
@@ -77,21 +77,15 @@ namespace Raindrop::Graphics{
 			inline VertexLayout& addAttribute(Binding& binding, const std::string& name, std::uint32_t location = LOCATION_AUTO){
 				return addAttribute(binding, name, Utils::typeToFormat<T>(), location);
 			}
-			
-			const AttributeInfo& get(const std::string& name) const;
 
 			std::vector<VkVertexInputBindingDescription> getBindingDescriptions() const;
 			std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions() const;
 
+			BindingInfo& operator[](const std::string& name);
+			const BindingInfo& operator[](const std::string& name) const;
+
 		private:
-			struct Info{
-				std::vector<BindingInfo> bindings;
-				std::vector<AttributeInfo> attributes;	
-			} _info;
-
-			std::unordered_map<std::string, AttributeInfo*> _nameToAttributesMap;
-
-			void mapAttributes();
+			std::unordered_map<std::string, BindingInfo> _bindings;
 
 	};
 }

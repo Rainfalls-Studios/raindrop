@@ -121,6 +121,7 @@ class Testbed : public Raindrop::Engine, public Raindrop::Events::Listener{
 				  .addAttribute<glm::vec3>(binding, "position")
 				  .addAttribute<glm::vec2>(binding, "uv");
 
+			std::cout << layout["binding 0"]["color"].name << std::endl;
 
 			_pipeline.initialize(*this);
 		}

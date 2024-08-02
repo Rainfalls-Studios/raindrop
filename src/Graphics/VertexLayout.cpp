@@ -7,33 +7,35 @@ namespace Raindrop::Graphics{
 
 	VertexLayout::Binding VertexLayout::addBinding(const std::string& name, const VkVertexInputRate& rate, const VkMemoryPropertyFlags& memProperties, std::uint32_t binding){
 		if (binding == BINDING_AUTO){
-			binding = _info.bindings.size();
+			binding = _bindings.size();
 		}
 
-		auto& info = _info.bindings.emplace_back();
-		info.binding = binding;
-		info.memoryProperties = memProperties;
-		info.name = name;
-		info.stride = 0;
-		info.nextLocation = 0;
-		info.rate = rate;
+		BindingInfo info{
+			.binding = binding,
+			.stride = 0,
+			.memoryProperties = memProperties,
+			.name = name,
+			.rate = rate
+		};
 
-		return std::move(Binding(info, _info));
+		auto& ref = _bindings[name] = info;
+
+		return std::move(Binding(ref));
 	}
 
 	VertexLayout& VertexLayout::addAttribute(Binding& binding, const std::string& name, const VkFormat& format, std::uint32_t location){
 		auto& bindingInfo = binding._info;
 
-		auto& info = _info.attributes.emplace_back();
-		info.binding = bindingInfo.binding;
-		info.format = format;
-		info.location = location == LOCATION_AUTO ? bindingInfo.nextLocation++ : location;
-		info.name = name;
-		info.offset = bindingInfo.stride;
+		AttributeInfo info{
+			.format = format,
+			.offset = bindingInfo.stride,
+			.binding = bindingInfo.binding,
+			.location = location == LOCATION_AUTO ? static_cast<uint32_t>(bindingInfo.attributes.size()) : location,
+			.name = name
+		};
 
+		bindingInfo.attributes[name] = info;
 		bindingInfo.stride += Formats::getSize(format);
-
-		mapAttributes();
 
 		return *this;
 	}
@@ -69,11 +71,7 @@ namespace Raindrop::Graphics{
 		return _info;
 	}
 
-
-	VertexLayout::Binding::Binding(BindingInfo& info, Info& data) noexcept :
-		_info{info},
-		_data{data}
-	{}
+	VertexLayout::Binding::Binding(BindingInfo& info) noexcept : _info{info}{}
 
 	VertexLayout::Binding& VertexLayout::Binding::setName(const std::string& name){
 		_info.name = name;
@@ -94,50 +92,55 @@ namespace Raindrop::Graphics{
 		return _info;
 	}
 
-	void VertexLayout::mapAttributes(){
-		_nameToAttributesMap.clear();
-
-		for (auto& attribute : _info.attributes){
-			_nameToAttributesMap[attribute.name] = &attribute;
-		}
-	}
-
-	const VertexLayout::AttributeInfo& VertexLayout::get(const std::string& name) const{
-		return *_nameToAttributesMap.at(name);
-	}
-
 	std::vector<VkVertexInputBindingDescription> VertexLayout::getBindingDescriptions() const{
-		std::vector<VkVertexInputBindingDescription> descriptions(_info.bindings.size());
+		std::vector<VkVertexInputBindingDescription> descriptions;
+		descriptions.reserve(_bindings.size());
 
-		for (std::size_t i=0; i<descriptions.size(); i++){
-			auto& description = descriptions[i];
-			auto& info = _info.bindings[i];
-
-			description = VkVertexInputBindingDescription{
-				.binding = info.binding,
-				.stride = info.stride,
-				.inputRate = info.rate
+		for (auto& binding : _bindings){
+			VkVertexInputBindingDescription description{
+				.binding = binding.second.binding,
+				.stride = binding.second.stride,
+				.inputRate = binding.second.rate
 			};
+
+			descriptions.push_back(description);
 		}
 
 		return std::move(descriptions);
 	}
 
 	std::vector<VkVertexInputAttributeDescription> VertexLayout::getAttributeDescriptions() const {
-		std::vector<VkVertexInputAttributeDescription> descriptions(_info.attributes.size());
+		std::vector<VkVertexInputAttributeDescription> descriptions;
 
-		for (std::size_t i=0; i<descriptions.size(); i++){
-			auto& description = descriptions[i];
-			auto& info = _info.attributes[i];
+		for (auto& binding : _bindings){
+			for (auto& attribute : binding.second.attributes){
+				VkVertexInputAttributeDescription description{
+					.location = attribute.second.location,
+					.binding = attribute.second.binding,
+					.format = attribute.second.format,
+					.offset = attribute.second.offset
+				};
 
-			description = VkVertexInputAttributeDescription{
-				.location = info.location,
-				.binding = info.binding,
-				.format = info.format,
-				.offset = info.offset	
-			};
+				descriptions.push_back(description);
+			}
 		}
 
 		return std::move(descriptions);
+	}
+
+	VertexLayout::AttributeInfo& VertexLayout::BindingInfo::operator[](const std::string& name){
+		return attributes.at(name);
+	}
+
+	const VertexLayout::AttributeInfo& VertexLayout::BindingInfo::operator[](const std::string& name) const{
+		return attributes.at(name);
+	}
+
+	VertexLayout::BindingInfo& VertexLayout::operator[](const std::string& name){
+		return _bindings.at(name);
+	}
+
+	const VertexLayout::BindingInfo& VertexLayout::operator[](const std::string& name) const{
+		return _bindings.at(name);
 	}
 }
