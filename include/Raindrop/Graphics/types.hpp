@@ -22,6 +22,9 @@ namespace Raindrop::Graphics{
 	class Formats;
 	class DescriptorSetLayout;
 	class Memory;
+	class Mesh;
+	class MeshData;
+	class VertexLayout;
 }
 
 #endif

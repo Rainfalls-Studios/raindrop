@@ -19,5 +19,8 @@
 #include "DescriptorSetLayout.hpp"
 #include "Memory.hpp"
 #include "Sampler.hpp"
+#include "VertexLayout.hpp"
+#include "Mesh.hpp"
+#include "MeshData.hpp"
 
 #endif

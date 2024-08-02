@@ -114,6 +114,15 @@ class Testbed : public Raindrop::Engine, public Raindrop::Events::Listener{
 
 			Engine::subscribeToEvent<Raindrop::Events::WindowCloseRequest>(this, &Testbed::closeEvent);
 
+			Raindrop::Graphics::VertexLayout layout;
+			auto binding = layout.addBinding("binding 0");
+
+			layout.addAttribute<glm::vec3>(binding, "color")
+				  .addAttribute<glm::vec3>(binding, "position")
+				  .addAttribute<glm::vec2>(binding, "uv");
+
+			std::cout << layout.get("uv").binding << std::endl;
+
 			_pipeline.initialize(*this);
 		}
 
