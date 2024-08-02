@@ -162,6 +162,7 @@ namespace Raindrop::Graphics{
 					VertexInputState& setFlags(const VkPipelineVertexInputStateCreateFlags& flags);
 					VertexInputState& addBindingDescriptions(const std::initializer_list<VkVertexInputBindingDescription>& descriptions);
 					VertexInputState& addAttributeDescriptions(const std::initializer_list<VkVertexInputAttributeDescription>& descriptions);
+					VertexInputState& setLayout(const VertexLayout& layout);
 
 					VkPipelineVertexInputStateCreateInfo& get();
 

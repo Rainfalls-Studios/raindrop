@@ -2,6 +2,7 @@
 #include <Raindrop/Graphics/Context.hpp>
 #include <Raindrop/Graphics/RenderPass.hpp>
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
+#include <Raindrop/Graphics/VertexLayout.hpp>
 #include <iostream>
 
 namespace Raindrop::Graphics{
@@ -268,6 +269,22 @@ namespace Raindrop::Graphics{
 		info.pVertexAttributeDescriptions = data.vertexAttributeDescription.data();
 		info.vertexAttributeDescriptionCount = static_cast<uint32_t>(data.vertexAttributeDescription.size());
 
+		return *this;
+	}
+
+	GraphicsPipeline::VertexInputState& GraphicsPipeline::VertexInputState::setLayout(const VertexLayout& layout){
+		auto& info = getInfo();
+		auto& data = getData();
+
+		data.vertexAttributeDescription = layout.getAttributeDescriptions();
+		data.vertexBindingDescriptions = layout.getBindingDescriptions();
+
+		info.pVertexAttributeDescriptions = data.vertexAttributeDescription.data();
+		info.vertexAttributeDescriptionCount = static_cast<uint32_t>(data.vertexAttributeDescription.size());
+
+		info.pVertexBindingDescriptions = data.vertexBindingDescriptions.data();
+		info.vertexBindingDescriptionCount = static_cast<uint32_t>(data.vertexBindingDescriptions.size());
+	
 		return *this;
 	}
 

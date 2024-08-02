@@ -25,6 +25,7 @@ namespace Raindrop::Graphics{
 				std::uint32_t nextLocation;
 				VkMemoryPropertyFlags memoryProperties;
 				std::string name;
+				VkVertexInputRate rate;
 			};
 
 			class Attribute{
@@ -53,6 +54,7 @@ namespace Raindrop::Graphics{
 
 					Binding& setName(const std::string& name);
 					Binding& setMemoryProperties(const VkMemoryPropertyFlags& flags);
+					Binding& setInputRate(const VkVertexInputRate& rate);
 
 					const BindingInfo& get() const noexcept;
 
@@ -67,7 +69,7 @@ namespace Raindrop::Graphics{
 			VertexLayout() noexcept;
 			~VertexLayout() = default;
 
-			Binding addBinding(const std::string& name, const VkMemoryPropertyFlags& memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, std::uint32_t binding = BINDING_AUTO);
+			Binding addBinding(const std::string& name, const VkVertexInputRate& rate = VK_VERTEX_INPUT_RATE_VERTEX, const VkMemoryPropertyFlags& memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, std::uint32_t binding = BINDING_AUTO);
 
 			VertexLayout& addAttribute(Binding& binding, const std::string& name, const VkFormat& format, std::uint32_t location = LOCATION_AUTO);
 			
@@ -77,6 +79,9 @@ namespace Raindrop::Graphics{
 			}
 			
 			const AttributeInfo& get(const std::string& name) const;
+
+			std::vector<VkVertexInputBindingDescription> getBindingDescriptions() const;
+			std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions() const;
 
 		private:
 			struct Info{

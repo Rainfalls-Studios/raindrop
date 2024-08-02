@@ -5,7 +5,7 @@
 namespace Raindrop::Graphics{
 	VertexLayout::VertexLayout() noexcept{}
 
-	VertexLayout::Binding VertexLayout::addBinding(const std::string& name, const VkMemoryPropertyFlags& memProperties, std::uint32_t binding){
+	VertexLayout::Binding VertexLayout::addBinding(const std::string& name, const VkVertexInputRate& rate, const VkMemoryPropertyFlags& memProperties, std::uint32_t binding){
 		if (binding == BINDING_AUTO){
 			binding = _info.bindings.size();
 		}
@@ -16,6 +16,7 @@ namespace Raindrop::Graphics{
 		info.name = name;
 		info.stride = 0;
 		info.nextLocation = 0;
+		info.rate = rate;
 
 		return std::move(Binding(info, _info));
 	}
@@ -84,6 +85,11 @@ namespace Raindrop::Graphics{
 		return *this;
 	}
 
+	VertexLayout::Binding& VertexLayout::Binding::setInputRate(const VkVertexInputRate& rate){
+		_info.rate = rate;
+		return *this;
+	}
+
 	const VertexLayout::BindingInfo& VertexLayout::Binding::get() const noexcept{
 		return _info;
 	}
@@ -100,4 +106,38 @@ namespace Raindrop::Graphics{
 		return *_nameToAttributesMap.at(name);
 	}
 
+	std::vector<VkVertexInputBindingDescription> VertexLayout::getBindingDescriptions() const{
+		std::vector<VkVertexInputBindingDescription> descriptions(_info.bindings.size());
+
+		for (std::size_t i=0; i<descriptions.size(); i++){
+			auto& description = descriptions[i];
+			auto& info = _info.bindings[i];
+
+			description = VkVertexInputBindingDescription{
+				.binding = info.binding,
+				.stride = info.stride,
+				.inputRate = info.rate
+			};
+		}
+
+		return std::move(descriptions);
+	}
+
+	std::vector<VkVertexInputAttributeDescription> VertexLayout::getAttributeDescriptions() const {
+		std::vector<VkVertexInputAttributeDescription> descriptions(_info.attributes.size());
+
+		for (std::size_t i=0; i<descriptions.size(); i++){
+			auto& description = descriptions[i];
+			auto& info = _info.attributes[i];
+
+			description = VkVertexInputAttributeDescription{
+				.location = info.location,
+				.binding = info.binding,
+				.format = info.format,
+				.offset = info.offset	
+			};
+		}
+
+		return std::move(descriptions);
+	}
 }
