@@ -143,4 +143,9 @@ namespace Raindrop::Graphics{
 	const VertexLayout::BindingInfo& VertexLayout::operator[](const std::string& name) const{
 		return _bindings.at(name);
 	}
+
+	std::size_t VertexLayout::getBindingCount() const noexcept{
+		return _bindings.size();
+	}
+
 }

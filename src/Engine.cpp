@@ -182,6 +182,11 @@ namespace Raindrop{
 		return std::move(pool);
 	}
 
+	Graphics::MeshData Engine::createGraphicsMeshData(){
+		Graphics::MeshData mesh;
+		mesh.prepare(getGraphicsContext());
+		return std::move(mesh);
+	}
 
 	// ==================== EVENTS ============================
 

@@ -84,6 +84,8 @@ namespace Raindrop::Graphics{
 			BindingInfo& operator[](const std::string& name);
 			const BindingInfo& operator[](const std::string& name) const;
 
+			std::size_t getBindingCount() const noexcept;
+
 		private:
 			std::unordered_map<std::string, BindingInfo> _bindings;
 
