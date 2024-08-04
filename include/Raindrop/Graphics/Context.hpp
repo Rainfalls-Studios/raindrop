@@ -2,10 +2,10 @@
 #define __RAINDROP_GRAPHICS_CONTEXT_HPP__
 
 #include "types.hpp"
-#include "common.hpp"
 #include "Core/Context.hpp"
 #include "Window/Context.hpp"
 #include "Formats.hpp"
+#include "CommandPool.hpp"
 #include <Raindrop/Events/types.hpp>
 
 namespace Raindrop::Graphics{
@@ -15,6 +15,8 @@ namespace Raindrop::Graphics{
 		Core::Context core;
 		Window::Context window;
 		Formats formats;
+
+		CommandPool transfertCommandPool;
 
 		void createLogger();
 		void initialize(Events::Context& events);

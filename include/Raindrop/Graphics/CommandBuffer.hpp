@@ -13,6 +13,11 @@ namespace Raindrop::Graphics{
 
 			const VkCommandBuffer& get() const noexcept;
 
+			void beginSingleUse();
+
+			void end();
+			void submit(VkQueue queue, VkFence fence = VK_NULL_HANDLE);
+
 		private:
 			Context* _context;
 			VkCommandBuffer _commandBuffer;

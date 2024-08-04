@@ -56,9 +56,10 @@ namespace Raindrop::Graphics{
 		std::swap(A._size, B._size);
 	}
 
-	void Buffer::prepare(Context& context){
+	Buffer& Buffer::prepare(Context& context){
 		_context = &context;
 		_buildInfo = std::make_unique<BuildInfo>();
+		return *this;
 	}
 
 	void Buffer::release(){

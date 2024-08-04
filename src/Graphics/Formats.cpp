@@ -18,8 +18,10 @@ namespace Raindrop::Graphics{
 		release();
 	}
 
-	void Formats::prepare(Context& context){
+	Formats& Formats::prepare(Context& context){
 		_context = &context;
+
+		return *this;
 	}
 
 	void Formats::initialize(){

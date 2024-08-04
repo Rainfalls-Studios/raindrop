@@ -16,9 +16,11 @@ namespace Raindrop::Graphics::Core{
 		release();	
 	}
 
-	void Device::prepare(Context& context){
+	Device& Device::prepare(Context& context){
 		_context = &context;
 		_builder = std::make_unique<vkb::DeviceBuilder>(context.physicalDevice.getVkb());
+
+		return *this;
 	}
 
 	void Device::initialize(){

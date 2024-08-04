@@ -10,7 +10,7 @@ namespace Raindrop::Graphics{
 			CommandPool();
 			~CommandPool();
 
-			void prepare(Context& context);
+			CommandPool& prepare(Context& context);
 			void initialize();
 			void release();
 

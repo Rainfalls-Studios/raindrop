@@ -10,16 +10,15 @@ namespace Raindrop::Graphics{
 		public:
 			struct Buffer{
 				std::vector<uint8_t> data;
-				std::size_t stride;
-				bool isVertex;
-				bool valid;
+				std::uint32_t stride;
+				std::uint32_t binding;
 
 				Buffer();
 			};
 
 			struct AttributeData{
-				std::size_t binding;
-				std::size_t offset;
+				std::uint32_t binding;
+				std::uint32_t offset;
 			};
 
 			class Binding{
@@ -92,10 +91,16 @@ namespace Raindrop::Graphics{
 			const std::vector<std::uint8_t>& getBindingBuffer(const std::string& name) const;
 			const VertexLayout& getLayout() const noexcept;
 
+			const std::vector<Buffer>& getBuffers() const noexcept;
+			const std::size_t& getVertexCount() const noexcept;
+
+
 		private:
 			Context* _context;
+			std::size_t _vertexCount;
 			std::vector<Buffer> _buffers;
 			std::vector<std::size_t> _indices;
+			std::unordered_map<std::size_t, std::size_t> _bindingToBuffer;
 			VertexLayout _layout;
 	};
 }

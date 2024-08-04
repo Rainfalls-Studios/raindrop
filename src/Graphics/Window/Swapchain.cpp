@@ -105,12 +105,13 @@ namespace Raindrop::Graphics::Window{
 		release();
 	}
 
-	void Swapchain::prepare(Context& context, Core::Context& core, Graphics::Context& graphics){
+	Swapchain& Swapchain::prepare(Context& context, Core::Context& core, Graphics::Context& graphics){
 		_context = &context;
 		_core = &core;
 		_graphics = &graphics;
 
 		querySupport();
+		return *this;
 	}
 
 	void Swapchain::initialize(){

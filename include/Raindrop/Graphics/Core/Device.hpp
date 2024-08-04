@@ -18,7 +18,7 @@ namespace Raindrop::Graphics::Core{
 			Device(const Device&) = delete;
 			Device& operator=(const Device&) = delete;
 
-			void prepare(Context& context);
+			Device& prepare(Context& context);
 			void initialize();
 			void release();
 

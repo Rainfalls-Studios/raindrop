@@ -68,7 +68,7 @@ namespace Raindrop::Graphics{
 			Formats() noexcept;
 			~Formats();
 
-			void prepare(Context& context);
+			Formats& prepare(Context& context);
 			void initialize();
 			void release();
 

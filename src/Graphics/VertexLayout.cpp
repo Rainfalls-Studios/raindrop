@@ -39,44 +39,8 @@ namespace Raindrop::Graphics{
 
 		return *this;
 	}
-
-	VertexLayout::Attribute::Attribute(AttributeInfo& info) noexcept : _info{info}{}
-
-	VertexLayout::Attribute& VertexLayout::Attribute::setName(const std::string& name){
-		_info.name = name;
-		return *this;
-	}
-
-	VertexLayout::Attribute& VertexLayout::Attribute::setOffset(const std::uint32_t& offset){
-		_info.offset = offset;
-		return *this;
-	}
-
-	VertexLayout::Attribute& VertexLayout::Attribute::setFormat(const VkFormat& format){
-		_info.format = format;
-		return *this;
-	}
-
-	VertexLayout::Attribute& VertexLayout::Attribute::setBinding(const std::uint32_t& binding){
-		_info.binding = binding;
-		return *this;
-	}
-
-	VertexLayout::Attribute& VertexLayout::Attribute::setLocation(const std::uint32_t& location){
-		_info.location = location;
-		return *this;
-	}
-
-	const VertexLayout::AttributeInfo& VertexLayout::Attribute::get() const noexcept{
-		return _info;
-	}
-
+	
 	VertexLayout::Binding::Binding(BindingInfo& info) noexcept : _info{info}{}
-
-	VertexLayout::Binding& VertexLayout::Binding::setName(const std::string& name){
-		_info.name = name;
-		return *this;
-	}
 	
 	VertexLayout::Binding& VertexLayout::Binding::setMemoryProperties(const VkMemoryPropertyFlags& flags){
 		_info.memoryProperties = flags;
@@ -148,4 +112,17 @@ namespace Raindrop::Graphics{
 		return _bindings.size();
 	}
 
+	const std::unordered_map<std::string, VertexLayout::BindingInfo>& VertexLayout::getBindings() const noexcept{
+		return _bindings;
+	}
+
+	// std::vector<const BindingInfo&> VertexLayout::getVertexRateBindings() const noexcept{
+	// 	std::vector<const BindingInfo&> bindings;
+	// 	for (auto& b : _bindings){
+	// 		if (b.second.rate == VK_VERTEX_INPUT_RATE_VERTEX){
+	// 			bindings.push_back(b.second);
+	// 		}
+	// 	}
+	// 	return bindings;
+	// }
 }

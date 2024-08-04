@@ -12,7 +12,7 @@ namespace Raindrop::Graphics::Window{
 			Surface() noexcept;
 			~Surface();
 
-			void prepare(Context& context, Core::Context& core);
+			Surface& prepare(Context& context, Core::Context& core);
 			void initialize();
 			void release();
 

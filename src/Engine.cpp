@@ -1,4 +1,5 @@
 #include <Raindrop/Engine.hpp>
+#include <Raindrop/Graphics/common.hpp>
 
 namespace Raindrop{
 	Engine::Engine() :

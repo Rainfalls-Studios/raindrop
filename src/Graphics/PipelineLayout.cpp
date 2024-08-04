@@ -1,6 +1,7 @@
 #include <Raindrop/Graphics/PipelineLayout.hpp>
 #include <Raindrop/Graphics/Context.hpp>
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
+#include <Raindrop/Graphics/DescriptorSetLayout.hpp>
 
 namespace Raindrop::Graphics{
 	PipelineLayout::PushConstantRange::PushConstantRange(VkPushConstantRange& range) noexcept : _range{range}{}

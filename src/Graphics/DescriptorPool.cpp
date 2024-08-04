@@ -2,6 +2,7 @@
 #include <Raindrop/Graphics/Context.hpp>
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
 #include <Raindrop/Graphics/DescriptorSet.hpp>
+#include <Raindrop/Graphics/DescriptorSetLayout.hpp>
 
 namespace Raindrop::Graphics{
 	DescriptorPool::BuildInfo::BuildInfo() : 

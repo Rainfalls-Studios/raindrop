@@ -13,8 +13,10 @@ namespace Raindrop::Graphics{
 		release();
 	}
 
-	void CommandPool::prepare(Context& context){
+	CommandPool& CommandPool::prepare(Context& context){
 		_context = &context;
+
+		return *this;
 	}
 
 	void CommandPool::initialize(){

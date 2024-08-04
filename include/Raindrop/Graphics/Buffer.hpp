@@ -18,7 +18,7 @@ namespace Raindrop::Graphics{
 
 			friend void swap(Buffer& A, Buffer& B);
 
-			void prepare(Context& context);
+			Buffer& prepare(Context& context);
 			void release();
 
 			void allocate();

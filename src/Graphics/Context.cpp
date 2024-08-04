@@ -29,32 +29,38 @@ namespace Raindrop::Graphics{
 		core.instance.initialize();
 
 		// Create the window surface
-		window.surface.prepare(window, core);
-		window.surface.initialize();
+		window.surface.prepare(window, core)
+		              .initialize();
 
-		// // Require surface support
-		core.physicalDevice.prepare(core);
-		core.physicalDevice.requireSurfaceSupport(window.surface.get());
-		core.physicalDevice.initialize();
-
-		formats.prepare(*this);
-		formats.initialize();
+		// Require surface support
+		core.physicalDevice.prepare(core)
+						   .requireSurfaceSupport(window.surface.get())
+						   .initialize();
+		
+		// Initialize the format
+		formats.prepare(*this)
+		       .initialize();
 
 		// Create the physical device
-		core.device.prepare(core);
-		core.device.initialize();
+		core.device.prepare(core)
+				   .initialize();
 
 
 		// Create the window's swapchain
-		window.swapchain.prepare(window, core, *this);
-		window.swapchain.wantExtent(window.window.getExtent())
+		window.swapchain.prepare(window, core, *this)
+						.wantExtent(window.window.getExtent())
 						.wantFrameCount(Window::Swapchain::DOUBLE_BUFFERING)
 						.wantPresentMode(VK_PRESENT_MODE_FIFO_KHR)
 						.wantSurfaceFormat({
 							.format = VK_FORMAT_R8G8B8A8_SRGB,
 							.colorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR
-						});
-		window.swapchain.initialize();
+						})
+						.initialize();
+
+		transfertCommandPool.prepare(*this)
+			.setCreateFlags(VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT)
+			.setQueueFamily(core.device.transfetQueue.familyIndex)
+			.initialize();
 	}
 
 

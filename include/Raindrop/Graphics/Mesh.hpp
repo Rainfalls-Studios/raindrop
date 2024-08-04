@@ -1,23 +1,37 @@
 #ifndef __RAINDROP_GRAPHICS_MESH_HPP__
 #define __RAINDROP_GRAPHICS_MESH_HPP__
 
-// #include "types.hpp"
-// #include "pch.pch"
+#include "types.hpp"
+#include "pch.pch"
 
-// namespace Raindrop::Graphics{
-// 	class Mesh{
-// 		public:
-// 			Mesh();
-// 			~Mesh();
+namespace Raindrop::Graphics{
+	class Mesh{
+		public:
+			Mesh() noexcept;
+			~Mesh();
 
+			void prepare(Context& context);
+			void initialize();
+			void release();
+
+			Mesh& setData(const MeshData& data);
+
+			const VkIndexType& getIndexType() const noexcept;
+			bool hasIndexBuffer() const noexcept;
+			const Buffer* getIndexBuffer() const noexcept;
+			const std::vector<Buffer>& getVertexBuffer() const noexcept;
+
+		private:
+			Context* _context;
+			const MeshData* _data;
 			
+			VkIndexType _indexType;
+			std::unique_ptr<Buffer> _indexBuffer;
+			std::vector<Buffer> _vertexBuffers;
 
-// 		private:
-// 			Context* _context;
-		
-// 			std::unique_ptr<Buffer> indexBuffer;
-// 			std::vector<Buffer> vertexBuffers;
-// 	};
-// }
+			void createIndexBuffer();
+			void createVertexBuffers();
+	};
+}
 
 #endif

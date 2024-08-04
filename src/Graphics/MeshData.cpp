@@ -4,9 +4,7 @@
 namespace Raindrop::Graphics{
 	MeshData::Buffer::Buffer() : 
 		data{},
-		stride{0},
-		isVertex{false},
-		valid{false}
+		stride{0}
 	{}
 
 	MeshData::Binding::Binding(VertexLayout::BindingInfo& info, Buffer& buffer) noexcept :
@@ -56,22 +54,27 @@ namespace Raindrop::Graphics{
 		_layout = layout;
 
 		_buffers.clear();
-		_buffers.resize(_layout.getBindingCount());
+		const auto& bindings = _layout.getBindings();
 
-		auto descriptions = _layout.getBindingDescriptions();
-		for (auto& d : descriptions){
-			auto& buffer = _buffers[d.binding];
+		std::size_t id = 0;
+		for (const auto& binding : bindings){
+			const auto& data = binding.second;
 
-			buffer.isVertex = d.inputRate == VK_VERTEX_INPUT_RATE_VERTEX;
-			buffer.stride = d.stride;
-			buffer.valid = true;
+			if (data.rate != VK_VERTEX_INPUT_RATE_VERTEX) continue;
+
+			_bindingToBuffer[data.binding] = id;
+
+			Buffer& buffer =_buffers.emplace_back();
+			buffer.stride = data.stride;
+			buffer.binding = data.binding;
+
+			id++;
 		}
 	}
 			
 	void MeshData::allocate(const std::size_t& count){
+		_vertexCount = count;
 		for (auto& b : _buffers){
-			if (!b.isVertex || !b.valid) continue;
-
 			b.data.clear();
 			b.data.resize(count * b.stride);
 		}
@@ -79,21 +82,27 @@ namespace Raindrop::Graphics{
 
 	void MeshData::resize(const std::size_t& count){
 		for (auto& b : _buffers){
-			if (!b.isVertex || !b.valid) continue;
-
 			b.data.resize(count * b.stride);
 		}
 	}
 
 	MeshData::Binding MeshData::getBinding(const std::string& name){
 		VertexLayout::BindingInfo& info = _layout[name];
-		return Binding(info, _buffers[info.binding]);
+		std::size_t index = 0;
+		
+		try{
+			index = _bindingToBuffer.at(info.binding);
+		} catch (const std::out_of_range& err){
+			_context->logger->warn("Attempt to access instance rate binding in mesh data : The mesh data only contains vertex rate bindings");
+			throw std::runtime_error("The mesh data only contains vertex rate bindings : attempt to access an instance rate binding");
+		}
+
+		return Binding(info, _buffers[index]);
 	}
 
 	void MeshData::pushIndex(const std::size_t& index){
 		_indices.push_back(index);
 	}
-
 
 	const std::vector<std::size_t>& MeshData::getIndices() const noexcept{
 		return _indices;
@@ -149,4 +158,13 @@ namespace Raindrop::Graphics{
 
 		return std::move(output);
 	}
+
+	const std::vector<MeshData::Buffer>& MeshData::getBuffers() const noexcept{
+		return _buffers;
+	}
+
+	const std::size_t& MeshData::getVertexCount() const noexcept{
+		return _vertexCount;
+	}
+
 }

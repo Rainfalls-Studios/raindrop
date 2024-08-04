@@ -28,7 +28,7 @@ namespace Raindrop::Graphics::Window{
 			Swapchain() noexcept;
 			~Swapchain();
 
-			void prepare(Context& context, Core::Context& core, Graphics::Context& graphics);
+			Swapchain& prepare(Context& context, Core::Context& core, Graphics::Context& graphics);
 			void initialize();
 			void release();
 

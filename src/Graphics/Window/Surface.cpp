@@ -15,9 +15,10 @@ namespace Raindrop::Graphics::Window{
 		release();
 	}
 
-	void Surface::prepare(Context& context, Core::Context& core){
+	Surface& Surface::prepare(Context& context, Core::Context& core){
 		_context = &context;
 		_core = &core;
+		return *this;
 	}
 
 	void Surface::initialize(){
