@@ -10,6 +10,14 @@ namespace Raindrop::Graphics{
 			Mesh() noexcept;
 			~Mesh();
 
+			Mesh(const Mesh&) = delete;
+			Mesh& operator=(const Mesh&) = delete;
+
+			Mesh(Mesh&& other);
+			Mesh& operator=(Mesh&& other);
+
+			friend void swap(Mesh& A, Mesh& B);
+
 			void prepare(Context& context);
 			void initialize();
 			void release();

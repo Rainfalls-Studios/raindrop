@@ -137,6 +137,12 @@ class Testbed : public Raindrop::Engine, public Raindrop::Events::Listener{
 				color[0] = glm::vec3(0.f);
 			}
 
+			auto mesh = Engine::createGraphicsMesh();
+			{
+				mesh.setData(meshData)
+					.initialize();
+			}
+
 			_pipeline.initialize(*this);
 		}
 

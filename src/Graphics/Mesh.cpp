@@ -17,6 +17,29 @@ namespace Raindrop::Graphics{
 		release();
 	}
 
+
+	Mesh::Mesh(Mesh&& other) : 
+		_context{nullptr},
+		_data{nullptr},
+		_indexBuffer{},
+		_vertexBuffers{}
+	{
+		swap(*this, other);
+	}
+
+	Mesh& Mesh::operator=(Mesh&& other){
+		swap(*this, other);
+		return *this;
+	}
+
+	void swap(Mesh& A, Mesh& B){
+		std::swap(A._context, B._context);
+		std::swap(A._data, B._data);
+		std::swap(A._indexType, B._indexType);
+		std::swap(A._indexBuffer, B._indexBuffer);
+		std::swap(A._vertexBuffers, B._vertexBuffers);
+	}
+
 	void Mesh::prepare(Context& context){
 		_context = &context;
 	}
@@ -35,6 +58,8 @@ namespace Raindrop::Graphics{
 		// TODO: async memory submit
 		createIndexBuffer();
 		createVertexBuffers();
+
+		_data = nullptr;
 	}
 
 	void Mesh::createIndexBuffer(){

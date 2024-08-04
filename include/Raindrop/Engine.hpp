@@ -56,6 +56,7 @@ namespace Raindrop{
 			Graphics::Sampler createGraphicsSampler();
 			Graphics::DescriptorPool createGraphicsDescriptorPool();
 			Graphics::MeshData createGraphicsMeshData();
+			Graphics::Mesh createGraphicsMesh();
 
 			// EVENTS
 

@@ -96,7 +96,7 @@ namespace Raindrop::Graphics{
 			_context->logger
 		);
 
-		if (_buildInfo->memory){
+		if (!_buildInfo->memory){
 			VkMemoryRequirements memRequirements;
 			vkGetBufferMemoryRequirements(device.get(), _buffer, &memRequirements);
 
@@ -113,7 +113,7 @@ namespace Raindrop::Graphics{
 		_context->logger->trace("Binding buffer and memory...");
 
 		Exceptions::checkVkOperation<VkDeviceMemory>(
-			vkBindBufferMemory(device.get(), _buffer, _memory->get(), static_cast<VkDeviceSize>(_buildInfo->size)),
+			vkBindBufferMemory(device.get(), _buffer, _memory->get(), static_cast<VkDeviceSize>(_buildInfo->memoryOffset)),
 			"Failed to bind buffer and memory",
 			Exceptions::VulkanOperationType::BINDING,
 			_context->logger
