@@ -22,5 +22,7 @@
 #include "VertexLayout.hpp"
 #include "Mesh.hpp"
 #include "MeshData.hpp"
+#include "Model.hpp"
+#include "ModelLoader.hpp"
 
 #endif

@@ -12,6 +12,7 @@ namespace Raindrop::Graphics{
 				std::vector<uint8_t> data;
 				std::uint32_t stride;
 				std::uint32_t binding;
+				VkMemoryPropertyFlags memProperties;
 
 				Buffer();
 			};
@@ -77,12 +78,13 @@ namespace Raindrop::Graphics{
 
 			friend void swap(MeshData& A, MeshData& B);
 
-			void prepare(Context& context);
-			void setLayout(const VertexLayout& layout);
+			MeshData& prepare(Context& context);
+			MeshData& setLayout(const VertexLayout& layout);
 			
-			void allocate(const std::size_t& count);
+			MeshData& allocate(const std::size_t& count);
 			void resize(const std::size_t& count);
 			void pushIndex(const std::size_t& index);
+			MeshData& setPrimitiveTopology(const VkPrimitiveTopology& topology);
 
 			Binding getBinding(const std::string& name);
 
@@ -102,6 +104,7 @@ namespace Raindrop::Graphics{
 			std::vector<std::size_t> _indices;
 			std::unordered_map<std::size_t, std::size_t> _bindingToBuffer;
 			VertexLayout _layout;
+			VkPrimitiveTopology _primitiveTopology;
 	};
 }
 

@@ -26,6 +26,8 @@ namespace Raindrop::Graphics{
 	class MeshData;
 	class VertexLayout;
 	class Sampler;
+	class Model;
+	class ModelLoader;
 }
 
 #endif

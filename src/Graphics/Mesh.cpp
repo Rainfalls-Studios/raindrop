@@ -40,8 +40,9 @@ namespace Raindrop::Graphics{
 		std::swap(A._vertexBuffers, B._vertexBuffers);
 	}
 
-	void Mesh::prepare(Context& context){
+	Mesh& Mesh::prepare(Context& context){
 		_context = &context;
+		return *this;
 	}
 
 	void Mesh::initialize(){
@@ -174,7 +175,7 @@ namespace Raindrop::Graphics{
 				.setSize(data.stride * vertexCount)
 				.setSharingMode(VK_SHARING_MODE_EXCLUSIVE)
 				.setUsage(VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT)
-				.setMemoryProperties(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
+				.setMemoryProperties(data.memProperties)
 				.allocate();
 			
 			// begin command buffer
@@ -225,12 +226,11 @@ namespace Raindrop::Graphics{
 		return _indexBuffer.get();
 	}
 
-	const std::vector<Buffer>& Mesh::getVertexBuffer() const noexcept{
+	const std::vector<Buffer>& Mesh::getVertexBuffers() const noexcept{
 		return _vertexBuffers;
 	}
 
 	bool Mesh::hasIndexBuffer() const noexcept{
 		return _indexBuffer != nullptr;
 	}
-
 }

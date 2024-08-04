@@ -4,7 +4,9 @@
 namespace Raindrop::Graphics{
 	MeshData::Buffer::Buffer() : 
 		data{},
-		stride{0}
+		stride{0},
+		binding{0},
+		memProperties{VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT}
 	{}
 
 	MeshData::Binding::Binding(VertexLayout::BindingInfo& info, Buffer& buffer) noexcept :
@@ -46,11 +48,12 @@ namespace Raindrop::Graphics{
 		std::swap(A._layout, B._layout);
 	}
 
-	void MeshData::prepare(Context& context){
+	MeshData& MeshData::prepare(Context& context){
 		_context = &context;
+		return *this;
 	}
 	
-	void MeshData::setLayout(const VertexLayout& layout){
+	MeshData& MeshData::setLayout(const VertexLayout& layout){
 		_layout = layout;
 
 		_buffers.clear();
@@ -67,17 +70,20 @@ namespace Raindrop::Graphics{
 			Buffer& buffer =_buffers.emplace_back();
 			buffer.stride = data.stride;
 			buffer.binding = data.binding;
+			buffer.memProperties = data.memoryProperties;
 
 			id++;
 		}
+		return *this;
 	}
 			
-	void MeshData::allocate(const std::size_t& count){
+	MeshData& MeshData::allocate(const std::size_t& count){
 		_vertexCount = count;
 		for (auto& b : _buffers){
 			b.data.clear();
 			b.data.resize(count * b.stride);
 		}
+		return *this;
 	}
 
 	void MeshData::resize(const std::size_t& count){
@@ -165,6 +171,11 @@ namespace Raindrop::Graphics{
 
 	const std::size_t& MeshData::getVertexCount() const noexcept{
 		return _vertexCount;
+	}
+
+	MeshData& MeshData::setPrimitiveTopology(const VkPrimitiveTopology& topology){
+		_primitiveTopology = topology;
+		return *this;
 	}
 
 }

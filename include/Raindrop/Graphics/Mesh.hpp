@@ -1,3 +1,4 @@
+
 #ifndef __RAINDROP_GRAPHICS_MESH_HPP__
 #define __RAINDROP_GRAPHICS_MESH_HPP__
 
@@ -18,7 +19,7 @@ namespace Raindrop::Graphics{
 
 			friend void swap(Mesh& A, Mesh& B);
 
-			void prepare(Context& context);
+			Mesh& prepare(Context& context);
 			void initialize();
 			void release();
 
@@ -27,7 +28,7 @@ namespace Raindrop::Graphics{
 			const VkIndexType& getIndexType() const noexcept;
 			bool hasIndexBuffer() const noexcept;
 			const Buffer* getIndexBuffer() const noexcept;
-			const std::vector<Buffer>& getVertexBuffer() const noexcept;
+			const std::vector<Buffer>& getVertexBuffers() const noexcept;
 
 		private:
 			Context* _context;
