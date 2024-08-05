@@ -61,6 +61,9 @@ namespace Raindrop::Graphics{
 			.setCreateFlags(VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT)
 			.setQueueFamily(core.device.transfetQueue.familyIndex)
 			.initialize();
+		
+		modelLoader.prepare(*this)
+			.initialize();
 	}
 
 

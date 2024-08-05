@@ -2,7 +2,7 @@
 
 namespace Raindrop::Graphics::Utils{
 	template<>
-	inline VkFormat typeToFormat<int8_t>() noexcept{
+	VkFormat typeToFormat<int8_t>() noexcept{
 		return VK_FORMAT_R8_SINT;
 	}
 
@@ -22,7 +22,7 @@ namespace Raindrop::Graphics::Utils{
 	}
 
 	template<>
-	inline VkFormat typeToFormat<uint8_t>() noexcept{
+	VkFormat typeToFormat<uint8_t>() noexcept{
 		return VK_FORMAT_R8_UINT;
 	}
 
@@ -42,7 +42,7 @@ namespace Raindrop::Graphics::Utils{
 	}
 
 	template<>
-	inline VkFormat typeToFormat<int16_t>() noexcept{
+	VkFormat typeToFormat<int16_t>() noexcept{
 		return VK_FORMAT_R16_SINT;
 	}
 
@@ -62,7 +62,7 @@ namespace Raindrop::Graphics::Utils{
 	}
 
 	template<>
-	inline VkFormat typeToFormat<uint16_t>() noexcept{
+	VkFormat typeToFormat<uint16_t>() noexcept{
 		return VK_FORMAT_R16_UINT;
 	}
 
@@ -82,7 +82,7 @@ namespace Raindrop::Graphics::Utils{
 	}
 
 	template<>
-	inline VkFormat typeToFormat<int32_t>() noexcept{
+	VkFormat typeToFormat<int32_t>() noexcept{
 		return VK_FORMAT_R32_SINT;
 	}
 
@@ -102,7 +102,7 @@ namespace Raindrop::Graphics::Utils{
 	}
 
 	template<>
-	inline VkFormat typeToFormat<uint32_t>() noexcept{
+	VkFormat typeToFormat<uint32_t>() noexcept{
 		return VK_FORMAT_R32_UINT;
 	}
 
@@ -122,7 +122,7 @@ namespace Raindrop::Graphics::Utils{
 	}
 
 	template<>
-	inline VkFormat typeToFormat<int64_t>() noexcept{
+	VkFormat typeToFormat<int64_t>() noexcept{
 		return VK_FORMAT_R64_SINT;
 	}
 
@@ -142,7 +142,7 @@ namespace Raindrop::Graphics::Utils{
 	}
 
 	template<>
-	inline VkFormat typeToFormat<uint64_t>() noexcept{
+	VkFormat typeToFormat<uint64_t>() noexcept{
 		return VK_FORMAT_R64_UINT;
 	}
 
@@ -162,7 +162,7 @@ namespace Raindrop::Graphics::Utils{
 	}
 
 	template<>
-	inline VkFormat typeToFormat<float>() noexcept{
+	VkFormat typeToFormat<float>() noexcept{
 		return VK_FORMAT_R32_SFLOAT;
 	}
 
@@ -182,7 +182,7 @@ namespace Raindrop::Graphics::Utils{
 	}
 
 	template<>
-	inline VkFormat typeToFormat<double>() noexcept{
+	VkFormat typeToFormat<double>() noexcept{
 		return VK_FORMAT_R64_SFLOAT;
 	}
 

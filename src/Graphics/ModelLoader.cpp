@@ -32,6 +32,12 @@ namespace Raindrop::Graphics{
 	}
 
 	std::shared_ptr<Model> ModelLoader::load(const std::filesystem::path& filepath, const std::uint32_t& properties){
+		if (!_context){
+			spdlog::warn("Attempt to load a model using a non prepared model loader");
+			throw std::runtime_error("The model loader has not been prepared");
+		}
+
+		_context->logger->info("Loading model \"{}\"...", filepath.string());
 		auto meshesData = loadMeshes(filepath, properties);
 
 		std::vector<Mesh> meshes(meshesData.size());
@@ -53,6 +59,13 @@ namespace Raindrop::Graphics{
 	}
 
 	std::vector<MeshData> ModelLoader::loadMeshes(const std::filesystem::path& filepath, const std::uint32_t& properties){
+		if (!_context){
+			spdlog::warn("Attempt to load a model using a non prepared model loader");
+			throw std::runtime_error("The model loader has not been prepared");
+		}
+
+
+		_context->logger->info("Loading meshes \"{}\"...", filepath.string());
 		Assimp::Importer importer;
 
 		uint flags = aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_SortByPType | aiProcess_OptimizeMeshes;
@@ -62,7 +75,7 @@ namespace Raindrop::Graphics{
 		if (properties & UV) flags |= aiProcess_GenUVCoords | aiProcess_FlipUVs;
 		if (properties & TANGENT) flags |= aiProcess_CalcTangentSpace;
 		
-
+		_context->logger->trace("Reading model file \"{}\"...", filepath.string());
 		const aiScene* scene = importer.ReadFile(filepath.string(), flags);
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode){
 			_context->logger->error("Failed to load model scene \"{}\" : reason  : {}", filepath.string(), importer.GetErrorString());
@@ -70,6 +83,7 @@ namespace Raindrop::Graphics{
 		}
 
 		std::vector<MeshData> meshes(scene->mNumMeshes);
+		_context->logger->trace("Model file loaded successfully \"{}\", found {} meshes", filepath.string(), scene->mNumMeshes);
 
 		VertexLayout layout = createVertexLayout(properties);
 
@@ -122,7 +136,7 @@ namespace Raindrop::Graphics{
 				auto colors = binding.get<glm::vec3>("color");
 
 				if (data->mColors[0] == nullptr){
-					_context->logger->warn("The model \"{}\" does not contains colors as required");
+					_context->logger->warn("The model \"{}\" does not contains colors as required", filepath.string());
 					for (std::size_t n=0; n<data->mNumVertices; n++){
 						colors[n] = glm::vec3(1.f);
 					}
@@ -137,8 +151,8 @@ namespace Raindrop::Graphics{
 			if (properties & UV){
 				auto UVs = binding.get<glm::vec2>("UV");
 
-				if (data->mTextureCoords == nullptr){
-					_context->logger->warn("The model \"{}\" does not contains UVs as required");
+				if (data->mTextureCoords[0] == nullptr){
+					_context->logger->warn("The model \"{}\" does not contains UVs as required", filepath.string());
 					for (std::size_t n=0; n<data->mNumVertices; n++){
 						UVs[n] = glm::vec2(0.f);
 					}
@@ -163,7 +177,7 @@ namespace Raindrop::Graphics{
 				auto tangents = binding.get<glm::vec3>("tangent");
 
 				if (data->mTangents == nullptr){
-					_context->logger->warn("The model \"{}\" does not contains tangents as required");
+					_context->logger->warn("The model \"{}\" does not contains tangents as required", filepath.string());
 					for (std::size_t n=0; n<data->mNumVertices; n++){
 						tangents[n] = glm::vec3(1.f);
 					}
@@ -179,7 +193,7 @@ namespace Raindrop::Graphics{
 				auto bitangents = binding.get<glm::vec3>("bitangent");
 
 				if (data->mBitangents == nullptr){
-					_context->logger->warn("The model \"{}\" does not contains bitangents as required");
+					_context->logger->warn("The model \"{}\" does not contains bitangents as required", filepath.string());
 					for (std::size_t n=0; n<data->mNumVertices; n++){
 						bitangents[n] = glm::vec3(1.f);
 					}
@@ -203,6 +217,7 @@ namespace Raindrop::Graphics{
 			}
 		}
 
+		_context->logger->trace("Meshes loaded successfully !");
 		return std::move(meshes);
 	}
 
@@ -221,5 +236,4 @@ namespace Raindrop::Graphics{
 
 		return layout;
 	}
-
 }

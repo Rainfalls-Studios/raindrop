@@ -177,5 +177,4 @@ namespace Raindrop::Graphics{
 		_primitiveTopology = topology;
 		return *this;
 	}
-
 }

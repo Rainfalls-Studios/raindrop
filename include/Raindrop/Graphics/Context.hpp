@@ -6,6 +6,7 @@
 #include "Window/Context.hpp"
 #include "Formats.hpp"
 #include "CommandPool.hpp"
+#include "ModelLoader.hpp"
 #include <Raindrop/Events/types.hpp>
 
 namespace Raindrop::Graphics{
@@ -17,6 +18,7 @@ namespace Raindrop::Graphics{
 		Formats formats;
 
 		CommandPool transfertCommandPool;
+		ModelLoader modelLoader;
 
 		void createLogger();
 		void initialize(Events::Context& events);

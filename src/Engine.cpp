@@ -117,6 +117,10 @@ namespace Raindrop{
 		return getGraphicsContext().formats;
 	}
 
+	Graphics::ModelLoader& Engine::getGraphicsModelLoader(){
+		return getGraphicsContext().modelLoader;
+	}
+
 	Graphics::RenderPass Engine::createGraphicsRenderPass(){
 		Graphics::RenderPass renderPass;
 		renderPass.prepare(getGraphicsContext());

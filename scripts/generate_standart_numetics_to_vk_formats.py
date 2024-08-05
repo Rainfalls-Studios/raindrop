@@ -38,7 +38,7 @@ with open(output_file, "w") as file:
 	for base_type, vk_format in type_to_vk_format.items():
 		# Base type template specialization
 		file.write(f"\ttemplate<>\n")
-		file.write(f"\tinline VkFormat typeToFormat<{base_type}>() noexcept{{\n")
+		file.write(f"\tVkFormat typeToFormat<{base_type}>() noexcept{{\n")
 		file.write(f"\t\treturn VK_FORMAT_R{vk_format[0]}_{vk_format[1]};\n")
 		file.write(f"\t}}\n\n")
 

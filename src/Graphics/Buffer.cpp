@@ -123,7 +123,7 @@ namespace Raindrop::Graphics{
 	}
 
 	void Buffer::free(){
-		unmap();
+		if (_mapped) unmap();
 
 		auto& device = _context->getDevice();
 		auto& allocationCallbacks = _context->core.allocationCallbacks;
