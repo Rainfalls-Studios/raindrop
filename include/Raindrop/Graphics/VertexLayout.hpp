@@ -4,16 +4,35 @@
 #include "types.hpp"
 #include "pch.pch"
 #include "Utils.hpp"
+#include "Formats.hpp"
 
 namespace Raindrop::Graphics{
 	class VertexLayout{
 		public:
+			enum AttributeUsage{
+				POSITION = 1 << 0,
+				NORMAL = 1 << 1,
+				COLOR = 1 << 2,
+				UV = 1 << 3,
+				TANGENT = 1 << 4,
+				BITANGENT = 1 << 5,
+
+				OTHER = 1 << 6 
+			};
+
+			using UsageFlags = std::uint32_t;
+
+			static constexpr std::uint32_t BINDING_AUTO = UINT32_MAX;
+			static constexpr std::uint32_t LOCATION_AUTO = UINT32_MAX;
+
 			struct AttributeInfo{
 				VkFormat format;
 				std::uint32_t offset;
 				std::uint32_t binding;
 				std::uint32_t location;
 				std::string name;
+				AttributeUsage usage;
+				Formats::ComponentSwizzle componentMapping;
 			};
 
 			struct BindingInfo{
@@ -24,15 +43,6 @@ namespace Raindrop::Graphics{
 				VkVertexInputRate rate;
 
 				std::unordered_map<std::string, AttributeInfo>  attributes;
-
-				/**
-				 * @brief Access the attribute named 'name'
-				 * 
-				 * @param name The name of the attribute to access
-				 * @return AttributeInfo& 
-				 */
-				AttributeInfo& operator[](const std::string& name);
-
 				
 				/**
 				 * @brief Access the attribute named 'name'
@@ -66,6 +76,33 @@ namespace Raindrop::Graphics{
 					Binding& setInputRate(const VkVertexInputRate& rate);
 
 					/**
+					 * @brief Add a new attribute into the vertex layout binding
+					 * 
+					 * @param name The name of the attribute. /!\ If the name is already used, the previous data will be overwriten /!\
+					 * @param format The format of the attribute, must be a valid vulkan vertex attribute format
+					 * @param usage The usage of the attribute. This is used on mesh loading. The data found in the mesh file will be written on the corresponding vertex attribute
+					 * @param location The location of the attribute withing the binding, by default will be the next available location.
+					 * @param componentMapping The mapping of the components, useful to isolate data as a differnt variable
+					 * @return Binding& 
+					 */
+					Binding& addAttribute(const std::string& name, const VkFormat format, const AttributeUsage& usage = OTHER, const std::uint32_t& location = LOCATION_AUTO, const Formats::ComponentSwizzle& componentMapping = Formats::ComponentSwizzle());
+
+					/**
+					 * @brief Add a new attribute into the vertex layout binding
+					 * 
+					 * @tparam T The type of the vertex attribute. This type is converted into a valid vulkan vertex attribute format.
+					 * @param name The name of the attribute. /!\ If the name is already used, the previous data will be overwriten /!\
+					 * @param usage The usage of the attribute. This is used on mesh loading. The data found in the mesh file will be written on the corresponding vertex attribute
+					 * @param location The location of the attribute withing the binding, by default will be the next available location.
+					 * @param componentMapping The mapping of the components, useful to isolate data as a differnt variable
+					 * @return Binding& 
+					 */
+					template<typename T>
+					Binding& addAttribute(const std::string& name, const AttributeUsage& usage = OTHER, const std::uint32_t& location = LOCATION_AUTO, const Formats::ComponentSwizzle& componentMapping = Formats::ComponentSwizzle()){
+						return addAttribute(name, Utils::typeToFormat<T>(), usage, location, componentMapping);
+					}
+
+					/**
 					 * @brief Get the binding raw info
 					 * 
 					 * @return const BindingInfo& 
@@ -75,10 +112,6 @@ namespace Raindrop::Graphics{
 				private:
 					BindingInfo& _info;
 			};
-
-			
-			static constexpr std::uint32_t BINDING_AUTO = UINT32_MAX;
-			static constexpr std::uint32_t LOCATION_AUTO = UINT32_MAX;
 
 			VertexLayout() noexcept;
 			~VertexLayout() = default;
@@ -93,31 +126,6 @@ namespace Raindrop::Graphics{
 			 * @return Binding 
 			 */
 			Binding addBinding(const std::string& name, const VkVertexInputRate& rate = VK_VERTEX_INPUT_RATE_VERTEX, const VkMemoryPropertyFlags& memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, std::uint32_t binding = BINDING_AUTO);
-
-			/**
-			 * @brief Add a new attribute to the binding
-			 * 
-			 * @param binding The binding to add the attribute to
-			 * @param name The name of the attribute
-			 * @param format The format of the data
-			 * @param location The location of the attribute within the binding
-			 * @return VertexLayout& 
-			 */
-			VertexLayout& addAttribute(Binding& binding, const std::string& name, const VkFormat& format, std::uint32_t location = LOCATION_AUTO);
-			
-			/**
-			 * @brief Add a new attribute to the binding
-			 * 
-			 * @tparam T The type of the attribute to add
-			 * @param bindihng The binding to add the attribute to
-			 * @param name The name of the attribute
-			 * @param location The location of the attribute within the binding
-			 * @return VertexLayout& 
-			 */
-			template<typename T>
-			inline VertexLayout& addAttribute(Binding& binding, const std::string& name, std::uint32_t location = LOCATION_AUTO){
-				return addAttribute(binding, name, Utils::typeToFormat<T>(), location);
-			}
 
 			/**
 			 * @brief Get the bindings as an array of vulkan binding description
@@ -161,7 +169,15 @@ namespace Raindrop::Graphics{
 			 * 
 			 * @return const std::unordered_map<std::string, BindingInfo>& 
 			 */
-			const std::unordered_map<std::string, BindingInfo>& getBindings() const noexcept;
+			std::unordered_map<std::string, BindingInfo>& getBindings() noexcept;
+
+			/**
+			 * @brief Get a vector of all the attributes that have as a usage the inout value
+			 * 
+			 * @param usage The usage to filter
+			 * @return std::vector<AttributeInfo> 
+			 */
+			std::vector<AttributeInfo> getDedicatedAttributes(const AttributeUsage& usage) const;
 
 		private:
 			std::unordered_map<std::string, BindingInfo> _bindings;

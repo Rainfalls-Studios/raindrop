@@ -7,6 +7,68 @@
 namespace Raindrop::Graphics{
 	class Formats{
 		public:
+			enum class ComponentType{
+				NONE = 0,
+				RED = 1 << 0,
+				GREEN = 1 << 1,
+				BLUE = 1 << 2,
+				ALPHA = 1 << 3,
+				DEPTH = 1 << 4,
+				STENCIL = 1 << 5,
+
+				R = RED,
+				G = GREEN,
+				B = BLUE,
+				A = ALPHA,
+
+				X = RED,
+				Y = GREEN,
+				Z = BLUE,
+				W = ALPHA
+			};
+
+			using ComponentMask = std::underlying_type_t<ComponentType>;
+
+			struct ComponentInfo{
+				ComponentType type;
+				std::uint32_t size; // in bits
+				std::uint32_t offset; // relative to the format base (in bits)
+			};
+
+			struct FormatInfo{
+				std::uint32_t size;
+				std::uint32_t componentCount;
+				ComponentInfo components[4];
+
+				const ComponentInfo* getComponent(const ComponentType& type) const noexcept;
+			};
+
+			struct ComponentSwizzle{
+				union{
+					ComponentType r;
+					ComponentType x;
+				};
+
+				union{
+					ComponentType g;
+					ComponentType y;
+				};
+
+				union{
+					ComponentType b;
+					ComponentType z;
+				};
+
+				union{
+					ComponentType a;
+					ComponentType w;
+				};
+
+				ComponentSwizzle(const ComponentType& x = ComponentType::X, const ComponentType& y = ComponentType::Y, const ComponentType& z = ComponentType::Z, const ComponentType& w = ComponentType::W);
+				ComponentType& get(const ComponentType& type);
+				const ComponentType& get(const ComponentType& type) const;
+			};
+
 			enum Properties : std::uint64_t{
 				NONE = 0ULL,
 				SFLOAT = 1ULL << 0ULL,
@@ -129,6 +191,7 @@ namespace Raindrop::Graphics{
 			static std::size_t getSize(const VkFormat& format) noexcept;
 			static std::size_t getTexelCount(const VkFormat& format) noexcept;
 			static PropertiesFlags getProperties(const VkFormat& format) noexcept;
+			static FormatInfo getInfo(const VkFormat& format) noexcept;
 
 			enum Usage{
 				BUFFER,

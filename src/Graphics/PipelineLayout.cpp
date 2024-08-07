@@ -52,9 +52,11 @@ namespace Raindrop::Graphics{
 		std::swap(A._info, B._info);
 	}
 
-	void PipelineLayout::prepare(Context& context){
+	PipelineLayout& PipelineLayout::prepare(Context& context){
 		_context = &context;
 		_info = std::make_unique<BuildInfo>();
+
+		return *this;
 	}
 
 	void PipelineLayout::initialize(){

@@ -18,6 +18,16 @@ namespace Raindrop::Graphics{
 		return _buffer.data.data();
 	}
 
+	const VertexLayout::AttributeInfo* MeshData::Binding::get(const std::uint32_t& location) const noexcept{
+		for (const auto& attribute : _info.attributes){
+			if (attribute.second.location == location){
+				return &attribute.second;
+			}
+		}
+		return nullptr;
+	}
+
+
 	MeshData::MeshData() noexcept :
 		_context{nullptr},
 		_buffers{},
@@ -177,4 +187,15 @@ namespace Raindrop::Graphics{
 		_primitiveTopology = topology;
 		return *this;
 	}
+
+	MeshData::Binding MeshData::getBinding(const std::uint32_t& bindingIndex){
+		auto& bindings = _layout.getBindings();
+		for (auto& binding : bindings){
+			if (binding.second.binding == bindingIndex){
+				return Binding(binding.second, _buffers[_bindingToBuffer[bindingIndex]]);
+			}
+		}
+		throw std::runtime_error("invalid index");
+	}
+
 }

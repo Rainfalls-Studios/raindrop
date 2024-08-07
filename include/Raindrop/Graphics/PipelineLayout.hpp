@@ -35,7 +35,7 @@ namespace Raindrop::Graphics{
 
 			friend void swap(PipelineLayout& A, PipelineLayout& B);
 
-			void prepare(Context& context);
+			PipelineLayout& prepare(Context& context);
 			void initialize();
 			void release();
 

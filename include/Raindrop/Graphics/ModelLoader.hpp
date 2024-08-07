@@ -3,21 +3,11 @@
 
 #include "types.hpp"
 #include "pch.pch"
+#include "Formats.hpp"
 
 namespace Raindrop::Graphics{
 	class ModelLoader{
 		public:
-			enum RequiredProperties{
-				POSITION = 1 << 0,
-				NORMAL = 1 << 1,
-				COLOR = 1 << 2,
-				UV = 1 << 3,
-				WEIGHT = 1 << 4, // not supported
-				TANGENT = 1 << 5,
-				BITANGENT = 1 << 6,
-				SMOOTH_NORMAL = 1 << 7
-			};
-
 			ModelLoader() noexcept;
 			~ModelLoader();
 
@@ -25,13 +15,14 @@ namespace Raindrop::Graphics{
 			void initialize();
 			void release();
 
-			std::shared_ptr<Model> load(const std::filesystem::path& filepath, const std::uint32_t& properties = POSITION | NORMAL | UV);
-			std::vector<MeshData> loadMeshes(const std::filesystem::path& filepath, const std::uint32_t& properties = POSITION | NORMAL | UV);
+			std::shared_ptr<Model> load(const std::filesystem::path& filepath, const ModelLayoutConfig& config);
+			std::vector<MeshData> loadMeshes(const std::filesystem::path& filepath, const ModelLayoutConfig& config);
 
 		private:
 			Context* _context;
 
-			VertexLayout createVertexLayout(std::uint32_t properties);
+			
+
 			
 	};
 }

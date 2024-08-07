@@ -22,23 +22,6 @@ namespace Raindrop::Graphics{
 
 		return std::move(Binding(ref));
 	}
-
-	VertexLayout& VertexLayout::addAttribute(Binding& binding, const std::string& name, const VkFormat& format, std::uint32_t location){
-		auto& bindingInfo = binding._info;
-
-		AttributeInfo info{
-			.format = format,
-			.offset = bindingInfo.stride,
-			.binding = bindingInfo.binding,
-			.location = location == LOCATION_AUTO ? static_cast<uint32_t>(bindingInfo.attributes.size()) : location,
-			.name = name
-		};
-
-		bindingInfo.attributes[name] = info;
-		bindingInfo.stride += Formats::getSize(format);
-
-		return *this;
-	}
 	
 	VertexLayout::Binding::Binding(BindingInfo& info) noexcept : _info{info}{}
 	
@@ -49,6 +32,27 @@ namespace Raindrop::Graphics{
 
 	VertexLayout::Binding& VertexLayout::Binding::setInputRate(const VkVertexInputRate& rate){
 		_info.rate = rate;
+		return *this;
+	}
+
+	VertexLayout::Binding& VertexLayout::Binding::addAttribute(const std::string& name, const VkFormat format, const AttributeUsage& usage, const std::uint32_t& location, const Formats::ComponentSwizzle& componentMapping){
+		AttributeInfo info{
+			.format = format,
+			.offset = _info.stride,
+			.binding = _info.binding,
+			.location = location == LOCATION_AUTO ? static_cast<uint32_t>(_info.attributes.size()) : location,
+			.name = name,
+			.usage = usage,
+			.componentMapping = componentMapping
+		};
+
+		if (_info.attributes.count(name) == 1){
+			spdlog::warn("The vertex layout binding already as an attribute named \"{}\", overwriting it...", name);
+		}		
+
+		_info.attributes[name] = info;
+		_info.stride += Formats::getSize(format);
+
 		return *this;
 	}
 
@@ -92,10 +96,6 @@ namespace Raindrop::Graphics{
 		return std::move(descriptions);
 	}
 
-	VertexLayout::AttributeInfo& VertexLayout::BindingInfo::operator[](const std::string& name){
-		return attributes.at(name);
-	}
-
 	const VertexLayout::AttributeInfo& VertexLayout::BindingInfo::operator[](const std::string& name) const{
 		return attributes.at(name);
 	}
@@ -112,17 +112,19 @@ namespace Raindrop::Graphics{
 		return _bindings.size();
 	}
 
-	const std::unordered_map<std::string, VertexLayout::BindingInfo>& VertexLayout::getBindings() const noexcept{
+	std::unordered_map<std::string, VertexLayout::BindingInfo>& VertexLayout::getBindings() noexcept{
 		return _bindings;
 	}
 
-	// std::vector<const BindingInfo&> VertexLayout::getVertexRateBindings() const noexcept{
-	// 	std::vector<const BindingInfo&> bindings;
-	// 	for (auto& b : _bindings){
-	// 		if (b.second.rate == VK_VERTEX_INPUT_RATE_VERTEX){
-	// 			bindings.push_back(b.second);
-	// 		}
-	// 	}
-	// 	return bindings;
-	// }
+	std::vector<VertexLayout::AttributeInfo> VertexLayout::getDedicatedAttributes(const AttributeUsage& usage) const{
+		std::vector<AttributeInfo> out;
+		for (auto& binding : _bindings){
+			for (auto& attribute : binding.second.attributes){
+				if (attribute.second.usage == usage){
+					out.push_back(attribute.second);
+				}
+			}
+		}
+		return std::move(out);
+	}
 }

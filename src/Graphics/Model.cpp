@@ -51,4 +51,8 @@ namespace Raindrop::Graphics{
 		_meshes = std::move(meshes);
 		return *this;
 	}
+
+	const std::vector<Mesh>& Model::getMeshes() const noexcept{
+		return _meshes;
+	}
 }

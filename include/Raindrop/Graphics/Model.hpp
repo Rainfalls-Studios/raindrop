@@ -18,12 +18,13 @@ namespace Raindrop::Graphics{
 
 			friend void swap(Model& A, Model& B);
 
-
 			Model& prepare(Context& context);
 			void initialize();
 			void release();
 
 			Model& setMeshes(std::vector<Mesh>&& meshes);
+			
+			const std::vector<Mesh>& getMeshes() const noexcept;
 
 		private:
 			Context* _context;

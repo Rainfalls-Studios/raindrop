@@ -10,6 +10,42 @@
 #include <bitset>
 
 namespace Raindrop::Graphics{
+	Formats::ComponentSwizzle::ComponentSwizzle(const ComponentType& x, const ComponentType& y, const ComponentType& z, const ComponentType& w) : 
+		r{x},
+		g{y},
+		b{z},
+		a{w}
+	{}
+
+	Formats::ComponentType& Formats::ComponentSwizzle::get(const ComponentType& type){
+		switch (type){
+			case ComponentType::RED: return r;
+			case ComponentType::GREEN: return g;
+			case ComponentType::BLUE: return b;
+			case ComponentType::ALPHA: return a;
+		}
+		throw std::runtime_error("Invalid component type");
+	}
+
+	const Formats::ComponentType& Formats::ComponentSwizzle::get(const ComponentType& type) const{
+		switch (type){
+			case ComponentType::RED: return r;
+			case ComponentType::GREEN: return g;
+			case ComponentType::BLUE: return b;
+			case ComponentType::ALPHA: return a;
+		}
+		throw std::runtime_error("Invalid component type");
+	}
+
+	const Formats::ComponentInfo* Formats::FormatInfo::getComponent(const ComponentType& type) const noexcept{
+		for (std::uint32_t i=0; i<componentCount; i++){
+			if (components[i].type == type){
+				return &components[i];
+			}
+		}
+		return nullptr;
+	}
+	
 	Formats::Formats() noexcept :
 		_context{nullptr}
 	{}
@@ -386,4 +422,43 @@ namespace Raindrop::Graphics{
 	VkFormat Formats::findBestBufferFormat(const PropertiesFlags& properties, const VkFormatFeatureFlags& features){
 		return findBestFormat(properties, features, BUFFER);
 	}
+
+	static Formats::ComponentType toRaindropComponentType(const VKU_FORMAT_COMPONENT_TYPE& type){
+		switch (type){
+			case VKU_FORMAT_COMPONENT_TYPE_NONE: return Formats::ComponentType::NONE;
+			case VKU_FORMAT_COMPONENT_TYPE_R: return Formats::ComponentType::R;
+			case VKU_FORMAT_COMPONENT_TYPE_G: return Formats::ComponentType::G;
+			case VKU_FORMAT_COMPONENT_TYPE_B: return Formats::ComponentType::B;
+			case VKU_FORMAT_COMPONENT_TYPE_A: return Formats::ComponentType::A;
+			case VKU_FORMAT_COMPONENT_TYPE_D: return Formats::ComponentType::DEPTH;
+			case VKU_FORMAT_COMPONENT_TYPE_S: return Formats::ComponentType::STENCIL;
+		}
+		throw std::runtime_error("invalid format component type");
+	}
+
+	Formats::FormatInfo Formats::getInfo(const VkFormat& format) noexcept{
+		VKU_FORMAT_INFO info = vkuGetFormatInfo(format);
+
+		FormatInfo out{
+			.size = info.block_size,
+			.componentCount = info.component_count
+		};
+
+		std::uint32_t offset = 0;
+		for (std::uint32_t i=0; i<info.component_count; i++){
+			auto& component = out.components[i];
+			const auto& componentInfo = info.components[i];
+
+			component = {
+				.type = toRaindropComponentType(componentInfo.type),
+				.size = componentInfo.size,
+				.offset = offset
+			};
+
+			offset += componentInfo.size;
+		}
+
+		return out;
+	}
+
 }

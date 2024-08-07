@@ -1,23 +1,26 @@
 #version 450 core
 #pragma shader_stage(vertex)
 
-layout (location = 0) out vec2 frag_UV;
+layout (location = 0) in vec3 vert_position;
+layout (location = 1) in vec3 vert_colors;
 
-struct Vertex{
-	vec2 position;
-	vec2 UV;
-};
+layout (location = 0) out vec3 frag_color;
+layout (location = 1) out vec2 frag_UV;
+layout (location = 2) out vec3 frag_normal;
 
-Vertex vertices[6] = {
-	{{-1., -1.}, {0., 0.}},
-	{{ 1., -1.}, {1., 0.}},
-	{{-1.,  1.}, {0., 1.}},
-	{{-1.,  1.}, {0., 1.}},
-	{{ 1., -1.}, {1., 0.}},
-	{{ 1.,  1.}, {1., 1.}}
-};
+
+layout(push_constant, std430) uniform pc {
+    mat4 modelTransform;
+	mat4 cameraViewProjection;
+} pushConstant;
+
 
 void main(){
-	frag_UV = vertices[gl_VertexIndex].UV;
-	gl_Position = vec4(vertices[gl_VertexIndex].position, 0., 1.);
+	frag_UV = vec2(0.f);
+	frag_normal = vert_colors;
+	frag_color = vec3(1.f);
+
+	vec4 position = vec4(vert_position, 1.f) * pushConstant.modelTransform;
+
+	gl_Position = position;
 }

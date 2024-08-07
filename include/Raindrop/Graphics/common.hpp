@@ -24,5 +24,6 @@
 #include "MeshData.hpp"
 #include "Model.hpp"
 #include "ModelLoader.hpp"
+#include "ModelLayoutConfig.hpp"
 
 #endif

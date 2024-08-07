@@ -8,12 +8,12 @@ namespace Raindrop::Graphics::Utils{
 
 	template<>
 	VkFormat typeToFormat<glm::vec<2, int8_t>>() noexcept{
-		return VK_FORMAT_R8G8B8_SINT;
+		return VK_FORMAT_R8G8_SINT;
 	}
 
 	template<>
 	VkFormat typeToFormat<glm::vec<3, int8_t>>() noexcept{
-		return VK_FORMAT_R8G8B8A8_SINT;
+		return VK_FORMAT_R8G8B8_SINT;
 	}
 
 	template<>
@@ -28,12 +28,12 @@ namespace Raindrop::Graphics::Utils{
 
 	template<>
 	VkFormat typeToFormat<glm::vec<2, uint8_t>>() noexcept{
-		return VK_FORMAT_R8G8B8_UINT;
+		return VK_FORMAT_R8G8_UINT;
 	}
 
 	template<>
 	VkFormat typeToFormat<glm::vec<3, uint8_t>>() noexcept{
-		return VK_FORMAT_R8G8B8A8_UINT;
+		return VK_FORMAT_R8G8B8_UINT;
 	}
 
 	template<>
@@ -48,12 +48,12 @@ namespace Raindrop::Graphics::Utils{
 
 	template<>
 	VkFormat typeToFormat<glm::vec<2, int16_t>>() noexcept{
-		return VK_FORMAT_R16G16B16_SINT;
+		return VK_FORMAT_R16G16_SINT;
 	}
 
 	template<>
 	VkFormat typeToFormat<glm::vec<3, int16_t>>() noexcept{
-		return VK_FORMAT_R16G16B16A16_SINT;
+		return VK_FORMAT_R16G16B16_SINT;
 	}
 
 	template<>
@@ -68,12 +68,12 @@ namespace Raindrop::Graphics::Utils{
 
 	template<>
 	VkFormat typeToFormat<glm::vec<2, uint16_t>>() noexcept{
-		return VK_FORMAT_R16G16B16_UINT;
+		return VK_FORMAT_R16G16_UINT;
 	}
 
 	template<>
 	VkFormat typeToFormat<glm::vec<3, uint16_t>>() noexcept{
-		return VK_FORMAT_R16G16B16A16_UINT;
+		return VK_FORMAT_R16G16B16_UINT;
 	}
 
 	template<>
@@ -88,12 +88,12 @@ namespace Raindrop::Graphics::Utils{
 
 	template<>
 	VkFormat typeToFormat<glm::vec<2, int32_t>>() noexcept{
-		return VK_FORMAT_R32G32B32_SINT;
+		return VK_FORMAT_R32G32_SINT;
 	}
 
 	template<>
 	VkFormat typeToFormat<glm::vec<3, int32_t>>() noexcept{
-		return VK_FORMAT_R32G32B32A32_SINT;
+		return VK_FORMAT_R32G32B32_SINT;
 	}
 
 	template<>
@@ -108,12 +108,12 @@ namespace Raindrop::Graphics::Utils{
 
 	template<>
 	VkFormat typeToFormat<glm::vec<2, uint32_t>>() noexcept{
-		return VK_FORMAT_R32G32B32_UINT;
+		return VK_FORMAT_R32G32_UINT;
 	}
 
 	template<>
 	VkFormat typeToFormat<glm::vec<3, uint32_t>>() noexcept{
-		return VK_FORMAT_R32G32B32A32_UINT;
+		return VK_FORMAT_R32G32B32_UINT;
 	}
 
 	template<>
@@ -128,12 +128,12 @@ namespace Raindrop::Graphics::Utils{
 
 	template<>
 	VkFormat typeToFormat<glm::vec<2, int64_t>>() noexcept{
-		return VK_FORMAT_R64G64B64_SINT;
+		return VK_FORMAT_R64G64_SINT;
 	}
 
 	template<>
 	VkFormat typeToFormat<glm::vec<3, int64_t>>() noexcept{
-		return VK_FORMAT_R64G64B64A64_SINT;
+		return VK_FORMAT_R64G64B64_SINT;
 	}
 
 	template<>
@@ -148,12 +148,12 @@ namespace Raindrop::Graphics::Utils{
 
 	template<>
 	VkFormat typeToFormat<glm::vec<2, uint64_t>>() noexcept{
-		return VK_FORMAT_R64G64B64_UINT;
+		return VK_FORMAT_R64G64_UINT;
 	}
 
 	template<>
 	VkFormat typeToFormat<glm::vec<3, uint64_t>>() noexcept{
-		return VK_FORMAT_R64G64B64A64_UINT;
+		return VK_FORMAT_R64G64B64_UINT;
 	}
 
 	template<>
@@ -168,12 +168,12 @@ namespace Raindrop::Graphics::Utils{
 
 	template<>
 	VkFormat typeToFormat<glm::vec<2, float>>() noexcept{
-		return VK_FORMAT_R32G32B32_SFLOAT;
+		return VK_FORMAT_R32G32_SFLOAT;
 	}
 
 	template<>
 	VkFormat typeToFormat<glm::vec<3, float>>() noexcept{
-		return VK_FORMAT_R32G32B32A32_SFLOAT;
+		return VK_FORMAT_R32G32B32_SFLOAT;
 	}
 
 	template<>
@@ -188,17 +188,16 @@ namespace Raindrop::Graphics::Utils{
 
 	template<>
 	VkFormat typeToFormat<glm::vec<2, double>>() noexcept{
-		return VK_FORMAT_R64G64B64_SFLOAT;
+		return VK_FORMAT_R64G64_SFLOAT;
 	}
 
 	template<>
 	VkFormat typeToFormat<glm::vec<3, double>>() noexcept{
-		return VK_FORMAT_R64G64B64A64_SFLOAT;
+		return VK_FORMAT_R64G64B64_SFLOAT;
 	}
 
 	template<>
 	VkFormat typeToFormat<glm::vec<4, double>>() noexcept{
 		return VK_FORMAT_R64G64B64A64_SFLOAT;
 	}
-
 }

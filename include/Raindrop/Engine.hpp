@@ -58,6 +58,8 @@ namespace Raindrop{
 			Graphics::DescriptorPool createGraphicsDescriptorPool();
 			Graphics::MeshData createGraphicsMeshData();
 			Graphics::Mesh createGraphicsMesh();
+			Graphics::VertexLayout createGraphicsVertexLayout();
+			Graphics::ModelLayoutConfig createGraphicsModelLayoutConfig();
 
 			// EVENTS
 

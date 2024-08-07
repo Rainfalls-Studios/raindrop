@@ -60,6 +60,9 @@ namespace Raindrop::Graphics{
 		createIndexBuffer();
 		createVertexBuffers();
 
+		_layout = _data->getLayout();
+		_vertexCount = _data->getVertexCount();
+
 		_data = nullptr;
 	}
 
@@ -73,7 +76,7 @@ namespace Raindrop::Graphics{
 			_indexType = VK_INDEX_TYPE_UINT32;
 		}
 
-		std::size_t bufferSize = indexCount * _indexType == VK_INDEX_TYPE_UINT16 ? 2 : 4;
+		std::size_t bufferSize = indexCount * (_indexType == VK_INDEX_TYPE_UINT16 ? 2 : 4);
 
 		_indexBuffer = std::make_unique<Buffer>();
 		_indexBuffer->prepare(*_context)
@@ -232,5 +235,13 @@ namespace Raindrop::Graphics{
 
 	bool Mesh::hasIndexBuffer() const noexcept{
 		return _indexBuffer != nullptr;
+	}
+
+	const VertexLayout& Mesh::getVertexLayout() const noexcept{
+		return _layout;
+	}
+
+	const std::size_t& Mesh::getVertexCount() const noexcept{
+		return _vertexCount;
 	}
 }

@@ -199,6 +199,14 @@ namespace Raindrop{
 		return std::move(mesh);
 	}
 
+	Graphics::ModelLayoutConfig Engine::createGraphicsModelLayoutConfig(){
+		return Graphics::ModelLayoutConfig();
+	}
+
+	Graphics::VertexLayout Engine::createGraphicsVertexLayout(){
+		return Graphics::VertexLayout();
+	}
+
 	// ==================== EVENTS ============================
 
 	Events::Context& Engine::getEventsContext(){

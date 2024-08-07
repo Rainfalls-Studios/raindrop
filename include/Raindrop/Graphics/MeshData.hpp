@@ -47,14 +47,29 @@ namespace Raindrop::Graphics{
 								return reinterpret_cast<T&>(_buffer.data.at(id));
 							}
 
+							void* getRaw(const std::size_t& index){
+								std::size_t id = _buffer.stride * index + _offset;
+								return static_cast<void*>(_buffer.data.data() + id);
+							}
+
 						private:
 							std::size_t _offset;
 							Buffer& _buffer;
 					};
 
-					template<typename T>
+					template<typename T = std::nullptr_t>
 					inline Attribute<T> get(const std::string& name){
 						return Attribute<T>(_info[name].offset, _buffer);
+					}
+
+					template<typename T = std::nullptr_t>
+					inline Attribute<T> get(const std::size_t& location){
+						for (const auto& attribute : _info.attributes){
+							if (attribute.second.location == location){
+								return Attribute<T>(attribute.second.offset, _buffer);
+							}
+						}
+						throw std::out_of_range("Invalid location");
 					}
 
 					void* viewRaw();
@@ -68,6 +83,8 @@ namespace Raindrop::Graphics{
 				private:
 					VertexLayout::BindingInfo& _info;
 					Buffer& _buffer;
+
+					const VertexLayout::AttributeInfo* get(const std::uint32_t& location) const noexcept;
 			};
 
 			MeshData() noexcept;
@@ -87,6 +104,7 @@ namespace Raindrop::Graphics{
 			MeshData& setPrimitiveTopology(const VkPrimitiveTopology& topology);
 
 			Binding getBinding(const std::string& name);
+			Binding getBinding(const std::uint32_t& binding);
 
 			const std::vector<std::size_t>& getIndices() const noexcept;
 			std::vector<std::uint8_t> getIndicesAs(const VkIndexType& type) const noexcept;

@@ -2,18 +2,15 @@
 #include <Raindrop/Graphics/SimpleRenderer.hpp>
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
 #include <spdlog/spdlog.h>
+#include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include <fstream>
 
 #include "config.h"
 
-class CustomSceneProperty : public Raindrop::Scenes::Property{
-	public:
-		int myValue;
-};
-
 struct PushConstant{
-	int a;
+	glm::mat4 modelTransform = glm::mat4(1.f);
+	glm::mat4 viewProjection = glm::mat4(1.f);
 };
 
 std::string read_file(const std::filesystem::path& path){
@@ -46,10 +43,14 @@ class TrianglePipeline{
 			_engine->getGraphicsContext().getDevice().waitIdle();
 		}
 
-		void initialize(Raindrop::Engine& engine){
+		void initialize(Raindrop::Engine& engine, const Raindrop::Graphics::VertexLayout& layout){
 			_engine = &engine;
 
-			_layout.prepare(engine.getGraphicsContext());
+			_layout.prepare(engine.getGraphicsContext())
+				.addPushConstant()
+					.set<PushConstant>()
+					.setStage(VK_SHADER_STAGE_VERTEX_BIT);
+				
 			_layout.initialize();
 
 			_fragment.prepare(engine.getGraphicsContext());
@@ -84,12 +85,22 @@ class TrianglePipeline{
 			_pipeline.getColorBlendState()
 				.addColorAttachment()
 					.enableBlending();
+			
+			_pipeline.getVertexInputState()
+				.setLayout(layout);
+		
+			_pipeline.getInputAssemplyState()
+				.setPrimitiveTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
 				
 			_pipeline.initialize();
 		}
 
 		void bind(Raindrop::Graphics::CommandBuffer* cmd){
 			_pipeline.bind(*cmd);
+		}
+
+		const Raindrop::Graphics::PipelineLayout& getLayout() const noexcept{
+			return _layout;
 		}
 
 	private:
@@ -99,7 +110,6 @@ class TrianglePipeline{
 		Raindrop::Graphics::ShaderModule _vertex;
 		Raindrop::Graphics::GraphicsPipeline _pipeline;
 };
-
 
 class Testbed : public Raindrop::Engine, public Raindrop::Events::Listener{
 	public:
@@ -114,15 +124,40 @@ class Testbed : public Raindrop::Engine, public Raindrop::Events::Listener{
 
 			Engine::subscribeToEvent<Raindrop::Events::WindowCloseRequest>(this, &Testbed::closeEvent);
 
-			auto model = Engine::getGraphicsModelLoader().load(PATH / "models/bunny.obj");
+			auto layout = Engine::createGraphicsVertexLayout();
+			layout.addBinding("binding")
+				.addAttribute<glm::vec3>("position", Raindrop::Graphics::VertexLayout::POSITION)
+				.addAttribute<glm::vec3>(
+					"color",
+					Raindrop::Graphics::VertexLayout::NORMAL,
+					Raindrop::Graphics::VertexLayout::LOCATION_AUTO,
+					
+					Raindrop::Graphics::Formats::ComponentSwizzle{
+						Raindrop::Graphics::Formats::ComponentType::G,
+						Raindrop::Graphics::Formats::ComponentType::R,
+						Raindrop::Graphics::Formats::ComponentType::R,
+						Raindrop::Graphics::Formats::ComponentType::A
+					});
 
-			_pipeline.initialize(*this);
+			auto config = Engine::createGraphicsModelLayoutConfig();
+			config.addLayout(layout)
+				.require(Raindrop::Graphics::ModelLayoutConfig::Usage::POSITION);
+			
+			_model = Engine::getGraphicsModelLoader().load(PATH / "models/teapot.obj", config);
+
+			_pipeline.initialize(*this, layout);
+		}
+
+		~Testbed(){
+			Engine::getGraphicsDevice().waitIdle();
 		}
 
 		void run(){
 			_run = true;
 			auto start = std::chrono::steady_clock::now();
+			PushConstant p;
 
+			_renderer.setSwapchainColor(glm::vec3(0.2f));
 			while (_run){
 				auto now = std::chrono::steady_clock::now();
 
@@ -132,16 +167,30 @@ class Testbed : public Raindrop::Engine, public Raindrop::Events::Listener{
 				auto commandBuffer = _renderer.beginFrame();
 				if (commandBuffer){
 
-					glm::vec3 clearColor;
-					clearColor.r = glm::sin(duration.count());
-					clearColor.g = glm::cos(duration.count() * 3.14);
-					clearColor.b = glm::sin(duration.count() * 1.5);
+					p.modelTransform = glm::scale(glm::mat4(1.f), glm::vec3(std::sin(duration.count()) * 0.3 + 0.3));
 
-					_renderer.setSwapchainColor(clearColor);
 					_renderer.beginSwapchainRenderPass(commandBuffer);
 
 					_pipeline.bind(commandBuffer);
-					vkCmdDraw(commandBuffer->get(), 3, 1, 0, 0);
+					for (auto& mesh : _model->getMeshes()){
+						if (mesh.hasIndexBuffer()){
+							vkCmdBindIndexBuffer(commandBuffer->get(), mesh.getIndexBuffer()->get(), 0, mesh.getIndexType());
+						}
+
+						const auto& buffers = mesh.getVertexBuffers();
+						std::vector<VkBuffer> vkBuffers(buffers.size());
+						std::vector<VkDeviceSize> offsets(buffers.size());
+
+						for (std::size_t i=0; i<buffers.size(); i++){
+							vkBuffers[i] = buffers[i].get();
+							offsets[i] = 0;
+						}
+
+						vkCmdBindVertexBuffers(commandBuffer->get(), 0, vkBuffers.size(), vkBuffers.data(), offsets.data());
+
+						vkCmdPushConstants(commandBuffer->get(), _pipeline.getLayout().get(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstant), &p);
+						vkCmdDraw(commandBuffer->get(), mesh.getVertexCount(), 1, 0, 0);
+					}
 
 					_renderer.endSwapchainRenderPass(commandBuffer);
 
@@ -154,6 +203,8 @@ class Testbed : public Raindrop::Engine, public Raindrop::Events::Listener{
 		Raindrop::Graphics::SimpleRenderer _renderer;
 		TrianglePipeline _pipeline;
 		bool _run;
+
+		std::shared_ptr<Raindrop::Graphics::Model> _model;
 };
 
 int main(){

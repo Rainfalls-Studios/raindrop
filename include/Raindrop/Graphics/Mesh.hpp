@@ -4,6 +4,7 @@
 
 #include "types.hpp"
 #include "pch.pch"
+#include "VertexLayout.hpp"
 
 namespace Raindrop::Graphics{
 	class Mesh{
@@ -30,6 +31,9 @@ namespace Raindrop::Graphics{
 			const Buffer* getIndexBuffer() const noexcept;
 			const std::vector<Buffer>& getVertexBuffers() const noexcept;
 
+			const VertexLayout& getVertexLayout() const noexcept;
+			const std::size_t& getVertexCount() const noexcept;
+
 		private:
 			Context* _context;
 			const MeshData* _data;
@@ -37,6 +41,8 @@ namespace Raindrop::Graphics{
 			VkIndexType _indexType;
 			std::unique_ptr<Buffer> _indexBuffer;
 			std::vector<Buffer> _vertexBuffers;
+			VertexLayout _layout;
+			std::size_t _vertexCount;
 
 			void createIndexBuffer();
 			void createVertexBuffers();

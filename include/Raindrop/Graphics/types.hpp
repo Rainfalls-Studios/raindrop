@@ -28,6 +28,7 @@ namespace Raindrop::Graphics{
 	class Sampler;
 	class Model;
 	class ModelLoader;
+	class ModelLayoutConfig;
 }
 
 #endif

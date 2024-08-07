@@ -49,13 +49,13 @@ with open(output_file, "w") as file:
 
 			f = 'R' + vk_format[0]
 
-			if (size >= 1):
+			if (size >= 2):
 				f += 'G' + vk_format[0]
 			
-			if (size >= 2):
+			if (size >= 3):
 				f += 'B' + vk_format[0]
 
-			if (size >= 3):
+			if (size >= 4):
 				f += 'A' + vk_format[0]
 
 			file.write(f"\t\treturn VK_FORMAT_{f}_{vk_format[1]};\n")
