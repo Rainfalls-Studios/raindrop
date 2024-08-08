@@ -143,7 +143,7 @@ class Testbed : public Raindrop::Engine, public Raindrop::Events::Listener{
 			config.addLayout(layout)
 				.require(Raindrop::Graphics::ModelLayoutConfig::Usage::POSITION);
 			
-			_model = Engine::getGraphicsModelLoader().load(PATH / "models/teapot.obj", config);
+			_model = Engine::getGraphicsModelLoader().load(PATH / "models/bunny.obj", config);
 
 			_pipeline.initialize(*this, layout);
 		}

@@ -1,0 +1,8 @@
+#ifndef __RAINDROP_GRAPHICS_SCENE_PCH_PCH__
+#define __RAINDROP_GRAPHICS_SCENE_PCH_PCH__
+
+#include "../pch.pch"
+
+#include <entt/entt.hpp>
+
+#endif
