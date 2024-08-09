@@ -3,12 +3,13 @@
 
 #include "types.hpp"
 #include "pch.pch"
+#include "Scene.hpp"
 
 namespace Raindrop::Scenes{
-	class Entity{
+	class Entity : public Object{
 		public:
 			Entity() noexcept;
-			Entity(Scene& scene, const EntityID& id);
+			Entity(const std::shared_ptr<Scene>& scene, const EntityID& id);
 			
 			Entity(const Entity& other);
 			Entity& operator=(const Entity& other);
@@ -20,70 +21,72 @@ namespace Raindrop::Scenes{
 
 			const EntityID& getID() const noexcept;
 
+			std::shared_ptr<Scene> getScene();
+			const std::shared_ptr<Scene> getScene() const;
+
+			bool valid() const noexcept;
+
 			template<typename T, typename... Args>
 			T& add(Args&&... args){
-				return getRegistry().emplace<T, Args...>(_id, std::forward<Args>(args)...);
+				return getScene()->emplace<T, Args...>(_id, std::forward<Args>(args)...);
 			}
 
 			template<typename T, typename... Args>
 			T& addOrReplace(Args&&... args){
-				return getRegistry().emplace_or_replace<T, Args...>(_id, std::forward<Args>(args)...);
+				return getScene()->emplace_or_replace<T, Args...>(_id, std::forward<Args>(args)...);
 			}
 
 			template<typename T, typename... Args>
 			T& getOrAdd(Args&&... args){
-				return getRegistry().get_or_emplace<T, Args...>(_id, std::forward<Args>(args)...);
+				return getScene()->get_or_emplace<T, Args...>(_id, std::forward<Args>(args)...);
 			}
 
 			template<typename T, typename... Args>
 			T& replace(Args&&... args){
-				return getRegistry().replace<T, Args...>(_id, std::forward<Args>(args)...);
+				return getScene()->replace<T, Args...>(_id, std::forward<Args>(args)...);
 			}
 
 			template<typename T, typename... Other>
 			T& remove(){
-				return getRegistry().erase<T, Other...>(_id);
+				return getScene()->erase<T, Other...>(_id);
 			}
 
 			template<typename... Types>
 			bool hasAllOf() const{
-				return getRegistry().all_of<Types...>(_id);
+				return getScene()->all_of<Types...>(_id);
 			}
 
 			template<typename... Types>
 			bool hasAnyOf() const{
-				return getRegistry().any_of<Types...>(_id);
+				return getScene()->any_of<Types...>(_id);
 			}
 
 			template<typename... Types>
 			auto get(){
-				return getRegistry().get<Types...>(_id);
+				return getScene()->get<Types...>(_id);
 			}
 
 			template<typename... Types>
 			auto get() const{
-				return getRegistry().get<Types...>(_id);
+				return getScene()->get<Types...>(_id);
 			}
 
 			template<typename... Types>
 			auto tryGet(){
-				return getRegistry().try_get<Types...>(_id);
+				return getScene()->try_get<Types...>(_id);
 			}
 
 			template<typename... Types>
 			auto tryGet() const{
-				return getRegistry().try_get<Types...>(_id);
+				return getScene()->try_get<Types...>(_id);
 			}
 
 			bool hasComponents() const{
-				return getRegistry().orphan(_id);
+				return getScene()->orphan(_id);
 			}
 
 		private:
-			Registry& getRegistry();
-			const Registry& getRegistry() const;
-
-			Scene* _scene;
+			std::weak_ptr<Scene> _scene;
 			EntityID _id;
 	};
 }

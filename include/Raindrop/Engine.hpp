@@ -31,6 +31,8 @@ namespace Raindrop{
 			Context& getContext();
 			const Context& getContext() const;
 
+			UUIDRegistry& getUUIDRegistry();
+
 			// GRAPHICS
 
 			Graphics::Context& getGraphicsContext();
@@ -91,7 +93,7 @@ namespace Raindrop{
 			Scenes::Context& getScenesContext();
 			const Scenes::Context& getScenesContext() const;
 
-			Scenes::Scene createScene();
+			std::shared_ptr<Scenes::Scene> createScene();
 
 		private:
 			std::unique_ptr<Context> _context;

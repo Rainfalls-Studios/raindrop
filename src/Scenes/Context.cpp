@@ -7,7 +7,8 @@ namespace Raindrop::Scenes{
 		logger = spdlog::stdout_color_st("Raindrop::Scenes");
 	}
 
-	void Context::initialize(){
+	void Context::initialize(Raindrop::Context& core){
+		this->core = &core;
 		createLogger();
 	}
 }

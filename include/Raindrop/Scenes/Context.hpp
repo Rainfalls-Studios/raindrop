@@ -3,13 +3,15 @@
 
 #include "pch.pch"
 #include "Scene.hpp"
+#include "../Context.hpp"
 
 namespace Raindrop::Scenes{
 	struct Context{
 		std::shared_ptr<spdlog::logger> logger;
+		Raindrop::Context* core;
 
 		void createLogger();
-		void initialize();
+		void initialize(Raindrop::Context& core);
 	};
 }
 

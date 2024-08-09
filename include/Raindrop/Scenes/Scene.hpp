@@ -4,10 +4,10 @@
 #include "types.hpp"
 #include "pch.pch"
 #include "Property.hpp"
-#include "Entity.hpp"
+#include <Raindrop/Object.hpp>
 
 namespace Raindrop::Scenes{
-	class Scene : private Registry{
+	class Scene : private Registry, public Object, public std::enable_shared_from_this<Scene>{
 		public:
 			Scene() noexcept;
 			~Scene();
@@ -117,6 +117,7 @@ namespace Raindrop::Scenes{
 			using Registry::group_if_exists;
 			using Registry::owned;
 			using Registry::sort;
+			using Registry::orphan;
 
 		private:
 			Context* _context;

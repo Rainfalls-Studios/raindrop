@@ -4,12 +4,12 @@
 
 namespace Raindrop::Scenes{
 	Entity::Entity() noexcept : 
-		_scene{nullptr},
+		_scene{},
 		_id{INVALID_ENTITY_ID}
 	{}
 
-	Entity::Entity(Scene& scene, const EntityID& id) : 
-		_scene{&scene},
+	Entity::Entity(const std::shared_ptr<Scene>& scene, const EntityID& id) : 
+		_scene{scene},
 		_id{id}
 	{}
 	
@@ -25,7 +25,7 @@ namespace Raindrop::Scenes{
 	}
 
 	Entity::Entity(Entity&& other) : 
-		_scene{nullptr},
+		_scene{},
 		_id{INVALID_ENTITY_ID}
 	{
 		swap(*this, other);
@@ -45,13 +45,18 @@ namespace Raindrop::Scenes{
 		return _id;
 	}
 
-	Registry& Entity::getRegistry(){
-		if (!_scene) throw std::runtime_error("Invalid entity");
-		return _scene->getRegistry();
+	std::shared_ptr<Scene> Entity::getScene(){
+		if (_scene.expired()) throw std::runtime_error("Invalid entity");
+		return _scene.lock();
 	}
 
-	const Registry& Entity::getRegistry() const{
-		if (!_scene) throw std::runtime_error("Invalid entity");
-		return _scene->getRegistry();
+	const std::shared_ptr<Scene> Entity::getScene() const{
+		if (_scene.expired()) throw std::runtime_error("Invalid entity");
+		return _scene.lock();
 	}
+
+	bool Entity::valid() const noexcept{
+		return !_scene.expired() && _id != INVALID_ENTITY_ID;
+	}
+
 }

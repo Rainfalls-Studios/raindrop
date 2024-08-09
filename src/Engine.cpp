@@ -36,7 +36,7 @@ namespace Raindrop{
 
 	void Engine::initializeCore(){
 		_context = std::make_unique<Context>();
-
+		// _context->initialize()
 	}
 
 	void Engine::initializeGraphics(){
@@ -49,10 +49,12 @@ namespace Raindrop{
 
 	void Engine::initializeEvents(){
 		_events = std::make_unique<Events::Context>();
+		_events->initialize();
 	}	
 	
 	void Engine::initializeScenes(){
 		_scenes = std::make_unique<Scenes::Context>();
+		_scenes->initialize(*_context);
 	}
 
 
@@ -70,6 +72,10 @@ namespace Raindrop{
 			throw std::runtime_error("Core has not been initialized");
 		}
 		return *_context;
+	}
+
+	UUIDRegistry& Engine::getUUIDRegistry(){
+		return getContext().registry;
 	}
 
 	// ==================== GRAPHICS ============================
@@ -240,9 +246,9 @@ namespace Raindrop{
 		return *_scenes;
 	}
 
-	Scenes::Scene Engine::createScene(){
-		Scenes::Scene scene;
-		scene.prepare(getScenesContext());
-		return std::move(scene);
+	std::shared_ptr<Scenes::Scene> Engine::createScene(){
+		std::shared_ptr<Scenes::Scene> scene = _context->registry.emplace<Scenes::Scene>();
+		scene->prepare(getScenesContext());
+		return scene;
 	}
 }

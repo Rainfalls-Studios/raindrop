@@ -1,9 +1,13 @@
 #include <Raindrop/UUID.hpp>
 #include <random>
 #include <thread>
+#include <cinttypes>
 
 namespace Raindrop{
-	UUID::UUID() noexcept {}
+	UUID::UUID() noexcept :
+		_lower{0},
+		_upper{0}
+	{}
 
 	UUID::UUID(const std::uint64_t& lower, const std::uint64_t& upper) noexcept :
 		_lower{lower},
@@ -21,7 +25,10 @@ namespace Raindrop{
 		return *this;
 	}
 
-	UUID::UUID(UUID&& other) noexcept{
+	UUID::UUID(UUID&& other) noexcept :
+		_lower{0},
+		_upper{0}
+	{
 		swap(*this, other);
 	}
 
@@ -40,7 +47,34 @@ namespace Raindrop{
 	}
 
 	std::string UUID::asString() const{
-		return std::to_string(_lower) + std::to_string(_upper);
+		char buffer[33]; // 16 digits for each uint64_t + 1 for null terminator
+		std::sprintf(buffer, "%016" PRIu64 "%016" PRIu64, _lower, _upper);
+		return std::string(buffer);
+	}
+
+	bool UUID::parse(const std::string& str) noexcept{
+		if (str.size() < 16 * 2) {
+			return false;
+		}
+
+		const char* cstr = str.c_str();
+
+		char* end = nullptr;
+		const std::uint64_t temp_lower = std::strtoull(cstr, &end, 10);
+
+		if (end - cstr != 16) {
+			return false;
+		}
+
+		const std::uint64_t temp_upper = std::strtoull(end, nullptr, 10);
+
+		if (end && *end == '\0'){
+			_lower = temp_lower;
+			_upper = temp_upper;
+			return true;
+		}
+
+		return false;
 	}
 
 
@@ -67,5 +101,14 @@ namespace Raindrop{
 		const std::uint64_t upper = dist(rng);
 
 		return UUID(lower, upper);
+	}
+
+
+	const std::uint64_t& UUID::lower() const noexcept{
+		return _lower;
+	}
+
+	const std::uint64_t& UUID::upper() const noexcept{
+		return _upper;
 	}
 }

@@ -1,6 +1,7 @@
 #include <Raindrop/Scenes/Scene.hpp>
 #include <Raindrop/Scenes/Context.hpp>
 #include <Raindrop/Scenes/Property.hpp>
+#include <Raindrop/Scenes/Entity.hpp>
 
 namespace Raindrop::Scenes{
 
@@ -49,15 +50,24 @@ namespace Raindrop::Scenes{
 
 	Entity Scene::create(){
 		EntityID id = Registry::create();
-		return Entity(*this, id);
+
+		Entity entity = Entity(shared_from_this(), id);
+		_context->core->registry.insertEntity(entity);
+		
+		return entity;
 	}
 
 	Entity Scene::create(const EntityID& hint){
 		EntityID id = Registry::create(hint);
-		return Entity(*this, id);
+
+		Entity entity = Entity(shared_from_this(), id);
+		_context->core->registry.insertEntity(entity);
+
+		return entity;
 	}
 
 	void Scene::destroy(const Entity& entity){
+		_context->core->registry.eraseEntity(entity.getUUID());
 		Registry::destroy(entity.getID());
 	}
 
