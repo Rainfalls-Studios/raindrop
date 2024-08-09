@@ -12,6 +12,7 @@
 namespace Raindrop::Graphics{
 	struct Context{
 		std::shared_ptr<spdlog::logger> logger;
+		Raindrop::Context* raindrop;
 
 		Core::Context core;
 		Window::Context window;
@@ -21,7 +22,7 @@ namespace Raindrop::Graphics{
 		ModelLoader modelLoader;
 
 		void createLogger();
-		void initialize(Events::Context& events);
+		void initialize(Raindrop::Context& raindrop);
 		
 		Core::Instance& getInstance() noexcept;
 		const Core::Instance& getInstance() const noexcept;

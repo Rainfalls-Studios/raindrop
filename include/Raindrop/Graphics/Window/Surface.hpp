@@ -1,10 +1,9 @@
 #ifndef __RAINDROP_GRAPHICS_WINDOW_SURFACE_HPP__
 #define __RAINDROP_GRAPHICS_WINDOW_SURFACE_HPP__
 
-#include "prototypes.hpp"
-#include <Raindrop/Graphics/Core/prototypes.hpp>
-#include <vulkan/vulkan.h>
-#include <VkBootstrap.h>
+#include "types.hpp"
+#include "pch.pch"
+#include <Raindrop/Graphics/Core/types.hpp>
 
 namespace Raindrop::Graphics::Window{
 	class Surface{

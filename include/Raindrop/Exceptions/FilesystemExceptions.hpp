@@ -1,7 +1,7 @@
 #ifndef __RAINDROP_EXCEPTIONS_FILSYSTEM_EXCEPTIONS_HPP__
 #define __RAINDROP_EXCEPTIONS_FILSYSTEM_EXCEPTIONS_HPP__
 
-#include "common.hpp"
+#include "pch.pch"
 
 namespace Raindrop::Exceptions{
 	class FilesystemException : public std::exception{

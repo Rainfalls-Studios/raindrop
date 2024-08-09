@@ -8,10 +8,10 @@
 namespace Raindrop::Scenes{
 	struct Context{
 		std::shared_ptr<spdlog::logger> logger;
-		Raindrop::Context* core;
+		Raindrop::Context* raindrop;
 
 		void createLogger();
-		void initialize(Raindrop::Context& core);
+		void initialize(Raindrop::Context& raindrop);
 	};
 }
 

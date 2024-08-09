@@ -1,7 +1,7 @@
 #ifndef __RAINDROP_EXCEPTIONS_RESOURCE_EXCEPTIONS_HPP__
 #define __RAINDROP_EXCEPTIONS_RESOURCE_EXCEPTIONS_HPP__
 
-#include "common.hpp"
+#include "pch.pch"
 #include <Raindrop/Asset.hpp>
 
 // TODO: implement asset ID reference

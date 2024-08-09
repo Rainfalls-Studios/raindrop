@@ -1,8 +1,8 @@
 #ifndef __RAINDROP_GRAPHICS_CORE_DEVICE_HPP__
 #define __RAINDROP_GRAPHICS_CORE_DEVICE_HPP__
 
-#include "prototypes.hpp"
-#include <Raindrop/Graphics/pch.pch>
+#include "types.hpp"
+#include "pch.pch"
 
 namespace Raindrop::Graphics::Core{
 	class Device{

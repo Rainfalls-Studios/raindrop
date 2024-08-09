@@ -1,8 +1,8 @@
 #ifndef __RAINDROP_GRAPHICS_CORE_PHYSICAL_DEVICE_HPP__
 #define __RAINDROP_GRAPHICS_CORE_PHYSICAL_DEVICE_HPP__
 
-#include "common.hpp"
-#include <Raindrop/Graphics/pch.pch>
+#include "types.hpp"
+#include "pch.pch"
 
 namespace Raindrop::Graphics::Core{
 	class PhysicalDevice{

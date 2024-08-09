@@ -1,7 +1,18 @@
 #include <Raindrop/Raindrop.hpp>
 #include <Raindrop/Graphics/SimpleRenderer.hpp>
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
+#include <Raindrop/Graphics/PipelineLayout.hpp>
+#include <Raindrop/Graphics/ShaderModule.hpp>
+#include <Raindrop/Graphics/GraphicsPipeline.hpp>
+#include <Raindrop/Graphics/VertexLayout.hpp>
+#include <Raindrop/Graphics/ModelLayoutConfig.hpp>
+#include <Raindrop/Graphics/Model.hpp>
+#include <Raindrop/Graphics/Mesh.hpp>
+#include <Raindrop/Graphics/Buffer.hpp>
+#include <Raindrop/Events/Listener.hpp>
+
 #include <spdlog/spdlog.h>
+
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include <fstream>
@@ -119,7 +130,7 @@ class Testbed : public Raindrop::Engine, public Raindrop::Events::Listener{
 		}
 
 		Testbed() : Engine(), Listener(){
-			Engine::initialize(INIT_EVERYTHING);
+			Engine::initialize();
 			_renderer.initialize(getGraphicsContext());
 
 			Engine::subscribeToEvent<Raindrop::Events::WindowCloseRequest>(this, &Testbed::closeEvent);
@@ -127,18 +138,8 @@ class Testbed : public Raindrop::Engine, public Raindrop::Events::Listener{
 			auto layout = Engine::createGraphicsVertexLayout();
 			layout.addBinding("binding")
 				.addAttribute<glm::vec3>("position", Raindrop::Graphics::VertexLayout::POSITION)
-				.addAttribute<glm::vec3>(
-					"color",
-					Raindrop::Graphics::VertexLayout::NORMAL,
-					Raindrop::Graphics::VertexLayout::LOCATION_AUTO,
-					
-					Raindrop::Graphics::Formats::ComponentSwizzle{
-						Raindrop::Graphics::Formats::ComponentType::G,
-						Raindrop::Graphics::Formats::ComponentType::R,
-						Raindrop::Graphics::Formats::ComponentType::R,
-						Raindrop::Graphics::Formats::ComponentType::A
-					});
-
+				.addAttribute<glm::vec3>("color", Raindrop::Graphics::VertexLayout::NORMAL);
+				
 			auto config = Engine::createGraphicsModelLayoutConfig();
 			config.addLayout(layout)
 				.require(Raindrop::Graphics::ModelLayoutConfig::Usage::POSITION);

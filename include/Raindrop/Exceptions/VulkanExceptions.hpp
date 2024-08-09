@@ -1,7 +1,6 @@
 #ifndef __RAINDROP_EXCEPTIONS_VULKAN_EXCEPTIONS_HPP__
 #define __RAINDROP_EXCEPTIONS_VULKAN_EXCEPTIONS_HPP__
 
-#include "common.hpp"
 #include <vulkan/vulkan.h>
 #include <spdlog/spdlog.h>
 

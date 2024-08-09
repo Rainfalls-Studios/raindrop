@@ -52,7 +52,7 @@ namespace Raindrop::Scenes{
 		EntityID id = Registry::create();
 
 		Entity entity = Entity(shared_from_this(), id);
-		_context->core->registry.insertEntity(entity);
+		_context->raindrop->registry.insertEntity(entity);
 		
 		return entity;
 	}
@@ -61,13 +61,13 @@ namespace Raindrop::Scenes{
 		EntityID id = Registry::create(hint);
 
 		Entity entity = Entity(shared_from_this(), id);
-		_context->core->registry.insertEntity(entity);
+		_context->raindrop->registry.insertEntity(entity);
 
 		return entity;
 	}
 
 	void Scene::destroy(const Entity& entity){
-		_context->core->registry.eraseEntity(entity.getUUID());
+		_context->raindrop->registry.eraseEntity(entity.getUUID());
 		Registry::destroy(entity.getID());
 	}
 

@@ -1,9 +1,8 @@
 #ifndef __RAINDROP_GRAPHICS_CORE_INSTANCE_HPP__
 #define __RAINDROP_GRAPHICS_CORE_INSTANCE_HPP__
 
-#include "common.hpp"
-#include <Raindrop/Graphics/pch.pch>
-#include <VkBootstrap.h>
+#include "types.hpp"
+#include "pch.pch"
 
 namespace Raindrop::Graphics::Core{
 	class Instance{

@@ -58,5 +58,4 @@ namespace Raindrop::Scenes{
 	bool Entity::valid() const noexcept{
 		return !_scene.expired() && _id != INVALID_ENTITY_ID;
 	}
-
 }

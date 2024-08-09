@@ -1,12 +1,14 @@
 #include <Raindrop/Graphics/Context.hpp>
 #include <spdlog/sinks/stdout_color_sinks.h>
+#include <Raindrop/Context.hpp>
 
 namespace Raindrop::Graphics{
 	void Context::createLogger(){
 		logger = spdlog::stdout_color_st("Raindrop::Graphics");
 	}
 
-	void Context::initialize(Events::Context& events){
+	void Context::initialize(Raindrop::Context& raindrop){
+		this->raindrop = &raindrop;
 		createLogger();
 
 		// None for now
@@ -14,7 +16,7 @@ namespace Raindrop::Graphics{
 
 		// First create the window
 		window.createLogger();
-		window.window.prepare(window, events);
+		window.window.prepare(window, *raindrop.events.get());
 		window.window.initialize();
 		
 

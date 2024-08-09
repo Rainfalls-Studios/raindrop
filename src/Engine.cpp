@@ -1,64 +1,40 @@
 #include <Raindrop/Engine.hpp>
-#include <Raindrop/Graphics/common.hpp>
+
+#include <Raindrop/Graphics/RenderPass.hpp>
+#include <Raindrop/Graphics/Buffer.hpp>
+#include <Raindrop/Graphics/DescriptorSetLayout.hpp>
+#include <Raindrop/Graphics/GraphicsPipeline.hpp>
+#include <Raindrop/Graphics/ShaderModule.hpp>
+#include <Raindrop/Graphics/Memory.hpp>
+#include <Raindrop/Graphics/Memory.hpp>
+#include <Raindrop/Graphics/Image.hpp>
+#include <Raindrop/Graphics/ImageView.hpp>
+#include <Raindrop/Graphics/Sampler.hpp>
+#include <Raindrop/Graphics/DescriptorPool.hpp>
+#include <Raindrop/Graphics/MeshData.hpp>
+#include <Raindrop/Graphics/Mesh.hpp>
+#include <Raindrop/Graphics/VertexLayout.hpp>
+#include <Raindrop/Graphics/ModelLayoutConfig.hpp>
 
 #define create_graphics_interface(type) std::shared_ptr<Graphics::type> Engine::createGraphics##type(){ std::shared_ptr<Graphics::type> instance = getUUIDRegistry().emplace<Graphics::type>(); instance->prepare(getGraphicsContext()); return std::move(instance);}
 
 namespace Raindrop{
 	Engine::Engine() :
-		_context{nullptr},
-		_graphics{nullptr}
+		_context{nullptr}
 	{}
 
 	Engine::~Engine(){
 		release();
 	}
 
-	void Engine::initialize(InitFlags flags){
-		initializeCore();
-
-		if (flags & INIT_EVENTS){
-			initializeEvents();
-		}
-
-		if (flags & INIT_GRAPHICS){
-			initializeGraphics();
-		}
-
-		if (flags & INIT_SCENES){
-			initializeScenes();
-		}
+	void Engine::initialize(){
+		_context = std::make_unique<Context>();
+		_context->initialize();
 	}
 
 	void Engine::release(){
-		_scenes.reset();
-		_graphics.reset();
-		_events.reset();
 		_context.reset();
 	}
-
-	void Engine::initializeCore(){
-		_context = std::make_unique<Context>();
-		// _context->initialize()
-	}
-
-	void Engine::initializeGraphics(){
-		_graphics = std::make_unique<Graphics::Context>();
-		_graphics->initialize(getEventsContext());
-
-		// _graphics->core.createLogger();
-		// _graphics->core.instance.initialize(_graphics->core);
-	}
-
-	void Engine::initializeEvents(){
-		_events = std::make_unique<Events::Context>();
-		_events->initialize();
-	}	
-	
-	void Engine::initializeScenes(){
-		_scenes = std::make_unique<Scenes::Context>();
-		_scenes->initialize(*_context);
-	}
-
 
 	// ======================= CORE ==============================
 
@@ -83,17 +59,19 @@ namespace Raindrop{
 	// ==================== GRAPHICS ============================
 
 	Graphics::Context& Engine::getGraphicsContext(){
-		if (!_graphics){
+		auto& graphics = getContext().graphics;
+		if (!graphics){
 			throw std::runtime_error("Graphics context has not been initialized");
 		}
-		return *_graphics;
+		return *graphics;
 	}
 
 	const Graphics::Context& Engine::getGraphicsContext() const{
-		if (!_graphics){
+		const auto& graphics = getContext().graphics;
+		if (!graphics){
 			throw std::runtime_error("Graphics context has not been initialized");
 		}
-		return *_graphics;
+		return *graphics;
 	}
 
 
@@ -151,34 +129,38 @@ namespace Raindrop{
 	// ==================== EVENTS ============================
 
 	Events::Context& Engine::getEventsContext(){
-		if (!_events){
+		auto& events = getContext().events;
+		if (!events){
 			throw std::runtime_error("Events context has not been initialized");
 		}
-		return *_events;
+		return *events;
 	}
 
 	const Events::Context& Engine::getEventsContext() const{
-		if (!_events){
+		auto& events = getContext().events;
+		if (!events){
 			throw std::runtime_error("Events context has not been initialized");
 		}
-		return *_events;
+		return *events;
 	}
 
 
 	// ==================== SCENES ============================
 
 	Scenes::Context& Engine::getScenesContext(){
-		if (!_scenes){
+		auto& scenes = getContext().scenes;
+		if (!scenes){
 			throw std::runtime_error("Scenes context has not been initialized");
 		}
-		return *_scenes;
+		return *scenes;
 	}
 
 	const Scenes::Context& Engine::getScenesContext() const{
-		if (!_scenes){
+		auto& scenes = getContext().scenes;
+		if (!scenes){
 			throw std::runtime_error("Scenes context has not been initialized");
 		}
-		return *_scenes;
+		return *scenes;
 	}
 
 	std::shared_ptr<Scenes::Scene> Engine::createScene(){

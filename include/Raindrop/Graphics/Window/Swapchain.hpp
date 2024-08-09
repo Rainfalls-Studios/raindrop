@@ -1,10 +1,10 @@
 #ifndef __RAINDROP_GRAPHICS_WINDOW_SWAPCHAIN_HPP__
 #define __RAINDROP_GRAPHICS_WINDOW_SWAPCHAIN_HPP__
 
-#include "prototypes.hpp"
-#include <Raindrop/Graphics/Core/prototypes.hpp>
+#include "types.hpp"
+#include "pch.pch"
+#include <Raindrop/Graphics/Core/types.hpp>
 #include <Raindrop/Graphics/RenderPass.hpp>
-#include <Raindrop/Graphics/pch.pch>
 
 namespace Raindrop::Graphics::Window{
 	class Swapchain{

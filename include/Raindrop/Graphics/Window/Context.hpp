@@ -1,10 +1,11 @@
 #ifndef __RAINDROP_GRAPHICS_WINDOW_CONTEXT_HPP__
 #define __RAINDROP_GRAPHICS_WINDOW_CONTEXT_HPP__
 
+#include "types.hpp"
+#include "pch.pch"
 #include "Window.hpp"
 #include "Surface.hpp"
 #include "Swapchain.hpp"
-#include <spdlog/spdlog.h>
 
 namespace Raindrop::Graphics::Window{
 	struct Context{

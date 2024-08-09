@@ -6,7 +6,8 @@ namespace Raindrop::Events{
 		logger = spdlog::stdout_color_st("Raindrop::Events");
 	}
 
-	void Context::initialize(){
+	void Context::initialize(Raindrop::Context& raindrop){
+		this->raindrop = &raindrop;
 		createLogger();
 
 		manager.prepare(*this);

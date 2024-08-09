@@ -2,7 +2,7 @@
 #define __RAINDROP_GRAPHICS_RENDER_PASS_HPP__
 
 #include "types.hpp"
-#include <Raindrop/Graphics/Core/prototypes.hpp>
+#include <Raindrop/Graphics/Core/types.hpp>
 #include <Raindrop/Graphics/pch.pch>
 #include <Raindrop/Object.hpp>
 

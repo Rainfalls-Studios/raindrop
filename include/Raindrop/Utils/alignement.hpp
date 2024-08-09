@@ -1,7 +1,7 @@
 #ifndef __RAINDROP_UTILS_ALIGNEMENT_HPP__
 #define __RAINDROP_UTILS_ALIGNEMENT_HPP__
 
-#include "common.hpp"
+#include "pch.pch"
 
 namespace Raindrop::Utils{
 	template<typename T>

@@ -1,19 +1,17 @@
-#ifndef __RAINDROP_EVENTS_CONTEXT_HPP__
-#define __RAINDROP_EVENTS_CONTEXT_HPP__
+#ifndef __RAINDROP_ASSETS_CONTEXT_HPP__
+#define __RAINDROP_ASSETS_CONTEXT_HPP__
 
-#include "types.hpp"
 #include "pch.pch"
 #include "Manager.hpp"
-#include "Inputs.hpp"
+#include "types.hpp"
 
-namespace Raindrop::Events{
+namespace Raindrop::Assets{
 	struct Context{
 		std::shared_ptr<spdlog::logger> logger;
 		Raindrop::Context* raindrop;
 
 		Manager manager;
-		Inputs inputs;
-
+		
 		void initialize(Raindrop::Context& raindrop);
 		void createLogger();
 	};

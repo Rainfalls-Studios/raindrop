@@ -1,7 +1,7 @@
 #ifndef __RAINDROP_EXCEPTIONS_EVENTS_EXCEPTIONS_HPP__
 #define __RAINDROP_EXCEPTIONS_EVENTS_EXCEPTIONS_HPP__
 
-#include "common.hpp"
+#include "pch.pch"
 
 namespace Raindrop::Exceptions{
 	class EventException : public std::exception{

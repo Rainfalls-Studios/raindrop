@@ -1,6 +1,7 @@
 #ifndef __RAINDROP_GRAPHICS_TYPES_HPP__
 #define __RAINDROP_GRAPHICS_TYPES_HPP__
 
+#include "../types.hpp"
 #include <cstddef>
 
 namespace Raindrop::Graphics{

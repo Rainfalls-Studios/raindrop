@@ -3,7 +3,7 @@
 
 #include "pch.pch"
 #include "Event.hpp"
-#include <Raindrop/Graphics/Window/prototypes.hpp>
+#include <Raindrop/Graphics/Window/types.hpp>
 
 namespace Raindrop::Events{
 

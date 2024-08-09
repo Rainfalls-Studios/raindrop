@@ -1,8 +1,11 @@
 #ifndef __RAINDROP_GRAPHICS_SIMPLE_RENDERE_HPP__
 #define __RAINDROP_GRAPHICS_SIMPLE_RENDERE_HPP__
 
-#include "common.hpp"
+#include "pch.pch"
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
+#include "CommandBuffer.hpp"
+#include "CommandPool.hpp"
+#include "Context.hpp"
 
 namespace Raindrop::Graphics{
 	class SimpleRenderer{
