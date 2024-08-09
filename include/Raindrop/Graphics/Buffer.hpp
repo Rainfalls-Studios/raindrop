@@ -3,9 +3,10 @@
 
 #include "types.hpp"
 #include "pch.pch"
+#include <Raindrop/Object.hpp>
 
 namespace Raindrop::Graphics{
-	class Buffer{
+	class Buffer : public Object{
 		public:
 			Buffer() noexcept;
 			~Buffer();

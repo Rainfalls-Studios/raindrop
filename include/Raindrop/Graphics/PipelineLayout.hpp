@@ -3,9 +3,10 @@
 
 #include "types.hpp"
 #include "pch.pch"
+#include <Raindrop/Object.hpp>
 
 namespace Raindrop::Graphics{
-	class PipelineLayout{
+	class PipelineLayout : public Object{
 		public:
 			class PushConstantRange{
 				public:

@@ -4,9 +4,10 @@
 #include "types.hpp"
 #include "pch.pch"
 #include "Formats.hpp"
+#include <Raindrop/Object.hpp>
 
 namespace Raindrop::Graphics{
-	class ModelLoader{
+	class ModelLoader : public Object{
 		public:
 			ModelLoader() noexcept;
 			~ModelLoader();

@@ -3,9 +3,10 @@
 
 #include "types.hpp"
 #include "pch.pch"
+#include <Raindrop/Object.hpp>
 
 namespace Raindrop::Graphics{
-	class DescriptorPool{
+	class DescriptorPool : public Object{
 		public:
 			DescriptorPool() noexcept;
 			~DescriptorPool();

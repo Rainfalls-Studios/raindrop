@@ -122,10 +122,6 @@ class Testbed : public Raindrop::Engine, public Raindrop::Events::Listener{
 			Engine::initialize(INIT_EVERYTHING);
 			_renderer.initialize(getGraphicsContext());
 
-			auto scene = Engine::createScene();
-			Raindrop::Scenes::Entity entity = scene->create();
-			std::cout << entity.getUUID().asString() << std::endl;
-
 			Engine::subscribeToEvent<Raindrop::Events::WindowCloseRequest>(this, &Testbed::closeEvent);
 
 			auto layout = Engine::createGraphicsVertexLayout();

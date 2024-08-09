@@ -5,9 +5,10 @@
 #include "types.hpp"
 #include "pch.pch"
 #include "VertexLayout.hpp"
+#include <Raindrop/Object.hpp>
 
 namespace Raindrop::Graphics{
-	class Mesh{
+	class Mesh : public Object{
 		public:
 			Mesh() noexcept;
 			~Mesh();

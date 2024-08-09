@@ -4,9 +4,10 @@
 #include "types.hpp"
 #include "pch.pch"
 #include "VertexLayout.hpp"
+#include <Raindrop/Object.hpp>
 
 namespace Raindrop::Graphics{
-	class ModelLayoutConfig{
+	class ModelLayoutConfig : public Object{
 		public:
 			using Usage = VertexLayout::AttributeUsage;
 			using UsageFlags = VertexLayout::UsageFlags;

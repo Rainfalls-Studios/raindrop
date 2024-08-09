@@ -4,9 +4,10 @@
 #include "types.hpp"
 #include <Raindrop/Graphics/Core/prototypes.hpp>
 #include <Raindrop/Graphics/pch.pch>
+#include <Raindrop/Object.hpp>
 
 namespace Raindrop::Graphics{
-	class RenderPass{
+	class RenderPass : public Object{
 		private:
 			struct BuildInfo{
 				struct SubpassData{

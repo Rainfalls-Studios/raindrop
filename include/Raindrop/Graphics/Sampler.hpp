@@ -3,9 +3,10 @@
 
 #include "types.hpp"
 #include "pch.pch"
+#include <Raindrop/Object.hpp>
 
 namespace Raindrop::Graphics{
-	class Sampler{
+	class Sampler : public Object{
 		public:
 			Sampler() noexcept;
 			~Sampler();

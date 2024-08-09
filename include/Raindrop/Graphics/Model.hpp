@@ -3,9 +3,10 @@
 
 #include "types.hpp"
 #include "pch.pch"
+#include <Raindrop/Object.hpp>
 
 namespace Raindrop::Graphics{
-	class Model{
+	class Model : public Object{
 		public:
 			Model() noexcept;
 			~Model();

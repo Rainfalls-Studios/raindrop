@@ -33,6 +33,15 @@ namespace Raindrop{
 
 			UUIDRegistry& getUUIDRegistry();
 
+			template<typename T>
+			inline std::shared_ptr<T> getObject(const UUID& uuid){
+				return getUUIDRegistry().get<T>(uuid);
+			}
+
+			inline Scenes::Entity& getEntity(const UUID& uuid){
+				return getUUIDRegistry().getEntity(uuid);
+			}
+
 			// GRAPHICS
 
 			Graphics::Context& getGraphicsContext();
@@ -47,19 +56,20 @@ namespace Raindrop{
 			Graphics::Formats& getGraphicsFormats();
 			Graphics::ModelLoader& getGraphicsModelLoader();
 
-			Graphics::RenderPass createGraphicsRenderPass();
-			Graphics::Buffer createGraphicsBuffer();
-			Graphics::DescriptorSetLayout createGraphicsDescriptorSetLayout();
-			Graphics::GraphicsPipeline createGraphicsGraphicsPipeline();
-			Graphics::PipelineLayout createGraphicsPipelineLayout();
-			Graphics::ShaderModule createGraphicsShaderModule();
-			Graphics::Memory createGraphicsMemory();
-			Graphics::Image createGraphicsImage();
-			Graphics::ImageView createGraphicsImageView();
-			Graphics::Sampler createGraphicsSampler();
-			Graphics::DescriptorPool createGraphicsDescriptorPool();
-			Graphics::MeshData createGraphicsMeshData();
-			Graphics::Mesh createGraphicsMesh();
+			std::shared_ptr<Graphics::RenderPass> createGraphicsRenderPass();
+			std::shared_ptr<Graphics::Buffer> createGraphicsBuffer();
+			std::shared_ptr<Graphics::DescriptorSetLayout> createGraphicsDescriptorSetLayout();
+			std::shared_ptr<Graphics::GraphicsPipeline> createGraphicsGraphicsPipeline();
+			std::shared_ptr<Graphics::PipelineLayout> createGraphicsPipelineLayout();
+			std::shared_ptr<Graphics::ShaderModule> createGraphicsShaderModule();
+			std::shared_ptr<Graphics::Memory> createGraphicsMemory();
+			std::shared_ptr<Graphics::Image> createGraphicsImage();
+			std::shared_ptr<Graphics::ImageView> createGraphicsImageView();
+			std::shared_ptr<Graphics::Sampler> createGraphicsSampler();
+			std::shared_ptr<Graphics::DescriptorPool> createGraphicsDescriptorPool();
+			std::shared_ptr<Graphics::MeshData> createGraphicsMeshData();
+			std::shared_ptr<Graphics::Mesh> createGraphicsMesh();
+
 			Graphics::VertexLayout createGraphicsVertexLayout();
 			Graphics::ModelLayoutConfig createGraphicsModelLayoutConfig();
 

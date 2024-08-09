@@ -3,9 +3,10 @@
 
 #include "pch.pch"
 #include "types.hpp"
+#include <Raindrop/Object.hpp>
 
 namespace Raindrop::Graphics{
-	class GraphicsPipeline{
+	class GraphicsPipeline : public Object{
 		private:
 			struct BuildInfo{
 				struct VertexInputData{

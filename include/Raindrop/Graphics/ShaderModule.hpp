@@ -3,9 +3,10 @@
 
 #include "types.hpp"
 #include "pch.pch"
+#include <Raindrop/Object.hpp>
 
 namespace Raindrop::Graphics{
-	class ShaderModule{
+	class ShaderModule : public Object{
 		public:
 			ShaderModule() noexcept;
 			~ShaderModule();

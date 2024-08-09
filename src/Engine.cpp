@@ -1,6 +1,8 @@
 #include <Raindrop/Engine.hpp>
 #include <Raindrop/Graphics/common.hpp>
 
+#define create_graphics_interface(type) std::shared_ptr<Graphics::type> Engine::createGraphics##type(){ std::shared_ptr<Graphics::type> instance = getUUIDRegistry().emplace<Graphics::type>(); instance->prepare(getGraphicsContext()); return std::move(instance);}
+
 namespace Raindrop{
 	Engine::Engine() :
 		_context{nullptr},
@@ -127,84 +129,17 @@ namespace Raindrop{
 		return getGraphicsContext().modelLoader;
 	}
 
-	Graphics::RenderPass Engine::createGraphicsRenderPass(){
-		Graphics::RenderPass renderPass;
-		renderPass.prepare(getGraphicsContext());
-		return std::move(renderPass);
-	}
-
-	Graphics::Buffer Engine::createGraphicsBuffer(){
-		Graphics::Buffer buffer;
-		buffer.prepare(getGraphicsContext());
-		return std::move(buffer);
-	}
-
-	Graphics::DescriptorSetLayout Engine::createGraphicsDescriptorSetLayout(){
-		Graphics::DescriptorSetLayout descriptorSetLayout;
-		descriptorSetLayout.prepare(getGraphicsContext());
-		return std::move(descriptorSetLayout);
-	}
-
-	Graphics::GraphicsPipeline Engine::createGraphicsGraphicsPipeline(){
-		Graphics::GraphicsPipeline pipeline;
-		pipeline.prepare(getGraphicsContext());
-		return std::move(pipeline);
-	}
-
-	Graphics::PipelineLayout Engine::createGraphicsPipelineLayout(){
-		Graphics::PipelineLayout layout;
-		layout.prepare(getGraphicsContext());
-		return std::move(layout);
-	}
-
-	Graphics::ShaderModule Engine::createGraphicsShaderModule(){
-		Graphics::ShaderModule module;
-		module.prepare(getGraphicsContext());
-		return std::move(module);
-	}
-
-	Graphics::Memory Engine::createGraphicsMemory(){
-		Graphics::Memory memory;
-		memory.prepare(getGraphicsContext());
-		return std::move(memory);
-	}
-
-	Graphics::Image Engine::createGraphicsImage(){
-		Graphics::Image image;
-		image.prepare(getGraphicsContext());
-		return std::move(image);
-	}
-
-	Graphics::ImageView Engine::createGraphicsImageView(){
-		Graphics::ImageView imageView;
-		imageView.prepare(getGraphicsContext());
-		return std::move(imageView);
-	}
-
-	Graphics::Sampler Engine::createGraphicsSampler(){
-		Graphics::Sampler sampler;
-		sampler.prepare(getGraphicsContext());
-		return std::move(sampler);
-	}
-
-	Graphics::DescriptorPool Engine::createGraphicsDescriptorPool(){
-		Graphics::DescriptorPool pool;
-		pool.prepare(getGraphicsContext());
-		return std::move(pool);
-	}
-
-	Graphics::MeshData Engine::createGraphicsMeshData(){
-		Graphics::MeshData mesh;
-		mesh.prepare(getGraphicsContext());
-		return std::move(mesh);
-	}
-
-	Graphics::Mesh Engine::createGraphicsMesh(){
-		Graphics::Mesh mesh;
-		mesh.prepare(getGraphicsContext());
-		return std::move(mesh);
-	}
-
+	create_graphics_interface(RenderPass);
+	create_graphics_interface(Buffer);
+	create_graphics_interface(DescriptorSetLayout);
+	create_graphics_interface(GraphicsPipeline);
+	create_graphics_interface(ShaderModule);
+	create_graphics_interface(Memory);
+	create_graphics_interface(Image);
+	create_graphics_interface(Sampler);
+	create_graphics_interface(DescriptorPool);
+	create_graphics_interface(MeshData);
+	
 	Graphics::ModelLayoutConfig Engine::createGraphicsModelLayoutConfig(){
 		return Graphics::ModelLayoutConfig();
 	}

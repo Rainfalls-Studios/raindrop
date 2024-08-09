@@ -5,9 +5,10 @@
 #include "pch.pch"
 #include "Utils.hpp"
 #include "Formats.hpp"
+#include <Raindrop/Object.hpp>
 
 namespace Raindrop::Graphics{
-	class VertexLayout{
+	class VertexLayout : public Object{
 		public:
 			enum AttributeUsage{
 				POSITION = 1 << 0,

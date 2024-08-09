@@ -3,9 +3,10 @@
 
 #include "types.hpp"
 #include "pch.pch"
+#include <Raindrop/Object.hpp>
 
 namespace Raindrop::Graphics{
-	class DescriptorSet{
+	class DescriptorSet : public Object{
 		public:
 			DescriptorSet() noexcept;
 			DescriptorSet(Context& context, const VkDescriptorSet& set) noexcept;

@@ -4,9 +4,10 @@
 #include "types.hpp"
 #include "pch.pch"
 #include "VertexLayout.hpp"
+#include <Raindrop/Object.hpp>
 
 namespace Raindrop::Graphics{
-	class MeshData{
+	class MeshData : public Object{
 		public:
 			struct Buffer{
 				std::vector<uint8_t> data;
