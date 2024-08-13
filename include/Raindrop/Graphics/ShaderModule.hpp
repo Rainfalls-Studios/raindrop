@@ -3,10 +3,10 @@
 
 #include "types.hpp"
 #include "pch.pch"
-#include <Raindrop/Object.hpp>
+#include <Raindrop/Assets/Asset.hpp>
 
 namespace Raindrop::Graphics{
-	class ShaderModule : public Object{
+	class ShaderModule : public Assets::Asset{
 		public:
 			static std::shared_ptr<ShaderModule> create(Raindrop::Context& context);
 
@@ -21,7 +21,7 @@ namespace Raindrop::Graphics{
 
 			friend void swap(ShaderModule& A, ShaderModule& B);
 
-			void prepare(Context& context);
+			ShaderModule& prepare(Context& context);
 			void initialize();
 			void release();
 
@@ -41,7 +41,6 @@ namespace Raindrop::Graphics{
 
 			std::unique_ptr<BuildInfo> _info;
 			BuildInfo& getInfo();
-			
 	};
 }
 

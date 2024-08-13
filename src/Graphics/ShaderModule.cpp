@@ -37,9 +37,10 @@ namespace Raindrop::Graphics{
 		std::swap(A._module, B._module);
 	}
 
-	void ShaderModule::prepare(Context& context){
+	ShaderModule& ShaderModule::prepare(Context& context){
 		_context = &context;
 		_info = std::make_unique<BuildInfo>();
+		return *this;
 	}
 
 	void ShaderModule::initialize(){

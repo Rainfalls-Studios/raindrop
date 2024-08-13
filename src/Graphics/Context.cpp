@@ -2,6 +2,8 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <Raindrop/Context.hpp>
 
+#include <Raindrop/Graphics/ShaderModuleFactory.hpp>
+
 namespace Raindrop::Graphics{
 	void Context::createLogger(){
 		logger = spdlog::stdout_color_st("Raindrop::Graphics");
@@ -66,8 +68,16 @@ namespace Raindrop::Graphics{
 		
 		modelLoader.prepare(*this)
 			.initialize();
+		
+
+		createAssetFactories();
 	}
 
+	void Context::createAssetFactories(){
+		auto& assetManager = raindrop->assets->manager;
+
+		assetManager.emplaceFactory<ShaderModuleFactory>(*this);
+	}
 
 	Core::Device& Context::getDevice() noexcept{
 		return core.device;

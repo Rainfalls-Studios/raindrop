@@ -23,6 +23,7 @@ namespace Raindrop::Graphics{
 
 		void createLogger();
 		void initialize(Raindrop::Context& raindrop);
+		void createAssetFactories();
 		
 		Core::Instance& getInstance() noexcept;
 		const Core::Instance& getInstance() const noexcept;
