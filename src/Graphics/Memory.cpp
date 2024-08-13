@@ -1,8 +1,13 @@
 #include <Raindrop/Graphics/Memory.hpp>
 #include <Raindrop/Graphics/Context.hpp>
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
+#include <Raindrop/Context.hpp>
 
 namespace Raindrop::Graphics{
+	std::shared_ptr<Memory> Memory::create(Raindrop::Context& context){
+		return context.registry.emplace<Memory>();
+	}
+
 	Memory::Memory() noexcept : 
 		_context{nullptr},
 		_memory{VK_NULL_HANDLE},

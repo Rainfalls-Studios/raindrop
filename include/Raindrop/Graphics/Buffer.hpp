@@ -8,6 +8,8 @@
 namespace Raindrop::Graphics{
 	class Buffer : public Object{
 		public:
+			static std::shared_ptr<Buffer> create(Raindrop::Context& context);
+			
 			Buffer() noexcept;
 			~Buffer();
 
@@ -18,6 +20,7 @@ namespace Raindrop::Graphics{
 			Buffer& operator=(Buffer&& other);
 
 			friend void swap(Buffer& A, Buffer& B);
+
 
 			Buffer& prepare(Context& context);
 			void release();

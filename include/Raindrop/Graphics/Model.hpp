@@ -8,6 +8,8 @@
 namespace Raindrop::Graphics{
 	class Model : public Object{
 		public:
+			static std::shared_ptr<Model> create(Raindrop::Context& context);
+
 			Model() noexcept;
 			~Model();
 

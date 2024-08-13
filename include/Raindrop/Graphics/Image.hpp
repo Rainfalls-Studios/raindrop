@@ -8,6 +8,8 @@
 namespace Raindrop::Graphics{
 	class Image : public Object{
 		public:
+			static std::shared_ptr<Image> create(Raindrop::Context& context);
+
 			Image() noexcept;
 			~Image();
 

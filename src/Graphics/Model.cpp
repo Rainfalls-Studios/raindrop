@@ -1,9 +1,13 @@
 #include <Raindrop/Graphics/Model.hpp>
 #include <Raindrop/Graphics/Context.hpp>
 #include <Raindrop/Graphics/Mesh.hpp>
-
+#include <Raindrop/Context.hpp>
 
 namespace Raindrop::Graphics{
+	std::shared_ptr<Model> Model::create(Raindrop::Context& context){
+		return context.registry.emplace<Model>();
+	}
+
 	Model::Model() noexcept : 
 		_context{nullptr},
 		_meshes{}

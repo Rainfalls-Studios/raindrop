@@ -8,6 +8,8 @@
 namespace Raindrop::Graphics{
 	class Sampler : public Object{
 		public:
+			static std::shared_ptr<Sampler> create(Raindrop::Context& context);
+
 			Sampler() noexcept;
 			~Sampler();
 

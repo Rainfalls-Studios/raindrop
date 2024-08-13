@@ -5,8 +5,13 @@
 #include <Raindrop/Graphics/VertexLayout.hpp>
 #include <Raindrop/Graphics/CommandBuffer.hpp>
 #include <Raindrop/Graphics/PipelineLayout.hpp>
+#include <Raindrop/Context.hpp>
 
 namespace Raindrop::Graphics{
+	std::shared_ptr<GraphicsPipeline> GraphicsPipeline::create(Raindrop::Context& context){
+		return context.registry.emplace<GraphicsPipeline>();
+	}
+
 	// =========================== VIEWPORT ========================
 
 	GraphicsPipeline::Viewport::Viewport(VkViewport& viewport) noexcept : _viewport{&viewport}{}

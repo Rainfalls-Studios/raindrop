@@ -374,6 +374,7 @@ namespace Raindrop::Graphics{
 					BuildInfo::ShaderStageData& getData();
 			};
 
+			static std::shared_ptr<GraphicsPipeline> create(Raindrop::Context& context);
 
 			GraphicsPipeline() noexcept;
 			~GraphicsPipeline();

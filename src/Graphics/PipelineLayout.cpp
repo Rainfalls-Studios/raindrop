@@ -2,8 +2,13 @@
 #include <Raindrop/Graphics/Context.hpp>
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
 #include <Raindrop/Graphics/DescriptorSetLayout.hpp>
+#include <Raindrop/Context.hpp>
 
 namespace Raindrop::Graphics{
+	std::shared_ptr<PipelineLayout> PipelineLayout::create(Raindrop::Context& context){
+		return context.registry.emplace<PipelineLayout>();
+	}
+
 	PipelineLayout::PushConstantRange::PushConstantRange(VkPushConstantRange& range) noexcept : _range{range}{}
 
 	PipelineLayout::PushConstantRange& PipelineLayout::PushConstantRange::setStage(const VkShaderStageFlags& stage) noexcept{
@@ -20,8 +25,6 @@ namespace Raindrop::Graphics{
 		_range.size = size;
 		return *this;
 	}
-
-
 
 	PipelineLayout::PipelineLayout() noexcept : 
 		_context{nullptr},

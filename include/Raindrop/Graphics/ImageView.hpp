@@ -8,6 +8,8 @@
 namespace Raindrop::Graphics{
 	class ImageView : public Object{
 		public:
+			static std::shared_ptr<ImageView> create(Raindrop::Context& context);
+
 			ImageView() noexcept;
 			~ImageView();
 
@@ -23,8 +25,7 @@ namespace Raindrop::Graphics{
 			void initialize();
 			void release();
 
-			ImageView& setSource(const Image& image);
-			ImageView& setSource(const VkImage& image);
+			ImageView& setSource(const std::shared_ptr<Image>& image);
 			ImageView& setFlags(const VkImageViewCreateFlags& flags);
 			ImageView& setType(const VkImageViewType& type);
 			ImageView& setFormat(const VkFormat& format);
@@ -39,13 +40,23 @@ namespace Raindrop::Graphics{
 
 		private:
 			struct BuildInfo{
-				VkImageViewCreateInfo info;
+				std::shared_ptr<Image> source;
+				VkImageViewCreateFlags flags;
+				VkImageViewType viewType;
+				VkFormat format;
+				VkComponentMapping componentMapping;
+				VkImageAspectFlags imageAspectMask;
+				std::uint32_t baseMip;
+				std::uint32_t mipCount;
+				std::uint32_t baseLayer;
+				std::uint32_t layerCount;
 
 				BuildInfo();
 			};
 
 			Context* _context;
 			VkImageView _imageView;
+			std::shared_ptr<Image> _source;
 
 			std::unique_ptr<BuildInfo> _info;
 			BuildInfo& getInfo();

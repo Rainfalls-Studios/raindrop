@@ -92,8 +92,13 @@ namespace Raindrop::Graphics{
 					VkSubpassDependency* _dependency;
 			};
 
+			static std::shared_ptr<RenderPass> create(Raindrop::Context& context);
+
 			RenderPass() noexcept;
 			~RenderPass();
+
+			RenderPass(const RenderPass&) = delete;
+			RenderPass& operator=(const RenderPass&) = delete;
 
 			RenderPass(RenderPass&& other);
 			RenderPass& operator=(RenderPass&& other);

@@ -2,8 +2,13 @@
 #include <Raindrop/Graphics/Context.hpp>
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
 #include <Raindrop/Graphics/CommandBuffer.hpp>
+#include <Raindrop/Context.hpp>
 
 namespace Raindrop::Graphics{
+	std::shared_ptr<CommandPool> CommandPool::create(Raindrop::Context& context){
+		return context.registry.emplace<CommandPool>();
+	}
+
 	CommandPool::CommandPool() : 
 		_context{nullptr},
 		_pool{VK_NULL_HANDLE}

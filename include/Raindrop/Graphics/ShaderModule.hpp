@@ -8,6 +8,8 @@
 namespace Raindrop::Graphics{
 	class ShaderModule : public Object{
 		public:
+			static std::shared_ptr<ShaderModule> create(Raindrop::Context& context);
+
 			ShaderModule() noexcept;
 			~ShaderModule();
 

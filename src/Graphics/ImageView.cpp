@@ -2,34 +2,35 @@
 #include <Raindrop/Graphics/Image.hpp>
 #include <Raindrop/Graphics/Context.hpp>
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
+#include <Raindrop/Context.hpp>
 
 namespace Raindrop::Graphics{
+	std::shared_ptr<ImageView> ImageView::create(Raindrop::Context& context){
+		return context.registry.emplace<ImageView>();
+	}
+
 	ImageView::BuildInfo::BuildInfo() : 
-		info{
-			.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-			.pNext = nullptr,
-			.flags = 0,
-			.image = VK_NULL_HANDLE,
-			.format = VK_FORMAT_UNDEFINED,
-			.components{
-				.r = VK_COMPONENT_SWIZZLE_R,
-				.g = VK_COMPONENT_SWIZZLE_G,
-				.b = VK_COMPONENT_SWIZZLE_B,
-				.a = VK_COMPONENT_SWIZZLE_A,
-			},
-			.subresourceRange{
-				.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-				.baseMipLevel = 0,
-				.levelCount = 1,
-				.baseArrayLayer = 0,
-				.layerCount = 1
-			}
-		}
+		source{VK_NULL_HANDLE},
+		flags{0},
+		viewType{VK_IMAGE_VIEW_TYPE_2D},
+		format{VK_FORMAT_UNDEFINED},
+		componentMapping{
+			.r = VK_COMPONENT_SWIZZLE_R,
+			.g = VK_COMPONENT_SWIZZLE_G,
+			.b = VK_COMPONENT_SWIZZLE_B,
+			.a = VK_COMPONENT_SWIZZLE_A,
+		},
+		imageAspectMask{VK_IMAGE_ASPECT_COLOR_BIT},
+		baseMip{0},
+		mipCount{1},
+		baseLayer{0},
+		layerCount{1}
 	{}
 
 	ImageView::ImageView() noexcept : 
 		_context{nullptr},
 		_imageView{VK_NULL_HANDLE},
+		_source{},
 		_info{}
 	{}
 
@@ -53,6 +54,7 @@ namespace Raindrop::Graphics{
 	void swap(ImageView& A, ImageView& B){
 		std::swap(A._context, B._context);
 		std::swap(A._imageView, B._imageView);
+		std::swap(A._source, B._source);
 		std::swap(A._info, B._info);
 	}
 
@@ -62,18 +64,32 @@ namespace Raindrop::Graphics{
 	}
 
 	void ImageView::initialize(){
-		if (!_context || !_info){
-			(_context == nullptr ? spdlog::default_logger() : _context->logger)->warn("Attempt to initialized a non prepared image view");
-			throw std::runtime_error("The image view has not be en prepared !");
-		}
+		BuildInfo& info = getInfo();
 
-		VkImageViewCreateInfo& info = _info->info;
+		_source = info.source;
+
+		VkImageViewCreateInfo createInfo{
+			.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = info.flags,
+			.image = _source->get(),
+			.viewType = info.viewType,
+			.format = info.format,
+			.components = info.componentMapping,
+			.subresourceRange = {
+				.aspectMask = info.imageAspectMask,
+				.baseMipLevel = info.baseMip,
+				.levelCount = info.mipCount,
+				.baseArrayLayer = info.baseLayer,
+				.layerCount = info.layerCount
+			}
+		};
 
 		auto& device = _context->getDevice();
 		auto& allocationCallbacks = _context->core.allocationCallbacks;
 
 		Exceptions::checkVkCreation<VkImageView>(
-			vkCreateImageView(device.get(), &info, allocationCallbacks, &_imageView),
+			vkCreateImageView(device.get(), &createInfo, allocationCallbacks, &_imageView),
 			"Failed to create image view",
 			_context->logger
 		);
@@ -87,6 +103,8 @@ namespace Raindrop::Graphics{
 		auto& device = _context->getDevice();
 		auto& allocationCallbacks = _context->core.allocationCallbacks;
 
+		_source.reset();
+
 		if (_imageView){
 			vkDestroyImageView(device.get(), _imageView, allocationCallbacks);
 			_imageView = VK_NULL_HANDLE;
@@ -96,58 +114,53 @@ namespace Raindrop::Graphics{
 		_info.reset();
 	}
 
-	ImageView& ImageView::setSource(const Image& image){
-		getInfo().info.image = image.get();
+	ImageView& ImageView::setSource(const std::shared_ptr<Image>& image){
+		getInfo().source = image;
 		return *this;
 	}
 
 	ImageView& ImageView::setFlags(const VkImageViewCreateFlags& flags){
-		getInfo().info.flags = flags;
-		return *this;
-	}
-
-	ImageView& ImageView::setSource(const VkImage& image){
-		getInfo().info.image = image;
+		getInfo().flags = flags;
 		return *this;
 	}
 
 	ImageView& ImageView::setType(const VkImageViewType& type){
-		getInfo().info.viewType = type;
+		getInfo().viewType = type;
 		return *this;
 	}
 
 	ImageView& ImageView::setFormat(const VkFormat& format){
-		getInfo().info.format = format;
+		getInfo().format = format;
 		return *this;
 	}
 
 	ImageView& ImageView::setComponentMapping(const VkComponentMapping& mapping){
-		getInfo().info.components = mapping;
+		getInfo().componentMapping = mapping;
 		return *this;
 	}
 
 	ImageView& ImageView::setAspectMask(const VkImageAspectFlags& mask){
-		getInfo().info.subresourceRange.aspectMask = mask;
+		getInfo().imageAspectMask = mask;
 		return *this;
 	}
 
 	ImageView& ImageView::setBaseMipmapLevel(const std::uint32_t& level){
-		getInfo().info.subresourceRange.baseMipLevel = level;
+		getInfo().baseMip = level;
 		return *this;
 	}
 
 	ImageView& ImageView::setMipmapLevelCount(const std::uint32_t& count){
-		getInfo().info.subresourceRange.levelCount = count;
+		getInfo().mipCount = count;
 		return *this;
 	}
 
 	ImageView& ImageView::setBaseArrayLayer(const std::uint32_t& layer){
-		getInfo().info.subresourceRange.baseArrayLayer = layer;
+		getInfo().baseLayer = layer;
 		return *this;
 	}
 
 	ImageView& ImageView::setLayerCount(const std::uint32_t& count){
-		getInfo().info.subresourceRange.layerCount = count;
+		getInfo().layerCount = count;
 		return *this;
 	}
 
@@ -157,7 +170,7 @@ namespace Raindrop::Graphics{
 
 	ImageView::BuildInfo& ImageView::getInfo(){
 		if (!_context || !_info){
-			(_context == nullptr ? spdlog::default_logger() : _context->logger)->warn("Attempt to access a non prepared image view");
+			(_context == nullptr ? spdlog::default_logger() : _context->logger)->warn("Attempt to access build info of a non prepared image view");
 			throw std::runtime_error("The image view has not been prepared !");
 		}
 

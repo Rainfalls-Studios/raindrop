@@ -2,8 +2,13 @@
 #include <Raindrop/Graphics/Context.hpp>
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
 #include <Raindrop/Graphics/Memory.hpp>
+#include <Raindrop/Context.hpp>
 
 namespace Raindrop::Graphics{
+	std::shared_ptr<Image> Image::create(Raindrop::Context& context){
+		return context.registry.emplace<Image>();
+	}
+
 	Image::BuildInfo::BuildInfo() : 
 		info{
 			.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,

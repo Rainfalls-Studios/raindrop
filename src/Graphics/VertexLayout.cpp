@@ -1,8 +1,13 @@
 #include <Raindrop/Graphics/VertexLayout.hpp>
 #include <Raindrop/Graphics/Context.hpp>
 #include <Raindrop/Graphics/Formats.hpp>
+#include <Raindrop/Context.hpp>
 
 namespace Raindrop::Graphics{
+	std::shared_ptr<VertexLayout> VertexLayout::create(Raindrop::Context& context){
+		return context.registry.emplace<VertexLayout>();
+	}
+
 	VertexLayout::VertexLayout() noexcept{}
 
 	VertexLayout::Binding VertexLayout::addBinding(const std::string& name, const VkVertexInputRate& rate, const VkMemoryPropertyFlags& memProperties, std::uint32_t binding){

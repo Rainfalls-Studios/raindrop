@@ -4,8 +4,13 @@
 #include <Raindrop/Graphics/CommandBuffer.hpp>
 #include <Raindrop/Graphics/Buffer.hpp>
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
+#include <Raindrop/Context.hpp>
 
 namespace Raindrop::Graphics{
+	std::shared_ptr<Mesh> Mesh::create(Raindrop::Context& context){
+		return context.registry.emplace<Mesh>();
+	}
+
 	Mesh::Mesh() noexcept :
 		_context{nullptr},
 		_data{nullptr},

@@ -1,7 +1,12 @@
 #include <Raindrop/Graphics/MeshData.hpp>
 #include <Raindrop/Graphics/Context.hpp>
+#include <Raindrop/Context.hpp>
 
 namespace Raindrop::Graphics{
+	std::shared_ptr<MeshData> MeshData::create(Raindrop::Context& context){
+		return context.registry.emplace<MeshData>();
+	}
+
 	MeshData::Buffer::Buffer() : 
 		data{},
 		stride{0},

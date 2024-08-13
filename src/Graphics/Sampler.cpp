@@ -1,8 +1,13 @@
 #include <Raindrop/Graphics/Sampler.hpp>
 #include <Raindrop/Graphics/Context.hpp>
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
+#include <Raindrop/Context.hpp>
 
 namespace Raindrop::Graphics{
+	std::shared_ptr<Sampler> Sampler::create(Raindrop::Context& context){
+		return context.registry.emplace<Sampler>();
+	}
+
 	Sampler::BuildInfo::BuildInfo() : 
 		info{
 			.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,

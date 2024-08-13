@@ -32,6 +32,11 @@ namespace Raindrop::Graphics{
 					VertexLayout _layout;
 			};
 
+			static std::shared_ptr<ModelLayoutConfig> create(Raindrop::Context& context);
+
+			ModelLayoutConfig() = default;
+			~ModelLayoutConfig() = default;
+
 			MeshProfile& addLayout(const VertexLayout& layout);
 
 			const MeshProfile* find(const UsageFlags& flags) const noexcept;

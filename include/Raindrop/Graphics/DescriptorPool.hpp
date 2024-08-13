@@ -8,6 +8,8 @@
 namespace Raindrop::Graphics{
 	class DescriptorPool : public Object{
 		public:
+			static std::shared_ptr<DescriptorPool> create(Raindrop::Context& context);
+			
 			DescriptorPool() noexcept;
 			~DescriptorPool();
 

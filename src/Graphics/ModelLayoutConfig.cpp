@@ -1,7 +1,12 @@
 #include <Raindrop/Graphics/ModelLayoutConfig.hpp>
 #include <Raindrop/Graphics/Context.hpp>
+#include <Raindrop/Context.hpp>
 
 namespace Raindrop::Graphics{
+	std::shared_ptr<ModelLayoutConfig> ModelLayoutConfig::create(Raindrop::Context& context){
+		return context.registry.emplace<ModelLayoutConfig>();
+	}
+
 	ModelLayoutConfig::MeshProfile::MeshProfile(const VertexLayout& layout) noexcept : 
 		_required{0},
 		_except{0},

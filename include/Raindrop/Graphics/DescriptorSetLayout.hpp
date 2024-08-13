@@ -25,6 +25,8 @@ namespace Raindrop::Graphics{
 					std::vector<VkSampler>& _immutableSampler;
 			};
 
+			static std::shared_ptr<DescriptorSetLayout> create(Raindrop::Context& context);
+
 			DescriptorSetLayout() noexcept;
 			~DescriptorSetLayout();
 

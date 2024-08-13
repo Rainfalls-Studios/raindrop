@@ -25,6 +25,8 @@ namespace Raindrop::Graphics{
 					VkPushConstantRange& _range;
 			};
 
+			static std::shared_ptr<PipelineLayout> create(Raindrop::Context& context);
+
 			PipelineLayout() noexcept;
 			~PipelineLayout();
 

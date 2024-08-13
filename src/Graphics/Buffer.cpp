@@ -3,6 +3,7 @@
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
 #include <Raindrop/Utils/alignement.hpp>
 #include <Raindrop/Graphics/Memory.hpp>
+#include <Raindrop/Context.hpp>
 
 namespace Raindrop::Graphics{
 	Buffer::BuildInfo::BuildInfo() : 
@@ -16,6 +17,10 @@ namespace Raindrop::Graphics{
 		memory{},
 		memoryOffset{0}
 	{}
+
+	std::shared_ptr<Buffer> Buffer::create(Raindrop::Context& context){
+		return context.registry.emplace<Buffer>();
+	}
 
 	Buffer::Buffer() noexcept : 
 		_context{nullptr},

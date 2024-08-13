@@ -8,6 +8,8 @@
 namespace Raindrop::Graphics{
 	class Memory : public Object{
 		public:
+			static std::shared_ptr<Memory> create(Raindrop::Context& context);
+
 			Memory() noexcept;
 			~Memory();
 

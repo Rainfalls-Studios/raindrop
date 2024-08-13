@@ -1,8 +1,13 @@
 #include <Raindrop/Graphics/ShaderModule.hpp>
 #include <Raindrop/Graphics/Context.hpp>
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
+#include <Raindrop/Context.hpp>
 
 namespace Raindrop::Graphics{
+	std::shared_ptr<ShaderModule> ShaderModule::create(Raindrop::Context& context){
+		return context.registry.emplace<ShaderModule>();
+	}
+
 	ShaderModule::ShaderModule() noexcept :
 		_context{nullptr},
 		_module{VK_NULL_HANDLE},

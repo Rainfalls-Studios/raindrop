@@ -3,8 +3,13 @@
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
 #include <Raindrop/Graphics/DescriptorSet.hpp>
 #include <Raindrop/Graphics/DescriptorSetLayout.hpp>
+#include <Raindrop/Context.hpp>
 
 namespace Raindrop::Graphics{
+	std::shared_ptr<DescriptorPool> DescriptorPool::create(Raindrop::Context& context){
+		return context.registry.emplace<DescriptorPool>();
+	}
+
 	DescriptorPool::BuildInfo::BuildInfo() : 
 		info{
 			.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,

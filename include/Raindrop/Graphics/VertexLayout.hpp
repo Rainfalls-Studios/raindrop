@@ -114,6 +114,8 @@ namespace Raindrop::Graphics{
 					BindingInfo& _info;
 			};
 
+			static std::shared_ptr<VertexLayout> create(Raindrop::Context& context);
+
 			VertexLayout() noexcept;
 			~VertexLayout() = default;
 			

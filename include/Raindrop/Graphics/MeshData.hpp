@@ -88,6 +88,8 @@ namespace Raindrop::Graphics{
 					const VertexLayout::AttributeInfo* get(const std::uint32_t& location) const noexcept;
 			};
 
+			static std::shared_ptr<MeshData> create(Raindrop::Context& context);
+
 			MeshData() noexcept;
 			~MeshData();
 

@@ -10,6 +10,8 @@
 namespace Raindrop::Graphics{
 	class Mesh : public Object{
 		public:
+			static std::shared_ptr<Mesh> create(Raindrop::Context& context);
+
 			Mesh() noexcept;
 			~Mesh();
 

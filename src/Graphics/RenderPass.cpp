@@ -2,8 +2,12 @@
 #include <Raindrop/Graphics/Context.hpp>
 #include <Raindrop/Graphics/Core/Context.hpp>
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
+#include <Raindrop/Context.hpp>
 
 namespace Raindrop::Graphics{
+	std::shared_ptr<RenderPass> RenderPass::create(Raindrop::Context& context){
+		return context.registry.emplace<RenderPass>();
+	}
 
 	// ======================== ATTACHMENT DESCRIPTION
 

@@ -8,6 +8,8 @@
 namespace Raindrop::Graphics{
 	class CommandPool : public Object{
 		public:
+			static std::shared_ptr<CommandPool> create(Raindrop::Context& context);
+
 			CommandPool();
 			~CommandPool();
 

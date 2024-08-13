@@ -3,10 +3,13 @@
 
 #include "types.hpp"
 #include "pch.pch"
+#include <Raindrop/Object.hpp>
 
 namespace Raindrop::Graphics{
-	class Framebuffer{
+	class Framebuffer : public Object{
 		public:
+			static std::shared_ptr<Framebuffer> create(Raindrop::Context& context);
+
 			Framebuffer() noexcept;
 			~Framebuffer();
 

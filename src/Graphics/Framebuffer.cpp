@@ -3,8 +3,13 @@
 #include <Raindrop/Graphics/ImageView.hpp>
 #include <Raindrop/Graphics/RenderPass.hpp>
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
+#include <Raindrop/Context.hpp>
 
 namespace Raindrop::Graphics{
+	std::shared_ptr<Framebuffer> Framebuffer::create(Raindrop::Context& context){
+		return context.registry.emplace<Framebuffer>();
+	}
+
 	Framebuffer::Framebuffer() noexcept : 
 		_context{nullptr},
 		_framebuffer{VK_NULL_HANDLE},
