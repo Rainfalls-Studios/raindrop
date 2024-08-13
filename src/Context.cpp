@@ -39,5 +39,4 @@ namespace Raindrop{
 		scenes = std::make_unique<Scenes::Context>();
 		scenes->initialize(*this);
 	}
-
 }
