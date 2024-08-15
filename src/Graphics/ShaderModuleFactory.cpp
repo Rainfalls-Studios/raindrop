@@ -52,6 +52,13 @@ namespace Raindrop::Graphics{
 			throw std::runtime_error("Unknown extension");
 		}
 
+		try{
+			module->initialize();
+		} catch (const std::exception& e){
+			_context->logger->warn("Failed to create shader module : {}", e.what());
+			throw std::runtime_error("Exception occured while loading shader module");
+		}
+
 		_modules[path] = module;
 		return std::static_pointer_cast<Assets::Asset>(module);
 	}

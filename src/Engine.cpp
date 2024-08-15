@@ -15,6 +15,7 @@
 #include <Raindrop/Graphics/Mesh.hpp>
 #include <Raindrop/Graphics/VertexLayout.hpp>
 #include <Raindrop/Graphics/ModelLayoutConfig.hpp>
+#include <Raindrop/Graphics/PipelineLayout.hpp>
 
 #define create_graphics_interface(type) std::shared_ptr<Graphics::type> Engine::createGraphics##type(){ std::shared_ptr<Graphics::type> instance = getUUIDRegistry().emplace<Graphics::type>(); instance->prepare(getGraphicsContext()); return std::move(instance);}
 
@@ -110,6 +111,7 @@ namespace Raindrop{
 	create_graphics_interface(RenderPass);
 	create_graphics_interface(Buffer);
 	create_graphics_interface(DescriptorSetLayout);
+	create_graphics_interface(PipelineLayout);
 	create_graphics_interface(GraphicsPipeline);
 	create_graphics_interface(ShaderModule);
 	create_graphics_interface(Memory);
@@ -167,5 +169,22 @@ namespace Raindrop{
 		std::shared_ptr<Scenes::Scene> scene = _context->registry.emplace<Scenes::Scene>();
 		scene->prepare(getScenesContext());
 		return scene;
+	}
+
+
+	Assets::Context& Engine::getAssetsContext(){
+		auto& assets = getContext().assets;
+		if (!assets){
+			throw std::runtime_error("Assets context has not been initialized");
+		}
+		return *assets;
+	}
+
+	const Assets::Context& Engine::getAssetsContext() const{
+		auto& assets = getContext().assets;
+		if (!assets){
+			throw std::runtime_error("Assets context has not been initialized");
+		}
+		return *assets;
 	}
 }

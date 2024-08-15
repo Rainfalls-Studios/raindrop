@@ -1,19 +1,20 @@
-// #include <Raindrop/Graphics/Core/Swapchain.hpp>
-// #include <Raindrop/Graphics/Context.hpp>
-// #include <Raindrop/RenderPass.hpp>
-// #include <Raindrop_internal/RenderPass.hpp>
-// #include <Raindrop_internal/Format.hpp>
-// #include <spdlog/spdlog.h>
-
 #include <Raindrop/Graphics/Window/Swapchain.hpp>
 #include <Raindrop/Graphics/Window/Context.hpp>
 #include <Raindrop/Graphics/Core/Context.hpp>
+#include <Raindrop/Graphics/Context.hpp>
+#include <Raindrop/Context.hpp>
 
 #include <vulkan/vk_enum_string_helper.h>
 
 #include <Raindrop/Exceptions/VulkanExceptions.hpp>
 
 #include <iostream>
+
+#define CONTEXT _context
+#define GRAPHICS CONTEXT->graphics
+#define RAINDROP GRAPHICS->raindrop
+#define REGISTRY RAINDROP->registry
+#define CORE GRAPHICS->core
 
 namespace Raindrop::Graphics::Window{
 	Swapchain::SwapchainData::SwapchainData(Core::Context* context) :
@@ -25,8 +26,7 @@ namespace Raindrop::Graphics::Window{
 	Swapchain::SwapchainData::~SwapchainData(){
 		auto& device = context->device;
 		auto& allocationCallbacks = context->allocationCallbacks;
-		
-		device.waitIdle();
+
 		for (auto &frame : frames){
 			if (frame.framebuffer != VK_NULL_HANDLE){
 				vkDestroyFramebuffer(device.get(), frame.framebuffer, allocationCallbacks);
@@ -65,8 +65,6 @@ namespace Raindrop::Graphics::Window{
 
 	Swapchain::Swapchain() noexcept : 
 		_context{nullptr},
-		_core{nullptr},
-		_graphics{nullptr},
 		_swapchain{},
 		_oldSwapchain{},
 		_renderPass{},
@@ -105,10 +103,8 @@ namespace Raindrop::Graphics::Window{
 		release();
 	}
 
-	Swapchain& Swapchain::prepare(Context& context, Core::Context& core, Graphics::Context& graphics){
+	Swapchain& Swapchain::prepare(Context& context){
 		_context = &context;
-		_core = &core;
-		_graphics = &graphics;
 
 		querySupport();
 		return *this;
@@ -131,9 +127,7 @@ namespace Raindrop::Graphics::Window{
 
 		_oldSwapchain.reset();
 		_swapchain.reset();
-		_renderPass.release();
-		_graphics = nullptr;
-		_core = nullptr;
+		_renderPass.reset();
 		_context = nullptr;
 	}
 
@@ -144,7 +138,7 @@ namespace Raindrop::Graphics::Window{
 	}
 
 	void Swapchain::querySupportCapabilities(){
-		const auto& physicalDevice = _core->physicalDevice;
+		const auto& physicalDevice = CORE.physicalDevice;
 		const auto& surface = _context->surface;
 
 		Exceptions::checkVkOperation<VkPhysicalDevice>(
@@ -156,7 +150,7 @@ namespace Raindrop::Graphics::Window{
 	}
 
 	void Swapchain::querySupportFormats(){
-		const auto& physicalDevice = _core->physicalDevice;
+		const auto& physicalDevice = CORE.physicalDevice;
 		const auto& surface = _context->surface;
 
 		uint32_t count = 0;
@@ -179,7 +173,7 @@ namespace Raindrop::Graphics::Window{
 	}
 
 	void Swapchain::querySupportPresentModes(){
-		const auto& physicalDevice = _core->physicalDevice;
+		const auto& physicalDevice = CORE.physicalDevice;
 		const auto& surface = _context->surface;
 
 		uint32_t count = 0;
@@ -202,8 +196,11 @@ namespace Raindrop::Graphics::Window{
 	}
 
 	void Swapchain::createRenderPass(){
-		_renderPass.prepare(*_graphics);
-		auto attachment = _renderPass.addAttachment()
+
+		_renderPass = REGISTRY.emplace<RenderPass>();
+
+		_renderPass->prepare(*GRAPHICS);
+		auto attachment = _renderPass->addAttachment()
 			.setFormat(_surfaceFormat.format)
 			.setLoadOperation(VK_ATTACHMENT_LOAD_OP_CLEAR)
 			.setStoreOperation(VK_ATTACHMENT_STORE_OP_STORE)
@@ -212,10 +209,10 @@ namespace Raindrop::Graphics::Window{
 			.setInitialLayout(VK_IMAGE_LAYOUT_UNDEFINED)
 			.setFinalLayout(VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 		
-		auto subpass = _renderPass.addSubpass()
+		auto subpass = _renderPass->addSubpass()
 			.addColorAttachment(attachment, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 		
-		auto dependency = _renderPass.addDependency()
+		auto dependency = _renderPass->addDependency()
 			.setSrcSubpass(RenderPass::SubpassDescription::External)
 			.setSrcAccess(VK_ACCESS_NONE)
 			.setSrcStage(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT)
@@ -223,7 +220,7 @@ namespace Raindrop::Graphics::Window{
 			.setDstAccess(VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT)
 			.setDstStage(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
 		
-		_renderPass.initialize();
+		_renderPass->initialize();
 	}
 
 	VkSurfaceFormatKHR Swapchain::findSurfaceFormat(){
@@ -309,7 +306,7 @@ namespace Raindrop::Graphics::Window{
 	}
 
 	void Swapchain::rebuildSwapchain(){
-		auto& device = _core->device;
+		auto& device = CORE.device;
 
 		_context->logger->info("Rebuilding swapchain...");
 		
@@ -317,7 +314,7 @@ namespace Raindrop::Graphics::Window{
 		device.waitIdle();
 		
 		std::swap(_swapchain, _oldSwapchain);
-		_swapchain = std::make_unique<SwapchainData>(_core);
+		_swapchain = std::make_unique<SwapchainData>(&CORE);
 
 		querySupport();
 
@@ -350,8 +347,8 @@ namespace Raindrop::Graphics::Window{
 		info.clipped = VK_TRUE;
 
 		uint32_t queueFamilyIndices[] = {
-			_core->device.graphicsQueue.familyIndex,
-			_core->device.presentQueue.familyIndex,
+			CORE.device.graphicsQueue.familyIndex,
+			CORE.device.presentQueue.familyIndex,
 		};
 
 		if (queueFamilyIndices[0] != queueFamilyIndices[1]){
@@ -372,7 +369,7 @@ namespace Raindrop::Graphics::Window{
 		info.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
 		Exceptions::checkVkCreation<VkSwapchainKHR>(
-			vkCreateSwapchainKHR(device.get(), &info, _core->allocationCallbacks, &_swapchain->swapchain),
+			vkCreateSwapchainKHR(device.get(), &info, CORE.allocationCallbacks, &_swapchain->swapchain),
 			"Failed to create swapchain",
 			_context->logger
 		);
@@ -389,7 +386,7 @@ namespace Raindrop::Graphics::Window{
 	}
 
 	void Swapchain::getSwapchainImages(){
-		auto& device = _core->device;
+		auto& device = CORE.device;
 
 		uint32_t imageCount = 0;
 		Exceptions::checkVkOperation<VkSwapchainKHR>(
@@ -423,8 +420,8 @@ namespace Raindrop::Graphics::Window{
 	}
 
 	void Swapchain::createImageViews(){
-		auto& device = _core->device;
-		auto& allocationCallbacks = _core->allocationCallbacks;
+		auto& device = CORE.device;
+		auto& allocationCallbacks = CORE.allocationCallbacks;
 
 		for (auto &frame : _swapchain->frames){
 			VkImageViewCreateInfo viewInfo{};
@@ -451,14 +448,14 @@ namespace Raindrop::Graphics::Window{
 	}
 
 	void Swapchain::createFramebuffers(){
-		auto& device = _core->device;
-		auto& allocationCallbacks = _core->allocationCallbacks;
+		auto& device = CORE.device;
+		auto& allocationCallbacks = CORE.allocationCallbacks;
 
 		for (auto &frame : _swapchain->frames){
 			VkFramebufferCreateInfo framebufferInfo = {};
 
 			framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-			framebufferInfo.renderPass = _renderPass.get();
+			framebufferInfo.renderPass = _renderPass->get();
 			framebufferInfo.attachmentCount = 1;
 			framebufferInfo.pAttachments = &frame.imageView;
 			framebufferInfo.width = _extent.width;
@@ -474,8 +471,8 @@ namespace Raindrop::Graphics::Window{
 	}
 
 	void Swapchain::createSyncObjects(){
-		auto& device = _core->device;
-		auto& allocationCallbacks = _core->allocationCallbacks;
+		auto& device = CORE.device;
+		auto& allocationCallbacks = CORE.allocationCallbacks;
 
 		VkSemaphoreCreateInfo semaphoreInfo = {};
 		semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
@@ -509,7 +506,7 @@ namespace Raindrop::Graphics::Window{
 		VkRenderPassBeginInfo renderPassBeginInfo{};
 
 		renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-		renderPassBeginInfo.renderPass = _renderPass.get();
+		renderPassBeginInfo.renderPass = _renderPass->get();
 		renderPassBeginInfo.framebuffer = _swapchain->frames[_currentFrame].framebuffer;
 
 		renderPassBeginInfo.renderArea.offset = {0, 0};
@@ -540,7 +537,7 @@ namespace Raindrop::Graphics::Window{
 	}
 
 	VkResult Swapchain::acquireNextImage(){
-		auto& device = _core->device;
+		auto& device = CORE.device;
 
 		Exceptions::checkVkOperation<VkFence>(
 			vkWaitForFences(device.get(), 1, &_swapchain->frames[_currentFrame].inFlightFence, VK_TRUE, UINT64_MAX),
@@ -553,8 +550,8 @@ namespace Raindrop::Graphics::Window{
 	}
 
 	VkResult Swapchain::submitCommandBuffer(std::vector<VkCommandBuffer> buffers){
-		auto& device = _core->device;
-		auto& allocationCallbacks = _core->allocationCallbacks;
+		auto& device = CORE.device;
+		auto& allocationCallbacks = CORE.allocationCallbacks;
 
 		
 		if (_swapchain->frames[_nextFrame].imageInFlight != VK_NULL_HANDLE){
@@ -645,7 +642,7 @@ namespace Raindrop::Graphics::Window{
 	}
 
 
-	const RenderPass& Swapchain::getRenderPass() const{
+	const std::shared_ptr<RenderPass>& Swapchain::getRenderPass() const{
 		return _renderPass;
 	}
 }

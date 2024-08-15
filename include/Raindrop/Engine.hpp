@@ -91,6 +91,16 @@ namespace Raindrop{
 
 			std::shared_ptr<Scenes::Scene> createScene();
 
+			// ASSETS
+
+			Assets::Context& getAssetsContext();
+			const Assets::Context& getAssetsContext() const;
+
+			template<typename T>
+			std::shared_ptr<T> loadOrGet(const std::filesystem::path& path){
+				return getAssetsContext().manager.loadOrGet<T>(path);
+			}
+
 		private:
 			std::unique_ptr<Context> _context;
 	};

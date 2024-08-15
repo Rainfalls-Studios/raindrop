@@ -6,6 +6,7 @@
 #include <Raindrop/Graphics/CommandBuffer.hpp>
 #include <Raindrop/Graphics/PipelineLayout.hpp>
 #include <Raindrop/Context.hpp>
+#include <Raindrop/Graphics/ShaderModule.hpp>
 
 namespace Raindrop::Graphics{
 	std::shared_ptr<GraphicsPipeline> GraphicsPipeline::create(Raindrop::Context& context){
@@ -765,8 +766,9 @@ namespace Raindrop::Graphics{
 		return *this;
 	}
 
-	GraphicsPipeline::ShaderStage& GraphicsPipeline::ShaderStage::setModule(const VkShaderModule& module){
-		getInfo().module = module;
+	GraphicsPipeline::ShaderStage& GraphicsPipeline::ShaderStage::setModule(const std::shared_ptr<ShaderModule>& module){
+		getData().modules.push_back(module);
+		if (module) getInfo().module = module->get();
 		return *this;
 	}
 
@@ -809,13 +811,15 @@ namespace Raindrop::Graphics{
 	GraphicsPipeline::GraphicsPipeline() noexcept : 
 		_context{nullptr},
 		_pipeline{VK_NULL_HANDLE},
+		_modules{},
+		_pipelineLayout{},
+		_renderPass{},
 		_info{}
 	{}
 
 	GraphicsPipeline::~GraphicsPipeline(){
 		release();
 	}
-
 
 	GraphicsPipeline::GraphicsPipeline(GraphicsPipeline&& other) : 
 		_context{nullptr},
@@ -864,6 +868,10 @@ namespace Raindrop::Graphics{
 			throw std::runtime_error("The pipeline has already been initialied");
 		}
 
+		_renderPass = _info->renderPass;
+		_pipelineLayout = _info->layout;
+		_modules = _info->shaderStageData.modules;
+
 		VkGraphicsPipelineCreateInfo info{
 			.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
 			.pNext = nullptr,
@@ -879,8 +887,8 @@ namespace Raindrop::Graphics{
 			.pDepthStencilState = _info->depthStencilState.has_value() ? &_info->depthStencilState.value() : nullptr,
 			.pColorBlendState = _info->colorBlendState.has_value() ? &_info->colorBlendState.value() : nullptr,
 			.pDynamicState = _info->dynamicState.has_value() ? &_info->dynamicState.value() : nullptr,
-			.layout = _info->layout->get(),
-			.renderPass = _info->renderPass->get(),
+			.layout = _pipelineLayout->get(),
+			.renderPass = _renderPass->get(),
 			.subpass = _info->subpass,
 			.basePipelineHandle = VK_NULL_HANDLE, // TODO : batched pipeline creation
 			.basePipelineIndex = -1
@@ -903,6 +911,10 @@ namespace Raindrop::Graphics{
 
 		auto& device = _context->getDevice();
 		auto& allocationCallbacks = _context->core.allocationCallbacks;
+
+		_modules.clear();
+		_renderPass.reset();
+		_pipelineLayout.reset();
 
 		if (_pipeline){
 			vkDestroyPipeline(device.get(), _pipeline, allocationCallbacks);
@@ -931,13 +943,13 @@ namespace Raindrop::Graphics{
 		return *this;
 	}
 
-	GraphicsPipeline& GraphicsPipeline::setRenderPass(const RenderPass& renderPass){
-		checkBuild().renderPass = &renderPass;
+	GraphicsPipeline& GraphicsPipeline::setRenderPass(const std::shared_ptr<RenderPass>& renderPass){
+		checkBuild().renderPass = renderPass;
 		return *this;
 	}
 
-	GraphicsPipeline& GraphicsPipeline::setLayout(const PipelineLayout& layout){
-		checkBuild().layout = &layout;
+	GraphicsPipeline& GraphicsPipeline::setLayout(const std::shared_ptr<PipelineLayout>& layout){
+		checkBuild().layout = layout;
 		return *this;
 	}
 

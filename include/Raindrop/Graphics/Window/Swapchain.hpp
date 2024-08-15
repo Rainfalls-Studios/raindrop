@@ -28,7 +28,7 @@ namespace Raindrop::Graphics::Window{
 			Swapchain() noexcept;
 			~Swapchain();
 
-			Swapchain& prepare(Context& context, Core::Context& core, Graphics::Context& graphics);
+			Swapchain& prepare(Context& context);
 			void initialize();
 			void release();
 
@@ -46,7 +46,7 @@ namespace Raindrop::Graphics::Window{
 			uint32_t getCurrentFrameIndex() const;
 			uint32_t getNextFrameIndex() const;
 
-			const RenderPass& getRenderPass() const;
+			const std::shared_ptr<RenderPass>& getRenderPass() const;
 
 			void beginRenderPass(VkCommandBuffer commandBuffer);
 			void endRenderPass(VkCommandBuffer commandBuffer);
@@ -68,13 +68,11 @@ namespace Raindrop::Graphics::Window{
 			};
 
 			Context* _context;
-			Core::Context* _core;
-			Graphics::Context* _graphics;
 
 			std::unique_ptr<SwapchainData> _swapchain;
 			std::unique_ptr<SwapchainData> _oldSwapchain;
 
-			RenderPass _renderPass;
+			std::shared_ptr<RenderPass> _renderPass;
 			uint32_t _currentFrame;
 			uint32_t _nextFrame;
 

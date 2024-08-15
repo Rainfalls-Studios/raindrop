@@ -2,8 +2,6 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <Raindrop/Context.hpp>
 
-#include <Raindrop/Graphics/ShaderModuleFactory.hpp>
-
 namespace Raindrop::Graphics{
 	void Context::createLogger(){
 		logger = spdlog::stdout_color_st("Raindrop::Graphics");
@@ -17,7 +15,7 @@ namespace Raindrop::Graphics{
 		core.allocationCallbacks = nullptr;
 
 		// First create the window
-		window.createLogger();
+		window.initialize(this);
 		window.window.prepare(window, *raindrop.events.get());
 		window.window.initialize();
 		
@@ -51,7 +49,7 @@ namespace Raindrop::Graphics{
 
 
 		// Create the window's swapchain
-		window.swapchain.prepare(window, core, *this)
+		window.swapchain.prepare(window)
 						.wantExtent(window.window.getExtent())
 						.wantFrameCount(Window::Swapchain::DOUBLE_BUFFERING)
 						.wantPresentMode(VK_PRESENT_MODE_FIFO_KHR)
@@ -76,7 +74,7 @@ namespace Raindrop::Graphics{
 	void Context::createAssetFactories(){
 		auto& assetManager = raindrop->assets->manager;
 
-		assetManager.emplaceFactory<ShaderModuleFactory>(*this);
+		shaderModuleFactory = assetManager.emplaceFactory<ShaderModule, ShaderModuleFactory>(*this);
 	}
 
 	Core::Device& Context::getDevice() noexcept{

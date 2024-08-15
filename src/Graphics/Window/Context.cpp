@@ -5,4 +5,9 @@ namespace Raindrop::Graphics::Window{
 	void Context::createLogger(){
 		logger = spdlog::stdout_color_st("Raindrop::Graphics::Window");
 	}
+
+	void Context::initialize(Graphics::Context* graphics){
+		createLogger();
+		this->graphics = graphics;
+	}
 }

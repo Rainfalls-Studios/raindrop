@@ -7,6 +7,7 @@
 #include "Formats.hpp"
 #include "CommandPool.hpp"
 #include "ModelLoader.hpp"
+#include "ShaderModuleFactory.hpp"
 #include <Raindrop/Events/types.hpp>
 
 namespace Raindrop::Graphics{
@@ -20,6 +21,8 @@ namespace Raindrop::Graphics{
 
 		CommandPool transfertCommandPool;
 		ModelLoader modelLoader;
+
+		std::shared_ptr<ShaderModuleFactory> shaderModuleFactory;
 
 		void createLogger();
 		void initialize(Raindrop::Context& raindrop);

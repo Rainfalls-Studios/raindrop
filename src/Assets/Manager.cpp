@@ -26,26 +26,26 @@ namespace Raindrop::Assets{
 		_context = nullptr;
 	}
 
-	void Manager::insertFactory(const std::size_t& typeID, std::unique_ptr<Factory>&& factory){
-		if (_factories.count(typeID) == 1){
-			_context->logger->warn("Overwriting factory linked with typeID {}", typeID);
+	void Manager::insertFactory(const std::type_info& typeInfo, std::shared_ptr<Factory>&& factory){
+		if (_factories.count(typeInfo.hash_code()) == 1){
+			_context->logger->warn("Overwriting factory linked with type {}", typeInfo.name());
 		}
-		_factories[typeID] = std::move(factory);
+		_factories[typeInfo.hash_code()] = factory;
 	}
 
-
-	void Manager::removeFactory(const std::size_t& typeID){
-		_factories.erase(typeID);
-	}
-
-	std::shared_ptr<Asset> Manager::loadOrGet(const std::size_t& typeID, const std::filesystem::path& path){
-		auto it = _factories.find(typeID);
+	std::shared_ptr<Asset> Manager::loadOrGet(const std::type_info& typeInfo, const std::filesystem::path& path){
+		auto it = _factories.find(typeInfo.hash_code());
 		if (it == _factories.end()){
-			_context->logger->warn("Could not find the factory corresponding to the data type {}. Could not load \"{}\"", typeID, path.string());
+			_context->logger->warn("Could not find the factory corresponding to the data type {}. Could not load \"{}\"", typeInfo.name(), path.string());
 			throw std::out_of_range("Could not find the factory");
 		}
 
-		auto& factory = it->second;
+		auto factory = it->second.lock();
+		if (!factory){
+			_context->logger->warn("The factory corresponding to the data type \"{}\" has been destroy and is no longer valid. Could not load \"{}\"", typeInfo.name(), path.string());
+			throw std::out_of_range("The corresponding factory has been destroyed and is no longer valid");
+		}
+
 		return factory->getOrCreate(path);
 	}
 }

@@ -24,22 +24,6 @@ struct PushConstant{
 	glm::mat4 viewProjection = glm::mat4(1.f);
 };
 
-std::string read_file(const std::filesystem::path& path){
-	spdlog::info("Loading file \"{}\" ...", path.string());
-	std::ifstream file(path, std::ios_base::binary | std::ios_base::in);
-	if (!file.is_open()){
-		spdlog::warn("Could not open file \"{}\"", path.string());
-		throw std::runtime_error("Could not open file");
-	}
-
-	std::stringstream streamBuf;
-	streamBuf << file.rdbuf();
-
-	spdlog::info("File \"{}\" loaded !", path.string());
-
-	return streamBuf.str();
-}
-
 class TrianglePipeline{
 	public:
 		TrianglePipeline() noexcept : 
@@ -57,69 +41,64 @@ class TrianglePipeline{
 		void initialize(Raindrop::Engine& engine, const Raindrop::Graphics::VertexLayout& layout){
 			_engine = &engine;
 
-			_layout.prepare(engine.getGraphicsContext())
-				.addPushConstant()
+			_layout = engine.createGraphicsPipelineLayout();
+			_layout->addPushConstant()
 					.set<PushConstant>()
 					.setStage(VK_SHADER_STAGE_VERTEX_BIT);
 				
-			_layout.initialize();
+			_layout->initialize();
 
-			_fragment.prepare(engine.getGraphicsContext());
-			_fragment.setCode(read_file(PATH / "shaders/triangle/triangle.frag.spv"))
-				.initialize();
+			_fragment = engine.loadOrGet<Raindrop::Graphics::ShaderModule>(PATH / "shaders/triangle/triangle.frag.spv");
+			_vertex = engine.loadOrGet<Raindrop::Graphics::ShaderModule>(PATH / "shaders/triangle/triangle.vert.spv");
 			
-			_vertex.prepare(engine.getGraphicsContext());
-			_vertex.setCode(read_file(PATH / "shaders/triangle/triangle.vert.spv"))
-				.initialize();
-			
-			_pipeline.prepare(engine.getGraphicsContext());
-			_pipeline.addStage()
-				.setModule(_fragment.get())
+			_pipeline = engine.createGraphicsGraphicsPipeline();
+			_pipeline->addStage()
+				.setModule(_fragment)
 				.setEntryPoint("main")
 				.setStage(VK_SHADER_STAGE_FRAGMENT_BIT);
 			
-			_pipeline.addStage()
-				.setModule(_vertex.get())
+			_pipeline->addStage()
+				.setModule(_vertex)
 				.setEntryPoint("main")
 				.setStage(VK_SHADER_STAGE_VERTEX_BIT);
 			
-			_pipeline.setLayout(_layout)
+			_pipeline->setLayout(_layout)
 				.setRenderPass(_engine->getGraphicsContext().window.swapchain.getRenderPass())
 				.setSubpass(0);
 			
-			_pipeline.getViewportState().addScissor();
-			_pipeline.getViewportState().addViewport();
+			_pipeline->getViewportState().addScissor();
+			_pipeline->getViewportState().addViewport();
 			
-			_pipeline.getDynamicState()
+			_pipeline->getDynamicState()
 				.addDynamicStates({VK_DYNAMIC_STATE_SCISSOR, VK_DYNAMIC_STATE_VIEWPORT});
 
-			_pipeline.getColorBlendState()
+			_pipeline->getColorBlendState()
 				.addColorAttachment()
 					.enableBlending();
 			
-			_pipeline.getVertexInputState()
+			_pipeline->getVertexInputState()
 				.setLayout(layout);
 		
-			_pipeline.getInputAssemplyState()
+			_pipeline->getInputAssemplyState()
 				.setPrimitiveTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
 				
-			_pipeline.initialize();
+			_pipeline->initialize();
 		}
 
 		void bind(Raindrop::Graphics::CommandBuffer* cmd){
-			_pipeline.bind(*cmd);
+			_pipeline->bind(*cmd);
 		}
 
 		const Raindrop::Graphics::PipelineLayout& getLayout() const noexcept{
-			return _layout;
+			return *_layout;
 		}
 
 	private:
 		Raindrop::Engine* _engine;
-		Raindrop::Graphics::PipelineLayout _layout;
-		Raindrop::Graphics::ShaderModule _fragment;
-		Raindrop::Graphics::ShaderModule _vertex;
-		Raindrop::Graphics::GraphicsPipeline _pipeline;
+		std::shared_ptr<Raindrop::Graphics::PipelineLayout> _layout;
+		std::shared_ptr<Raindrop::Graphics::ShaderModule> _fragment;
+		std::shared_ptr<Raindrop::Graphics::ShaderModule> _vertex;
+		std::shared_ptr<Raindrop::Graphics::GraphicsPipeline> _pipeline;
 };
 
 class Testbed : public Raindrop::Engine, public Raindrop::Events::Listener{

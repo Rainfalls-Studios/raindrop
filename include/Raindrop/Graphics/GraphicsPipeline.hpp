@@ -34,12 +34,13 @@ namespace Raindrop::Graphics{
 
 				struct ShaderStageData{
 					std::list<std::string> entryPoints;
+					std::list<std::shared_ptr<ShaderModule>> modules;
 					std::vector<VkSpecializationInfo> specializations;
 				} shaderStageData;
 
 				VkPipelineCreateFlags flags;
-				const RenderPass* renderPass;
-				const PipelineLayout* layout;
+				std::shared_ptr<RenderPass> renderPass;
+				std::shared_ptr<PipelineLayout> layout;
 				std::uint32_t subpass;
 
 				std::vector<VkPipelineShaderStageCreateInfo> stages;
@@ -360,7 +361,7 @@ namespace Raindrop::Graphics{
 
 					ShaderStage& setFlags(const VkPipelineStageFlags& flags);
 					ShaderStage& setStage(const VkShaderStageFlagBits& stage);
-					ShaderStage& setModule(const VkShaderModule& module);
+					ShaderStage& setModule(const std::shared_ptr<ShaderModule>& module);
 					ShaderStage& setEntryPoint(const std::string& entryPoint);
 					ShaderStage& addSpecialization(const VkSpecializationInfo& specialization);
 
@@ -392,8 +393,8 @@ namespace Raindrop::Graphics{
 			void release();
 
 			GraphicsPipeline& setFlags(const VkPipelineCreateFlags& flags);
-			GraphicsPipeline& setRenderPass(const RenderPass& renderPass);
-			GraphicsPipeline& setLayout(const PipelineLayout& layout);
+			GraphicsPipeline& setRenderPass(const std::shared_ptr<RenderPass>& renderPass);
+			GraphicsPipeline& setLayout(const std::shared_ptr<PipelineLayout>& layout);
 			GraphicsPipeline& setSubpass(const std::uint32_t& subpass);
 
 			ShaderStage addStage();
@@ -412,6 +413,9 @@ namespace Raindrop::Graphics{
 		private:
 			Context* _context;
 			VkPipeline _pipeline;
+			std::shared_ptr<RenderPass> _renderPass;
+			std::shared_ptr<PipelineLayout> _pipelineLayout;
+			std::list<std::shared_ptr<ShaderModule>> _modules;
 
 			std::unique_ptr<BuildInfo> _info;
 

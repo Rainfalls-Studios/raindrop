@@ -4,6 +4,7 @@
 #include "types.hpp"
 #include "pch.pch"
 #include <Raindrop/Assets/Factory.hpp>
+#include "ShaderModule.hpp"
 
 namespace Raindrop::Graphics{
 	class ShaderModuleFactory : public Assets::Factory{

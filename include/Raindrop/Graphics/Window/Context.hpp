@@ -11,11 +11,13 @@ namespace Raindrop::Graphics::Window{
 	struct Context{
 		std::shared_ptr<spdlog::logger> logger;
 
+		Graphics::Context* graphics;
 		Window window;
 		Surface surface;
 		Swapchain swapchain;
 		
 		void createLogger();
+		void initialize(Graphics::Context* graphics);
 	};
 }
 
