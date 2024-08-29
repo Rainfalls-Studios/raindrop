@@ -58,9 +58,11 @@ namespace Raindrop::Graphics{
 		std::swap(A._info, B._info);
 	}
 
-	void ImageView::prepare(Context& context){
+	ImageView& ImageView::prepare(Context& context){
 		_context = &context;
 		_info = std::make_unique<BuildInfo>();
+
+		return *this;
 	}
 
 	void ImageView::initialize(){

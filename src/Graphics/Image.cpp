@@ -68,9 +68,11 @@ namespace Raindrop::Graphics{
 		std::swap(A._info, B._info);
 	}
 
-	void Image::prepare(Context& context){
+	Image& Image::prepare(Context& context){
 		_context = &context;
 		_info = std::make_unique<BuildInfo>();
+
+		return *this;
 	}
 
 	void Image::initialize(){
@@ -120,8 +122,6 @@ namespace Raindrop::Graphics{
 		auto& allocationCallbacks = _context->core.allocationCallbacks;
 
 		_memory.reset();
-
-		spdlog::info("test");
 
 		if (_image){
 			vkDestroyImage(device.get(), _image, allocationCallbacks);
@@ -260,5 +260,9 @@ namespace Raindrop::Graphics{
 	Image& Image::setMemoryOffset(const std::size_t& offset){
 		getInfo().memoryOffset = offset;
 		return *this;
+	}
+
+	const std::shared_ptr<Memory> Image::getMemory() const noexcept{
+		return _memory;
 	}
 }

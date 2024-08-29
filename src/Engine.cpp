@@ -16,6 +16,7 @@
 #include <Raindrop/Graphics/VertexLayout.hpp>
 #include <Raindrop/Graphics/ModelLayoutConfig.hpp>
 #include <Raindrop/Graphics/PipelineLayout.hpp>
+#include <Raindrop/Graphics/Texture.hpp>
 
 #define create_graphics_interface(type) std::shared_ptr<Graphics::type> Engine::createGraphics##type(){ std::shared_ptr<Graphics::type> instance = getUUIDRegistry().emplace<Graphics::type>(); instance->prepare(getGraphicsContext()); return std::move(instance);}
 
@@ -119,6 +120,7 @@ namespace Raindrop{
 	create_graphics_interface(Sampler);
 	create_graphics_interface(DescriptorPool);
 	create_graphics_interface(MeshData);
+	create_graphics_interface(Texture);
 	
 	Graphics::ModelLayoutConfig Engine::createGraphicsModelLayoutConfig(){
 		return Graphics::ModelLayoutConfig();

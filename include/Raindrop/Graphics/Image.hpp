@@ -21,7 +21,7 @@ namespace Raindrop::Graphics{
 
 			friend void swap(Image& A, Image& B);
 
-			void prepare(Context& context);
+			Image& prepare(Context& context);
 			void initialize();
 			void release();
 
@@ -48,6 +48,7 @@ namespace Raindrop::Graphics{
 			const VkImage& get() const noexcept;
 
 			VkMemoryRequirements getMemoryRequirements() const;
+			const std::shared_ptr<Memory> getMemory() const noexcept;
 
 		private:
 			struct BuildInfo{

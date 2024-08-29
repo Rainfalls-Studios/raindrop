@@ -21,7 +21,7 @@ namespace Raindrop::Graphics{
 
 			friend void swap(Sampler& A, Sampler& B);
 
-			void prepare(Context& context);
+			Sampler& prepare(Context& context);
 			void initialize();
 			void release();
 
@@ -35,7 +35,7 @@ namespace Raindrop::Graphics{
 			Sampler& setMipLodBias(const float& bias);
 			Sampler& enableAnistotropy(const bool& enable = true);
 			Sampler& setMaxAnisotropy(const float& max);
-			Sampler& enbaleComparation(const bool& enable = true);
+			Sampler& enableComparation(const bool& enable = true);
 			Sampler& setCompareOperation(const VkCompareOp& operation);
 			Sampler& setMinLod(const float& min);
 			Sampler& setMaxLod(const float& max);

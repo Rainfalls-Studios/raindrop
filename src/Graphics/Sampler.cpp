@@ -59,9 +59,11 @@ namespace Raindrop::Graphics{
 		std::swap(A._info, B._info);
 	}
 
-	void Sampler::prepare(Context& context){
+	Sampler& Sampler::prepare(Context& context){
 		_context = &context;
 		_info = std::make_unique<BuildInfo>();
+
+		return *this;
 	}
 
 	void Sampler::initialize(){
@@ -153,7 +155,7 @@ namespace Raindrop::Graphics{
 		return *this;
 	}
 
-	Sampler& Sampler::enbaleComparation(const bool& enable){
+	Sampler& Sampler::enableComparation(const bool& enable){
 		getInfo().info.compareEnable = static_cast<VkBool32>(enable);
 		return *this;
 	}

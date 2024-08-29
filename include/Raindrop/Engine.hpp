@@ -55,6 +55,7 @@ namespace Raindrop{
 			std::shared_ptr<Graphics::DescriptorPool> createGraphicsDescriptorPool();
 			std::shared_ptr<Graphics::MeshData> createGraphicsMeshData();
 			std::shared_ptr<Graphics::Mesh> createGraphicsMesh();
+			std::shared_ptr<Graphics::Texture> createGraphicsTexture();
 
 			Graphics::VertexLayout createGraphicsVertexLayout();
 			Graphics::ModelLayoutConfig createGraphicsModelLayoutConfig();

@@ -21,7 +21,7 @@ namespace Raindrop::Graphics{
 
 			friend void swap(ImageView& A, ImageView& B);
 
-			void prepare(Context& context);
+			ImageView& prepare(Context& context);
 			void initialize();
 			void release();
 

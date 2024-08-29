@@ -31,6 +31,7 @@ namespace Raindrop::Graphics{
 	class ModelLoader;
 	class ModelLayoutConfig;
 	class Framebuffer;
+	class Texture;
 }
 
 #endif

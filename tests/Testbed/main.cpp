@@ -9,6 +9,7 @@
 #include <Raindrop/Graphics/Model.hpp>
 #include <Raindrop/Graphics/Mesh.hpp>
 #include <Raindrop/Graphics/Buffer.hpp>
+#include <Raindrop/Graphics/Texture.hpp>
 #include <Raindrop/Events/Listener.hpp>
 
 #include <spdlog/spdlog.h>
@@ -126,6 +127,13 @@ class Testbed : public Raindrop::Engine, public Raindrop::Events::Listener{
 			_model = Engine::getGraphicsModelLoader().load(PATH / "models/bunny.obj", config);
 
 			_pipeline.initialize(*this, layout);
+
+			auto texture = Engine::createGraphicsTexture();
+			texture->setWidth(1024)
+				.setHeight(1024)
+				.setFormat(VK_FORMAT_R8G8B8A8_SINT)
+				.setLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+				.allocate();
 		}
 
 		~Testbed(){
@@ -188,9 +196,12 @@ class Testbed : public Raindrop::Engine, public Raindrop::Events::Listener{
 };
 
 int main(){
-	Testbed testbed;
-
-	testbed.run();
+	try{
+		Testbed testbed;
+		testbed.run();
+	} catch (const std::exception& e){
+		std::cout << e.what() << std::endl;
+	}
 
 	return EXIT_SUCCESS;
 }
