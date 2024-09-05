@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.30)
 project(Raindrop)
 
 # set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -33,13 +33,10 @@ target_link_libraries(
     -static-libstdc++
     SDL3::SDL3-static
     vk-bootstrap
-
-	PUBLIC
-	Vulkan::Vulkan
 	glm::glm
+	Vulkan::Vulkan
     spdlog::spdlog_header_only
     EnTT::EnTT
-
 	
 )
 
@@ -51,3 +48,5 @@ if(WIN32)
         -lwinpthread
     )
 endif()
+
+add_subdirectory(tests)
