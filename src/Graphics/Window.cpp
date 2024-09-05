@@ -1,6 +1,8 @@
 #include "Raindrop/Graphics/Window.hpp"
 #include "Raindrop/Graphics/Context.hpp"
 
+#include <SDL3/SDL_vulkan.h>
+
 namespace Raindrop::Graphics{
 	Window::Window(Context& context, const char* title, std::uint32_t width, std::uint32_t height) : _context{context}{
 		// We suppose that this function is only called once
@@ -25,6 +27,27 @@ namespace Raindrop::Graphics{
 			SDL_Quit();
 		}
 	}
+
+	std::vector<const char*> Window::vkExtensions(){
+		Uint32 count;
+		const char *const *extensions = SDL_Vulkan_GetInstanceExtensions(&count);
+
+		return std::vector<const char*>(extensions, extensions + count);
+	}
+
+	VkSurfaceKHR Window::createSurface(){
+		VkSurfaceKHR surface;
+
+		SPDLOG_LOGGER_INFO(_context.getLogger(), "Creating window vulkan surface...");
+		if (SDL_Vulkan_CreateSurface(_window, _context.getInstance().get(), nullptr, &surface) != SDL_TRUE){
+			SPDLOG_LOGGER_ERROR(_context.getLogger(), "Failed to create window vulkan surface : {}", SDL_GetError());
+			throw std::runtime_error("Failed to create surface");
+		}
+		
+		SPDLOG_LOGGER_INFO(_context.getLogger(), "Window vulkan surface created with success !");
+		return surface;
+	}
+
 
 	Context& Window::getContext() noexcept{
 		return _context;

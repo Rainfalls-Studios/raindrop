@@ -15,6 +15,9 @@ namespace Raindrop::Graphics{
 
 			SDL_Window* get() const noexcept;
 
+			std::vector<const char*> vkExtensions();
+			VkSurfaceKHR createSurface();
+
 		private:
 			#if 0
 				struct SDL_Window;
