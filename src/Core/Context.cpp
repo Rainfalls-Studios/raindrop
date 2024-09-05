@@ -3,7 +3,7 @@
 
 namespace Raindrop::Core{
 	Context::Context() : 
-		_logger{spdlog::stdout_color_st("Raindrop.Core")},
+		_logger{spdlog::stdout_color_st("Raindrop::Core")},
 		_assets{std::make_unique<Assets::Context>(*this)},
 		_events{std::make_unique<Events::Context>(*this)},
 		_scenes{std::make_unique<Scenes::Context>(*this)}

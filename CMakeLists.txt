@@ -31,12 +31,14 @@ target_link_libraries(
 	PRIVATE
     -static-libgcc
     -static-libstdc++
-    SDL3::SDL3-static
+    
+    PUBLIC
     vk-bootstrap
-	glm::glm
 	Vulkan::Vulkan
-    spdlog::spdlog_header_only
     EnTT::EnTT
+    SDL3::SDL3-static
+	glm::glm
+    spdlog::spdlog_header_only
 	
 )
 
