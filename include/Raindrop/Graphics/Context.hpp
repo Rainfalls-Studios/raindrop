@@ -5,6 +5,7 @@
 #include "Window.hpp"
 #include "Vulkan/Instance.hpp"
 #include "Vulkan/Surface.hpp"
+#include "Vulkan/PhysicalDevice.hpp"
 
 namespace Raindrop{
 	namespace Core{class Context;}
@@ -27,6 +28,9 @@ namespace Raindrop{
 				Vulkan::Surface& getSurface() noexcept;
 				const Vulkan::Surface& getSurface() const noexcept;
 
+				Vulkan::PhysicalDevice& getPhysicalDevice() noexcept;
+				const Vulkan::PhysicalDevice& getPhysicalDevice() const noexcept;
+
 			private:
 				Core::Context& _core;
 				std::shared_ptr<spdlog::logger> _logger;
@@ -34,6 +38,7 @@ namespace Raindrop{
 				Window _window;
 				Vulkan::Instance _vkInstance;
 				Vulkan::Surface _vkSurface;
+				Vulkan::PhysicalDevice _vkPhysicalDevice;
 		};
 	}
 }

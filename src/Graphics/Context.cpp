@@ -8,7 +8,8 @@ namespace Raindrop::Graphics{
 		_logger{spdlog::stdout_color_st("Raindrop::Graphics")},
 		_window(*this, "Raindrop", 1080, 720),
 		_vkInstance(*this, _window.vkExtensions()),
-		_vkSurface{*this, _window.createSurface()}
+		_vkSurface(*this, _window.createSurface()),
+		_vkPhysicalDevice(*this)
 	{}
 
 	Context::~Context(){
@@ -45,5 +46,13 @@ namespace Raindrop::Graphics{
 
 	const Vulkan::Surface& Context::getSurface() const noexcept{
 		return _vkSurface;
+	}
+
+	Vulkan::PhysicalDevice& Context::getPhysicalDevice() noexcept{
+		return _vkPhysicalDevice;
+	}
+
+	const Vulkan::PhysicalDevice& Context::getPhysicalDevice() const noexcept{
+		return _vkPhysicalDevice;
 	}
 }
