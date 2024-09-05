@@ -9,7 +9,8 @@ namespace Raindrop::Graphics{
 		_window(*this, "Raindrop", 1080, 720),
 		_vkInstance(*this, _window.vkExtensions()),
 		_vkSurface(*this, _window.createSurface()),
-		_vkPhysicalDevice(*this)
+		_vkPhysicalDevice(*this),
+		_vkDevice(*this)
 	{}
 
 	Context::~Context(){
@@ -54,5 +55,13 @@ namespace Raindrop::Graphics{
 
 	const Vulkan::PhysicalDevice& Context::getPhysicalDevice() const noexcept{
 		return _vkPhysicalDevice;
+	}
+
+	Vulkan::Device& Context::getDevice() noexcept{
+		return _vkDevice;
+	}
+
+	const Vulkan::Device& Context::getDevice() const noexcept{
+		return _vkDevice;
 	}
 }
