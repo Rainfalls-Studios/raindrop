@@ -32,8 +32,6 @@ namespace Raindrop::Core{
 
 				Manager _manager;
 				Inputs _inputs;
-
-				void createLogger();
 		};
 	}
 }

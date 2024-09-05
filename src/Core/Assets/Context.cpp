@@ -1,16 +1,15 @@
-#include "Raindrop/Core/Scenes/Context.hpp"
+#include "Raindrop/Core/Assets/Context.hpp"
 #include "Raindrop/Core/Context.hpp"
 
-namespace Raindrop::Core::Scenes{
-	Context::Context(Core::Context& core) :
+namespace Raindrop::Core::Assets{
+	Context::Context(Core::Context& core) : 
 		_core{core},
-		_logger{_core.getLogger()->clone("Raindrop::Core::Scenes")}
+		_logger{core.getLogger()->clone("Raindrop::Core::Assets")},
+		_manager{*this}
 	{}
 
-	Context::~Context(){
-		
-	}
-
+	Context::~Context(){}
+	
 	Core::Context& Context::getCore() noexcept{
 		return _core;
 	}
@@ -19,12 +18,19 @@ namespace Raindrop::Core::Scenes{
 		return _core;
 	}
 
-
 	std::shared_ptr<spdlog::logger>& Context::getLogger() noexcept{
 		return _logger;
 	}
 
 	const std::shared_ptr<spdlog::logger>& Context::getLogger() const noexcept{
 		return _logger;
+	}
+
+	Manager& Context::getManager() noexcept{
+		return _manager;
+	}
+
+	const Manager& Context::getManager() const noexcept{
+		return _manager;
 	}
 }
