@@ -7,6 +7,8 @@
 #include "Vulkan/Surface.hpp"
 #include "Vulkan/PhysicalDevice.hpp"
 #include "Vulkan/Device.hpp"
+#include "Vulkan/Swapchain.hpp"
+#include "Raindrop/Core/UUIDRegistry.hpp"
 
 namespace Raindrop{
 	namespace Core{class Context;}
@@ -35,6 +37,14 @@ namespace Raindrop{
 				Vulkan::Device& getDevice() noexcept;
 				const Vulkan::Device& getDevice() const noexcept;
 
+				Vulkan::Swapchain& getSwapchain() noexcept;
+				const Vulkan::Swapchain& getSwapchain() const noexcept;
+
+				
+
+				Core::UUIDRegistry& getRegistry() noexcept;
+				const Core::UUIDRegistry& getRegistry() const noexcept;
+
 			private:
 				Core::Context& _core;
 				std::shared_ptr<spdlog::logger> _logger;
@@ -44,6 +54,7 @@ namespace Raindrop{
 				Vulkan::Surface _vkSurface;
 				Vulkan::PhysicalDevice _vkPhysicalDevice;
 				Vulkan::Device _vkDevice;
+				Vulkan::Swapchain _vkSwapchain;
 		};
 	}
 }

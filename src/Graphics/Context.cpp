@@ -10,7 +10,8 @@ namespace Raindrop::Graphics{
 		_vkInstance(*this, _window.vkExtensions()),
 		_vkSurface(*this, _window.createSurface()),
 		_vkPhysicalDevice(*this),
-		_vkDevice(*this)
+		_vkDevice(*this),
+		_vkSwapchain(*this)
 	{}
 
 	Context::~Context(){
@@ -63,5 +64,21 @@ namespace Raindrop::Graphics{
 
 	const Vulkan::Device& Context::getDevice() const noexcept{
 		return _vkDevice;
+	}
+
+	Core::UUIDRegistry& Context::getRegistry() noexcept{
+		return _core.getRegistry();
+	}
+
+	const Core::UUIDRegistry& Context::getRegistry() const noexcept{
+		return _core.getRegistry();
+	}
+
+	Vulkan::Swapchain& Context::getSwapchain() noexcept{
+		return _vkSwapchain;
+	}
+
+	const Vulkan::Swapchain& Context::getSwapchain() const noexcept{
+		return _vkSwapchain;
 	}
 }
