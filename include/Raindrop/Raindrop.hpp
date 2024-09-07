@@ -12,6 +12,11 @@ namespace Raindrop{
 			void run();
 
 		private:
+			struct Setup{
+				Setup();
+			};
+
+			Setup _setup;
 			Core::Context _core;
 			Graphics::Context _graphics;
 	};
